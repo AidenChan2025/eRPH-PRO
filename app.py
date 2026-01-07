@@ -450,109 +450,27 @@ def get_dskp_structure():
         ).distinct().all()
         
         # Structure: { 'SR': { 'Tahun 1': ['BM', 'BI'], ... }, 'SMK': ... }
-        structure = {}
-        
-        def normalize_grade(g_raw):
-            if not g_raw: return None
-            g = str(g_raw).strip().upper()
-            
-            # Simple normalization or pass-through
-            # The previous detailed logic is good, keeping it for structure
-            # ... (Logic identical to previous, just ensuring this endpoint works)
-            return g_raw # Return raw for now to debug, user said "Year/Grade" field logic is needed.
-
-        # Let's simplify structure for the frontend "Cascading" usage if we want to filter Subject BY Grade or Vice Versa.
-        # For now, the user just wants the Subject list to be correct.
-        
-        return jsonify({'success': True, 'data': str(results)}) # Placeholder if not used yet
-    except Exception as e:
-        return jsonify({'success': False, 'message': str(e)}), 500
-            if 'PENGUKUHAN' in g: return 'Pengukuhan'
-
-            # SMK Grades
-            if g in ['PERALIHAN']: return 'Peralihan'
-            if g in ['TINGKATAN 1', 'FORM 1', 'T1']: return 'Tingkatan 1'
-            if g in ['TINGKATAN 2', 'FORM 2', 'T2']: return 'Tingkatan 2'
-            if g in ['TINGKATAN 3', 'FORM 3', 'T3']: return 'Tingkatan 3'
-            if g in ['TINGKATAN 4', 'FORM 4', 'T4']: return 'Tingkatan 4'
-            if g in ['TINGKATAN 5', 'FORM 5', 'T5']: return 'Tingkatan 5'
-            
-            # Junk Filter
-            if len(g) > 20: return None
-            
-            return g.title()
-
-        def grade_sort_key(g_name):
-            # Sort Order: Pra -> Tahun 1-6 -> Kelas Bercantum -> Peralihan -> SMK
-            lower = g_name.lower()
-            if 'pra' in lower: return 0
-            if 'tahun 1' in lower: return 10
-            if 'tahun 2' in lower: return 11
-            if 'tahun 3' in lower: return 12
-            if 'tahun 4' in lower: return 13
-            if 'tahun 5' in lower: return 14
-            if 'tahun 6' in lower: return 15
-            
-            if 'kelas bercantum' in lower: return 18
-            if 'pemulihan' in lower: return 19
-            if 'pengukuhan' in lower: return 19.5
-            
-            if 'peralihan' in lower: return 20
-            if 'tingkatan 1' in lower: return 21
-            if 'tingkatan 2' in lower: return 22
-            if 'tingkatan 3' in lower: return 23
-            if 'tingkatan 4' in lower: return 24
-            if 'tingkatan 5' in lower: return 25
-            
-            return 99 # Others at end
-
-        # Build raw dict first
-        temp_structure = {}
-        for school_type, grade, subject in results:
-            if not school_type: continue
-            
-            # STRICT FILTER: School Type must be short and resemble SR/SMK
-            vals = school_type.strip().upper()
-            if vals not in ['SR', 'SMK', 'SK', 'SJKC', 'SJKT']:
-                if len(vals) > 5: continue 
-                
-            # Normalize Name
-            sType_Name = 'SR (Sekolah Rendah)' if vals == 'SR' else vals
-            if vals == 'SMK': sType_Name = 'SMK (Sekolah Menengah)'
-            
-            # Special Grouping: Pemulihan (Based on Subject Name)
-            if subject and 'PEMULIHAN' in subject.upper():
-                nGrade = 'Pemulihan'
-            else:
-                nGrade = normalize_grade(grade)
-            
-            if not nGrade: continue # Skip garbage grades
-            
-            # BLACKLIST RULES (User Requested Filters)
-            # Remove "CUTI PERSEKOLAHAN", "PROGRAM KHAS", "GPM"
-            # We check both Grade and Subject for these keywords
-            check_str = (str(grade) + ' ' + str(subject)).upper()
-            if 'CUTI' in check_str or 'PROGRAM KHAS' in check_str or 'GPM' in check_str:
-                continue
-
-            if sType_Name not in temp_structure: temp_structure[sType_Name] = {}
-            if nGrade not in temp_structure[sType_Name]: temp_structure[sType_Name][nGrade] = set()
-            
-            # Normalize Subject
-            if subject and len(subject) < 50: 
-                 temp_structure[sType_Name][nGrade].add(subject)
-
-        # Rebuild with sorted keys
         final_structure = {}
-        for sType in sorted(temp_structure.keys()):
-            if not temp_structure[sType]: continue
+        
+        for school_type, grade, subject in results:
+            if not school_type or not grade: continue
             
-            final_structure[sType] = {}
-            # Sort grades based on custom key
-            sorted_grades = sorted(temp_structure[sType].keys(), key=grade_sort_key)
-            for gr in sorted_grades:
-                # Sort subjects alphabetically
-                final_structure[sType][gr] = sorted(list(temp_structure[sType][gr]))
+            st = school_type.strip().upper()
+            if st == 'SR': st = 'SR (Sekolah Rendah)'
+            elif st == 'SMK': st = 'SMK (Sekolah Menengah)'
+            
+            if st not in final_structure: final_structure[st] = {}
+            
+            g = str(grade).strip().title()
+            if g not in final_structure[st]: final_structure[st][g] = []
+            
+            if subject and subject not in final_structure[st][g]:
+                final_structure[st][g].append(subject)
+                
+        # Sort
+        for st in final_structure:
+            for g in final_structure[st]:
+                final_structure[st][g].sort()
 
         return jsonify({
             'success': True, 
