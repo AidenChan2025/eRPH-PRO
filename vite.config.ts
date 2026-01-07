@@ -20,7 +20,7 @@ export default defineConfig(({ mode }) => {
       'process.env.VITE_FIREBASE_MEASUREMENT_ID': JSON.stringify(env.VITE_FIREBASE_MEASUREMENT_ID || ''),
     },
     build: {
-      outDir: 'build',
+      // outDir: 'build', // Using default dist
       emptyOutDir: true,
       sourcemap: false,
       minify: 'esbuild',
