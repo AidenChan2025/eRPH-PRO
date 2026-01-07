@@ -13,7 +13,20 @@ const KnowledgeBase = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [activeTab, setActiveTab] = useState<'updates' | 'guides' | 'faq'>('updates');
 
+    const [expandedLog, setExpandedLog] = useState<string | null>(null);
+
     const updateLogs = [
+        {
+            version: "v0.0.42",
+            date: "Jan 07, 2026",
+            title: "DSKP Browser & Build Optimization",
+            items: [
+                "New Inline DSKP Selector with cascading dropdowns (Theme -> Topic -> Standards).",
+                "Optimized build process for faster deployment and reduced memory usage.",
+                "Frontend automatically fetches real Subject list from database to prevent mismatches.",
+                "Auto-Language switching for DSKP content based on selected subject."
+            ]
+        },
         {
             version: "v0.0.36",
             date: "Jan 07, 2026",
@@ -79,6 +92,13 @@ const KnowledgeBase = () => {
 
     const [selectedGuide, setSelectedGuide] = useState<{ title: string; content: React.ReactNode } | null>(null);
 
+    // Set default expanded log to the latest one on mount
+    React.useEffect(() => {
+        if (!expandedLog && updateLogs.length > 0) {
+            setExpandedLog(updateLogs[0].version);
+        }
+    }, []);
+
     return (
         <div className="min-h-screen bg-slate-50 flex flex-col">
             <PublicNavbar />
@@ -133,71 +153,53 @@ const KnowledgeBase = () => {
                     <div className="min-h-[400px]">
                         {/* UPDATE LOGS */}
                         {activeTab === 'updates' && (
-                            <div className="space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                            <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
                                 <div className="flex items-center justify-between">
                                     <h3 className="text-2xl font-black text-slate-900">Changelog & Release Notes</h3>
                                     <span className="text-xs font-bold bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full uppercase tracking-widest">Live</span>
                                 </div>
 
-                                <div className="relative space-y-12 before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:ml-8 before:h-full before:w-0.5 before:bg-slate-200">
-                                    <div className="relative pl-16 md:pl-24 group">
-                                        <div className="absolute left-0 w-10 h-10 md:w-16 md:h-16 rounded-2xl bg-white border-2 border-slate-100 flex items-center justify-center shadow-sm z-10 group-hover:scale-110 transition-transform group-hover:border-blue-500 text-slate-400 group-hover:text-blue-500">
-                                            <Star className="w-5 h-5 md:w-8 md:h-8 fill-current text-amber-400 border-none" />
-                                        </div>
-
-                                        <div className="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-xl transition-all">
-                                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-                                                <div>
-                                                    <div className="flex items-center gap-3 mb-2">
-                                                        <span className="px-3 py-1 bg-slate-900 text-white rounded-lg text-xs font-black font-mono tracking-tight">v0.0.33</span>
-                                                        <time className="text-xs font-bold text-slate-400 uppercase tracking-widest">Jan 07, 2026</time>
-                                                    </div>
-                                                    <h4 className="text-xl font-black text-slate-800">Knowledge Hub & UI Polish</h4>
+                                <div className="relative space-y-6 before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:ml-8 before:h-full before:w-0.5 before:bg-slate-200">
+                                    {updateLogs.filter(l => l.title.toLowerCase().includes(searchQuery.toLowerCase()) || l.version.includes(searchQuery)).map((log, i) => {
+                                        const isExpanded = expandedLog === log.version;
+                                        return (
+                                            <div key={i} className="relative pl-16 md:pl-24 group">
+                                                <div className={`absolute left-0 w-10 h-10 md:w-16 md:h-16 rounded-2xl border-2 flex items-center justify-center shadow-sm z-10 transition-all ${isExpanded ? 'bg-blue-600 border-blue-600 text-white scale-110 shadow-blue-200' : 'bg-white border-slate-100 text-slate-400 group-hover:border-blue-500 group-hover:text-blue-500'}`}>
+                                                    {i === 0 ? <Star className="w-5 h-5 md:w-8 md:h-8 fill-current" /> : <Zap className="w-5 h-5 md:w-8 md:h-8" />}
                                                 </div>
-                                            </div>
-                                            <ul className="grid grid-cols-1 gap-3">
-                                                {[
-                                                    "Overhauled Knowledge Base with User Guides",
-                                                    "New Interactive FAQ Accordion System",
-                                                    "Optimized Login Page Layout",
-                                                    "Global Navigation Refinement"
-                                                ].map((item, idx) => (
-                                                    <li key={idx} className="flex items-start gap-3 text-sm font-medium text-slate-600 bg-slate-50 p-4 rounded-xl">
-                                                        <div className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-2 shrink-0"></div>
-                                                        {item}
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        </div>
-                                    </div>
 
-                                    {updateLogs.filter(l => l.title.toLowerCase().includes(searchQuery.toLowerCase()) || l.version.includes(searchQuery)).map((log, i) => (
-                                        <div key={i} className="relative pl-16 md:pl-24 group">
-                                            <div className="absolute left-0 w-10 h-10 md:w-16 md:h-16 rounded-2xl bg-white border-2 border-slate-100 flex items-center justify-center shadow-sm z-10 group-hover:scale-110 transition-transform group-hover:border-blue-500 text-slate-400 group-hover:text-blue-500">
-                                                <Zap className="w-5 h-5 md:w-8 md:h-8" />
-                                            </div>
-
-                                            <div className="bg-white p-8 rounded-[2rem] border border-slate-100 shadow-sm hover:shadow-xl transition-all">
-                                                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
-                                                    <div>
-                                                        <div className="flex items-center gap-3 mb-2">
-                                                            <span className="px-3 py-1 bg-slate-900 text-white rounded-lg text-xs font-black font-mono tracking-tight">{log.version}</span>
-                                                            <time className="text-xs font-bold text-slate-400 uppercase tracking-widest">{log.date}</time>
+                                                <div
+                                                    onClick={() => setExpandedLog(isExpanded ? null : log.version)}
+                                                    className={`bg-white rounded-[2rem] border transition-all cursor-pointer overflow-hidden ${isExpanded ? 'p-8 border-blue-200 shadow-xl ring-4 ring-blue-50/50' : 'p-6 border-slate-100 shadow-sm hover:shadow-md hover:border-blue-100'}`}
+                                                >
+                                                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                                        <div>
+                                                            <div className="flex items-center gap-3 mb-2">
+                                                                <span className={`px-3 py-1 rounded-lg text-xs font-black font-mono tracking-tight ${isExpanded ? 'bg-blue-600 text-white' : 'bg-slate-100 text-slate-600'}`}>{log.version}</span>
+                                                                <time className="text-xs font-bold text-slate-400 uppercase tracking-widest">{log.date}</time>
+                                                            </div>
+                                                            <h4 className={`font-black text-slate-800 transition-all ${isExpanded ? 'text-xl' : 'text-lg'}`}>{log.title}</h4>
                                                         </div>
-                                                        <h4 className="text-xl font-black text-slate-800">{log.title}</h4>
+                                                        <ChevronRight className={`w-5 h-5 text-slate-400 transition-transform duration-300 ${isExpanded ? 'rotate-90 text-blue-500' : ''}`} />
+                                                    </div>
+
+                                                    {/* Collapsible Content */}
+                                                    <div className={`grid grid-transition duration-500 ease-out ${isExpanded ? 'grid-rows-[1fr] opacity-100 mt-6' : 'grid-rows-[0fr] opacity-0'}`}>
+                                                        <div className="overflow-hidden">
+                                                            <ul className="grid grid-cols-1 gap-3">
+                                                                {log.items.map((item, idx) => (
+                                                                    <li key={idx} className="flex items-start gap-3 text-sm font-medium text-slate-600 bg-slate-50 p-4 rounded-xl">
+                                                                        <div className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-2 shrink-0"></div>
+                                                                        {item}
+                                                                    </li>
+                                                                ))}
+                                                            </ul>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                                <ul className="grid grid-cols-1 gap-3">
-                                                    {log.items.map((item, idx) => (
-                                                        <li key={idx} className="flex items-start gap-3 text-sm font-medium text-slate-600 bg-slate-50 p-4 rounded-xl">
-                                                            <div className="w-1.5 h-1.5 rounded-full bg-blue-500 mt-2 shrink-0"></div>
-                                                            {item}
-                                                        </li>
-                                                    ))}
-                                                </ul>
                                             </div>
-                                        </div>
-                                    ))}
+                                        );
+                                    })}
                                 </div>
                             </div>
                         )}

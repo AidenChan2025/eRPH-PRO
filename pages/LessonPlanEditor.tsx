@@ -49,10 +49,24 @@ const LessonPlanEditor = () => {
     const [subjectSearch, setSubjectSearch] = useState('');
     const [currentLang, setCurrentLang] = useState<SupportedLanguage>('ms');
 
+    // State for options
+    const [dbSubjects, setDbSubjects] = useState<string[]>([]);
+
     // Default Subjects List (Fallback) - Memoized
     const DEFAULT_SUBJECTS = useMemo(() => ["Bahasa Melayu", "English", "Matematik", "Sains", "Sejarah", "Reka Bentuk dan Teknologi", "Pendidikan Islam", "Pendidikan Moral", "Pendidikan Jasmani dan Kesihatan", "Pendidikan Seni Visual", "Pendidikan Muzik", "Bahasa Arab", "Bahasa Cina", "Bahasa Tamil", "Bahasa Iban", "Bahasa Kadazandusun", "Bahasa Semai"], []);
 
-    const allSubjects = useMemo(() => Array.from(new Set([...(settings?.customSubjects || []), ...DEFAULT_SUBJECTS])).sort(), [settings?.customSubjects, DEFAULT_SUBJECTS]);
+    useEffect(() => {
+        api.dskp.getOptions().then(res => {
+            if (res.success && res.subjects) {
+                setDbSubjects(res.subjects);
+            }
+        }).catch(err => console.error("Failed to load DSKP options", err));
+    }, []);
+
+    const allSubjects = useMemo(() => {
+        const source = dbSubjects.length > 0 ? dbSubjects : DEFAULT_SUBJECTS;
+        return Array.from(new Set([...(settings?.customSubjects || []), ...source])).sort();
+    }, [settings?.customSubjects, DEFAULT_SUBJECTS, dbSubjects]);
 
     const [dskpRecords, setDskpRecords] = useState<DSKPStandard[]>([]);
     const [localTheme, setLocalTheme] = useState('');

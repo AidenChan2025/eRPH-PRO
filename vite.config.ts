@@ -23,7 +23,7 @@ export default defineConfig(({ mode }) => {
       outDir: 'build',
       emptyOutDir: true,
       sourcemap: false,
-      minify: 'esbuild',
+      minify: false, // Disabled to prevent memory hangs on low-resource machines
       rollupOptions: {
         output: {
           manualChunks: {
