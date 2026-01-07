@@ -24689,7 +24689,50 @@ const translations = {
     faq_log_v31_item1: "Full Google Identity integration for teachers",
     faq_log_v31_item2: "Restored Quick Demo access for rapid prototyping",
     faq_log_v31_item3: "Expanded FAQ Knowledge Base with usage guides",
-    faq_log_v31_item4: "System build v0.0.31 stabilization"
+    faq_log_v31_item4: "System build v0.0.31 stabilization",
+    // Layout & Roles
+    role_gpk_1: "GPK 1",
+    role_gpk_hem: "GPK HEM",
+    role_gpk_koko: "GPK KOKO",
+    role_gpk: "GPK",
+    school_settings: "School Settings",
+    admin_mailbox: "Admin Mailbox",
+    broadcast: "Broadcast",
+    security_center: "Security Center",
+    powered_by: "Powered by",
+    system_version: "System v",
+    secure_session: "Secure Session",
+    good_morning: "Good Morning",
+    good_afternoon: "Good Afternoon",
+    good_evening: "Good Evening",
+    portal_locked: "Portal Locked",
+    locked_desc: "Session locked due to inactivity. Please enter your credential PIN or password to continue.",
+    invalid_credentials: "Invalid Credentials",
+    unlock_workspace: "Unlock Workspace",
+    switch_account: "Switch Account",
+    no_unread_notifications: "No Notifications",
+    contact_support: "Contact Support",
+    // Public Navbar
+    support_me: "Support Me",
+    // Lesson Plan Editor
+    select_subject: "Select Subject",
+    search_subject: "Search subject...",
+    year_grade: "Year / Grade",
+    level: "Level",
+    primary_school: "Primary School",
+    secondary_school: "Secondary School",
+    select_class: "Select Class",
+    select_theme: "Select Theme",
+    select_theme_label: "Theme (Tema)",
+    select_topic: "Select Topic",
+    select_topic_label: "Topic (Tajuk/Unit)",
+    auto_generate: "Auto-Generate",
+    lesson_plan_saved: "Lesson Plan Saved!",
+    saved_message: "Your RPH has been securely stored. What would you like to do next?",
+    return_dashboard: "Return to Dashboard",
+    keep_editing: "Keep Editing",
+    save_failed: "Failed to save lesson plan.",
+    loading_plans: "Loading plan..."
   },
   [Language.MS]: {
     app_name: "eRPH Pro",
@@ -25059,6 +25102,49 @@ const translations = {
     faq_contact_us: "Tidak temui jawapan yang anda cari? Sila sembang dengan pasukan mesra kami.",
     chat_support: "Sembang dengan Sokongan",
     email_us: "Emel Kami",
+    // Layout & Roles
+    role_gpk_1: "GPK 1",
+    role_gpk_hem: "GPK HEM",
+    role_gpk_koko: "GPK KOKO",
+    role_gpk: "GPK",
+    school_settings: "Tetapan Sekolah",
+    admin_mailbox: "Peti Mel Admin",
+    broadcast: "Siaran",
+    security_center: "Pusat Keselamatan",
+    powered_by: "Dikuasakan oleh",
+    system_version: "Sistem v",
+    secure_session: "Sesi Selamat",
+    good_morning: "Selamat Pagi",
+    good_afternoon: "Selamat Tengahari",
+    good_evening: "Selamat Petang",
+    portal_locked: "Portal Terkunci",
+    locked_desc: "Sesi dikunci kerana tidak aktif. Sila masukkan PIN atau kata laluan anda untuk meneruskan.",
+    invalid_credentials: "Kelayakan Tidak Sah",
+    unlock_workspace: "Buka Kunci Ruang Kerja",
+    switch_account: "Tukar Akaun",
+    no_unread_notifications: "Tiada Notifikasi",
+    contact_support: "Hubungi Sokongan",
+    // Public Navbar
+    support_me: "Sokong Saya",
+    // Lesson Plan Editor
+    select_subject: "Pilih Subjek",
+    search_subject: "Cari subjek...",
+    year_grade: "Tahun / Tingkatan",
+    level: "Tahap",
+    primary_school: "Sekolah Rendah",
+    secondary_school: "Sekolah Menengah",
+    select_class: "Pilih Kelas",
+    select_theme: "Pilih Tema",
+    select_theme_label: "Tema",
+    select_topic: "Pilih Tajuk",
+    select_topic_label: "Tajuk / Unit",
+    auto_generate: "Jana Automatik",
+    lesson_plan_saved: "RPH Disimpan!",
+    saved_message: "RPH anda telah disimpan dengan selamat. Apa yang anda ingin lakukan seterusnya?",
+    return_dashboard: "Kembali ke Papan Pemuka",
+    keep_editing: "Terus Mengedit",
+    save_failed: "Gagal menyimpan RPH.",
+    loading_plans: "Memuatkan pelan...",
     // --- CIRI-CIRI ---
     feat_hero_title: "Segala-galanya yang anda perlukan untuk",
     feat_hero_highlight: "Kuasai Pentadbiran Sekolah",
@@ -25184,9 +25270,132 @@ const translations = {
     faq_log_v31_item1: "为教师提供完整的 Google 身份集成",
     faq_log_v31_item2: "恢复快速演示访问，方便快速原型展示",
     faq_log_v31_item3: "扩展了 FAQ 知识库，增加了使用指南",
-    faq_log_v31_item4: "系统版本 v0.0.31 稳定性优化"
+    faq_log_v31_item4: "系统版本 v0.0.31 稳定性优化",
+    // Layout & Roles
+    role_gpk_1: "第一副校长",
+    role_gpk_hem: "学生事务副校长",
+    role_gpk_koko: "课外活动副校长",
+    role_gpk: "副校长",
+    school_settings: "学校设置",
+    admin_mailbox: "管理员邮箱",
+    broadcast: "广播",
+    security_center: "安全中心",
+    powered_by: "提供技术支持",
+    system_version: "系统版本",
+    secure_session: "安全会话",
+    good_morning: "早上好",
+    good_afternoon: "下午好",
+    good_evening: "晚上好",
+    portal_locked: "门户已锁定",
+    locked_desc: "由于长时间不活动，会话已锁定。请输入您的凭据 PIN 或密码以继续。",
+    invalid_credentials: "凭据无效",
+    unlock_workspace: "解锁工作区",
+    switch_account: "切换账户",
+    no_unread_notifications: "无未读通知",
+    contact_support: "联系支持",
+    // Public Navbar
+    support_me: "支持我",
+    // Lesson Plan Editor
+    select_subject: "选择科目",
+    search_subject: "搜索科目...",
+    year_grade: "年级",
+    level: "关卡",
+    primary_school: "小学",
+    secondary_school: "中学",
+    select_class: "选择班级",
+    select_theme: "选择主题",
+    select_theme_label: "主题 (Tema)",
+    select_topic: "选择课题",
+    select_topic_label: "课题 (Tajuk/Unit)",
+    auto_generate: "自动生成",
+    lesson_plan_saved: "教案已保存！",
+    saved_message: "您的 RPH 已安全存储。接下来您想做什么？",
+    return_dashboard: "返回仪表板",
+    keep_editing: "继续编辑",
+    save_failed: "保存教案失败。",
+    loading_plans: "正在加载教案..."
   },
-  [Language.TA]: {},
+  [Language.TA]: {
+    // Tamil Translations (Fallback to English where unsure)
+    app_name: "eRPH Pro",
+    dashboard: "முகப்பு",
+    my_lesson_plans: "பாடத்திட்டங்கள்",
+    leave_management: "விடுப்பு மேலாண்மை",
+    sign_out: "வெளியேறு",
+    welcome: "வரவேற்கிறோம்",
+    login_title: "உள்நுழையவும்",
+    email: "மின்னஞ்சல்",
+    password: "கடவுச்சொல்",
+    sign_in: "உள்நுழை",
+    role_teacher: "ஆசிரியர்",
+    role_principal: "தலைமையாசிரியர்",
+    role_school_admin: "பள்ளி நிர்வாகி",
+    role_super_admin: "சூப்பர் நிர்வாகி",
+    role_gpk_1: "GPK 1",
+    role_gpk_hem: "GPK HEM",
+    role_gpk_koko: "GPK KOKO",
+    role_gpk: "GPK",
+    school_settings: "பள்ளி அமைப்புகள்",
+    admin_mailbox: "நிர்வாக அஞ்சல் பெட்டி",
+    broadcast: "ஒளிபரப்பு",
+    security_center: "பாதுகாப்பு மையம்",
+    powered_by: "வழங்குபவர்",
+    system_version: "பதிப்பு",
+    secure_session: "பாதுகாப்பான அமர்வு",
+    good_morning: "காலை வணக்கம்",
+    good_afternoon: "மதிய வணக்கம்",
+    good_evening: "மாலை வணக்கம்",
+    portal_locked: "போர்டல் பூட்டப்பட்டுள்ளது",
+    locked_desc: "செயலற்ற நிலை காரணமாக அமர்வு பூட்டப்பட்டது.",
+    invalid_credentials: "தவறான சான்றுகள்",
+    unlock_workspace: "பணியிடத்தைத் திறக்கவும்",
+    switch_account: "கணக்கை மாற்றவும்",
+    no_unread_notifications: "அறிவிப்புகள் இல்லை",
+    contact_support: "ஆதரவைத் தொடர்பு கொள்ளவும்",
+    support_me: "என்னை ஆதரிக்கவும்",
+    select_subject: "பாடத்தைத் தேர்ந்தெடுக்கவும்",
+    search_subject: "தேடுக...",
+    year_grade: "வகுப்பு",
+    level: "நிலை",
+    primary_school: "தொடக்கப்பள்ளி",
+    secondary_school: "உயர்நிலைப்பள்ளி",
+    select_class: "வகுப்பைத் தேர்ந்தெடுக்கவும்",
+    select_theme: "கருப்பொருளைத் தேர்ந்தெடுக்கவும்",
+    select_theme_label: "கருப்பொருள் (Theme)",
+    select_topic: "தலைப்பைத் தேர்ந்தெடுக்கவும்",
+    select_topic_label: "தலைப்பு (Topic)",
+    auto_generate: "தானாக உருவாக்கு",
+    lesson_plan_saved: "பாடத்திட்டம் சேமிக்கப்பட்டது!",
+    saved_message: "உங்கள் RPH பாதுகாப்பாக சேமிக்கப்பட்டது.",
+    return_dashboard: "முகப்புக்கு திரும்பு",
+    keep_editing: "தொடர்ந்து திருத்தவும்",
+    save_failed: "சேமிக்க முடியவில்லை.",
+    loading_plans: "லோடாகிறது...",
+    // Fallback for others (English keys mapped)
+    edit_plan_title: "Edit Lesson Plan",
+    new_plan_title: "New Lesson Plan",
+    print: "Print",
+    save: "Save",
+    subject: "Subject",
+    class_label: "Class",
+    time: "Time",
+    date: "Date",
+    topic: "Topic",
+    content_standard: "Content Standard",
+    learning_standard: "Learning Standard",
+    objectives: "Objectives",
+    success_criteria: "Success Criteria",
+    learning_activities: "Activities",
+    resources_bbm: "BBM",
+    pak21_elements: "PAK-21",
+    assessment_pbd: "PBD",
+    impact_reflection: "Reflection",
+    nav_home: "Home",
+    nav_features: "Features",
+    nav_blog: "Articles",
+    nav_kb: "Knowledge Base",
+    nav_login: "Login"
+  },
   [Language.JV]: {}
 };
 const LanguageContext = reactExports.createContext(void 0);
@@ -25270,7 +25479,7 @@ const Button = ({
     }
   );
 };
-const APP_VERSION = "0.0.50";
+const APP_VERSION = "0.0.51";
 const SidebarContent = ({ user, onLogout, t, onClose }) => {
   const location2 = useLocation();
   const { viewMode, setViewMode } = useGlobal();
@@ -25289,12 +25498,12 @@ const SidebarContent = ({ user, onLogout, t, onClose }) => {
     { path: "/reviews", label: t("erph_approval"), modes: ["admin"], excludeRoles: [UserRole.SUPER_ADMIN] },
     { path: "/records", label: t("leave_approvals"), modes: ["admin"], excludeRoles: [UserRole.SUPER_ADMIN] },
     { path: "/users", label: t("manage_users"), modes: ["admin"] },
-    { path: "/security", label: "Security Center", modes: ["admin"], onlyRoles: [UserRole.SUPER_ADMIN] },
-    { path: "/mailbox", label: "Admin Mailbox", modes: ["admin"], onlyRoles: [UserRole.SUPER_ADMIN] },
-    { path: "/newsletter", label: "Broadcast", modes: ["admin"], onlyRoles: [UserRole.SUPER_ADMIN] },
+    { path: "/security", label: t("security_center"), modes: ["admin"], onlyRoles: [UserRole.SUPER_ADMIN] },
+    { path: "/mailbox", label: t("admin_mailbox"), modes: ["admin"], onlyRoles: [UserRole.SUPER_ADMIN] },
+    { path: "/newsletter", label: t("broadcast"), modes: ["admin"], onlyRoles: [UserRole.SUPER_ADMIN] },
     {
       path: "/settings",
-      label: user.role === UserRole.SUPER_ADMIN ? "System Settings" : t("school") + " Settings",
+      label: user.role === UserRole.SUPER_ADMIN ? t("system_settings") : t("school_settings"),
       modes: ["admin"]
     }
   ];
@@ -25308,21 +25517,21 @@ const SidebarContent = ({ user, onLogout, t, onClose }) => {
   const getRoleLabel = (role) => {
     switch (role) {
       case UserRole.SUPER_ADMIN:
-        return "Super Admin";
+        return t("role_super_admin");
       case UserRole.SCHOOL_ADMIN:
-        return "School Admin";
+        return t("role_school_admin");
       case UserRole.PRINCIPAL:
-        return "Principal";
+        return t("role_principal");
       case UserRole.GPK_1:
-        return "GPK 1";
+        return t("role_gpk_1");
       case UserRole.GPK_HEM:
-        return "GPK HEM";
+        return t("role_gpk_hem");
       case UserRole.GPK_KOKO:
-        return "GPK KOKO";
+        return t("role_gpk_koko");
       case UserRole.GPK:
-        return "GPK";
+        return t("role_gpk");
       default:
-        return "Teacher";
+        return t("role_teacher");
     }
   };
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "h-full flex flex-col bg-[#0f172a]", children: [
@@ -25357,7 +25566,7 @@ const SidebarContent = ({ user, onLogout, t, onClose }) => {
         {
           onClick: () => setViewMode("teacher"),
           className: `flex-1 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all duration-300 ${viewMode === "teacher" ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20" : "text-slate-500 hover:text-slate-300 hover:bg-slate-800/50"}`,
-          children: "Teacher"
+          children: t("role_teacher")
         }
       )
     ] }) }),
@@ -25387,9 +25596,12 @@ const SidebarContent = ({ user, onLogout, t, onClose }) => {
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-4 pt-4 border-t border-slate-800/50 text-center space-y-1", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[10px] text-slate-500 font-bold uppercase tracking-widest", children: "Powered by Aiden Chan" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-[10px] text-slate-500 font-bold uppercase tracking-widest", children: [
+          t("powered_by"),
+          " Aiden Chan"
+        ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-[9px] text-slate-400 font-black uppercase tracking-[0.2em]", children: [
-          "System v",
+          t("system_version"),
           APP_VERSION
         ] })
       ] })
@@ -25434,8 +25646,8 @@ const Layout = ({ children }) => {
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute -top-2 -right-2 w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center border-4 border-slate-900", children: /* @__PURE__ */ jsxRuntimeExports.jsx(ShieldCheck, { className: "w-4 h-4" }) })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-2xl font-black tracking-tight", children: "Portal Locked" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-400 mt-2 text-sm", children: "Session locked due to inactivity. Please enter your credential PIN or password to continue." })
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-2xl font-black tracking-tight", children: t("portal_locked") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-400 mt-2 text-sm", children: t("locked_desc") })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("form", { onSubmit: handleUnlock, className: "space-y-4", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -25449,12 +25661,13 @@ const Layout = ({ children }) => {
             autoFocus: true
           }
         ),
-        lockError && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-red-500 text-xs font-bold uppercase tracking-widest", children: "Invalid Credentials" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { className: "w-full h-14 rounded-2xl font-black text-lg shadow-xl shadow-blue-500/20", type: "submit", children: "Unlock Workspace" })
+        lockError && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-red-500 text-xs font-bold uppercase tracking-widest", children: t("invalid_credentials") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { className: "w-full h-14 rounded-2xl font-black text-lg shadow-xl shadow-blue-500/20", type: "submit", children: t("unlock_workspace") })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("button", { onClick: () => setCurrentUser(null), className: "text-slate-500 hover:text-white transition-colors text-xs font-bold uppercase tracking-widest flex items-center gap-2 mx-auto pt-4", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(LogOut, { className: "w-4 h-4" }),
-        " Switch Account"
+        " ",
+        t("switch_account")
       ] })
     ] }) });
   }
@@ -25472,7 +25685,7 @@ const Layout = ({ children }) => {
           /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: () => setIsMobileMenuOpen(true), className: "md:hidden p-2 -ml-2 text-slate-600 hover:bg-slate-100 rounded-xl transition-colors", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Menu, { className: "w-6 h-6" }) }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs("h2", { className: "text-sm md:text-base font-black text-slate-800 tracking-tight", children: [
-              (/* @__PURE__ */ new Date()).getHours() < 12 ? "Good Morning" : (/* @__PURE__ */ new Date()).getHours() < 18 ? "Good Afternoon" : "Good Evening",
+              (/* @__PURE__ */ new Date()).getHours() < 12 ? t("good_morning") : (/* @__PURE__ */ new Date()).getHours() < 18 ? t("good_afternoon") : t("good_evening"),
               ", ",
               currentUser.name.split(" ")[0]
             ] }),
@@ -25484,7 +25697,8 @@ const Layout = ({ children }) => {
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "hidden xl:flex items-center gap-2 px-4 py-1.5 bg-blue-50/50 border border-blue-100/50 rounded-full text-blue-700 text-[10px] font-black uppercase tracking-widest shadow-sm", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(ShieldCheck, { className: "w-3.5 h-3.5" }),
-            " Secure Session"
+            " ",
+            t("secure_session")
           ] })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1 md:gap-4 shrink-0", children: [
@@ -25526,15 +25740,16 @@ const Layout = ({ children }) => {
             ] }),
             showNotifications && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "absolute right-0 top-full mt-2 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-200", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-bold text-slate-800", children: "Notifications" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-bold text-slate-800", children: t("notifications") }),
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded-lg", children: [
                   notifications.length,
-                  " New"
+                  " ",
+                  t("new")
                 ] })
               ] }),
               /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "max-h-[400px] overflow-y-auto custom-scrollbar", children: notifications.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-8 text-center text-slate-400", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx(Bell, { className: "w-8 h-8 mx-auto mb-2 opacity-50" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs font-bold uppercase tracking-widest", children: "No Notifications" })
+                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs font-bold uppercase tracking-widest", children: t("no_unread_notifications") })
               ] }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "divide-y divide-slate-50", children: notifications.map((n) => /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `p-4 hover:bg-slate-50 transition-colors ${!n.isRead ? "bg-blue-50/30" : ""}`, children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-3", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `mt-1 w-2 h-2 rounded-full flex-shrink-0 ${!n.isRead ? "bg-blue-500" : "bg-slate-300"}` }),
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
@@ -25543,7 +25758,7 @@ const Layout = ({ children }) => {
                   /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[10px] font-bold text-slate-400 mt-2 uppercase tracking-wider", children: new Date(n.timestamp).toLocaleDateString() })
                 ] })
               ] }) }, n.id)) }) }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-2 border-t border-slate-100 bg-slate-50/50", children: /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "w-full py-2 text-xs font-bold text-slate-500 hover:text-blue-600 transition-colors uppercase tracking-widest", children: "Mark All as Read" }) })
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-2 border-t border-slate-100 bg-slate-50/50", children: /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "w-full py-2 text-xs font-bold text-slate-500 hover:text-blue-600 transition-colors uppercase tracking-widest", children: t("mark_all_read") }) })
             ] })
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(Link, { to: "/portal/security", className: "p-2 rounded-xl hover:bg-slate-100 text-slate-600", title: "Security Settings", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Shield, { className: "w-6 h-6" }) }),
@@ -25557,10 +25772,10 @@ const Layout = ({ children }) => {
           {
             href: "mailto:support@erphpro.com?subject=Support Request",
             className: "fixed bottom-8 right-8 z-50 p-4 bg-slate-900 text-white rounded-full shadow-2xl hover:scale-110 transition-transform flex items-center gap-2 group border-4 border-white",
-            title: "Contact Support",
+            title: t("contact_support"),
             children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx(Mail, { className: "w-6 h-6" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-300 font-bold whitespace-nowrap px-0 group-hover:px-2", children: "Contact Support" })
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-300 font-bold whitespace-nowrap px-0 group-hover:px-2", children: t("contact_support") })
             ]
           }
         )
@@ -25654,7 +25869,7 @@ const PublicNavbar = () => {
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3 md:gap-4", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(Link, { to: "/support", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("button", { className: "hidden md:flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-50 text-amber-700 hover:bg-amber-100 hover:text-amber-800 transition-colors font-bold text-sm tracking-tight border border-amber-100", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(Coffee, { className: "w-4 h-4" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Support Me" })
+        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: t("support_me") })
       ] }) }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs(
@@ -29130,7 +29345,7 @@ const LessonPlanEditor = () => {
       setShowSuccess(true);
     } catch (e) {
       console.error(e);
-      alert("Failed to save lesson plan.");
+      alert(t("save_failed"));
     }
   };
   const handleDskpSelect = reactExports.useCallback((std) => {
@@ -29196,7 +29411,7 @@ const LessonPlanEditor = () => {
               {
                 onClick: () => setIsSubjectOpen(!isSubjectOpen),
                 className: "w-full text-left border-2 border-slate-100 p-3 rounded-xl text-sm font-bold bg-slate-50/50 outline-none focus:border-blue-500 transition-all pr-10 truncate",
-                children: plan.subject || "Select Subject"
+                children: plan.subject || t("select_subject")
               }
             ),
             /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronDown, { className: "absolute right-3 top-3.5 w-4 h-4 text-slate-400 pointer-events-none" }),
@@ -29208,7 +29423,7 @@ const LessonPlanEditor = () => {
                   {
                     autoFocus: true,
                     className: "w-full pl-9 p-2 text-sm font-bold bg-slate-50 rounded-lg outline-none focus:ring-2 focus:ring-blue-100",
-                    placeholder: "Search subject...",
+                    placeholder: t("search_subject"),
                     value: subjectSearch,
                     onChange: (e) => setSubjectSearch(e.target.value)
                   }
@@ -29231,7 +29446,7 @@ const LessonPlanEditor = () => {
           isSubjectOpen && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "fixed inset-0 z-[-1]", onClick: () => setIsSubjectOpen(false) })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1.5", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1", children: "Year / Grade" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1", children: t("year_grade") }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative group", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs(
               "select",
@@ -29240,15 +29455,15 @@ const LessonPlanEditor = () => {
                 value: plan.grade,
                 onChange: (e) => setPlan({ ...plan, grade: e.target.value }),
                 children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "", children: "Level" }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsxs("optgroup", { label: "Primary School", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "", children: t("level") }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("optgroup", { label: t("primary_school"), children: [
                     [1, 2, 3, 4, 5, 6].map((y) => /* @__PURE__ */ jsxRuntimeExports.jsxs("option", { value: `Tahun ${y}`, children: [
                       "Tahun ",
                       y
                     ] }, `y${y}`)),
                     /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "Pra Sekolah", children: "Pra Sekolah" })
                   ] }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsxs("optgroup", { label: "Secondary School", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("optgroup", { label: t("secondary_school"), children: [
                     [1, 2, 3, 4, 5].map((f) => /* @__PURE__ */ jsxRuntimeExports.jsxs("option", { value: `Tingkatan ${f}`, children: [
                       "Tingkatan ",
                       f
@@ -29271,7 +29486,7 @@ const LessonPlanEditor = () => {
                 value: plan.className,
                 onChange: (e) => setPlan({ ...plan, className: e.target.value }),
                 children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "", children: "Select Class" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "", children: t("select_class") }),
                   (_a2 = settings == null ? void 0 : settings.customClasses) == null ? void 0 : _a2.map((c) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: c, children: c }, c))
                 ]
               }
@@ -29303,7 +29518,7 @@ const LessonPlanEditor = () => {
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex justify-between items-center px-1", children: /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "text-[10px] font-black text-slate-400 uppercase tracking-widest", children: t("topic") }) }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-6", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1.5", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "text-[10px] font-bold text-slate-400 uppercase ml-1", children: "Theme (Tema)" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "text-[10px] font-bold text-slate-400 uppercase ml-1", children: t("select_theme_label") }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsxs(
                 "select",
@@ -29315,7 +29530,7 @@ const LessonPlanEditor = () => {
                     setPlan({ ...plan, topic: "" });
                   },
                   children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "", children: "Select Theme" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "", children: t("select_theme") }),
                     dskpContext.themes.map((t2) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: t2, children: t2 }, t2))
                   ]
                 }
@@ -29324,7 +29539,7 @@ const LessonPlanEditor = () => {
             ] })
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1.5", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "text-[10px] font-bold text-slate-400 uppercase ml-1", children: "Topic (Tajuk/Unit)" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "text-[10px] font-bold text-slate-400 uppercase ml-1", children: t("select_topic_label") }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsxs(
                 "select",
@@ -29333,7 +29548,7 @@ const LessonPlanEditor = () => {
                   value: plan.topic || "",
                   onChange: (e) => setPlan({ ...plan, topic: e.target.value }),
                   children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "", children: "Select Topic" }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "", children: t("select_topic") }),
                     dskpContext.topics.map((t2) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: t2, children: t2 }, t2))
                   ]
                 }
@@ -29373,7 +29588,8 @@ const LessonPlanEditor = () => {
                 className: "flex items-center gap-1.5 px-3 py-1 text-[10px] font-black bg-indigo-50 text-indigo-600 rounded-full hover:bg-indigo-100 transition-colors uppercase tracking-tight",
                 children: [
                   /* @__PURE__ */ jsxRuntimeExports.jsx(Zap, { className: "w-3 h-3" }),
-                  " Auto-Generate"
+                  " ",
+                  t("auto_generate")
                 ]
               }
             )
@@ -29407,7 +29623,7 @@ const LessonPlanEditor = () => {
           placeholder: "e.g. Students can identify at least 3 types of...",
           icon: /* @__PURE__ */ jsxRuntimeExports.jsx(Target, { className: "w-4 h-4" }),
           colorClass: "blue",
-          emptyMessage: "Click '+' to define lesson objectives."
+          emptyMessage: t("objectives_hint")
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -29421,7 +29637,7 @@ const LessonPlanEditor = () => {
           placeholder: "e.g. I can describe the process of...",
           icon: /* @__PURE__ */ jsxRuntimeExports.jsx(CheckSquare, { className: "w-4 h-4" }),
           colorClass: "emerald",
-          emptyMessage: "Define measurable success criteria."
+          emptyMessage: t("success_criteria_hint")
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -29437,7 +29653,7 @@ const LessonPlanEditor = () => {
           colorClass: "indigo",
           isTextArea: true,
           labels: (i, len) => i === 0 ? "Induction" : i === len - 1 ? "Closure" : `Step ${i}`,
-          emptyMessage: "Break down the lesson into manageable steps."
+          emptyMessage: t("activities_hint")
         }
       )
     ] }),
@@ -29498,11 +29714,11 @@ const LessonPlanEditor = () => {
       {
         isOpen: showSuccess,
         onClose: () => setShowSuccess(false),
-        title: "Lesson Plan Saved!",
-        message: "Your RPH has been securely stored. What would you like to do next?",
-        primaryActionLabel: "Return to Dashboard",
+        title: t("lesson_plan_saved"),
+        message: t("saved_message"),
+        primaryActionLabel: t("return_dashboard"),
         onPrimaryAction: () => navigate("/portal/plans"),
-        secondaryActionLabel: "Keep Editing"
+        secondaryActionLabel: t("keep_editing")
       }
     )
   ] });

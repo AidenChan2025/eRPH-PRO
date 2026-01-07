@@ -47,7 +47,7 @@ const PublicNavbar = () => {
                     <Link to="/support">
                         <button className="hidden md:flex items-center gap-2 px-4 py-2 rounded-xl bg-amber-50 text-amber-700 hover:bg-amber-100 hover:text-amber-800 transition-colors font-bold text-sm tracking-tight border border-amber-100">
                             <Coffee className="w-4 h-4" />
-                            <span>Support Me</span>
+                            <span>{t('support_me')}</span>
                         </button>
                     </Link>
 

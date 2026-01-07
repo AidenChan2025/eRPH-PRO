@@ -120,7 +120,7 @@ const LessonPlanEditor = () => {
     }, [dskpRecords, localTheme, plan.topic, plan.contentStandard]);
 
     const toggleContentStandard = (val: string) => {
-        const current = plan.contentStandard ? plan.contentStandard.split('\n\n') : []; 
+        const current = plan.contentStandard ? plan.contentStandard.split('\n\n') : [];
         const exists = current.includes(val);
         const newArr = exists ? current.filter(c => c !== val) : [...current, val];
         setPlan({ ...plan, contentStandard: newArr.join('\n\n') });
@@ -182,19 +182,19 @@ const LessonPlanEditor = () => {
     const handleSave = async (status: LessonStatus) => {
         const now = new Date().toISOString();
         const planId = id || `lp-${Date.now()}`;
-        
+
         // Ensure user is logged in or fallback mock
         const teacherId = currentUser?.id || 'guest';
         const teacherName = currentUser?.name || 'Guest Teacher';
         const schoolId = currentUser?.schoolId || schools[0]?.id || 's-1';
-        
-        const newPlan = { 
-            ...plan, 
-            id: planId, 
-            teacherId, 
-            teacherName, 
-            schoolId, 
-            status, 
+
+        const newPlan = {
+            ...plan,
+            id: planId,
+            teacherId,
+            teacherName,
+            schoolId,
+            status,
             updatedAt: now,
             // Cast partial to full if needed, or services handles it
         } as LessonPlan;
@@ -204,7 +204,7 @@ const LessonPlanEditor = () => {
             setShowSuccess(true);
         } catch (e) {
             console.error(e);
-            alert("Failed to save lesson plan.");
+            alert(t('save_failed'));
         }
     };
 
@@ -277,7 +277,7 @@ const LessonPlanEditor = () => {
                                 onClick={() => setIsSubjectOpen(!isSubjectOpen)}
                                 className="w-full text-left border-2 border-slate-100 p-3 rounded-xl text-sm font-bold bg-slate-50/50 outline-none focus:border-blue-500 transition-all pr-10 truncate"
                             >
-                                {plan.subject || "Select Subject"}
+                                {plan.subject || t('select_subject')}
                             </button>
                             <ChevronDown className="absolute right-3 top-3.5 w-4 h-4 text-slate-400 pointer-events-none" />
 
@@ -289,7 +289,7 @@ const LessonPlanEditor = () => {
                                             <input
                                                 autoFocus
                                                 className="w-full pl-9 p-2 text-sm font-bold bg-slate-50 rounded-lg outline-none focus:ring-2 focus:ring-blue-100"
-                                                placeholder="Search subject..."
+                                                placeholder={t('search_subject')}
                                                 value={subjectSearch}
                                                 onChange={e => setSubjectSearch(e.target.value)}
                                             />
@@ -314,19 +314,19 @@ const LessonPlanEditor = () => {
 
                     {/* Year/Grade Selection */}
                     <div className="space-y-1.5">
-                        <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">Year / Grade</label>
+                        <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">{t('year_grade')}</label>
                         <div className="relative group">
                             <select
                                 className="w-full border-2 border-slate-100 p-3 rounded-xl text-sm font-bold appearance-none bg-slate-50/50 outline-none focus:border-blue-500 transition-all pr-10"
                                 value={plan.grade}
                                 onChange={e => setPlan({ ...plan, grade: e.target.value })}
                             >
-                                <option value="">Level</option>
-                                <optgroup label="Primary School">
+                                <option value="">{t('level')}</option>
+                                <optgroup label={t('primary_school')}>
                                     {[1, 2, 3, 4, 5, 6].map(y => <option key={`y${y}`} value={`Tahun ${y}`}>Tahun {y}</option>)}
                                     <option value="Pra Sekolah">Pra Sekolah</option>
                                 </optgroup>
-                                <optgroup label="Secondary School">
+                                <optgroup label={t('secondary_school')}>
                                     {[1, 2, 3, 4, 5].map(f => <option key={`f${f}`} value={`Tingkatan ${f}`}>Tingkatan {f}</option>)}
                                     <option value="Peralihan">Peralihan</option>
                                 </optgroup>
@@ -343,7 +343,7 @@ const LessonPlanEditor = () => {
                                 value={plan.className}
                                 onChange={e => setPlan({ ...plan, className: e.target.value })}
                             >
-                                <option value="">Select Class</option>
+                                <option value="">{t('select_class')}</option>
                                 {settings?.customClasses?.map(c => <option key={c} value={c}>{c}</option>)}
                             </select>
                             <Users className="absolute right-3 top-3.5 w-4 h-4 text-slate-400 pointer-events-none group-hover:text-blue-600 transition-colors" />
@@ -379,7 +379,7 @@ const LessonPlanEditor = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {/* Theme Dropdown */}
                         <div className="space-y-1.5">
-                            <label className="text-[10px] font-bold text-slate-400 uppercase ml-1">Theme (Tema)</label>
+                            <label className="text-[10px] font-bold text-slate-400 uppercase ml-1">{t('select_theme_label')}</label>
                             <div className="relative">
                                 <select
                                     className="w-full border-2 border-slate-100 p-3 rounded-xl text-sm font-bold bg-slate-50/50 outline-none focus:border-blue-500 transition-all appearance-none pr-10"
@@ -394,7 +394,7 @@ const LessonPlanEditor = () => {
                                         setPlan({ ...plan, topic: '' });
                                     }}
                                 >
-                                    <option value="">Select Theme</option>
+                                    <option value="">{t('select_theme')}</option>
                                     {dskpContext.themes.map(t => <option key={t} value={t}>{t}</option>)}
                                 </select>
                                 <ChevronDown className="absolute right-3 top-3.5 w-4 h-4 text-slate-400 pointer-events-none" />
@@ -403,14 +403,14 @@ const LessonPlanEditor = () => {
 
                         {/* Topic Dropdown */}
                         <div className="space-y-1.5">
-                            <label className="text-[10px] font-bold text-slate-400 uppercase ml-1">Topic (Tajuk/Unit)</label>
+                            <label className="text-[10px] font-bold text-slate-400 uppercase ml-1">{t('select_topic_label')}</label>
                             <div className="relative">
                                 <select
                                     className="w-full border-2 border-slate-100 p-3 rounded-xl text-sm font-bold bg-slate-50/50 outline-none focus:border-blue-500 transition-all appearance-none pr-10"
                                     value={plan.topic || ''}
                                     onChange={e => setPlan({ ...plan, topic: e.target.value })}
                                 >
-                                    <option value="">Select Topic</option>
+                                    <option value="">{t('select_topic')}</option>
                                     {dskpContext.topics.map(t => <option key={t} value={t}>{t}</option>)}
                                 </select>
                                 <ChevronDown className="absolute right-3 top-3.5 w-4 h-4 text-slate-400 pointer-events-none" />
@@ -456,7 +456,7 @@ const LessonPlanEditor = () => {
                                 onClick={() => generateSmartContent(plan.learningStandard || '', currentLang)}
                                 className="flex items-center gap-1.5 px-3 py-1 text-[10px] font-black bg-indigo-50 text-indigo-600 rounded-full hover:bg-indigo-100 transition-colors uppercase tracking-tight"
                             >
-                                <Zap className="w-3 h-3" /> Auto-Generate
+                                <Zap className="w-3 h-3" /> {t('auto_generate')}
                             </button>
                         </div>
                         <div className="border-2 border-slate-100 rounded-3xl p-4 bg-slate-50/30 min-h-[14rem] max-h-[20rem] overflow-y-auto space-y-2">
@@ -494,7 +494,7 @@ const LessonPlanEditor = () => {
                     placeholder="e.g. Students can identify at least 3 types of..."
                     icon={<Target className="w-4 h-4" />}
                     colorClass="blue"
-                    emptyMessage="Click '+' to define lesson objectives."
+                    emptyMessage={t('objectives_hint')}
                 />
 
                 <ListEditor
@@ -506,7 +506,7 @@ const LessonPlanEditor = () => {
                     placeholder="e.g. I can describe the process of..."
                     icon={<CheckSquare className="w-4 h-4" />}
                     colorClass="emerald"
-                    emptyMessage="Define measurable success criteria."
+                    emptyMessage={t('success_criteria_hint')}
                 />
 
                 <ListEditor
@@ -520,7 +520,7 @@ const LessonPlanEditor = () => {
                     colorClass="indigo"
                     isTextArea
                     labels={(i, len) => i === 0 ? 'Induction' : i === len - 1 ? 'Closure' : `Step ${i}`}
-                    emptyMessage="Break down the lesson into manageable steps."
+                    emptyMessage={t('activities_hint')}
                 />
             </Card>
 
@@ -575,11 +575,11 @@ const LessonPlanEditor = () => {
             <SuccessModal
                 isOpen={showSuccess}
                 onClose={() => setShowSuccess(false)}
-                title="Lesson Plan Saved!"
-                message="Your RPH has been securely stored. What would you like to do next?"
-                primaryActionLabel="Return to Dashboard"
+                title={t('lesson_plan_saved')}
+                message={t('saved_message')}
+                primaryActionLabel={t('return_dashboard')}
                 onPrimaryAction={() => navigate('/portal/plans')}
-                secondaryActionLabel="Keep Editing"
+                secondaryActionLabel={t('keep_editing')}
             />
         </div>
     );

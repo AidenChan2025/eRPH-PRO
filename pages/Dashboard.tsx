@@ -1,6 +1,6 @@
-
-import React, { useMemo, useEffect, useState } from 'react';
+import React, { useMemo, useEffect, useState, memo } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { APP_VERSION } from '../src/config/version';
 import { useGlobal } from '../context/GlobalContext';
 import { useLanguage } from '../context/LanguageContext';
 import Card from '../components/Card';
@@ -40,6 +40,7 @@ const THEMES = {
     slate: { bg: 'bg-slate-800', text: 'text-slate-800', border: 'border-slate-200', ring: 'ring-slate-500/20', light: 'bg-slate-100' },
 };
 
+
 const StatCard = ({ title, value, icon: Icon, color, subtext }: any) => (
     <div className={`bg-white rounded-xl p-6 border border-slate-100 shadow-sm flex items-start justify-between hover:shadow-md transition-all`}>
         <div>
@@ -76,16 +77,16 @@ const CustomizationDrawer = ({ isOpen, onClose, config, onSave }: { isOpen: bool
                 <div className="p-6 border-b flex justify-between items-center bg-slate-50">
                     <div>
                         <h3 className="font-black text-slate-800 uppercase tracking-tight flex items-center gap-2">
-                            <Palette className="w-5 h-5 text-blue-600" /> Personalize
+                            <Palette className="w-5 h-5 text-blue-600" /> {t('personalize')}
                         </h3>
-                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Dashboard Widgets</p>
+                        <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{t('dashboard_widgets')}</p>
                     </div>
                     <button onClick={onClose} className="p-2 hover:bg-white rounded-xl transition-colors shadow-sm border border-slate-200"><X className="w-5 h-5" /></button>
                 </div>
 
                 <div className="flex-1 overflow-y-auto p-6 space-y-8">
                     <div className="space-y-4">
-                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block">Color Essence</label>
+                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block">{t('color_essence')}</label>
                         <div className="grid grid-cols-3 gap-3">
                             {(Object.keys(THEMES) as Array<keyof typeof THEMES>).map(color => (
                                 <button
@@ -100,14 +101,14 @@ const CustomizationDrawer = ({ isOpen, onClose, config, onSave }: { isOpen: bool
                     </div>
 
                     <div className="space-y-4">
-                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block">Active Widgets</label>
+                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block">{t('active_widgets')}</label>
                         <div className="space-y-2">
                             {[
-                                { id: 'showStats', label: 'RPH Statistics', icon: PieChartIcon },
-                                { id: 'showRecentPlans', label: 'Recently Updated Plans', icon: BookOpen },
-                                { id: 'showTodaySchedule', label: 'Daily Schedule Preview', icon: Clock },
-                                { id: 'showTasks', label: 'Task Management', icon: CheckSquare },
-                                { id: 'showQuickLinks', label: 'Quick Demo Links', icon: Zap },
+                                { id: 'showStats', label: t('rph_stats_widget'), icon: PieChartIcon },
+                                { id: 'showRecentPlans', label: t('recent_plans_widget'), icon: BookOpen },
+                                { id: 'showTodaySchedule', label: t('daily_schedule_widget'), icon: Clock },
+                                { id: 'showTasks', label: t('task_mgmt_widget'), icon: CheckSquare },
+                                { id: 'showQuickLinks', label: t('quick_links_widget'), icon: Zap },
                             ].map(widget => (
                                 <button
                                     key={widget.id}
@@ -127,7 +128,7 @@ const CustomizationDrawer = ({ isOpen, onClose, config, onSave }: { isOpen: bool
                     </div>
 
                     <div className="space-y-4">
-                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block">Greeting Style</label>
+                        <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest block">{t('greeting_style')}</label>
                         <div className="flex gap-2">
                             {['minimal', 'formal', 'casual'].map(type => (
                                 <button
@@ -148,7 +149,7 @@ const CustomizationDrawer = ({ isOpen, onClose, config, onSave }: { isOpen: bool
                         onClick={handleSave}
                         isLoading={isSaving}
                     >
-                        <Save className="mr-2 w-5 h-5" /> Save Workspace
+                        <Save className="mr-2 w-5 h-5" /> {t('save_workspace')}
                     </Button>
                 </div>
             </div>
@@ -159,6 +160,20 @@ const CustomizationDrawer = ({ isOpen, onClose, config, onSave }: { isOpen: bool
 const SuperAdminDashboard = ({ stats }: { stats: any }) => {
     const { t } = useLanguage();
     const navigate = useNavigate();
+
+    const getRoleLabel = (role: UserRole) => {
+        switch (role) {
+            case UserRole.SUPER_ADMIN: return t('role_super_admin');
+            case UserRole.SCHOOL_ADMIN: return t('role_school_admin');
+            case UserRole.PRINCIPAL: return t('role_principal');
+            case UserRole.GPK_1: return t('role_gpk_1');
+            case UserRole.GPK_HEM: return t('role_gpk_hem');
+            case UserRole.GPK_KOKO: return t('role_gpk_koko');
+            case UserRole.GPK: return t('role_gpk');
+            default: return t('role_teacher');
+        }
+    };
+
     return (
         <div className="space-y-6 animate-in fade-in duration-500">
             <div className="flex justify-between items-center">
@@ -278,7 +293,7 @@ const SchoolAdminDashboard = () => {
 
     const schoolName = schools.find(s => s.id === currentUser?.schoolId)?.name || t('school');
 
-    if (loading) return <div className="p-12 text-center text-slate-500">Loading Analytics...</div>;
+    if (loading) return <div className="p-12 text-center text-slate-500 font-bold uppercase tracking-widest">{t('loading_plans')}</div>;
 
     return (
         <div className="space-y-6 animate-in fade-in">
@@ -401,6 +416,19 @@ const PersonalDashboard = () => {
 
     const currentTheme = THEMES[config.themeColor || 'blue'];
 
+    const getRoleLabel = (role: UserRole) => {
+        switch (role) {
+            case UserRole.SUPER_ADMIN: return t('role_super_admin');
+            case UserRole.SCHOOL_ADMIN: return t('role_school_admin');
+            case UserRole.PRINCIPAL: return t('role_principal');
+            case UserRole.GPK_1: return t('role_gpk_1');
+            case UserRole.GPK_HEM: return t('role_gpk_hem');
+            case UserRole.GPK_KOKO: return t('role_gpk_koko');
+            case UserRole.GPK: return t('role_gpk');
+            default: return t('role_teacher');
+        }
+    };
+
     return (
         <div className="space-y-6 max-w-6xl mx-auto pb-10">
             <div className={`rounded-3xl shadow-xl shadow-slate-200/50 border border-slate-100 p-8 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden bg-white group`}>
@@ -421,12 +449,12 @@ const PersonalDashboard = () => {
                         <span className="text-[10px] font-black text-slate-300 uppercase tracking-widest">{currentUser?.grade || '-'}</span>
                     </div>
                     <h1 className="text-4xl font-black text-slate-900 tracking-tight">
-                        {config.greetingType === 'formal' ? `Good Day, ${currentUser?.name.split(' ')[0]}` :
-                            config.greetingType === 'casual' ? `Hi ${currentUser?.name.split(' ')[0]}!` :
+                        {config.greetingType === 'formal' ? `${t('greeting_formal')}, ${currentUser?.name.split(' ')[0]}` :
+                            config.greetingType === 'casual' ? `${t('greeting_casual')} ${currentUser?.name.split(' ')[0]}!` :
                                 currentUser?.name}
                     </h1>
                     <p className="text-slate-500 font-medium flex items-center justify-center md:justify-start gap-2 mt-2">
-                        <Building className={`w-4 h-4 ${currentTheme.text}`} /> {currentUser?.role} • Malaysian Educator
+                        <Building className={`w-4 h-4 ${currentTheme.text}`} /> {getRoleLabel(currentUser?.role || UserRole.TEACHER)} • Malaysian Educator
                     </p>
                 </div>
 
@@ -482,13 +510,13 @@ const PersonalDashboard = () => {
                         <div className="space-y-4">
                             <div className="flex justify-between items-center px-1">
                                 <h3 className="font-black text-slate-800 uppercase tracking-tight flex items-center gap-2">
-                                    <TrendingUp className={`w-5 h-5 ${currentTheme.text}`} /> Recent Activity
+                                    <TrendingUp className={`w-5 h-5 ${currentTheme.text}`} /> {t('recent_activity')}
                                 </h3>
-                                <Link to="/portal/plans" className="text-xs font-bold text-blue-600 hover:underline flex items-center gap-1">View All <ArrowRight className="w-3 h-3" /></Link>
+                                <Link to="/portal/plans" className="text-xs font-bold text-blue-600 hover:underline flex items-center gap-1">{t('view_all')} <ArrowRight className="w-3 h-3" /></Link>
                             </div>
                             <div className="grid gap-3">
                                 {recentPlans.length === 0 ? (
-                                    <div className="p-12 text-center border-2 border-dashed border-slate-100 rounded-3xl text-slate-400 italic text-sm">No plans found. Start by creating your first RPH.</div>
+                                    <div className="p-12 text-center border-2 border-dashed border-slate-100 rounded-3xl text-slate-400 italic text-sm">{t('no_plans_found')}</div>
                                 ) : recentPlans.map(plan => (
                                     <Link key={plan.id} to={`/portal/plans/${plan.id}`} className="group block bg-white border border-slate-100 p-5 rounded-3xl shadow-sm hover:shadow-md hover:border-blue-200 transition-all">
                                         <div className="flex justify-between items-center">
@@ -516,13 +544,13 @@ const PersonalDashboard = () => {
                         <Card className="p-6 rounded-3xl border-slate-100">
                             <div className="flex justify-between items-center mb-6">
                                 <h3 className="font-black text-slate-800 uppercase tracking-tight flex items-center gap-2">
-                                    <CheckSquare className="w-5 h-5 text-indigo-500" /> Action Required
+                                    <CheckSquare className="w-5 h-5 text-indigo-500" /> {t('action_required')}
                                 </h3>
-                                <Button variant="ghost" size="sm" className="font-bold text-blue-600" onClick={() => navigate('/portal/tasks')}>Manage Tasks</Button>
+                                <Button variant="ghost" size="sm" className="font-bold text-blue-600" onClick={() => navigate('/portal/tasks')}>{t('manage_tasks')}</Button>
                             </div>
                             <div className="space-y-3">
                                 {myTasks.length === 0 ? (
-                                    <div className="p-10 border-2 border-dashed border-slate-50 rounded-2xl text-sm text-slate-400 italic text-center">Your workspace is clear! No pending tasks.</div>
+                                    <div className="p-10 border-2 border-dashed border-slate-50 rounded-2xl text-sm text-slate-400 italic text-center">{t('workspace_clear')}</div>
                                 ) : myTasks.map(task => (
                                     <div key={task.id} className="flex items-center gap-4 p-4 bg-slate-50/50 rounded-2xl border border-slate-50 group hover:bg-white hover:shadow-sm hover:border-blue-100 transition-all">
                                         <div className="p-2 bg-white rounded-lg shadow-sm border border-slate-100 text-slate-400 group-hover:text-blue-600 transition-colors">
@@ -530,7 +558,7 @@ const PersonalDashboard = () => {
                                         </div>
                                         <div className="flex-1 min-w-0">
                                             <p className="text-sm font-bold text-slate-800 truncate">{task.title}</p>
-                                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Due: {task.dueDate}</p>
+                                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{t('due')}: {task.dueDate}</p>
                                         </div>
                                         <button onClick={() => navigate('/portal/tasks')} className="opacity-0 group-hover:opacity-100 transition-opacity p-2 text-blue-600"><ArrowRight className="w-4 h-4" /></button>
                                     </div>
@@ -548,11 +576,11 @@ const PersonalDashboard = () => {
                             </div>
                             <div className="relative z-10">
                                 <h3 className="font-black uppercase tracking-widest text-[10px] mb-4 flex items-center gap-2 opacity-80">
-                                    <Calendar className="w-3.5 h-3.5" /> Today's Class Queue
+                                    <Calendar className="w-3.5 h-3.5" /> {t('today_class_queue')}
                                 </h3>
                                 <div className="space-y-4">
                                     {todayClasses.length === 0 ? (
-                                        <p className="text-sm font-medium italic opacity-70">No classes scheduled for today.</p>
+                                        <p className="text-sm font-medium italic opacity-70">{t('no_classes_today')}</p>
                                     ) : todayClasses.map((slot, idx) => (
                                         <div key={idx} className="flex gap-4 items-center">
                                             <div className="w-16 text-[10px] font-black uppercase text-right opacity-60 leading-tight">
@@ -569,7 +597,7 @@ const PersonalDashboard = () => {
                                     className="w-full mt-6 bg-white/10 hover:bg-white/20 border-white/20 text-white rounded-xl text-xs font-black uppercase tracking-widest h-12"
                                     onClick={() => navigate('/portal/timetable')}
                                 >
-                                    Full Schedule
+                                    {t('full_schedule')}
                                 </Button>
                             </div>
                         </Card>
@@ -578,14 +606,14 @@ const PersonalDashboard = () => {
                     {config.showQuickLinks && (
                         <div className="space-y-4">
                             <h3 className="font-black text-slate-800 uppercase tracking-tight flex items-center gap-2 px-1">
-                                <Zap className="w-5 h-5 text-amber-500" /> Core Shortcuts
+                                <Zap className="w-5 h-5 text-amber-500" /> {t('core_shortcuts')}
                             </h3>
                             <div className="grid grid-cols-2 gap-4">
                                 {[
-                                    { label: 'New RPH', path: '/portal/plans/new', icon: Plus, color: 'bg-blue-600', shadow: 'shadow-blue-100' },
-                                    { label: 'Records', path: '/portal/records', icon: ClipboardList, color: 'bg-indigo-600', shadow: 'shadow-indigo-100' },
-                                    { label: 'DSKP', path: '/portal/dskp', icon: BookOpen, color: 'bg-emerald-600', shadow: 'shadow-emerald-100' },
-                                    { label: 'Calendar', path: '/portal/calendar', icon: Calendar, color: 'bg-rose-600', shadow: 'shadow-rose-100' },
+                                    { label: t('new_rph'), path: '/portal/plans/new', icon: Plus, color: 'bg-blue-600', shadow: 'shadow-blue-100' },
+                                    { label: t('records'), path: '/portal/records', icon: ClipboardList, color: 'bg-indigo-600', shadow: 'shadow-indigo-100' },
+                                    { label: t('dskp'), path: '/portal/dskp', icon: BookOpen, color: 'bg-emerald-600', shadow: 'shadow-emerald-100' },
+                                    { label: t('calendar'), path: '/portal/calendar', icon: Calendar, color: 'bg-rose-600', shadow: 'shadow-rose-100' },
                                 ].map((link, idx) => (
                                     <button
                                         key={idx}
@@ -607,11 +635,11 @@ const PersonalDashboard = () => {
                             <div className="absolute top-0 right-0 p-3"><Sparkles className="w-5 h-5 text-amber-400 opacity-40" /></div>
                             <Quote className="w-8 h-8 text-blue-500 mb-4 opacity-40" />
                             <p className="text-slate-100 font-bold leading-relaxed text-sm italic relative z-10">
-                                "Education is not the filling of a pail, but the lighting of a fire."
+                                "{t('education_quote')}"
                             </p>
                             <div className="mt-6 flex items-center gap-3 opacity-60">
                                 <div className="w-5 h-0.5 bg-blue-500"></div>
-                                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">W.B. Yeats</span>
+                                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{t('quote_author')}</span>
                             </div>
                         </div>
                     )}
@@ -629,6 +657,7 @@ const PersonalDashboard = () => {
 };
 
 const Dashboard = () => {
+    const { t } = useLanguage();
     const { currentUser, viewMode } = useGlobal();
     const [saStats, setSaStats] = useState({ totalSchools: 0, totalUsers: 0, totalPlans: 0 });
 

@@ -41,12 +41,12 @@ const SidebarContent = ({ user, onLogout, t, onClose }: SidebarProps) => {
         { path: '/reviews', label: t('erph_approval'), modes: ['admin'], excludeRoles: [UserRole.SUPER_ADMIN] },
         { path: '/records', label: t('leave_approvals'), modes: ['admin'], excludeRoles: [UserRole.SUPER_ADMIN] },
         { path: '/users', label: t('manage_users'), modes: ['admin'] },
-        { path: '/security', label: 'Security Center', modes: ['admin'], onlyRoles: [UserRole.SUPER_ADMIN] },
-        { path: '/mailbox', label: 'Admin Mailbox', modes: ['admin'], onlyRoles: [UserRole.SUPER_ADMIN] },
-        { path: '/newsletter', label: 'Broadcast', modes: ['admin'], onlyRoles: [UserRole.SUPER_ADMIN] },
+        { path: '/security', label: t('security_center'), modes: ['admin'], onlyRoles: [UserRole.SUPER_ADMIN] },
+        { path: '/mailbox', label: t('admin_mailbox'), modes: ['admin'], onlyRoles: [UserRole.SUPER_ADMIN] },
+        { path: '/newsletter', label: t('broadcast'), modes: ['admin'], onlyRoles: [UserRole.SUPER_ADMIN] },
         {
             path: '/settings',
-            label: user.role === UserRole.SUPER_ADMIN ? 'System Settings' : t('school') + ' Settings',
+            label: user.role === UserRole.SUPER_ADMIN ? t('system_settings') : t('school_settings'),
             modes: ['admin']
         },
     ];
@@ -61,14 +61,14 @@ const SidebarContent = ({ user, onLogout, t, onClose }: SidebarProps) => {
 
     const getRoleLabel = (role: UserRole) => {
         switch (role) {
-            case UserRole.SUPER_ADMIN: return 'Super Admin';
-            case UserRole.SCHOOL_ADMIN: return 'School Admin';
-            case UserRole.PRINCIPAL: return 'Principal';
-            case UserRole.GPK_1: return 'GPK 1';
-            case UserRole.GPK_HEM: return 'GPK HEM';
-            case UserRole.GPK_KOKO: return 'GPK KOKO';
-            case UserRole.GPK: return 'GPK';
-            default: return 'Teacher';
+            case UserRole.SUPER_ADMIN: return t('role_super_admin');
+            case UserRole.SCHOOL_ADMIN: return t('role_school_admin');
+            case UserRole.PRINCIPAL: return t('role_principal');
+            case UserRole.GPK_1: return t('role_gpk_1');
+            case UserRole.GPK_HEM: return t('role_gpk_hem');
+            case UserRole.GPK_KOKO: return t('role_gpk_koko');
+            case UserRole.GPK: return t('role_gpk');
+            default: return t('role_teacher');
         }
     };
 
@@ -120,7 +120,7 @@ const SidebarContent = ({ user, onLogout, t, onClose }: SidebarProps) => {
                             onClick={() => setViewMode('teacher')}
                             className={`flex-1 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all duration-300 ${viewMode === 'teacher' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'text-slate-500 hover:text-slate-300 hover:bg-slate-800/50'}`}
                         >
-                            Teacher
+                            {t('role_teacher')}
                         </button>
                     </div>
                 </div>
@@ -153,8 +153,8 @@ const SidebarContent = ({ user, onLogout, t, onClose }: SidebarProps) => {
                     <span className="font-bold text-sm">{t('sign_out')}</span>
                 </button>
                 <div className="mt-4 pt-4 border-t border-slate-800/50 text-center space-y-1">
-                    <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Powered by Aiden Chan</p>
-                    <p className="text-[9px] text-slate-400 font-black uppercase tracking-[0.2em]">System v{APP_VERSION}</p>
+                    <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">{t('powered_by')} Aiden Chan</p>
+                    <p className="text-[9px] text-slate-400 font-black uppercase tracking-[0.2em]">{t('system_version')}{APP_VERSION}</p>
                 </div>
             </div>
         </div>
@@ -209,8 +209,8 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                         </div>
                     </div>
                     <div>
-                        <h2 className="text-2xl font-black tracking-tight">Portal Locked</h2>
-                        <p className="text-slate-400 mt-2 text-sm">Session locked due to inactivity. Please enter your credential PIN or password to continue.</p>
+                        <h2 className="text-2xl font-black tracking-tight">{t('portal_locked')}</h2>
+                        <p className="text-slate-400 mt-2 text-sm">{t('locked_desc')}</p>
                     </div>
                     <form onSubmit={handleUnlock} className="space-y-4">
                         <input
@@ -221,11 +221,11 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                             onChange={e => setLockInput(e.target.value)}
                             autoFocus
                         />
-                        {lockError && <p className="text-red-500 text-xs font-bold uppercase tracking-widest">Invalid Credentials</p>}
-                        <Button className="w-full h-14 rounded-2xl font-black text-lg shadow-xl shadow-blue-500/20" type="submit">Unlock Workspace</Button>
+                        {lockError && <p className="text-red-500 text-xs font-bold uppercase tracking-widest">{t('invalid_credentials')}</p>}
+                        <Button className="w-full h-14 rounded-2xl font-black text-lg shadow-xl shadow-blue-500/20" type="submit">{t('unlock_workspace')}</Button>
                     </form>
                     <button onClick={() => setCurrentUser(null)} className="text-slate-500 hover:text-white transition-colors text-xs font-bold uppercase tracking-widest flex items-center gap-2 mx-auto pt-4">
-                        <LogOut className="w-4 h-4" /> Switch Account
+                        <LogOut className="w-4 h-4" /> {t('switch_account')}
                     </button>
                 </div>
             </div>
@@ -258,7 +258,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                         </button>
                         <div className="flex flex-col">
                             <h2 className="text-sm md:text-base font-black text-slate-800 tracking-tight">
-                                {new Date().getHours() < 12 ? 'Good Morning' : new Date().getHours() < 18 ? 'Good Afternoon' : 'Good Evening'}, {currentUser.name.split(' ')[0]}
+                                {new Date().getHours() < 12 ? t('good_morning') : new Date().getHours() < 18 ? t('good_afternoon') : t('good_evening')}, {currentUser.name.split(' ')[0]}
                             </h2>
                             {currentSchool && (
                                 <div className="flex items-center gap-1.5 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
@@ -267,7 +267,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                             )}
                         </div>
                         <div className="hidden xl:flex items-center gap-2 px-4 py-1.5 bg-blue-50/50 border border-blue-100/50 rounded-full text-blue-700 text-[10px] font-black uppercase tracking-widest shadow-sm">
-                            <ShieldCheck className="w-3.5 h-3.5" /> Secure Session
+                            <ShieldCheck className="w-3.5 h-3.5" /> {t('secure_session')}
                         </div>
                     </div>
 
@@ -315,14 +315,14 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                             {showNotifications && (
                                 <div className="absolute right-0 top-full mt-2 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden z-50 animate-in fade-in slide-in-from-top-2 duration-200">
                                     <div className="p-4 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
-                                        <h3 className="font-bold text-slate-800">Notifications</h3>
-                                        <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded-lg">{notifications.length} New</span>
+                                        <h3 className="font-bold text-slate-800">{t('notifications')}</h3>
+                                        <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded-lg">{notifications.length} {t('new')}</span>
                                     </div>
                                     <div className="max-h-[400px] overflow-y-auto custom-scrollbar">
                                         {notifications.length === 0 ? (
                                             <div className="p-8 text-center text-slate-400">
                                                 <Bell className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                                                <p className="text-xs font-bold uppercase tracking-widest">No Notifications</p>
+                                                <p className="text-xs font-bold uppercase tracking-widest">{t('no_unread_notifications')}</p>
                                             </div>
                                         ) : (
                                             <div className="divide-y divide-slate-50">
@@ -343,7 +343,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                                     </div>
                                     <div className="p-2 border-t border-slate-100 bg-slate-50/50">
                                         <button className="w-full py-2 text-xs font-bold text-slate-500 hover:text-blue-600 transition-colors uppercase tracking-widest">
-                                            Mark All as Read
+                                            {t('mark_all_read')}
                                         </button>
                                     </div>
                                 </div>
@@ -367,10 +367,10 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                         <a
                             href="mailto:support@erphpro.com?subject=Support Request"
                             className="fixed bottom-8 right-8 z-50 p-4 bg-slate-900 text-white rounded-full shadow-2xl hover:scale-110 transition-transform flex items-center gap-2 group border-4 border-white"
-                            title="Contact Support"
+                            title={t('contact_support')}
                         >
                             <Mail className="w-6 h-6" />
-                            <span className="max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-300 font-bold whitespace-nowrap px-0 group-hover:px-2">Contact Support</span>
+                            <span className="max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-300 font-bold whitespace-nowrap px-0 group-hover:px-2">{t('contact_support')}</span>
                         </a>
                     )}
                 </main>

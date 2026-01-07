@@ -1,6 +1,6 @@
-
 import React, { memo } from 'react';
 import { Plus, X, Zap } from 'lucide-react';
+import { useLanguage } from '../context/LanguageContext';
 
 export interface Option {
     id: string;
@@ -25,6 +25,7 @@ interface ListEditorProps {
 export const ListEditor = memo(({
     title, items, onUpdate, onAdd, onRemove, placeholder, icon, colorClass, emptyMessage, isTextArea, labels
 }: ListEditorProps) => {
+    const { t } = useLanguage();
 
     // Derived classes based on color prop
     const bgSoft = `bg-${colorClass}-50`;
@@ -79,7 +80,7 @@ export const ListEditor = memo(({
                 {(!items || items.length === 0) && (
                     <div className="text-center py-10 text-slate-400 border-2 border-dashed border-slate-100 rounded-[2rem] bg-slate-50/50">
                         {isTextArea && <Zap className="w-8 h-8 mx-auto mb-2 opacity-20" />}
-                        <p className="text-sm font-medium">{emptyMessage || `Click "+" to add items.`}</p>
+                        <p className="text-sm font-medium">{emptyMessage || t('add_items_hint')}</p>
                     </div>
                 )}
             </div>
