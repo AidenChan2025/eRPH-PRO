@@ -21,6 +21,7 @@ export enum Language {
 export enum SchoolType {
   PRIMARY = 'SR',
   SECONDARY = 'SMK',
+  SJKC = 'SJKC',
   ALL = 'ALL'
 }
 
@@ -247,12 +248,13 @@ export interface LeaveRecord {
 }
 
 export interface DSKPStandard {
-  id: number;
+  id: string | number;
   schoolType: SchoolType;
   subject: string;
   grade: string;
   contentStandard: string;
   learningStandard: string;
+  topic?: string;
   temaBidang?: string;
   tema?: string;
   tajukKemahiran?: string;

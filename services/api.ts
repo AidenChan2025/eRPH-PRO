@@ -78,8 +78,8 @@ export const api = {
     list: (params: any) => fetchApi(`/dskp?${new URLSearchParams(params)}`),
     getOptions: () => fetchApi('/dskp/options'),
     listStructure: () => fetchApi('/dskp/structure'),
-    updateNode: (id: number, data: any) => fetchApi(`/dskp/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
-    delete: (id: number) => fetchApi(`/dskp/${id}`, { method: 'DELETE' }),
+    updateNode: (id: string | number, data: any) => fetchApi(`/dskp/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+    delete: (id: string | number) => fetchApi(`/dskp/${id}`, { method: 'DELETE' }),
     sync: (data: any) => fetchApi('/dskp/sync', { method: 'POST', body: JSON.stringify(data) })
   },
   users: {

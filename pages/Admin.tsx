@@ -579,7 +579,7 @@ export const DSKPManager = () => {
         finally { setIsSearching(false); }
     };
 
-    const handleDelete = async (id: number) => {
+    const handleDelete = async (id: string | number) => {
         if (!confirm('Are you sure you want to delete this standard? This cannot be undone.')) return;
         try {
             const res = await api.dskp.delete(id);
