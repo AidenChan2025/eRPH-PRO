@@ -12,3 +12,6 @@ const root = ReactDOM.createRoot(rootElement);
 root.render(
   <App />
 );
+
+// Signal that React has successfully mounted
+(window as any).erphLoaded = true;

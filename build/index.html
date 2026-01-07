@@ -84,7 +84,7 @@
   </style>
 
 
-  <script type="module" crossorigin src="/assets/index-CdmnaCRj.js"></script>
+  <script type="module" crossorigin src="/assets/index-BFFFdGpD.js"></script>
   <link rel="modulepreload" crossorigin href="/assets/vendor-react-DCT1OVcI.js">
   <link rel="modulepreload" crossorigin href="/assets/vendor-icons-mOHqhIGt.js">
   <link rel="modulepreload" crossorigin href="/assets/vendor-charts-ByOAIy3S.js">
@@ -98,6 +98,45 @@
   <!-- End Google Tag Manager (noscript) -->
   <div id="root"></div>
   <div id="print-container"></div>
+
+  <!-- Maintenance Fallback UI (Hidden by default) -->
+  <div id="maintenance-fallback"
+    style="display: none; position: fixed; inset: 0; background-color: #f8fafc; z-index: 9999; flex-direction: column; align-items: center; justify-content: center; font-family: 'Inter', sans-serif; text-align: center; padding: 2rem;">
+    <div
+      style="background: white; padding: 3rem; border-radius: 1rem; box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1); max-width: 28rem; width: 100%;">
+      <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#64748b"
+        stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 1.5rem;">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="8" x2="12" y2="12"></line>
+        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+      </svg>
+      <h1 style="font-size: 1.5rem; font-weight: 800; color: #1e293b; margin-bottom: 0.5rem;">System Maintenance</h1>
+      <p style="color: #64748b; font-size: 0.875rem; line-height: 1.5; margin-bottom: 1.5rem;">
+        The system is currently undergoing maintenance or experiencing high traffic. Please try again in a few moments.
+      </p>
+      <button onclick="window.location.reload()"
+        style="background-color: #2563eb; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 0.5rem; font-weight: 600; cursor: pointer; font-size: 0.875rem; transition: background-color 0.2s;">
+        Refresh Page
+      </button>
+      <p style="margin-top: 1.5rem; font-size: 0.75rem; color: #94a3b8;">
+        Error Code: CLIENT_TIMEOUT
+      </p>
+    </div>
+  </div>
+
+  <script>
+    // Fail-safe: Check if React mounted within 5 seconds
+    setTimeout(function () {
+      if (!window.erphLoaded) {
+        var fallback = document.getElementById('maintenance-fallback');
+        var root = document.getElementById('root');
+        if (fallback) fallback.style.display = 'flex';
+        if (root) root.style.display = 'none';
+        console.error("eRPH Pro: React Mount Timeout - Showing Fallback UI");
+      }
+    }, 5000);
+  </script>
+
 </body>
 
 </html>
