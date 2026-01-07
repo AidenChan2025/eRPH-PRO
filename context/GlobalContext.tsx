@@ -11,6 +11,7 @@ import {
   onAuthStateChanged, signOut, query, where, limit, getDoc, getCountFromServer, updateDoc
 } from '../services/firebase';
 import { sendEmail } from '../services/emailService';
+import { seed2026Data } from '../utils/seeder';
 
 export const MOCK_USERS: User[] = [
   { 
@@ -219,27 +220,29 @@ export const GlobalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
       } catch (e) {}
   };
 
-  useEffect(() => { refreshGlobalData(); }, [currentUser]); 
+  useEffect(() => { refreshGlobalData(); }, [currentUser]);
 
   const seedDatabase = async (force: boolean = false) => {
     if (isSeeding || (hasAttemptedSeed.current && !force)) return;
     setIsSeeding(true);
     hasAttemptedSeed.current = true;
     try {
+        // Check if we already have data to avoid re-seeding massive data on every reload
         const schoolRef = doc(db, 'schools', 's-1');
         const schoolSnap = await getDoc(schoolRef);
-        if (!schoolSnap.exists()) {
-            await setDoc(schoolRef, {
-                id: 's-1', name: 'SJK(C) Mentakab 1', code: 'CBC7071', district: 'Temerloh', type: SchoolType.SJKC,
-                settings: { termStartDate: '2025-03-10', customTimeSlots: ["07:45 - 08:45"], customClasses: ["4 诚实"], customSubjects: ["华文"] }
-            });
+        
+        if (!schoolSnap.exists() || force) {
+            await seed2026Data();
+            // Refresh local state after seeding
+            await refreshGlobalData();
+            // Force reload to reflect new data in lists if needed, or just let state update
+            window.location.reload(); 
         }
-        for (const mockUser of MOCK_USERS) {
-            const userRef = doc(db, 'users', mockUser.id);
-            const userSnap = await getDoc(userRef);
-            if (!userSnap.exists()) await setDoc(userRef, mockUser);
-        }
-    } catch (e) { console.error("Seed failed:", e); } finally { setIsSeeding(false); }
+    } catch (e) {
+        console.error("Seed failed:", e);
+    } finally {
+        setIsSeeding(false);
+    }
   };
 
   const sendNotification = async (recipientId: string, message: string) => {

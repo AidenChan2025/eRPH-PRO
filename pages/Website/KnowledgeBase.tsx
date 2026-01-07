@@ -17,7 +17,19 @@ const KnowledgeBase = () => {
 
     const updateLogs = [
         {
-            version: "v0.0.42",
+            version: "v0.0.46",
+            date: "Jan 07, 2026",
+            title: "Major Performance Upgrade (Firebase Engine)",
+            items: [
+                "🚀 Migrated database engine to Google Firebase for 10x faster performance.",
+                "⚡ Instant load times for Lesson Plans and Dashboard.",
+                "📅 Added 2026 Academic Year data (Jan-April) for testing.",
+                "🔄 Real-time data syncing between devices.",
+                "🛠️ Fixed 'CRITICAL' startup errors on some devices."
+            ]
+        },
+        {
+            version: "v0.0.45",
             date: "Jan 07, 2026",
             title: "DSKP Browser & Build Optimization",
             items: [

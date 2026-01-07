@@ -1,12 +1,12 @@
 {
   "name": "erph-pro",
-  "version": "0.0.42",
+  "version": "0.0.46",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "bump-version": "node scripts/bump_version.js",
     "build": "npm run bump-version && vite build",
-    "build:max": "npm run bump-version && node --max-old-space-size=8192 ./node_modules/vite/bin/vite.js build --minify false",
+    "build:max": "npm run bump-version && node --max-old-space-size=4096 ./node_modules/vite/bin/vite.js build --minify false",
     "build:clean": "rm -rf node_modules/.vite build && npm run build:max",
     "preview": "vite preview"
   },

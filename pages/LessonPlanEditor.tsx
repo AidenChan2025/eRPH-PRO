@@ -21,7 +21,11 @@ import {
 } from '../utils/smartParser';
 import { PrintPreviewModal, DskpBrowserModal, SuccessModal } from '../components/Modals';
 import { ListEditor, TagSelector } from '../components/LessonPlanComponents';
-import { api } from '../services/api';
+import { lessonService } from '../services/lessonService';
+import { dskpService } from '../services/dskpService';
+import { userService } from '../services/userService'; // If needed for profile syncing
+
+// ...
 
 const LessonPlanEditor = () => {
     const { id } = useParams<{ id?: string }>();
@@ -56,7 +60,7 @@ const LessonPlanEditor = () => {
     const DEFAULT_SUBJECTS = useMemo(() => ["Bahasa Melayu", "English", "Matematik", "Sains", "Sejarah", "Reka Bentuk dan Teknologi", "Pendidikan Islam", "Pendidikan Moral", "Pendidikan Jasmani dan Kesihatan", "Pendidikan Seni Visual", "Pendidikan Muzik", "Bahasa Arab", "Bahasa Cina", "Bahasa Tamil", "Bahasa Iban", "Bahasa Kadazandusun", "Bahasa Semai"], []);
 
     useEffect(() => {
-        api.dskp.getOptions().then(res => {
+        dskpService.getOptions().then(res => {
             if (res.success && res.subjects) {
                 setDbSubjects(res.subjects);
             }
@@ -74,7 +78,7 @@ const LessonPlanEditor = () => {
     // Fetch DSKP on Subject/Grade change
     useEffect(() => {
         if (plan.subject && plan.grade) {
-            api.dskp.list({ subject: plan.subject, grade: plan.grade }).then(res => {
+            dskpService.list({ subject: plan.subject, grade: plan.grade }).then(res => {
                 if (res.success && Array.isArray(res.data)) {
                     setDskpRecords(res.data);
                 }
@@ -116,14 +120,7 @@ const LessonPlanEditor = () => {
     }, [dskpRecords, localTheme, plan.topic, plan.contentStandard]);
 
     const toggleContentStandard = (val: string) => {
-        const current = plan.contentStandard ? plan.contentStandard.split('\n\n') : []; // Store as newline separated or handle as array? 
-        // The LessonPlan model stores strings. Let's assume we store them joined by \n\n for display, or we should change the schema?
-        // User wants "filter learning standard... 1.0-1.12".
-        // Let's implement multi-select logic but convert to string for the existing model.
-
-        // Actually, easiest is to detect if string contains it. But splitting is safer.
-        // Let's treat standard textarea as a "Display" of selected items?
-        // Re-implementing logic:
+        const current = plan.contentStandard ? plan.contentStandard.split('\n\n') : []; 
         const exists = current.includes(val);
         const newArr = exists ? current.filter(c => c !== val) : [...current, val];
         setPlan({ ...plan, contentStandard: newArr.join('\n\n') });
@@ -136,10 +133,6 @@ const LessonPlanEditor = () => {
 
         setPlan({ ...plan, learningStandard: newArr.join('\n\n') });
 
-        // Auto-Generate Content on change (debounced or immediate)
-        // We'll generate based on the LATEST selection
-        // If adding, generate. If removing, maybe don't clear? 
-        // User said "auto fill in...". Let's re-generate fully based on new selection.
         if (!exists) { // Only if adding
             generateSmartContent(newArr.join('\n'), currentLang);
         }
@@ -153,7 +146,7 @@ const LessonPlanEditor = () => {
 
     useEffect(() => {
         if (id) {
-            api.lessonPlans.get(id).then(res => {
+            lessonService.get(id).then(res => {
                 if (res.success && res.data) {
                     const data = res.data as LessonPlan;
                     setPlan(data);
@@ -168,7 +161,6 @@ const LessonPlanEditor = () => {
     }, [id]);
 
     // Smart Auto-Fill
-    // Smart Generation Logic
     // Smart Generation Logic
     const generateSmartContent = useCallback((std: string, lang: SupportedLanguage) => {
         if (!std) return;
@@ -190,10 +182,25 @@ const LessonPlanEditor = () => {
     const handleSave = async (status: LessonStatus) => {
         const now = new Date().toISOString();
         const planId = id || `lp-${Date.now()}`;
-        const newPlan = { ...plan, id: planId, teacherId: currentUser?.id, teacherName: currentUser?.name, schoolId: currentUser?.schoolId || '', status, updatedAt: now };
+        
+        // Ensure user is logged in or fallback mock
+        const teacherId = currentUser?.id || 'guest';
+        const teacherName = currentUser?.name || 'Guest Teacher';
+        const schoolId = currentUser?.schoolId || schools[0]?.id || 's-1';
+        
+        const newPlan = { 
+            ...plan, 
+            id: planId, 
+            teacherId, 
+            teacherName, 
+            schoolId, 
+            status, 
+            updatedAt: now,
+            // Cast partial to full if needed, or services handles it
+        } as LessonPlan;
 
         try {
-            await api.lessonPlans.save(newPlan);
+            await lessonService.save(newPlan);
             setShowSuccess(true);
         } catch (e) {
             console.error(e);
