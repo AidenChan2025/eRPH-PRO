@@ -1,0 +1,139 @@
+import React, { useState } from 'react';
+import PublicNavbar from '../../components/PublicNavbar';
+import PublicFooter from '../../components/PublicFooter';
+import { Shield, Lock, FileText, CheckCircle2 } from 'lucide-react';
+
+const Legal = () => {
+    const [activeTab, setActiveTab] = useState<'privacy' | 'terms' | 'security'>('privacy');
+
+    const tabs = [
+        { id: 'privacy', label: 'Privacy Policy', icon: Lock },
+        { id: 'terms', label: 'Terms of Service', icon: FileText },
+        { id: 'security', label: 'Security Policy', icon: Shield },
+    ];
+
+    return (
+        <div className="min-h-screen bg-white font-sans text-slate-900 selection:bg-blue-100 selection:text-blue-900">
+            <PublicNavbar />
+
+            <main className="pt-32 pb-20 px-6">
+                <div className="max-w-4xl mx-auto space-y-12">
+                    <div className="text-center space-y-4">
+                        <h1 className="text-4xl md:text-5xl font-black tracking-tight text-slate-900">Legal Center</h1>
+                        <p className="text-lg text-slate-500 font-medium max-w-2xl mx-auto">
+                            Transparency is our core value. Here is everything you need to know about how we manage usage, data, and security.
+                        </p>
+                    </div>
+
+                    <div className="flex flex-wrap justify-center gap-4 bg-slate-50 p-2 rounded-[2rem] border border-slate-100 max-w-2xl mx-auto">
+                        {tabs.map(tab => (
+                            <button
+                                key={tab.id}
+                                onClick={() => setActiveTab(tab.id as any)}
+                                className={`flex px-6 py-3 rounded-2xl items-center gap-2 font-bold transition-all ${activeTab === tab.id
+                                        ? 'bg-white shadow-md text-blue-600 scale-105'
+                                        : 'text-slate-500 hover:text-slate-700 hover:bg-slate-200/50'
+                                    }`}
+                            >
+                                <tab.icon className="w-4 h-4" />
+                                {tab.label}
+                            </button>
+                        ))}
+                    </div>
+
+                    <div className="bg-white border border-slate-100 rounded-[2.5rem] p-8 md:p-12 shadow-xl shadow-slate-200/30 animate-in fade-in slide-in-from-bottom-8 duration-500">
+                        {activeTab === 'privacy' && (
+                            <div className="prose prose-slate prose-headings:font-black prose-p:font-medium prose-p:text-slate-600 max-w-none">
+                                <h2>Privacy Policy</h2>
+                                <p className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-8">Last Updated: Jan 07, 2026</p>
+
+                                <h3>1. Data Collection</h3>
+                                <p>We collect minimal data necessary for the functionality of eRPH Pro. This includes:</p>
+                                <ul>
+                                    <li>Teacher names and email addresses (for identity).</li>
+                                    <li>Lesson plan content (RPH) generated or uploaded by you.</li>
+                                    <li>School profile information.</li>
+                                </ul>
+
+                                <h3>2. Data Usage</h3>
+                                <p>Your data is used strictly for:</p>
+                                <ul>
+                                    <li>Providing the Lesson Plan management service.</li>
+                                    <li>Generating official PDF reports for school administration.</li>
+                                    <li>Syncing with the National DSKP repository.</li>
+                                </ul>
+                                <p><strong>We do NOT sell your data to third parties.</strong></p>
+
+                                <h3>3. User Rights</h3>
+                                <p>You have the right to request a full export of your data or complete account deletion at any time by contacting support.</p>
+                            </div>
+                        )}
+
+                        {activeTab === 'terms' && (
+                            <div className="prose prose-slate prose-headings:font-black prose-p:font-medium prose-p:text-slate-600 max-w-none">
+                                <h2>Terms of Service</h2>
+                                <p className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-8">Effective Date: Jan 01, 2024</p>
+
+                                <h3>1. Usage License</h3>
+                                <p>By using eRPH Pro, you are granted a non-exclusive, limited license to access the platform for educational administration purposes.</p>
+
+                                <h3>2. Acceptable Use</h3>
+                                <p>You agree not to:</p>
+                                <ul>
+                                    <li>Misuse the reporting tools to falsify official school records.</li>
+                                    <li>Attempt to reverse engineer the source code.</li>
+                                    <li>Share your account credentials with unauthorized users.</li>
+                                </ul>
+
+                                <h3>3. Disclaimer</h3>
+                                <p>eRPH Pro is provided "as is". While we strive for 99.9% uptime, we are not liable for any data unavailability during scheduled maintenance windows.</p>
+                            </div>
+                        )}
+
+                        {activeTab === 'security' && (
+                            <div className="space-y-8">
+                                <div>
+                                    <h2 className="text-2xl font-black text-slate-900 mb-2">Security Infrastructure</h2>
+                                    <p className="text-slate-600 font-medium leading-relaxed">
+                                        We take the security of Malaysian educational data seriously. Our stack is built on enterprise-grade security principles.
+                                    </p>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    {[
+                                        { title: "Encryption at Rest", desc: "All database volumes are encrypted using AES-256 standards." },
+                                        { title: "TLS 1.3 Transport", desc: "All data in transit is protected by strict HTTPS enforcement." },
+                                        { title: "Isolated Tenants", desc: "School data is logically isolated to prevent cross-contamination." },
+                                        { title: "Regular Backups", desc: "Automated hourly backups ensure zero data loss." }
+                                    ].map((item, i) => (
+                                        <div key={i} className="p-6 rounded-2xl bg-slate-50 border border-slate-100">
+                                            <div className="flex items-center gap-3 mb-2 text-blue-600">
+                                                <CheckCircle2 className="w-5 h-5" />
+                                                <h4 className="font-black text-sm uppercase tracking-wider">{item.title}</h4>
+                                            </div>
+                                            <p className="text-slate-500 font-medium text-sm">{item.desc}</p>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <div className="bg-blue-50 p-6 rounded-2xl border border-blue-100 flex gap-4">
+                                    <Shield className="w-8 h-8 text-blue-600 shrink-0" />
+                                    <div>
+                                        <h4 className="font-black text-blue-800 mb-1">AIDEN Security Subsystem</h4>
+                                        <p className="text-blue-700/80 text-sm font-medium">
+                                            Our proprietary active defense system monitors for suspicious login patterns and prevents unauthorized access attempts in real-time.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </main>
+
+            <PublicFooter />
+        </div>
+    );
+};
+
+export default Legal;

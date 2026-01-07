@@ -1,0 +1,19 @@
+Options +FollowSymLinks +ExecCGI
+AddHandler cgi-script .cgi
+
+RewriteEngine On
+RewriteBase /
+
+# 1. API Routing
+RewriteRule ^api/(.*)$ index.cgi/api/$1 [L,QSA]
+
+# 2. Serve Static Assets from build folder
+RewriteCond %{DOCUMENT_ROOT}/build/$1 -f
+RewriteRule ^(.*)$ build/$1 [L]
+
+# 3. Avoid rewriting existing files (like .cgi)
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteRule ^ - [L]
+
+# 4. React Router Fallback
+RewriteRule ^(.*)$ build/index.html [L]

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background-color: #f3f4f6;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: #ffffff;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .hero {
+            background: url('https://source.unsplash.com/random/800x400/?technology') no-repeat center center;
+            background-size: cover;
+            height: 200px;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        h1 {
+            color: #111827;
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+
+        p {
+            color: #4b5563;
+            line-height: 1.8;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            display: inline-block;
+            background: #3b82f6;
+            color: white;
+            padding: 14px 28px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .footer {
+            background: #1f2937;
+            color: #9ca3af;
+            padding: 30px;
+            text-align: center;
+            font-size: 14px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="hero"></div>
+        <div class="content">
+            <h1>{{ title }}</h1>
+            <div class="body-text">
+                {{ content_html }}
+            </div>
+            <center><a href="{{ action_link }}" class="btn">{{ action_text }}</a></center>
+        </div>
+        <div class="footer">
+            <p>&copy; 2026 eRPH Pro. Unsubscribe</p>
+        </div>
+    </div>
+</body>
+
+</html>
