@@ -265,7 +265,10 @@ def lesson_plans():
     plan.subject = data.get('subject')
     plan.grade = data.get('grade')
     plan.topic = data.get('topic')
-    plan.date = datetime.datetime.strptime(data.get('date'), '%Y-%m-%d').date() if data.get('date') else None
+    try:
+        plan.date = datetime.datetime.strptime(data.get('date'), '%Y-%m-%d').date() if data.get('date') else None
+    except:
+        plan.date = None
     plan.status = data.get('status', 'Draft')
     plan.full_document = data
     db.session.commit()

@@ -6,7 +6,7 @@ import Button from './Button';
 import Card from './Card';
 import { useLanguage } from '../context/LanguageContext';
 import { useGlobal } from '../context/GlobalContext';
-import { X, Search, BookOpen, Check } from 'lucide-react';
+import { X, Search, BookOpen, Check, ChevronDown, ChevronUp } from 'lucide-react';
 import PrintableRPH from './PrintableRPH';
 import { db, collection, getDocs } from '../services/firebase';
 import { api } from '../services/api';
@@ -86,10 +86,18 @@ interface DskpBrowserProps {
     currentGrade?: string;
 }
 
-export const DskpBrowserModal = ({ isOpen, onClose, onSelect, currentSubject, currentGrade }: DskpBrowserProps) => {
+export const DskpBrowserModal = ({ isOpen, onClose, onSelect, currentSubject }: DskpBrowserProps) => {
     const [standards, setStandards] = useState<DSKPStandard[]>([]);
-    const [search, setSearch] = useState('');
     const [loading, setLoading] = useState(false);
+
+    // Filters
+    const [selectedSubject, setSelectedSubject] = useState(currentSubject || '');
+    const [selectedGrade, setSelectedGrade] = useState('');
+    const [search, setSearch] = useState('');
+
+    // Selection
+    const [expandedContent, setExpandedContent] = useState<string | null>(null);
+    const [selectedLearningStandards, setSelectedLearningStandards] = useState<Set<string>>(new Set());
 
     useEffect(() => {
         if (isOpen) {
@@ -100,114 +108,201 @@ export const DskpBrowserModal = ({ isOpen, onClose, onSelect, currentSubject, cu
                 }
                 setLoading(false);
             });
-            // Pre-fill search if subject is available
-            if (currentSubject) setSearch(currentSubject);
+            if (currentSubject) setSelectedSubject(currentSubject);
         } else {
+            // Reset state
+            setSelectedSubject('');
+            setSelectedGrade('');
             setSearch('');
+            setExpandedContent(null);
+            setSelectedLearningStandards(new Set());
         }
     }, [isOpen, currentSubject]);
 
-    // Filter Logic
-    const filtered = standards.filter(s => {
-        const query = search.toLowerCase();
-        const matchText =
-            s.contentStandard.toLowerCase().includes(query) ||
-            s.learningStandard.toLowerCase().includes(query) ||
-            s.subject.toLowerCase().includes(query) ||
-            s.grade.toLowerCase().includes(query);
+    // Derived Data: Unique Subjects and Grades
+    const subjects = React.useMemo(() => Array.from(new Set(standards.map(s => s.subject))).sort(), [standards]);
+    const grades = React.useMemo(() => {
+        if (!selectedSubject) return [];
+        return Array.from(new Set(standards.filter(s => s.subject === selectedSubject).map(s => s.grade))).sort();
+    }, [standards, selectedSubject]);
 
-        // If currentSubject/Grade provided, prioritize them but don't strictly hide if user wants to search others
-        // However, for best UX, we sort relevant ones to top
-        return matchText;
-    });
+    // Group Standards by Content Standard
+    const groupedStandards = React.useMemo(() => {
+        let filtered = standards;
 
-    // Sort to show exact matches for current context first
-    const sorted = [...filtered].sort((a, b) => {
-        let scoreA = 0;
-        let scoreB = 0;
-        if (currentSubject && a.subject === currentSubject) scoreA += 2;
-        if (currentGrade && a.grade === currentGrade) scoreA += 1;
-        if (currentSubject && b.subject === currentSubject) scoreB += 2;
-        if (currentGrade && b.grade === currentGrade) scoreB += 1;
-        return scoreB - scoreA;
-    });
+        if (selectedSubject) filtered = filtered.filter(s => s.subject === selectedSubject);
+        if (selectedGrade) filtered = filtered.filter(s => s.grade === selectedGrade);
+        if (search) {
+            const lowSearch = search.toLowerCase();
+            filtered = filtered.filter(s =>
+                s.contentStandard.toLowerCase().includes(lowSearch) ||
+                s.learningStandard.toLowerCase().includes(lowSearch)
+            );
+        }
+
+        // Grouping
+        const groups: Record<string, DSKPStandard[]> = {};
+        filtered.forEach(s => {
+            if (!groups[s.contentStandard]) groups[s.contentStandard] = [];
+            groups[s.contentStandard].push(s);
+        });
+
+        return groups;
+    }, [standards, selectedSubject, selectedGrade, search]);
+
+    const handleConfirm = () => {
+        // Find the first selected standard (to get subject/grade/content metadata)
+        // In a real app, we might need to return a composite object. 
+        // For now, we return the base DSKPStandard but with combined learningStandards.
+
+        if (selectedLearningStandards.size === 0) return;
+
+        const firstKey = Array.from(selectedLearningStandards)[0];
+        // Find the standard object corresponding to the first key (optimized finding needed in real huge datasets)
+        const allFiltered = Object.values(groupedStandards).flat();
+        const baseStd = allFiltered.find(s => s.learningStandard === firstKey);
+
+        if (baseStd) {
+            // Combine all selected learning standards into one string
+            const combinedLS = Array.from(selectedLearningStandards).join('\n');
+            onSelect({
+                ...baseStd,
+                learningStandard: combinedLS
+            });
+        }
+    };
+
+    const toggleSelection = (ls: string) => {
+        const newSet = new Set(selectedLearningStandards);
+        if (newSet.has(ls)) newSet.delete(ls);
+        else newSet.add(ls);
+        setSelectedLearningStandards(newSet);
+    };
 
     if (!isOpen) return null;
+
     return (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
-            <Card className="w-full max-w-4xl h-[85vh] flex flex-col shadow-2xl">
-                <div className="p-4 border-b bg-slate-50 rounded-t-xl flex justify-between items-center">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
+            <Card className="w-full max-w-5xl h-[85vh] flex flex-col shadow-2xl rounded-2xl overflow-hidden border-0">
+                {/* Header */}
+                <div className="p-5 border-b bg-white flex justify-between items-center">
                     <div>
-                        <h3 className="font-bold text-lg text-slate-800 flex items-center gap-2">
-                            <BookOpen className="w-5 h-5 text-blue-600" /> DSKP Browser
+                        <h3 className="font-black text-xl text-slate-800 flex items-center gap-2">
+                            <BookOpen className="w-6 h-6 text-blue-600" /> DSKP Browser
                         </h3>
-                        <p className="text-xs text-slate-500">Select a standard to auto-fill your lesson plan.</p>
+                        <p className="text-sm font-medium text-slate-500">Select standard to auto-fill lesson plan.</p>
                     </div>
-                    <button onClick={onClose} className="p-1 hover:bg-slate-200 rounded-full"><X className="w-5 h-5 text-slate-500" /></button>
+                    <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-full transition-colors"><X className="w-6 h-6 text-slate-400" /></button>
                 </div>
 
-                <div className="p-4 border-b bg-white">
-                    <div className="relative">
-                        <Search className="absolute left-3 top-2.5 w-4 h-4 text-slate-400" />
-                        <input
-                            className="w-full pl-10 pr-4 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-blue-500 outline-none"
-                            placeholder="Search by Subject, Grade or Keywords..."
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                            autoFocus
-                        />
+                {/* Filters */}
+                <div className="grid grid-cols-1 md:grid-cols-12 border-b bg-slate-50/50">
+                    <div className="md:col-span-3 p-4 border-r border-slate-200 space-y-4">
+                        <div className="space-y-1">
+                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Subject</label>
+                            <select
+                                className="w-full p-2.5 rounded-xl border border-slate-200 text-sm font-bold bg-white outline-none focus:ring-2 focus:ring-blue-500"
+                                value={selectedSubject}
+                                onChange={(e) => { setSelectedSubject(e.target.value); setSelectedGrade(''); }}
+                            >
+                                <option value="">All Subjects</option>
+                                {subjects.map(s => <option key={s} value={s}>{s}</option>)}
+                            </select>
+                        </div>
+                        <div className="space-y-1">
+                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Year / Grade</label>
+                            <select
+                                className="w-full p-2.5 rounded-xl border border-slate-200 text-sm font-bold bg-white outline-none focus:ring-2 focus:ring-blue-500"
+                                value={selectedGrade}
+                                onChange={(e) => setSelectedGrade(e.target.value)}
+                                disabled={!selectedSubject}
+                            >
+                                <option value="">All Levels</option>
+                                {grades.map(g => <option key={g} value={g}>{g}</option>)}
+                            </select>
+                        </div>
+                        <div className="pt-2">
+                            <div className="relative">
+                                <Search className="absolute left-3 top-2.5 w-4 h-4 text-slate-400" />
+                                <input
+                                    className="w-full pl-9 p-2 rounded-xl border border-slate-200 text-sm font-medium outline-none focus:border-blue-500"
+                                    placeholder="Search keywords..."
+                                    value={search}
+                                    onChange={(e) => setSearch(e.target.value)}
+                                />
+                            </div>
+                        </div>
                     </div>
-                    {currentSubject && (
-                        <div className="mt-2 flex gap-2">
-                            <span className="text-xs font-bold text-slate-500 uppercase">Suggested Context:</span>
-                            <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">{currentSubject}</span>
-                            {currentGrade && <span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full">{currentGrade}</span>}
-                        </div>
-                    )}
-                </div>
 
-                <div className="flex-1 overflow-y-auto bg-slate-50 p-4">
-                    {loading ? (
-                        <div className="text-center py-10 text-slate-500">Loading standards...</div>
-                    ) : sorted.length === 0 ? (
-                        <div className="text-center py-10 text-slate-500">
-                            No standards found. <br />
-                            <span className="text-xs">Try verifying your search or import new DSKP in Admin panel.</span>
-                        </div>
-                    ) : (
-                        <div className="grid gap-3">
-                            {sorted.map((s: any) => {
-                                const isMatch = currentSubject && s.subject === currentSubject && currentGrade && s.grade === currentGrade;
-                                return (
-                                    <div
-                                        key={s.id}
-                                        onClick={() => onSelect(s)}
-                                        className={`p-4 bg-white border rounded-xl cursor-pointer transition-all hover:shadow-md hover:border-blue-300 group ${isMatch ? 'ring-1 ring-blue-500 border-blue-500' : 'border-slate-200'}`}
-                                    >
-                                        <div className="flex justify-between items-start mb-2">
-                                            <div className="flex items-center gap-2">
-                                                <span className={`text-[10px] font-bold px-2 py-0.5 rounded border ${isMatch ? 'bg-blue-600 text-white border-blue-600' : 'bg-slate-100 text-slate-600 border-slate-200'}`}>
-                                                    {s.subject}
-                                                </span>
-                                                <span className="text-[10px] text-slate-500">{s.grade}</span>
+                    {/* Results Area */}
+                    <div className="md:col-span-9 bg-slate-50 flex flex-col h-full overflow-hidden">
+                        <div className="flex-1 overflow-y-auto p-6 space-y-4">
+                            {loading ? (
+                                <div className="flex justify-center items-center h-full"><span className="loading loading-spinner text-blue-600">Loading DSKP...</span></div>
+                            ) : Object.keys(groupedStandards).length === 0 ? (
+                                <div className="flex flex-col items-center justify-center h-full text-slate-400">
+                                    <BookOpen className="w-12 h-12 mb-2 opacity-20" />
+                                    <p>No standards found matching your criteria.</p>
+                                </div>
+                            ) : (
+                                Object.entries(groupedStandards).map(([cs, list]: [string, any[]]) => {
+                                    const isExpanded = expandedContent === cs;
+                                    const selectedCount = list.filter(item => selectedLearningStandards.has(item.learningStandard)).length;
+
+                                    return (
+                                        <div key={cs} className={`bg-white rounded-2xl border transition-all ${isExpanded ? 'ring-2 ring-blue-500 shadow-xl z-10' : 'border-slate-200 shadow-sm hover:border-blue-300'}`}>
+                                            <div
+                                                className="p-4 cursor-pointer flex justify-between items-start gap-4"
+                                                onClick={() => setExpandedContent(isExpanded ? null : cs)}
+                                            >
+                                                <div>
+                                                    <div className="flex items-center gap-2 mb-1">
+                                                        <span className="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-black uppercase tracking-wider">Content Standard</span>
+                                                        {selectedCount > 0 && <span className="text-[10px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded font-black">{selectedCount} Selected</span>}
+                                                    </div>
+                                                    <p className="font-bold text-slate-800 leading-snug">{cs}</p>
+                                                </div>
+                                                <Button size="sm" variant={isExpanded ? "primary" : "ghost"} className={isExpanded ? "" : "text-slate-400"}>
+                                                    {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                                                </Button>
                                             </div>
-                                            <Button size="sm" variant="ghost" className="opacity-0 group-hover:opacity-100 text-blue-600"><Check className="w-4 h-4 mr-1" /> Select</Button>
+
+                                            {isExpanded && (
+                                                <div className="border-t border-slate-100 bg-slate-50/50 p-2 space-y-1">
+                                                    {list.map(std => {
+                                                        const isSelected = selectedLearningStandards.has(std.learningStandard);
+                                                        return (
+                                                            <div
+                                                                key={std.id}
+                                                                onClick={() => toggleSelection(std.learningStandard)}
+                                                                className={`p-3 rounded-xl cursor-pointer flex items-start gap-3 transition-all ${isSelected ? 'bg-blue-600 text-white shadow-md' : 'hover:bg-white hover:shadow-sm text-slate-600'}`}
+                                                            >
+                                                                <div className={`mt-0.5 w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${isSelected ? 'border-white bg-white/20' : 'border-slate-300 bg-white'}`}>
+                                                                    {isSelected && <Check className="w-3 h-3 text-white" />}
+                                                                </div>
+                                                                <span className="text-sm font-medium leading-relaxed">{std.learningStandard}</span>
+                                                            </div>
+                                                        )
+                                                    })}
+                                                </div>
+                                            )}
                                         </div>
-                                        <div className="grid md:grid-cols-2 gap-4">
-                                            <div>
-                                                <div className="text-[10px] font-bold text-slate-400 uppercase mb-1">Content Standard</div>
-                                                <p className="text-sm font-medium text-slate-800">{s.contentStandard}</p>
-                                            </div>
-                                            <div>
-                                                <div className="text-[10px] font-bold text-slate-400 uppercase mb-1">Learning Standard</div>
-                                                <p className="text-sm text-slate-600">{s.learningStandard}</p>
-                                            </div>
-                                        </div>
-                                    </div>
-                                );
-                            })}
+                                    )
+                                })
+                            )}
                         </div>
-                    )}
+
+                        {/* Footer / confirm bar */}
+                        <div className="p-4 bg-white border-t flex justify-between items-center">
+                            <span className="text-xs font-bold text-slate-500">{selectedLearningStandards.size} standards selected</span>
+                            <div className="flex gap-3">
+                                <Button variant="ghost" onClick={onClose} className="rounded-xl">Cancel</Button>
+                                <Button onClick={handleConfirm} disabled={selectedLearningStandards.size === 0} className="rounded-xl px-8 shadow-lg shadow-blue-500/20">
+                                    Include {selectedLearningStandards.size} Standards
+                                </Button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </Card>
         </div>
