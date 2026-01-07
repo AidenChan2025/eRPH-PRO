@@ -1,7 +1,7 @@
 var _a;
 import { a as requireReact, b as requireReactDom, g as getDefaultExportFromCjs, r as reactExports, L as Link, u as useLocation, d as useNavigate, R as React, e as useParams, f as reactDomExports, H as HashRouter, h as Routes, i as Route, N as Navigate } from "./vendor-react-DCUojKaq.js";
-import { L as Lock, S as ShieldCheck, a as LogOut, M as Menu, B as Building, G as Globe, C as ChevronDown, b as Bell, c as Shield, d as Mail, e as Sparkles, X, T as Tag, f as ShieldAlert, g as Search, A as ArrowLeft, H as House, h as Coffee, i as ArrowRight, j as Twitter, F as Facebook, k as Linkedin, l as CircleCheck, m as BookOpen, P as PanelsTopLeft, n as ChartColumn, o as Clock, U as Users, p as Cpu, q as Book, r as FileText, s as CircleHelp, t as Star, Z as Zap, u as ChevronRight, v as Filter$1, w as Bookmark, x as Share2, y as Calendar, z as TrendingUp, D as MessageSquare, E as ThumbsUp, I as CircleAlert, J as Check, K as Heart, N as ChevronUp, O as LoaderCircle, Q as ChevronLeft, R as Trash2, V as Database, W as Settings, Y as CircleCheckBig, _ as ChartPie, $ as Palette, a0 as SquarePen, a1 as SquareCheckBig, a2 as Briefcase, a3 as Plus, a4 as Quote, a5 as Eye, a6 as EyeOff, a7 as Save, a8 as RefreshCw, a9 as Send, aa as Printer, ab as GraduationCap, ac as Target, ad as Layers, ae as MessageSquareText, af as Camera, ag as MapPin, ah as Award, ai as PenTool, aj as User$1, ak as Phone, al as Smartphone, am as History, an as Fingerprint, ao as Key, ap as Info, aq as Copy, ar as HardDrive, as as UserCheck, at as ExternalLink, au as Link$1, av as School, aw as Upload, ax as Pen, ay as DatabaseZap, az as TableProperties, aA as Inbox, aB as RotateCcw, aC as EllipsisVertical, aD as Reply, aE as Server, aF as Type, aG as Image$1 } from "./vendor-icons-v9JNwTnD.js";
-import { R as ResponsiveContainer, P as PieChart, a as Pie, C as Cell, T as Tooltip, L as Legend } from "./vendor-charts-DIRZi2yY.js";
+import { L as Lock, S as ShieldCheck, a as LogOut, M as Menu, B as Building, G as Globe, C as ChevronDown, b as Bell, c as Shield, d as Mail, e as Sparkles, X, T as Tag, f as ShieldAlert, g as Search, A as ArrowLeft, H as House, h as Coffee, i as ArrowRight, j as Twitter, F as Facebook, k as Linkedin, l as CircleCheck, m as BookOpen, P as PanelsTopLeft, n as ChartColumn, o as Clock, U as Users, p as Cpu, q as Book, r as FileText, s as CircleHelp, t as Star, Z as Zap, u as ChevronRight, v as Filter$1, w as Bookmark, x as Share2, y as Calendar, z as TrendingUp, D as MessageSquare, E as ThumbsUp, I as CircleAlert, J as Check, K as Heart, N as ChevronUp, O as LoaderCircle, Q as ChevronLeft, R as Trash2, V as Database, W as Activity, Y as Settings, _ as CircleCheckBig, $ as ChartPie, a0 as Palette, a1 as SquarePen, a2 as SquareCheckBig, a3 as Briefcase, a4 as Plus, a5 as Quote, a6 as Eye, a7 as EyeOff, a8 as Save, a9 as RefreshCw, aa as Send, ab as Printer, ac as GraduationCap, ad as Target, ae as Layers, af as MessageSquareText, ag as Camera, ah as MapPin, ai as Award, aj as PenTool, ak as User$1, al as Phone, am as Smartphone, an as History, ao as Fingerprint, ap as Key, aq as Info, ar as Copy, as as HardDrive, at as UserCheck, au as ExternalLink, av as Link$1, aw as School, ax as Upload, ay as Pen, az as DatabaseZap, aA as TableProperties, aB as Inbox, aC as RotateCcw, aD as EllipsisVertical, aE as Reply, aF as Server, aG as Type, aH as Image$1 } from "./vendor-icons-CozZ8biv.js";
+import { R as ResponsiveContainer, A as AreaChart, X as XAxis, Y as YAxis, T as Tooltip, C as CartesianGrid, a as Area, P as PieChart, b as Pie, c as Cell, L as Legend } from "./vendor-charts-CwRPTsBU.js";
 (function polyfill() {
   const relList = document.createElement("link").relList;
   if (relList && relList.supports && relList.supports("modulepreload")) {
@@ -115,6 +115,7 @@ var Language = /* @__PURE__ */ ((Language2) => {
 var SchoolType = /* @__PURE__ */ ((SchoolType2) => {
   SchoolType2["PRIMARY"] = "SR";
   SchoolType2["SECONDARY"] = "SMK";
+  SchoolType2["SJKC"] = "SJKC";
   SchoolType2["ALL"] = "ALL";
   return SchoolType2;
 })(SchoolType || {});
@@ -23973,46 +23974,76 @@ const seed2026Data = async () => {
   const subjects = ["Bahasa Melayu", "English", "Matematik", "Sains", "Sejarah", "Reka Bentuk dan Teknologi"];
   const classes = ["4 Cerdas", "5 Pintar", "6 Gemilang"];
   const timeSlots = ["07:45 - 08:45", "09:15 - 10:15", "11:45 - 12:45"];
-  const teacherId = "u-teacher";
-  const teacherName = "Wong Siew Min";
+  const teachers = [
+    { id: "u-teacher", name: "Wong Siew Min" },
+    { id: "u-principal", name: "Tan Mei Ling" },
+    { id: "u-admin", name: "Lee Wei Kang" }
+  ];
   let startDate = /* @__PURE__ */ new Date("2026-01-01");
   let endDate = /* @__PURE__ */ new Date("2026-04-30");
-  for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
-    if (d.getDay() === 0 || d.getDay() === 6) continue;
-    const dailyCount = Math.floor(Math.random() * 2) + 2;
-    for (let i = 0; i < dailyCount; i++) {
-      const subject = subjects[(d.getDate() + i) % subjects.length];
-      const cls = classes[i % classes.length];
-      const id = `lp-2026-${d.getMonth()}-${d.getDate()}-${i}`;
-      let status = LessonStatus.APPROVED;
-      if (d.getMonth() === 3) status = LessonStatus.SUBMITTED;
-      if (d > /* @__PURE__ */ new Date("2026-04-20")) status = LessonStatus.DRAFT;
-      const plan = {
-        id,
+  for (const teacher of teachers) {
+    for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
+      if (d.getDay() === 0 || d.getDay() === 6) continue;
+      const dailyCount = Math.floor(Math.random() * 2) + 2;
+      for (let i = 0; i < dailyCount; i++) {
+        const subject = subjects[(d.getDate() + i) % subjects.length];
+        const cls = classes[i % classes.length];
+        const id = `lp-2026-${teacher.id}-${d.getMonth()}-${d.getDate()}-${i}`;
+        let status = LessonStatus.APPROVED;
+        if (d.getMonth() === 3) status = LessonStatus.SUBMITTED;
+        if (d > /* @__PURE__ */ new Date("2026-04-20")) status = LessonStatus.DRAFT;
+        const plan = {
+          id,
+          schoolId: "s-1",
+          teacherId: teacher.id,
+          teacherName: teacher.name,
+          subject,
+          grade: cls.includes("4") ? "Tahun 4" : cls.includes("5") ? "Tahun 5" : "Tahun 6",
+          className: cls,
+          time: timeSlots[i],
+          topic: `Unit ${d.getDate()}: ${subject} - Topik Pembelajaran`,
+          date: d.toISOString().split("T")[0],
+          contentStandard: `${i + 1}.0 Standard Kandungan`,
+          learningStandard: `${i + 1}.${d.getDate()}.1 Standard Pembelajaran`,
+          objectives: [`Murid dapat menguasai ${subject} dengan baik.`],
+          successCriteria: ["Murid berjaya menjawab 3 soalan."],
+          activities: ["Set Induksi", "Aktiviti Utama", "Penutup"],
+          teachingAids: ["Buku Teks", "Papan Putih"],
+          pak21: ["Think-Pair-Share"],
+          assessment: ["Pemerhatian"],
+          status,
+          version: 1,
+          updatedAt: (/* @__PURE__ */ new Date()).toISOString()
+        };
+        batch.set(doc(db, "lessonPlans", plan.id), plan);
+        operationCounter++;
+        if (operationCounter >= batchSize) await commitBatch();
+      }
+    }
+    startDate = /* @__PURE__ */ new Date("2026-01-01");
+  }
+  const leaveTypes = Object.values(LeaveType);
+  for (const teacher of teachers) {
+    const leaveCount = Math.floor(Math.random() * 3) + 3;
+    for (let i = 0; i < leaveCount; i++) {
+      const month = Math.floor(Math.random() * 4);
+      const day = Math.floor(Math.random() * 20) + 1;
+      const startDate2 = new Date(2026, month, day);
+      const endDate2 = new Date(2026, month, day + Math.floor(Math.random() * 2));
+      const record = {
+        id: `lr-${teacher.id}-${i}`,
         schoolId: "s-1",
-        teacherId,
-        teacherName,
-        subject,
-        grade: cls.includes("4") ? "Tahun 4" : cls.includes("5") ? "Tahun 5" : "Tahun 6",
-        className: cls,
-        time: timeSlots[i],
-        topic: `Unit ${d.getDate()}: ${subject} - Topik Pembelajaran`,
-        date: d.toISOString().split("T")[0],
-        contentStandard: `${i + 1}.0 Standard Kandungan`,
-        learningStandard: `${i + 1}.${d.getDate()}.1 Standard Pembelajaran`,
-        objectives: [`Murid dapat menguasai ${subject} dengan baik.`],
-        successCriteria: ["Murid berjaya menjawab 3 soalan."],
-        activities: ["Set Induksi", "Aktiviti Utama", "Penutup"],
-        teachingAids: ["Buku Teks", "Papan Putih"],
-        pak21: ["Think-Pair-Share"],
-        assessment: ["Pemerhatian"],
-        status,
-        version: 1,
-        updatedAt: (/* @__PURE__ */ new Date()).toISOString()
+        teacherId: teacher.id,
+        teacherName: teacher.name,
+        type: leaveTypes[Math.floor(Math.random() * leaveTypes.length)],
+        startDate: startDate2.toISOString().split("T")[0],
+        endDate: endDate2.toISOString().split("T")[0],
+        reason: "Personal affairs / Medical appointment",
+        status: LeaveStatus.APPROVED,
+        createdAt: (/* @__PURE__ */ new Date()).toISOString()
       };
-      batch.set(doc(db, "lessonPlans", plan.id), plan);
+      batch.set(doc(db, "leaveRecords", record.id), record);
       operationCounter++;
-      if (operationCounter >= batchSize) await commitBatch();
     }
   }
   if (operationCounter > 0) await commitBatch();
@@ -25238,7 +25269,7 @@ const Button = ({
     }
   );
 };
-const APP_VERSION = "0.0.46";
+const APP_VERSION = "0.0.49";
 const SidebarContent = ({ user, onLogout, t, onClose }) => {
   const location2 = useLocation();
   const { viewMode, setViewMode } = useGlobal();
@@ -27699,6 +27730,15 @@ const LoginPage = () => {
     ] })
   ] });
 };
+const ANALYTICS_DATA = [
+  { name: "00:00", users: 12, hits: 45 },
+  { name: "04:00", users: 5, hits: 20 },
+  { name: "08:00", users: 154, hits: 450 },
+  { name: "12:00", users: 342, hits: 1200 },
+  { name: "16:00", users: 289, hits: 980 },
+  { name: "20:00", users: 89, hits: 340 },
+  { name: "23:59", users: 45, hits: 150 }
+];
 const THEMES = {
   blue: { bg: "bg-blue-600", text: "text-blue-600", border: "border-blue-100", ring: "ring-blue-500/20", light: "bg-blue-50" },
   purple: { bg: "bg-purple-600", text: "text-purple-600", border: "border-purple-100", ring: "ring-purple-500/20", light: "bg-purple-50" },
@@ -27819,13 +27859,53 @@ const SuperAdminDashboard = ({ stats }) => {
       /* @__PURE__ */ jsxRuntimeExports.jsx(StatCard, { title: t("total_schools"), value: stats.totalSchools, icon: Building, color: "bg-blue-600" }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(StatCard, { title: t("active_users"), value: stats.totalUsers, icon: Users, color: "bg-purple-600" }),
       /* @__PURE__ */ jsxRuntimeExports.jsx(StatCard, { title: t("total_plans"), value: stats.totalPlans, icon: FileText, color: "bg-emerald-600" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(StatCard, { title: "Storage Eng.", value: "MySQL 8.0", icon: Database, color: "bg-indigo-600" })
+      /* @__PURE__ */ jsxRuntimeExports.jsx(StatCard, { title: "Storage Eng.", value: "Google Firestore", icon: Database, color: "bg-orange-600" })
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-1 lg:grid-cols-3 gap-6", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(Card, { className: "lg:col-span-2 p-8 text-center text-slate-400 border-dashed flex flex-col items-center justify-center min-h-[300px]", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-4 bg-slate-50 rounded-full mb-4", children: /* @__PURE__ */ jsxRuntimeExports.jsx(TrendingUp, { className: "w-12 h-12 text-slate-300" }) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-bold text-slate-700 text-lg", children: "System Traffic & Analytics" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "max-w-xs mx-auto mt-1", children: t("realtime_analytics") })
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(Card, { className: "lg:col-span-2 p-6 flex flex-col min-h-[400px]", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-between items-center mb-6", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { className: "font-bold text-slate-800 text-lg flex items-center gap-2", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx(Activity, { className: "w-5 h-5 text-blue-600" }),
+              " System Traffic & Analytics"
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-400 font-bold uppercase tracking-widest mt-1", children: "Real-time Session Data (Google Analytics)" })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-2", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 text-xs font-bold text-slate-500", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "w-2 h-2 rounded-full bg-blue-500" }),
+              " Active Users"
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 text-xs font-bold text-slate-500", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "w-2 h-2 rounded-full bg-emerald-400" }),
+              " Page Hits"
+            ] })
+          ] })
+        ] }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 w-full min-h-[300px]", children: /* @__PURE__ */ jsxRuntimeExports.jsx(ResponsiveContainer, { width: "100%", height: "100%", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(AreaChart, { data: ANALYTICS_DATA, margin: { top: 10, right: 30, left: 0, bottom: 0 }, children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("defs", { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("linearGradient", { id: "colorUsers", x1: "0", y1: "0", x2: "0", y2: "1", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("stop", { offset: "5%", stopColor: "#3b82f6", stopOpacity: 0.3 }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("stop", { offset: "95%", stopColor: "#3b82f6", stopOpacity: 0 })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("linearGradient", { id: "colorHits", x1: "0", y1: "0", x2: "0", y2: "1", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("stop", { offset: "5%", stopColor: "#34d399", stopOpacity: 0.3 }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("stop", { offset: "95%", stopColor: "#34d399", stopOpacity: 0 })
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(XAxis, { dataKey: "name", fontSize: 12, tickLine: false, axisLine: false }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(YAxis, { fontSize: 12, tickLine: false, axisLine: false }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            Tooltip,
+            {
+              contentStyle: { borderRadius: "12px", border: "none", boxShadow: "0 10px 15px -3px rgba(0,0,0,0.1)" },
+              itemStyle: { fontSize: "12px", fontWeight: "bold" }
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(CartesianGrid, { strokeDasharray: "3 3", vertical: false, stroke: "#f1f5f9" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Area, { type: "monotone", dataKey: "hits", stroke: "#34d399", strokeWidth: 3, fillOpacity: 1, fill: "url(#colorHits)" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Area, { type: "monotone", dataKey: "users", stroke: "#3b82f6", strokeWidth: 3, fillOpacity: 1, fill: "url(#colorUsers)" })
+        ] }) }) })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs(Card, { className: "p-6", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { className: "text-lg font-bold text-slate-800 mb-6 flex items-center gap-2", children: [
