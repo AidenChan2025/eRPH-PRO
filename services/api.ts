@@ -68,7 +68,7 @@ export const api = {
     getSettings: () => fetchApi('/admin/settings'),
     updateSettings: (data: any) => fetchApi('/admin/settings', { method: 'PUT', body: JSON.stringify(data) }),
     getSchools: () => fetchApi('/admin/schools'),
-    getUsers: () => fetchApi('/admin/users')
+    getUsers: (params?: any) => fetchApi(`/admin/users?${new URLSearchParams(params)}`)
   },
   tasks: {
     list: () => fetchApi('/tasks'),
@@ -83,5 +83,10 @@ export const api = {
   },
   users: {
     check: (email: string) => fetchApi(`/users/check?email=${encodeURIComponent(email)}`)
+  },
+  leave: {
+    list: (params: any) => fetchApi(`/leaves?${new URLSearchParams(params)}`),
+    create: (data: any) => fetchApi('/leaves', { method: 'POST', body: JSON.stringify(data) }),
+    delete: (id: string) => fetchApi(`/leaves/${id}`, { method: 'DELETE' })
   }
 };

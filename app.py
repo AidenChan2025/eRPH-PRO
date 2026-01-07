@@ -114,6 +114,7 @@ class LeaveRecord(db.Model):
     reason = Column(Text)
     location = Column(String(255))
     status = Column(String(50), default='Pending')
+    evidence_url = Column(String(500))
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
 
 class DSKPStandard(db.Model):
@@ -229,9 +230,20 @@ def lesson_plans():
     if request.method == 'GET':
         teacher_id = request.args.get('teacherId')
         school_id = request.args.get('schoolId')
+        start_date = request.args.get('startDate')
+        end_date = request.args.get('endDate')
+        
         query = LessonPlan.query
         if teacher_id: query = query.filter_by(teacher_id=teacher_id)
         if school_id: query = query.filter_by(school_id=school_id)
+        
+        if start_date: 
+            s_dt = datetime.datetime.strptime(start_date, '%Y-%m-%d').date()
+            query = query.filter(LessonPlan.date >= s_dt)
+        if end_date: 
+            e_dt = datetime.datetime.strptime(end_date, '%Y-%m-%d').date()
+            query = query.filter(LessonPlan.date <= e_dt)
+            
         plans = query.all()
         return jsonify({'success': True, 'data': [p.full_document for p in plans]})
     
@@ -293,6 +305,24 @@ def tasks_route():
         } for t in tasks]})
     # POST implementation...
     return jsonify({'success': True})
+
+@app.route('/api/admin/users', methods=['GET'])
+def admin_users():
+    school_id = request.args.get('schoolId')
+    role = request.args.get('role')
+    query = User.query
+    if school_id: query = query.filter_by(school_id=school_id)
+    if role: query = query.filter_by(role=role)
+    
+    users = query.all()
+    return jsonify({'success': True, 'data': [{
+        'id': u.id, 
+        'name': u.name, 
+        'email': u.email, 
+        'role': u.role, 
+        'schoolId': u.school_id, 
+        'grade': u.grade
+    } for u in users]})
 
 @app.route('/api/admin/settings', methods=['GET', 'PUT'])
 def admin_settings():
@@ -885,6 +915,66 @@ def seed_2026_data():
                     connection.execute(statement) # Using raw execution
         
         return jsonify({'success': True, 'message': 'Database seeded successfully with 2026 data!'})
+    except Exception as e:
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+@app.route('/api/leaves', methods=['GET', 'POST'])
+def leaves_route():
+    if request.method == 'GET':
+        school_id = request.args.get('schoolId')
+        teacher_id = request.args.get('teacherId')
+        
+        query = LeaveRecord.query
+        if school_id: query = query.filter_by(school_id=school_id)
+        if teacher_id: query = query.filter_by(teacher_id=teacher_id)
+        
+        # Sort by date desc
+        records = query.order_by(LeaveRecord.start_date.desc()).all()
+        
+        return jsonify({'success': True, 'data': [{
+            'id': r.id,
+            'schoolId': r.school_id,
+            'teacherId': r.teacher_id,
+            'teacherName': r.teacher_name,
+            'type': r.type,
+            'startDate': r.start_date.isoformat() if r.start_date else None,
+            'endDate': r.end_date.isoformat() if r.end_date else None,
+            'reason': r.reason,
+            'location': r.location,
+            'status': r.status,
+            'createdAt': r.created_at.isoformat() if r.created_at else None
+        } for r in records]})
+
+    # POST - Create Record
+    data = request.json
+    try:
+        new_record = LeaveRecord(
+            id=data.get('id', str(uuid.uuid4())),
+            school_id=data.get('schoolId'),
+            teacher_id=data.get('teacherId'),
+            teacher_name=data.get('teacherName'),
+            type=data.get('type'),
+            start_date=datetime.datetime.strptime(data.get('startDate'), '%Y-%m-%d').date() if data.get('startDate') else None,
+            end_date=datetime.datetime.strptime(data.get('endDate'), '%Y-%m-%d').date() if data.get('endDate') else None,
+            reason=data.get('reason'),
+            location=data.get('location'),
+            status=data.get('status', 'Pending')
+        )
+        db.session.add(new_record)
+        db.session.commit()
+        return jsonify({'success': True, 'message': 'Leave record created'})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'message': str(e)}), 500
+
+@app.route('/api/leaves/<id>', methods=['DELETE'])
+def delete_leave(id):
+    try:
+        record = LeaveRecord.query.get(id)
+        if not record: return jsonify({'success': False, 'message': 'Record not found'}), 404
+        db.session.delete(record)
+        db.session.commit()
+        return jsonify({'success': True})
     except Exception as e:
         return jsonify({'success': False, 'message': str(e)}), 500
 

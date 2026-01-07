@@ -21,7 +21,7 @@ import {
 } from '../utils/smartParser';
 import { PrintPreviewModal, DskpBrowserModal, SuccessModal } from '../components/Modals';
 import { ListEditor, TagSelector } from '../components/LessonPlanComponents';
-import { doc, getDoc, db, setDoc } from '../services/firebase';
+import { api } from '../services/api';
 
 const LessonPlanEditor = () => {
     const { id } = useParams<{ id?: string }>();
@@ -62,14 +62,17 @@ const LessonPlanEditor = () => {
 
     useEffect(() => {
         if (id) {
-            getDoc(doc(db, 'lessonPlans', id)).then(snap => {
-                if (snap.exists()) {
-                    const data = snap.data() as LessonPlan;
+            api.lessonPlans.get(id).then(res => {
+                if (res.success && res.data) {
+                    const data = res.data as LessonPlan;
                     setPlan(data);
                     if (data.subject) setCurrentLang(detectSubjectLanguage(data.subject));
                 }
-                setLoading(false);
-            });
+            }).catch(err => {
+                console.error("Failed to load plan", err);
+            }).finally(() => setLoading(false));
+        } else {
+            setLoading(false);
         }
     }, [id]);
 
@@ -97,8 +100,14 @@ const LessonPlanEditor = () => {
         const now = new Date().toISOString();
         const planId = id || `lp-${Date.now()}`;
         const newPlan = { ...plan, id: planId, teacherId: currentUser?.id, teacherName: currentUser?.name, schoolId: currentUser?.schoolId || '', status, updatedAt: now };
-        await setDoc(doc(db, 'lessonPlans', planId), newPlan);
-        setShowSuccess(true);
+
+        try {
+            await api.lessonPlans.save(newPlan);
+            setShowSuccess(true);
+        } catch (e) {
+            console.error(e);
+            alert("Failed to save lesson plan.");
+        }
     };
 
     const handleDskpSelect = useCallback((std: DSKPStandard) => {

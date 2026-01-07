@@ -47,6 +47,15 @@ try:
                         print(f"Added column {col} to dskp_standards")
                     except Exception as e:
                         print(f"Notice: Could not add column {col}: {e}")
+
+            # Ensure leave_records has evidence_url
+            try:
+                lr_columns = [c['name'] for c in inspector.get_columns('leave_records')]
+                if 'evidence_url' not in lr_columns:
+                    db.session.execute("ALTER TABLE leave_records ADD COLUMN evidence_url VARCHAR(500)")
+                    print("Added column evidence_url to leave_records")
+            except Exception as e:
+                print(f"Notice: Could not check/add evidence_url: {e}")
             
             # 2. Force convert to TEXT to avoid "Data too long" errors
             text_cols = ['grade', 'school_type', 'subject', 'content_standard', 'learning_standard', 'tema_bidang', 'tema', 'tajuk_kemahiran', 'tajuk']

@@ -5,7 +5,7 @@ import { useLanguage } from '../context/LanguageContext';
 import Card from '../components/Card';
 import Button from '../components/Button';
 import { LeaveStatus, LessonStatus, LessonPlan, LeaveRecord, LeaveType, UserRole, User } from '../types';
-import { collection, query, where, getDocs, updateDoc, doc, db, setDoc, writeBatch, getDoc } from '../services/firebase';
+import { api } from '../services/api';
 import PrintableRPH from '../components/PrintableRPH';
 import {
     Check, X, Calendar, User as UserIcon, ChevronRight,
@@ -37,16 +37,17 @@ export const LeaveManagement = () => {
         if (!currentUser) return;
         setIsLoading(true);
         try {
-            let q;
+            const params: any = {};
             if (isSchoolAdmin) {
-                q = query(collection(db, 'leaveRecords'), where('schoolId', '==', currentUser.schoolId));
+                params.schoolId = currentUser.schoolId;
             } else {
-                q = query(collection(db, 'leaveRecords'), where('teacherId', '==', currentUser.id));
+                params.teacherId = currentUser.id;
             }
-            const snap = await getDocs(q);
-            const data = snap.docs.map(d => ({ id: d.id, ...d.data() } as LeaveRecord));
-            // Sort by date desc
-            setRecords(data.sort((a, b) => b.startDate.localeCompare(a.startDate)));
+
+            const res = await api.leave.list(params);
+            if (res.success && res.data) {
+                setRecords(res.data);
+            }
         } catch (e) { console.error(e); } finally { setIsLoading(false); }
     };
 
@@ -71,8 +72,7 @@ export const LeaveManagement = () => {
                 evidenceUrl = `https://storage.googleapis.com/erph-evidence/${newRecord.evidenceFile.name}`;
             }
 
-            const record: any = {
-                id: `lr-${Date.now()}`,
+            const recordData: any = {
                 schoolId: currentUser.schoolId,
                 teacherId: currentUser.id,
                 teacherName: currentUser.name,
@@ -82,11 +82,10 @@ export const LeaveManagement = () => {
                 reason: newRecord.reason,
                 location: newRecord.location,
                 status: LeaveStatus.APPROVED, // Auto-record as 'Approved' / Logged
-                createdAt: new Date().toISOString(),
-                evidenceUrl: evidenceUrl // Store the simulated URL
+                evidenceUrl: evidenceUrl
             };
 
-            await setDoc(doc(db, 'leaveRecords', record.id), record);
+            await api.leave.create(recordData);
             setShowAddModal(false);
             setNewRecord({ type: LeaveType.MEDICAL, startDate: '', endDate: '', reason: '', location: '', evidenceFile: null });
             fetchRecords();
@@ -100,10 +99,12 @@ export const LeaveManagement = () => {
     const handleDelete = async (id: string) => {
         if (!confirm("Are you sure you want to delete this record?")) return;
         try {
-            // In real app, delete doc
-            // await deleteDoc(doc(db, 'leaveRecords', id));
-            alert("Feature ready for deployment.");
-        } catch (e) { }
+            await api.leave.delete(id);
+            fetchRecords();
+        } catch (e) {
+            console.error(e);
+            alert("Failed to delete record.");
+        }
     };
 
     return (
@@ -272,10 +273,16 @@ const MonthlyReportView = ({ teachers, schoolId }: { teachers: User[], schoolId:
     const fetchReport = async () => {
         const start = new Date(selectedYear, selectedMonth, 1).toISOString().split('T')[0];
         const end = new Date(selectedYear, selectedMonth + 1, 0).toISOString().split('T')[0];
-        const q = query(collection(db, 'lessonPlans'), where('schoolId', '==', schoolId), where('date', '>=', start), where('date', '<=', end));
-        const snap = await getDocs(q);
-        const plans = snap.docs.map(d => d.data() as LessonPlan);
-        setReportData(teachers.map(t => ({ id: t.id, name: t.name, grade: t.grade || '-', plans: plans.filter(p => p.teacherId === t.id) })));
+
+        try {
+            const res = await api.lessonPlans.list({ schoolId, startDate: start, endDate: end });
+            if (res.success && res.data) {
+                const plans = res.data as LessonPlan[];
+                setReportData(teachers.map(t => ({ id: t.id, name: t.name, grade: t.grade || '-', plans: plans.filter(p => p.teacherId === t.id) })));
+            }
+        } catch (e) {
+            console.error(e);
+        }
     };
 
     useEffect(() => { fetchReport(); }, [selectedMonth, selectedYear, schoolId, teachers]);
@@ -315,8 +322,10 @@ export const ReviewDashboard = () => {
 
     useEffect(() => {
         if (!currentUser?.schoolId) return;
-        getDocs(query(collection(db, 'users'), where('schoolId', '==', currentUser.schoolId), where('role', '==', UserRole.TEACHER))).then(snap => {
-            setAllTeachers(snap.docs.map((d: any) => ({ id: d.id, ...d.data() } as User)));
+        api.admin.getUsers({ schoolId: currentUser.schoolId, role: UserRole.TEACHER }).then(res => {
+            if (res.success && res.data) {
+                setAllTeachers(res.data);
+            }
         });
     }, [currentUser]);
 
