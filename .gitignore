@@ -7,8 +7,8 @@ pnpm-lock.yaml
 .pnp.js
 
 # Production
-# build/
-dist/
+build/
+# dist/
 target/
 
 # Logs
