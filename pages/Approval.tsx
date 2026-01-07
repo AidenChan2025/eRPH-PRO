@@ -23,7 +23,7 @@ export const LeaveManagement = () => {
 
     // New Record Form State
     const [newRecord, setNewRecord] = useState({
-        type: LeaveType.MC,
+        type: LeaveType.MEDICAL,
         startDate: '',
         endDate: '',
         reason: '',
@@ -88,7 +88,7 @@ export const LeaveManagement = () => {
 
             await setDoc(doc(db, 'leaveRecords', record.id), record);
             setShowAddModal(false);
-            setNewRecord({ type: LeaveType.MC, startDate: '', endDate: '', reason: '', location: '', evidenceFile: null });
+            setNewRecord({ type: LeaveType.MEDICAL, startDate: '', endDate: '', reason: '', location: '', evidenceFile: null });
             fetchRecords();
             alert("Leave record saved successfully!");
         } catch (e) {
@@ -152,7 +152,7 @@ export const LeaveManagement = () => {
                                         </div>
                                     </td>
                                     <td className="px-6 py-4">
-                                        <span className={`px-2 py-1 rounded-lg text-[10px] font-black uppercase ${r.type === LeaveType.MC ? 'bg-red-50 text-red-600' : 'bg-blue-50 text-blue-600'}`}>
+                                        <span className={`px-2 py-1 rounded-lg text-[10px] font-black uppercase ${r.type === LeaveType.MEDICAL ? 'bg-red-50 text-red-600' : 'bg-blue-50 text-blue-600'}`}>
                                             {r.type}
                                         </span>
                                     </td>

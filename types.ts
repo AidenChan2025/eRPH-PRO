@@ -139,6 +139,7 @@ export interface User {
   bio?: string;
   serviceHistory?: ServiceRecord[];
   loginHistory?: LoginRecord[];
+  google_token?: string;
 }
 
 export enum LessonStatus {

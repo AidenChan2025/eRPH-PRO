@@ -46,7 +46,7 @@ export const syncDskpFromSheet = async (onProgress?: (msg: string) => void) => {
             if (!cols[0] || cols[0] === 'SUBJEK' || cols[0].startsWith('---')) return;
 
             standards.push({
-                id: `dskp-sync-${index}`,
+                id: index,
                 subject: cols[0] || 'Unknown',
                 grade: cols[1] || '-',
                 contentStandard: cols[2] || '-',
