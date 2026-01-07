@@ -4,38 +4,13 @@ import { Sparkles, ArrowRight, Zap, Shield, BookOpen, Clock, Star, CheckCircle2,
 import Button from '../../components/Button';
 import PublicNavbar from '../../components/PublicNavbar';
 import PublicFooter from '../../components/PublicFooter';
-import { db, collection, getDocs, getCountFromServer } from '../../services/firebase';
+import { db } from '../../services/firebase';
 
 import { useLanguage } from '../../context/LanguageContext';
 
 const LandingPage = () => {
     const { t } = useLanguage();
-    const [stats, setStats] = useState({ teachers: '10K+', schools: '400+', rphs: '1.5M+', saved: '80%' });
 
-    useEffect(() => {
-        const fetchStats = async () => {
-            try {
-                // Fetch actual counts from Firebase/Mock
-                const userCount = await getCountFromServer(collection(db, 'users'));
-                const schoolCount = await getCountFromServer(collection(db, 'schools'));
-                const planCount = await getCountFromServer(collection(db, 'plans'));
-
-                const uCount = userCount.data().count;
-                const sCount = schoolCount.data().count;
-                const pCount = planCount.data().count;
-
-                setStats({
-                    teachers: uCount > 10 ? `${uCount}+` : '10K+',
-                    schools: sCount > 5 ? `${sCount}+` : '400+',
-                    rphs: pCount > 20 ? `${pCount}+` : '1.5M+',
-                    saved: '85%' // Qualitative stat
-                });
-            } catch (e) {
-                console.error("Stats fetch failed, using realistic fallbacks", e);
-            }
-        };
-        fetchStats();
-    }, []);
 
     return (
         <div className="min-h-screen bg-[#fafbfc] text-slate-900 selection:bg-blue-100 selection:text-blue-900">
@@ -158,29 +133,28 @@ const LandingPage = () => {
                         <div className="space-y-8">
                             <h2 className="text-4xl md:text-6xl font-black leading-tight tracking-tighter">{t('stats_title').split(' ').slice(0, 2).join(' ')} <br />{t('stats_title').split(' ').slice(2).join(' ')}</h2>
                             <p className="text-slate-400 text-lg font-bold leading-relaxed">
-                                {t('stats_desc').replace('{teachers}', stats.teachers)}
+                                {t('stats_desc')}
                             </p>
                             <div className="flex items-center gap-6">
-                                <div className="flex -space-x-4">
-                                    {[1, 2, 3, 4].map(i => (
-                                        <div key={i} className="w-12 h-12 rounded-full border-4 border-slate-950 bg-slate-800 flex items-center justify-center text-[10px] font-black">
-                                            User {i}
-                                        </div>
-                                    ))}
+                                <div className="p-4 bg-blue-600/20 rounded-2xl border border-blue-500/30">
+                                    <Shield className="w-8 h-8 text-blue-400" />
                                 </div>
-                                <p className="text-sm font-black text-slate-500 uppercase tracking-widest">Trust Pilot 4.9/5</p>
+                                <div>
+                                    <p className="text-sm font-black text-slate-500 uppercase tracking-widest mb-1">Status</p>
+                                    <p className="text-white font-bold">Ready to Deploy</p>
+                                </div>
                             </div>
                         </div>
                         <div className="grid grid-cols-2 gap-4">
                             {[
-                                { label: t('stats_teachers'), value: stats.teachers },
-                                { label: t('stats_schools'), value: stats.schools },
-                                { label: t('stats_rphs'), value: stats.rphs },
-                                { label: t('stats_time'), value: stats.saved }
+                                { label: t('stats_schools'), value: t('stats_teachers') },
+                                { label: t('stats_time'), value: t('stats_rphs') },
+                                { label: t('stats_saved_label'), value: t('stats_saved_val') },
+                                { label: t('stats_uptime_label'), value: t('stats_uptime_val') }
                             ].map((s, i) => (
-                                <div key={i} className="p-8 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-sm">
-                                    <p className="text-3xl font-black text-blue-400 mb-2">{s.value}</p>
-                                    <p className="text-xs font-black text-slate-500 uppercase tracking-widest">{s.label}</p>
+                                <div key={i} className="p-8 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-sm hover:bg-white/10 transition-colors">
+                                    <p className="text-2xl font-black text-blue-400 mb-2">{s.value}</p>
+                                    <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">{s.label}</p>
                                 </div>
                             ))}
                         </div>
