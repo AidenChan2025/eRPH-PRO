@@ -1,6 +1,6 @@
 {
   "name": "erph-pro",
-  "version": "0.0.52",
+  "version": "0.0.78",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -8,7 +8,9 @@
     "build": "npm run bump-version && vite build",
     "build:max": "npm run bump-version && node --max-old-space-size=4096 ./node_modules/vite/bin/vite.js build --minify false",
     "build:clean": "rm -rf node_modules/.vite build && npm run build:max",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy": "npm run build && npx firebase deploy --only hosting",
+    "serve:firebase": "npx firebase emulators:start --only hosting"
   },
   "dependencies": {
     "@google/genai": "*",
@@ -20,13 +22,14 @@
     "recharts": "^2.13.3"
   },
   "devDependencies": {
+    "@types/node": "^22.10.1",
     "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
-    "@types/node": "^22.10.1",
     "@vitejs/plugin-react": "^4.3.4",
-    "autoprefixer": "^10.4.20",
-    "postcss": "^8.4.49",
-    "tailwindcss": "^3.4.16",
+    "autoprefixer": "^10.4.23",
+    "firebase-tools": "^15.1.0",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.19",
     "typescript": "^5.7.2",
     "vite": "^6.0.1"
   }

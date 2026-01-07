@@ -28,4 +28,31 @@ fs.writeFileSync(packageJsonPath, JSON.stringify(packageJson, null, 2));
 const versionFileContent = `export const APP_VERSION = '${newVersion}';\n`;
 fs.writeFileSync(versionFilePath, versionFileContent);
 
-console.log('Version updated successfully.');
+// Update src/config/changelog.ts
+const changelogPath = path.resolve(__dirname, '../src/config/changelog.ts');
+let changelogContent = fs.readFileSync(changelogPath, 'utf-8');
+
+const today = new Date().toLocaleDateString('en-US', {
+    month: 'short',
+    day: '2-digit',
+    year: 'numeric'
+});
+
+const newEntry = `    {
+        version: "v${newVersion}",
+        date: "${today}",
+        title: "Platform Enhancement",
+        items: [
+            "🚀 General performance optimizations and bug fixes.",
+            "🛡️ Security and stability improvements.",
+            "🔧 Minor UI refinements and infrastructure updates."
+        ]
+    },`;
+
+// Insert after 'export const CHANGELOG: ChangeLogEntry[] = ['
+const insertIndex = changelogContent.indexOf('export const CHANGELOG: ChangeLogEntry[] = [') + 'export const CHANGELOG: ChangeLogEntry[] = ['.length;
+changelogContent = changelogContent.slice(0, insertIndex) + '\n' + newEntry + changelogContent.slice(insertIndex);
+
+fs.writeFileSync(changelogPath, changelogContent);
+
+console.log('Version and Changelog updated successfully.');

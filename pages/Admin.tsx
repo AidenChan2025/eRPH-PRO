@@ -18,6 +18,7 @@ import {
     doc, setDoc, writeBatch
 } from '../services/firebase';
 import { api } from '../services/api';
+import { dskpService } from '../services/dskpService';
 import { DSKPStandard, UserRole, School, User, SchoolType, AcademicWeek, LessonStatus, DSKPStructure } from '../types';
 
 // --- DSKP SYNC MODAL WITH DATA MAPPING ---
@@ -105,7 +106,8 @@ const GoogleSheetSyncModal = ({ isOpen, onClose, onSynced }: { isOpen: boolean, 
     // Helper for robust batch sync
     const syncBatch = async (batch: any[], mode: 'replace' | 'append', retryCount = 0): Promise<void> => {
         try {
-            await api.dskp.sync({ mode, data: batch });
+            const res = await dskpService.sync({ mode, data: batch });
+            if (!res.success) throw new Error(res.message);
         } catch (err: any) {
             if (retryCount < 3) {
                 console.warn(`Batch sync failed (attempt ${retryCount + 1}), retrying in 1s...`, err);
@@ -521,6 +523,7 @@ export const DSKPManager = () => {
     const [expandedSubjects, setExpandedSubjects] = useState<string[]>([]);
     const [loadedData, setLoadedData] = useState<Record<string, DSKPStandard[]>>({});
     const [loadingNode, setLoadingNode] = useState<string | null>(null);
+    const [isLoadingStructure, setIsLoadingStructure] = useState(false);
 
     // Search State
     const [searchQuery, setSearchQuery] = useState('');
@@ -550,69 +553,135 @@ export const DSKPManager = () => {
         }
 
         try {
-            const res = await api.dskp.listStructure();
+            setIsLoadingStructure(true);
+            const res = await dskpService.listStructure();
             if (res.success) {
                 setStructure(res.data);
                 localStorage.setItem('dskp_structure', JSON.stringify(res.data));
             }
         } catch (err) {
             console.error(err);
+        } finally {
+            setIsLoadingStructure(false);
         }
     };
+
+    // Sync History State
+    const [lastSync, setLastSync] = useState<{ date: string, count: number, user: string } | null>(null);
+
+    // Sorting Logic
+    const sortKeys = (keys: string[], type: 'schoolType' | 'grade' | 'subject') => {
+        return keys.sort((a, b) => {
+            if (type === 'schoolType') {
+                // Priority: SR -> SK -> SJKC -> SJKT -> SMK -> SMA -> SBP -> KV
+                const priority = ['SR', 'SK', 'SJKC', 'SJKT', 'SMK', 'SMA', 'SBP', 'KV'];
+                const idxA = priority.indexOf(a);
+                const idxB = priority.indexOf(b);
+                if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+                if (idxA !== -1) return -1;
+                if (idxB !== -1) return 1;
+                return a.localeCompare(b);
+            }
+            if (type === 'grade') {
+                // Numeric extraction: "Tahun 1" -> 1
+                const getNum = (str: string) => {
+                    const match = str.match(/\d+/);
+                    return match ? parseInt(match[0]) : 999;
+                };
+                const numA = getNum(a);
+                const numB = getNum(b);
+                if (numA !== numB) return numA - numB;
+                return a.localeCompare(b);
+            }
+            // Subject: Alphabetical
+            return a.localeCompare(b);
+        });
+    };
+
+    const sortedTypes = useMemo(() => sortKeys(Object.keys(structure), 'schoolType'), [structure]);
+
+    const fetchSyncHistory = async () => {
+        const res = await dskpService.getSyncHistory();
+        if (res.success && res.data && res.data.length > 0) {
+            const latest = res.data[0];
+            setLastSync({
+                date: latest.timestamp,
+                count: latest.recordCount,
+                user: latest.userName
+            });
+        }
+    };
+
+    useEffect(() => {
+        fetchStructure();
+        fetchSyncHistory();
+    }, []);
 
     const handleSynced = () => {
         localStorage.removeItem('dskp_structure');
         fetchStructure(true);
+        fetchSyncHistory(); // Refresh history
     };
 
     const handleSearch = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!searchQuery.trim()) {
-            setSearchResults([]);
-            return;
-        }
+        if (!searchQuery.trim()) return;
+
         setIsSearching(true);
         try {
-            const res = await api.dskp.list({ search: searchQuery });
-            if (res.success) setSearchResults(res.data);
-        } catch (e) { console.error(e); }
-        finally { setIsSearching(false); }
+            const res = await dskpService.list({ search: searchQuery });
+            if (res.success && res.data) {
+                setSearchResults(res.data);
+            }
+        } catch (err) {
+            console.error("Search failed", err);
+        } finally {
+            setIsSearching(false);
+        }
     };
 
     const handleDelete = async (id: string | number) => {
-        if (!confirm('Are you sure you want to delete this standard? This cannot be undone.')) return;
+        if (!window.confirm("Are you sure you want to delete this standard? This action cannot be undone.")) return;
+
         try {
-            const res = await api.dskp.delete(id);
+            const res = await dskpService.delete(id);
             if (res.success) {
-                alert('Deleted successfully');
-                // Refresh data
-                if (searchResults.length > 0) handleSearch({ preventDefault: () => { } } as any);
-                // Also clear cache if needed, but for now simple alert is fine.
-                // ideally we reload the specific subject list if open.
+                // Refresh list if we are searching
+                if (searchQuery) {
+                    setSearchResults(prev => prev.filter(item => item.id !== id));
+                }
+                // Refresh hierarchy
+                handleSynced();
             } else {
-                alert('Failed to delete: ' + res.message);
+                alert("Failed to delete: " + res.message);
             }
-        } catch (e) { alert('Error deleting item'); }
+        } catch (err) {
+            console.error("Delete failed", err);
+        }
     };
 
-    const handleUpdate = async (data: any) => {
+    const handleUpdate = async (updatedData: Partial<DSKPStandard>) => {
         if (!editingNode) return;
-        try {
-            const res = await api.dskp.updateNode(editingNode.id, data);
-            if (res.success) {
-                alert('Updated successfully');
-                setEditingNode(null);
-                // Refresh data
-                if (searchResults.length > 0) handleSearch({ preventDefault: () => { } } as any);
-                // Trigger reload of expanded subjects?
-                // Simplest is just close modal. Results might be stale in accordionView until collapsed/expanded.
-            } else {
-                alert('Failed to update: ' + res.message);
-            }
-        } catch (e) { alert('Error updating item'); }
-    };
 
-    useEffect(() => { fetchStructure(); }, []);
+        try {
+            const res = await dskpService.updateNode(editingNode.id, updatedData);
+            if (res.success) {
+                // Update local state results if searching
+                if (searchQuery) {
+                    setSearchResults(prev => prev.map(item =>
+                        item.id === editingNode.id ? { ...item, ...updatedData } : item
+                    ));
+                }
+                // Refresh hierarchy
+                handleSynced();
+                setEditingNode(null); // Close modal
+            } else {
+                alert("Failed to update: " + res.message);
+            }
+        } catch (err) {
+            console.error("Update failed", err);
+        }
+    };
 
     const toggleType = (type: string) => {
         setExpandedTypes(prev => prev.includes(type) ? prev.filter(t => t !== type) : [...prev, type]);
@@ -634,8 +703,8 @@ export const DSKPManager = () => {
         if (isExpanding && !loadedData[key]) {
             setLoadingNode(key);
             try {
-                // Fetch specific data for this hierarchy
-                const res = await api.dskp.list({ schoolType: type, grade: grade, subject: subject });
+                // Fetch specific data for this hierarchy from Firebase
+                const res = await dskpService.list({ schoolType: type, grade: grade, subject: subject });
                 if (res.success) {
                     setLoadedData(prev => ({ ...prev, [key]: res.data }));
                 }
@@ -747,110 +816,138 @@ export const DSKPManager = () => {
                             {renderTable(searchResults)}
                         </Card>
                     ) : (
-                        <div className="p-12 text-center border-2 border-dashed border-slate-200 rounded-3xl">
-                            <p className="text-slate-400 font-bold">No results found for "{searchQuery}"</p>
+                        <div className="p-12 text-center text-slate-400 font-bold border-2 border-dashed border-slate-200 rounded-3xl">
+                            No results for "{searchQuery}"
                         </div>
                     )}
                 </div>
             ) : (
                 <div className="space-y-4">
-                    {Object.keys(structure).length === 0 ? (
+                    {/* Sync Status Header */}
+                    {lastSync && (
+                        <div className="flex justify-end animate-in fade-in slide-in-from-top-2">
+                            <div className="bg-slate-100 px-4 py-1.5 rounded-full flex items-center gap-2 border border-slate-200 shadow-sm">
+                                <Clock className="w-3.5 h-3.5 text-slate-400" />
+                                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wide">
+                                    Last Synced: <span className="text-blue-600">{new Date(lastSync.date).toLocaleString()}</span>
+                                    <span className="text-slate-300 mx-2">|</span>
+                                    {lastSync.user} ({lastSync.count} records)
+                                </span>
+                            </div>
+                        </div>
+                    )}
+
+                    {isLoadingStructure ? (
                         <div className="p-20 text-center">
                             <Loader2 className="w-8 h-8 animate-spin mx-auto text-blue-500 mb-4" />
                             <p className="text-xs font-bold text-slate-400 animate-pulse">Building Hierarchy...</p>
                         </div>
+                    ) : Object.keys(structure).length === 0 ? (
+                        <div className="p-20 text-center border-2 border-dashed border-slate-100 rounded-[2.5rem] bg-slate-50/50">
+                            <Database className="w-12 h-12 text-slate-200 mx-auto mb-4" />
+                            <h3 className="text-xl font-black text-slate-400 uppercase tracking-tight">Registry Empty</h3>
+                            <p className="text-sm font-medium text-slate-400 mt-2">No DSKP standards found in the system.<br />{isSuperAdmin && "Click 'Map & Sync Registry' to import data."}</p>
+                        </div>
                     ) : (
-                        Object.entries(structure).map(([type, grades]) => (
-                            <Card key={type} className="overflow-hidden border-slate-100 rounded-3xl shadow-sm">
-                                {/* LEVEL 1: School Type (SR / SMK) */}
-                                <div
-                                    onClick={() => toggleType(type)}
-                                    className="p-6 bg-slate-50 flex justify-between items-center cursor-pointer hover:bg-slate-100 transition-colors select-none"
-                                >
-                                    <div className="flex items-center gap-4">
-                                        <div className={`p-3 rounded-2xl transition-colors ${expandedTypes.includes(type) ? 'bg-blue-600 text-white' : 'bg-white text-slate-400'}`}>
-                                            <SchoolIcon className="w-6 h-6" />
+                        sortedTypes.map(type => {
+                            const grades = structure[type];
+                            // Sort Grades
+                            const sortedGrades = sortKeys(Object.keys(grades), 'grade');
+
+                            return (
+                                <Card key={type} className="overflow-hidden border-slate-100 rounded-3xl shadow-sm">
+                                    {/* LEVEL 1: School Type (SR / SMK) */}
+                                    <div
+                                        onClick={() => toggleType(type)}
+                                        className="p-6 bg-slate-50 flex justify-between items-center cursor-pointer hover:bg-slate-100 transition-colors select-none"
+                                    >
+                                        <div className="flex items-center gap-4">
+                                            <div className={`p-3 rounded-2xl transition-colors ${expandedTypes.includes(type) ? 'bg-blue-600 text-white' : 'bg-white text-slate-400'}`}>
+                                                <SchoolIcon className="w-6 h-6" />
+                                            </div>
+                                            <div>
+                                                <h3 className="text-2xl font-black text-slate-800">{type} DSKP</h3>
+                                                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">{Object.keys(grades).length} Grades Available</p>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <h3 className="text-2xl font-black text-slate-800">{type} DSKP</h3>
-                                            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">{Object.keys(grades).length} Grades Available</p>
-                                        </div>
+                                        <ChevronDown className={`w-6 h-6 text-slate-400 transition-transform duration-300 ${expandedTypes.includes(type) ? 'rotate-180' : ''}`} />
                                     </div>
-                                    <ChevronDown className={`w-6 h-6 text-slate-400 transition-transform duration-300 ${expandedTypes.includes(type) ? 'rotate-180' : ''}`} />
-                                </div>
 
-                                {/* LEVEL 2: Grades */}
-                                {expandedTypes.includes(type) && (
-                                    <div className="bg-white border-t border-slate-100 divide-y divide-slate-100">
-                                        {Object.entries(grades).map(([grade, subjects]) => {
-                                            const gradeKey = `${type}-${grade}`;
-                                            const isGradeExpanded = expandedGrades.includes(gradeKey);
+                                    {/* LEVEL 2: Grades */}
+                                    {expandedTypes.includes(type) && (
+                                        <div className="bg-white border-t border-slate-100 divide-y divide-slate-100">
+                                            {sortedGrades.map(grade => {
+                                                const subjects = grades[grade];
+                                                const sortedSubjects = sortKeys([...subjects], 'subject');
+                                                const gradeKey = `${type}-${grade}`;
+                                                const isGradeExpanded = expandedGrades.includes(gradeKey);
 
-                                            return (
-                                                <div key={gradeKey}>
-                                                    <div
-                                                        onClick={() => toggleGrade(type, grade)}
-                                                        className="p-4 pl-10 flex justify-between items-center cursor-pointer hover:bg-slate-50 transition-colors select-none"
-                                                    >
-                                                        <div className="flex items-center gap-3">
-                                                            <GraduationCap className={`w-5 h-5 ${isGradeExpanded ? 'text-blue-500' : 'text-slate-300'}`} />
-                                                            <span className={`text-sm font-bold ${isGradeExpanded ? 'text-blue-600' : 'text-slate-600'}`}>{grade}</span>
-                                                            <span className="bg-slate-100 text-slate-500 text-[10px] font-black px-2 py-0.5 rounded-md">{subjects.length} Subjects</span>
+                                                return (
+                                                    <div key={gradeKey}>
+                                                        <div
+                                                            onClick={() => toggleGrade(type, grade)}
+                                                            className="p-4 pl-10 flex justify-between items-center cursor-pointer hover:bg-slate-50 transition-colors select-none"
+                                                        >
+                                                            <div className="flex items-center gap-3">
+                                                                <GraduationCap className={`w-5 h-5 ${isGradeExpanded ? 'text-blue-500' : 'text-slate-300'}`} />
+                                                                <span className={`text-sm font-bold ${isGradeExpanded ? 'text-blue-600' : 'text-slate-600'}`}>{grade}</span>
+                                                                <span className="bg-slate-100 text-slate-500 text-[10px] font-black px-2 py-0.5 rounded-md">{subjects.length} Subjects</span>
+                                                            </div>
+                                                            <ChevronDown className={`w-4 h-4 text-slate-300 transition-transform duration-300 ${isGradeExpanded ? 'rotate-180' : ''}`} />
                                                         </div>
-                                                        <ChevronDown className={`w-4 h-4 text-slate-300 transition-transform duration-300 ${isGradeExpanded ? 'rotate-180' : ''}`} />
-                                                    </div>
 
-                                                    {/* LEVEL 3: Subjects */}
-                                                    {isGradeExpanded && (
-                                                        <div className="bg-slate-50/50 pl-16 pr-4 py-2 space-y-2 border-t border-slate-100">
-                                                            {subjects.map(subject => {
-                                                                const subjectKey = `${type}-${grade}-${subject}`;
-                                                                const isSubjectExpanded = expandedSubjects.includes(subjectKey);
-                                                                const data = loadedData[subjectKey] || [];
-                                                                const isLoading = loadingNode === subjectKey;
+                                                        {/* LEVEL 3: Subjects */}
+                                                        {isGradeExpanded && (
+                                                            <div className="bg-slate-50/50 pl-16 pr-4 py-2 space-y-2 border-t border-slate-100">
+                                                                {subjects.map(subject => {
+                                                                    const subjectKey = `${type}-${grade}-${subject}`;
+                                                                    const isSubjectExpanded = expandedSubjects.includes(subjectKey);
+                                                                    const data = loadedData[subjectKey] || [];
+                                                                    const isLoading = loadingNode === subjectKey;
 
-                                                                return (
-                                                                    <div key={subjectKey} className="bg-white rounded-2xl border border-slate-100 overflow-hidden shadow-sm">
-                                                                        <div
-                                                                            onClick={() => toggleSubject(type, grade, subject)}
-                                                                            className="p-3 pl-4 flex justify-between items-center cursor-pointer hover:bg-blue-50/30 transition-colors select-none"
-                                                                        >
-                                                                            <div className="flex items-center gap-3">
-                                                                                <Book className={`w-4 h-4 ${isSubjectExpanded ? 'text-blue-500' : 'text-slate-300'}`} />
-                                                                                <span className={`text-sm font-bold ${isSubjectExpanded ? 'text-slate-800' : 'text-slate-600'}`}>{subject}</span>
+                                                                    return (
+                                                                        <div key={subjectKey} className="bg-white rounded-2xl border border-slate-100 overflow-hidden shadow-sm">
+                                                                            <div
+                                                                                onClick={() => toggleSubject(type, grade, subject)}
+                                                                                className="p-3 pl-4 flex justify-between items-center cursor-pointer hover:bg-blue-50/30 transition-colors select-none"
+                                                                            >
+                                                                                <div className="flex items-center gap-3">
+                                                                                    <Book className={`w-4 h-4 ${isSubjectExpanded ? 'text-blue-500' : 'text-slate-300'}`} />
+                                                                                    <span className={`text-sm font-bold ${isSubjectExpanded ? 'text-slate-800' : 'text-slate-600'}`}>{subject}</span>
+                                                                                </div>
+                                                                                {isLoading ? (
+                                                                                    <Loader2 className="w-4 h-4 animate-spin text-blue-500" />
+                                                                                ) : (
+                                                                                    <ChevronDown className={`w-4 h-4 text-slate-300 transition-transform duration-300 ${isSubjectExpanded ? 'rotate-180' : ''}`} />
+                                                                                )}
                                                                             </div>
-                                                                            {isLoading ? (
-                                                                                <Loader2 className="w-4 h-4 animate-spin text-blue-500" />
-                                                                            ) : (
-                                                                                <ChevronDown className={`w-4 h-4 text-slate-300 transition-transform duration-300 ${isSubjectExpanded ? 'rotate-180' : ''}`} />
+
+                                                                            {/* LEVEL 4: Content Table */}
+                                                                            {isSubjectExpanded && (
+                                                                                <div className="border-t border-slate-100 animate-in slide-in-from-top-2 duration-300">
+                                                                                    {isLoading ? (
+                                                                                        <div className="p-10 text-center">
+                                                                                            <Loader2 className="w-6 h-6 animate-spin mx-auto text-blue-500 mb-2" />
+                                                                                            <span className="text-xs font-bold text-slate-400">Loading Standards...</span>
+                                                                                        </div>
+                                                                                    ) : data.length === 0 ? (
+                                                                                        <div className="p-8 text-center text-xs text-slate-400 italic">No standards found.</div>
+                                                                                    ) : renderTable(data)}
+                                                                                </div>
                                                                             )}
                                                                         </div>
-
-                                                                        {/* LEVEL 4: Content Table */}
-                                                                        {isSubjectExpanded && (
-                                                                            <div className="border-t border-slate-100 animate-in slide-in-from-top-2 duration-300">
-                                                                                {isLoading ? (
-                                                                                    <div className="p-10 text-center">
-                                                                                        <Loader2 className="w-6 h-6 animate-spin mx-auto text-blue-500 mb-2" />
-                                                                                        <span className="text-xs font-bold text-slate-400">Loading Standards...</span>
-                                                                                    </div>
-                                                                                ) : data.length === 0 ? (
-                                                                                    <div className="p-8 text-center text-xs text-slate-400 italic">No standards found.</div>
-                                                                                ) : renderTable(data)}
-                                                                            </div>
-                                                                        )}
-                                                                    </div>
-                                                                );
-                                                            })}
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
-                                )}
-                            </Card>
-                        ))
+                                                                    );
+                                                                })}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    )}
+                                </Card>
+                            );
+                        })
                     )}
                 </div>
             )}
