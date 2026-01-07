@@ -24205,13 +24205,14 @@ const GlobalProvider = ({ children }) => {
     refreshGlobalData();
   }, [currentUser]);
   const seedDatabase = async (force = false) => {
+    var _a2;
     if (isSeeding || hasAttemptedSeed.current && !force) return;
     setIsSeeding(true);
     hasAttemptedSeed.current = true;
     try {
       const schoolRef = doc(db, "schools", "s-1");
       const schoolSnap = await getDoc(schoolRef);
-      if (!schoolSnap.exists() || force) {
+      if (!schoolSnap.exists() || force || ((_a2 = schoolSnap.data().settings) == null ? void 0 : _a2.termStartDate) !== "2026-03-09") {
         await seed2026Data();
         await refreshGlobalData();
         window.location.reload();
@@ -25269,7 +25270,7 @@ const Button = ({
     }
   );
 };
-const APP_VERSION = "0.0.49";
+const APP_VERSION = "0.0.50";
 const SidebarContent = ({ user, onLogout, t, onClose }) => {
   const location2 = useLocation();
   const { viewMode, setViewMode } = useGlobal();
