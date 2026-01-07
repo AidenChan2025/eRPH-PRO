@@ -14,6 +14,7 @@ import {
     Mail, Lock, ChevronLeft, Layout, Shield, Check
 } from 'lucide-react';
 import { SuccessModal } from '../components/Modals';
+import { APP_VERSION } from '../src/config/version';
 
 const LoginPage = () => {
     const { currentUser, setCurrentUser } = useGlobal();
@@ -28,6 +29,7 @@ const LoginPage = () => {
     const [pdpaConsent, setPdpaConsent] = useState(false);
     const [showVerifyModal, setShowVerifyModal] = useState(false);
 
+
     // UI State
     const [error, setError] = useState('');
     const [message, setMessage] = useState('');
@@ -35,8 +37,6 @@ const LoginPage = () => {
     const [loginStage, setLoginStage] = useState('');
     const [showLangMenu, setShowLangMenu] = useState(false);
     const [typedText, setTypedText] = useState('');
-
-    const APP_VERSION = '0.0.33';
 
     // Redirect if already logged in
     useEffect(() => {

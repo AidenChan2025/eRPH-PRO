@@ -1,10 +1,11 @@
 {
   "name": "erph-pro",
-  "version": "0.0.32",
+  "version": "0.0.36",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "bump-version": "node scripts/bump_version.js",
+    "build": "npm run bump-version && vite build",
     "preview": "vite preview"
   },
   "dependencies": {

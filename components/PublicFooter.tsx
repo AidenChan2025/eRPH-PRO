@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Github, Twitter, Linkedin, Facebook, Coffee } from 'lucide-react';
+import { APP_VERSION } from '../src/config/version';
 
 const PublicFooter = () => {
     return (
@@ -58,7 +59,7 @@ const PublicFooter = () => {
                             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                             <span className="text-emerald-500 text-xs font-bold uppercase tracking-widest">System Operational</span>
                         </span>
-                        <span className="text-slate-600 text-xs font-mono">v0.0.33 (Stable)</span>
+                        <span className="text-slate-400 text-xs font-mono">v{APP_VERSION} (Stable)</span>
                     </div>
                 </div>
             </div>

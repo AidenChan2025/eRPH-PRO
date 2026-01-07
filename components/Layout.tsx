@@ -12,6 +12,7 @@ import { UserRole, Language, Notification, User } from '../types';
 import { collection, query, where, getDocs, db, writeBatch, doc } from '../services/firebase';
 import Button from './Button';
 import { CoffeeModal } from './CoffeeModal';
+import { APP_VERSION } from '../src/config/version';
 
 interface SidebarProps {
     user: User;
@@ -153,7 +154,7 @@ const SidebarContent = ({ user, onLogout, t, onClose }: SidebarProps) => {
                 </button>
                 <div className="mt-4 pt-4 border-t border-slate-800/50 text-center space-y-1">
                     <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Powered by Aiden Chan</p>
-                    <p className="text-[9px] text-slate-600 font-black uppercase tracking-[0.2em]">System v0.0.35</p>
+                    <p className="text-[9px] text-slate-400 font-black uppercase tracking-[0.2em]">System v{APP_VERSION}</p>
                 </div>
             </div>
         </div>

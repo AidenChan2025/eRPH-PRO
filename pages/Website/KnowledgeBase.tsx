@@ -15,7 +15,18 @@ const KnowledgeBase = () => {
 
     const updateLogs = [
         {
-            version: "v0.0.32",
+            version: "v0.0.36",
+            date: "Jan 07, 2026",
+            title: "MySQL Backend Transition & Versioning",
+            items: [
+                "Refactored Lesson Plan Editor and Approval flows to use scalable MySQL backend.",
+                "Implemented unified versioning system with auto-increment on build.",
+                "Fixed 'Cross-Origin-Opener-Policy' security headers.",
+                "Enhanced footer and dashboard version display readability."
+            ]
+        },
+        {
+            version: "v0.0.35",
             date: "Jan 07, 2026",
             title: "Performance & Reliability Update",
             items: [
