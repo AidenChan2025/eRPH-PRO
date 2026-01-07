@@ -6,7 +6,7 @@ export interface SmartOption {
     zh: string;
 }
 
-export type SupportedLanguage = 'ms' | 'en' | 'zh';
+export type SupportedLanguage = 'ms' | 'en' | 'zh' | 'ta';
 
 export const TEACHING_AIDS: SmartOption[] = [
     { id: 'textbook', ms: 'Buku Teks', en: 'Textbook', zh: '课本' },

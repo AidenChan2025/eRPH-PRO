@@ -54,6 +54,83 @@ const LessonPlanEditor = () => {
 
     const allSubjects = useMemo(() => Array.from(new Set([...(settings?.customSubjects || []), ...DEFAULT_SUBJECTS])).sort(), [settings?.customSubjects, DEFAULT_SUBJECTS]);
 
+    const [dskpRecords, setDskpRecords] = useState<DSKPStandard[]>([]);
+    const [localTheme, setLocalTheme] = useState('');
+
+    // Fetch DSKP on Subject/Grade change
+    useEffect(() => {
+        if (plan.subject && plan.grade) {
+            api.dskp.list({ subject: plan.subject, grade: plan.grade }).then(res => {
+                if (res.success && Array.isArray(res.data)) {
+                    setDskpRecords(res.data);
+                }
+            });
+
+            // Auto-Switch Language
+            const detectedLang = detectSubjectLanguage(plan.subject);
+            setCurrentLang(detectedLang);
+        }
+    }, [plan.subject, plan.grade]);
+
+    // Derived Options for UI
+    const dskpContext = useMemo(() => {
+        // 1. Unique Themes
+        // Extract themes (tema) - Filter by Subject/Grade is implicit in dskpRecords
+        const themes = Array.from(new Set(dskpRecords.map(r => r.tema || r.temaBidang || '').filter(Boolean))).sort();
+
+        // 2. Topics - Filter by Theme if selected
+        const relevantRecords = localTheme ? dskpRecords.filter(r => (r.tema === localTheme || r.temaBidang === localTheme)) : dskpRecords;
+        const topics = Array.from(new Set(relevantRecords.map(r => r.tajuk || r.tajukKemahiran || '').filter(Boolean))).sort();
+
+        // 3. Content Standards - Filter by Theme/Topic if selected
+        // Note: Some DSKP might depend on Topic selection to narrow down CS
+        let csFilter = relevantRecords;
+        if (plan.topic) {
+            csFilter = csFilter.filter(r => (r.tajuk === plan.topic || r.tajukKemahiran === plan.topic));
+        }
+        const csOptions = Array.from(new Set(csFilter.map(r => r.contentStandard).filter(Boolean))).sort();
+
+        // 4. Learning Standards - Filter by Selected CS (Multi-select support)
+        // If plan.contentStandard has values, we show LS that belong to ANY of the selected CS
+        let lsFilter = csFilter;
+        if (plan.contentStandard && plan.contentStandard.length > 0) {
+            lsFilter = lsFilter.filter(r => plan.contentStandard?.includes(r.contentStandard));
+        }
+        const lsOptions = Array.from(new Set(lsFilter.map(r => r.learningStandard).filter(Boolean))).sort();
+
+        return { themes, topics, csOptions, lsOptions };
+    }, [dskpRecords, localTheme, plan.topic, plan.contentStandard]);
+
+    const toggleContentStandard = (val: string) => {
+        const current = plan.contentStandard ? plan.contentStandard.split('\n\n') : []; // Store as newline separated or handle as array? 
+        // The LessonPlan model stores strings. Let's assume we store them joined by \n\n for display, or we should change the schema?
+        // User wants "filter learning standard... 1.0-1.12".
+        // Let's implement multi-select logic but convert to string for the existing model.
+
+        // Actually, easiest is to detect if string contains it. But splitting is safer.
+        // Let's treat standard textarea as a "Display" of selected items?
+        // Re-implementing logic:
+        const exists = current.includes(val);
+        const newArr = exists ? current.filter(c => c !== val) : [...current, val];
+        setPlan({ ...plan, contentStandard: newArr.join('\n\n') });
+    };
+
+    const toggleLearningStandard = (val: string) => {
+        const current = plan.learningStandard ? plan.learningStandard.split('\n\n') : [];
+        const exists = current.includes(val);
+        const newArr = exists ? current.filter(c => c !== val) : [...current, val];
+
+        setPlan({ ...plan, learningStandard: newArr.join('\n\n') });
+
+        // Auto-Generate Content on change (debounced or immediate)
+        // We'll generate based on the LATEST selection
+        // If adding, generate. If removing, maybe don't clear? 
+        // User said "auto fill in...". Let's re-generate fully based on new selection.
+        if (!exists) { // Only if adding
+            generateSmartContent(newArr.join('\n'), currentLang);
+        }
+    };
+
     // Memoized Filtering
     const filteredSubjects = useMemo(() => {
         const query = subjectSearch.toLowerCase();
@@ -270,26 +347,87 @@ const LessonPlanEditor = () => {
                     </div>
                 </div>
 
-                <div className="pt-4 border-t border-slate-50">
-                    <div className="flex justify-between items-center mb-3 px-1">
+
+                {/* DSKP Context Section */}
+                <div className="space-y-6 pt-4 border-t border-slate-50">
+                    <div className="flex justify-between items-center px-1">
                         <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{t('topic')}</label>
-                        <button onClick={() => setShowDskpBrowser(true)} className="text-[9px] font-black uppercase bg-blue-50 text-blue-700 px-4 py-2 rounded-full border border-blue-100 hover:bg-blue-100 flex items-center gap-2 transition-all shadow-sm">
-                            <BookOpen className="w-3.5 h-3.5" /> {t('browse_dskp')}
-                        </button>
+                        {/* Hidden fetcher trigger */}
                     </div>
-                    <input
-                        className="w-full text-2xl font-black border-b-2 border-slate-100 pb-3 outline-none focus:border-blue-500 transition-all bg-transparent placeholder:text-slate-200"
-                        value={plan.topic}
-                        onChange={e => setPlan({ ...plan, topic: e.target.value })}
-                        placeholder="Describe your lesson focus..."
-                    />
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* Theme Dropdown */}
+                        <div className="space-y-1.5">
+                            <label className="text-[10px] font-bold text-slate-400 uppercase ml-1">Theme (Tema)</label>
+                            <div className="relative">
+                                <select
+                                    className="w-full border-2 border-slate-100 p-3 rounded-xl text-sm font-bold bg-slate-50/50 outline-none focus:border-blue-500 transition-all appearance-none pr-10"
+                                    value={plan.topic?.split(' - ')[0] || ''}
+                                    onChange={e => {
+                                        // Reset topic when theme changes
+                                        // We might need a better way to store theme/topic separation in the plan object if supported
+                                        // For now, assume plan.topic = "Theme - Topic" or just handle local state if not saving theme separately
+                                        // User request implies strict selection. Let's try to infer list from DSKP.
+                                        // NOTE: Since we need to 'select' from DSKP, we depend on fetched standards.
+                                        setLocalTheme(e.target.value);
+                                        setPlan({ ...plan, topic: '' });
+                                    }}
+                                >
+                                    <option value="">Select Theme</option>
+                                    {dskpContext.themes.map(t => <option key={t} value={t}>{t}</option>)}
+                                </select>
+                                <ChevronDown className="absolute right-3 top-3.5 w-4 h-4 text-slate-400 pointer-events-none" />
+                            </div>
+                        </div>
+
+                        {/* Topic Dropdown */}
+                        <div className="space-y-1.5">
+                            <label className="text-[10px] font-bold text-slate-400 uppercase ml-1">Topic (Tajuk/Unit)</label>
+                            <div className="relative">
+                                <select
+                                    className="w-full border-2 border-slate-100 p-3 rounded-xl text-sm font-bold bg-slate-50/50 outline-none focus:border-blue-500 transition-all appearance-none pr-10"
+                                    value={plan.topic || ''}
+                                    onChange={e => setPlan({ ...plan, topic: e.target.value })}
+                                >
+                                    <option value="">Select Topic</option>
+                                    {dskpContext.topics.map(t => <option key={t} value={t}>{t}</option>)}
+                                </select>
+                                <ChevronDown className="absolute right-3 top-3.5 w-4 h-4 text-slate-400 pointer-events-none" />
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
+                    {/* Content Standard Multi-Select */}
                     <div className="space-y-2">
                         <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">{t('content_standard')}</label>
-                        <textarea className="w-full border-2 border-slate-100 p-5 rounded-3xl text-sm font-medium h-32 focus:border-blue-500 outline-none transition-all shadow-inner bg-slate-50/30" value={plan.contentStandard} onChange={e => setPlan({ ...plan, contentStandard: e.target.value })} placeholder="Paste or browse standard..." />
+                        <div className="border-2 border-slate-100 rounded-3xl p-4 bg-slate-50/30 min-h-[14rem] max-h-[20rem] overflow-y-auto space-y-2">
+                            {dskpContext.csOptions.length === 0 ? (
+                                <p className="text-sm text-slate-400 text-center italic mt-10">Select Subject & Year to load standards...</p>
+                            ) : (
+                                dskpContext.csOptions.map(cs => {
+                                    const isSelected = plan.contentStandard?.includes(cs);
+                                    return (
+                                        <div
+                                            key={cs}
+                                            onClick={() => toggleContentStandard(cs)}
+                                            className={`p-3 rounded-xl cursor-pointer text-sm font-medium transition-all border ${isSelected ? 'bg-white border-blue-500 text-blue-700 shadow-md transform scale-[1.01]' : 'bg-white/50 border-transparent hover:bg-white hover:border-slate-200 text-slate-600'}`}
+                                        >
+                                            <div className="flex gap-3">
+                                                <div className={`mt-0.5 w-4 h-4 rounded border flex items-center justify-center shrink-0 ${isSelected ? 'bg-blue-500 border-blue-500' : 'border-slate-300'}`}>
+                                                    {isSelected && <Check className="w-3 h-3 text-white" />}
+                                                </div>
+                                                <span>{cs}</span>
+                                            </div>
+                                        </div>
+                                    )
+                                })
+                            )}
+                        </div>
                     </div>
+
+                    {/* Learning Standard Multi-Select */}
                     <div className="space-y-2">
                         <div className="flex justify-between items-center mb-1">
                             <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">{t('learning_standard')}</label>
@@ -300,13 +438,29 @@ const LessonPlanEditor = () => {
                                 <Zap className="w-3 h-3" /> Auto-Generate
                             </button>
                         </div>
-                        <textarea
-                            className="w-full border-2 border-slate-100 p-5 rounded-3xl text-sm font-medium h-32 focus:border-blue-500 outline-none transition-all shadow-inner bg-slate-50/30"
-                            value={plan.learningStandard}
-                            onChange={e => setPlan({ ...plan, learningStandard: e.target.value })}
-                            onBlur={() => generateSmartContent(plan.learningStandard || '', currentLang)}
-                            placeholder="Paste or browse standard..."
-                        />
+                        <div className="border-2 border-slate-100 rounded-3xl p-4 bg-slate-50/30 min-h-[14rem] max-h-[20rem] overflow-y-auto space-y-2">
+                            {dskpContext.lsOptions.length === 0 ? (
+                                <p className="text-sm text-slate-400 text-center italic mt-10">Select Content Standard first...</p>
+                            ) : (
+                                dskpContext.lsOptions.map(ls => {
+                                    const isSelected = plan.learningStandard?.includes(ls);
+                                    return (
+                                        <div
+                                            key={ls}
+                                            onClick={() => toggleLearningStandard(ls)}
+                                            className={`p-3 rounded-xl cursor-pointer text-sm font-medium transition-all border ${isSelected ? 'bg-white border-indigo-500 text-indigo-700 shadow-md transform scale-[1.01]' : 'bg-white/50 border-transparent hover:bg-white hover:border-slate-200 text-slate-600'}`}
+                                        >
+                                            <div className="flex gap-3">
+                                                <div className={`mt-0.5 w-4 h-4 rounded border flex items-center justify-center shrink-0 ${isSelected ? 'bg-indigo-500 border-indigo-500' : 'border-slate-300'}`}>
+                                                    {isSelected && <Check className="w-3 h-3 text-white" />}
+                                                </div>
+                                                <span>{ls}</span>
+                                            </div>
+                                        </div>
+                                    )
+                                })
+                            )}
+                        </div>
                     </div>
                 </div>
 
