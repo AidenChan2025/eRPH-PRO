@@ -74,9 +74,6 @@ const LandingPage = () => {
                                     {t('hero_cta')} <ArrowRight className="ml-3 w-6 h-6" />
                                 </Button>
                             </Link>
-                            <Button variant="secondary" size="lg" className="rounded-2xl h-18 px-12 text-xl font-black bg-white/40 backdrop-blur-md">
-                                {t('hero_demo')}
-                            </Button>
                         </div>
                     </div>
 

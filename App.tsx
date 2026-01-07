@@ -147,6 +147,7 @@ const AppRoutes = () => {
 
 
 import { CookieConsent } from './components/CookieConsent';
+import ScrollToTop from './components/ScrollToTop';
 
 const App = () => {
     return (
@@ -154,7 +155,7 @@ const App = () => {
             <GlobalProvider>
                 <LanguageProvider>
                     <SecurityShell />
-
+                    <ScrollToTop />
                     <CookieConsent />
                     <AppRoutes />
                 </LanguageProvider>
