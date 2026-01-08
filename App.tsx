@@ -36,6 +36,7 @@ import ArticleManager from './pages/Admin/ArticleManager';
 
 // Security Shell
 const SecurityShell: React.FC = () => {
+    const { t } = useTranslation();
     useEffect(() => {
         if (window.location.hostname !== 'localhost') {
             document.addEventListener('contextmenu', (e) => e.preventDefault());
@@ -61,10 +62,10 @@ const SplashScreen = () => (
             </div>
 
             <div className="text-center space-y-3">
-                <h1 className="text-4xl font-black tracking-tight">eRPH <span className="text-blue-500">Pro</span></h1>
+                <h1 className="text-4xl font-black tracking-tight">{t('erph')}<span className="text-blue-500">{t('pro')}</span></h1>
                 <div className="flex flex-col items-center gap-2">
                     <div className="flex items-center gap-2 text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] ml-1">
-                        <span>Verifying Session</span>
+                        <span>{t('verifyingSession')}</span>
                         <span className="flex gap-1">
                             <span className="w-1 h-1 bg-blue-500 rounded-full animate-ping"></span>
                             <span className="w-1 h-1 bg-blue-500 rounded-full animate-ping [animation-delay:0.2s]"></span>
@@ -76,12 +77,13 @@ const SplashScreen = () => (
         </div>
 
         <div className="absolute bottom-12 left-0 right-0 text-center">
-            <p className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">Protected by AIDEN Security Subsystem v0.0.33</p>
+            <p className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">{t('protectedByAidenSecuritySubsystem')}</p>
         </div>
     </div>
 );
 
 const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+    const { t } = useTranslation();
     const { currentUser, isLoading } = useGlobal();
     const location = useLocation();
 
@@ -92,12 +94,14 @@ const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => 
 
 // Settings Brancher
 const SettingsPage = () => {
+    const { t } = useTranslation();
     const { currentUser } = useGlobal();
     if (currentUser?.role === UserRole.SUPER_ADMIN) return <SystemConfig />;
     return <SchoolSettings />;
 };
 
 const AppRoutes = () => {
+    const { t } = useTranslation();
     const { currentUser, isLoading } = useGlobal();
 
     if (isLoading) return <SplashScreen />;
@@ -148,8 +152,10 @@ const AppRoutes = () => {
 
 import { CookieConsent } from './components/CookieConsent';
 import ScrollToTop from './components/ScrollToTop';
+import { useTranslation } from 'react-i18next';
 
 const App = () => {
+    const { t } = useTranslation();
     return (
         <HashRouter>
             <GlobalProvider>

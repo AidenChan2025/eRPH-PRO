@@ -5,9 +5,10 @@ import { Sparkles, ArrowRight, Globe, ChevronDown, Coffee } from 'lucide-react';
 import Button from './Button';
 import { useLanguage } from '../context/LanguageContext';
 import { Language } from '../types';
+import { useTranslation } from 'react-i18next';
 
 const PublicNavbar = () => {
-    const { language, setLanguage, t } = useLanguage();
+        const { language, setLanguage, t } = useLanguage();
     const [showLangMenu, setShowLangMenu] = React.useState(false);
     const location = useLocation();
 
@@ -25,7 +26,7 @@ const PublicNavbar = () => {
                     <div className="p-2 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow-lg shadow-blue-500/30 group-hover:scale-105 transition-transform">
                         <Sparkles className="w-5 h-5 text-white" />
                     </div>
-                    <span className="text-2xl font-black text-slate-900 tracking-tighter">eRPH <span className="text-blue-600">Pro</span></span>
+                    <span className="text-2xl font-black text-slate-900 tracking-tighter">{t('erph')}<span className="text-blue-600">{t('pro')}</span></span>
                 </Link>
 
                 <div className="hidden md:flex items-center gap-10">

@@ -11,9 +11,10 @@ import {
 } from 'lucide-react';
 import { getEmails } from '../../services/emailService';
 import { Email } from '../../types';
+import { useTranslation } from 'react-i18next';
 
 export const Mailbox = () => {
-    const { t } = useLanguage();
+        const { t } = useLanguage();
     const [emails, setEmails] = useState<Email[]>([]);
     const [selectedEmail, setSelectedEmail] = useState<Email | null>(null);
     const [isReplying, setIsReplying] = useState(false);
@@ -53,7 +54,7 @@ export const Mailbox = () => {
                             <div className="p-2 bg-blue-50 rounded-xl text-blue-600">
                                 <Inbox className="w-5 h-5" />
                             </div>
-                            <h2 className="text-xl font-black text-slate-800 tracking-tight">Admin Mailbox</h2>
+                            <h2 className="text-xl font-black text-slate-800 tracking-tight">{t('adminMailbox')}</h2>
                         </div>
                         <div className="flex items-center gap-1">
                             <button className="p-2 hover:bg-slate-50 text-slate-400 rounded-xl transition-colors">
@@ -80,12 +81,12 @@ export const Mailbox = () => {
                     {isLoading ? (
                         <div className="p-12 text-center space-y-4">
                             <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
-                            <p className="text-xs font-black text-slate-400 uppercase tracking-widest">Hydrating Subsystem...</p>
+                            <p className="text-xs font-black text-slate-400 uppercase tracking-widest">{t('hydratingSubsystem')}</p>
                         </div>
                     ) : filteredEmails.length === 0 ? (
                         <div className="p-12 text-center">
                             <AlertCircle className="w-12 h-12 text-slate-200 mx-auto mb-4" />
-                            <p className="text-sm font-bold text-slate-400">No messages found.</p>
+                            <p className="text-sm font-bold text-slate-400">{t('noMessagesFound')}</p>
                         </div>
                     ) : filteredEmails.map(email => (
                         <button
@@ -122,8 +123,8 @@ export const Mailbox = () => {
                         <div className="w-24 h-24 bg-slate-50 rounded-[2rem] flex items-center justify-center mb-6">
                             <Mail className="w-10 h-10 text-slate-200" />
                         </div>
-                        <h3 className="text-xl font-black text-slate-800 mb-2">Select a Conversation</h3>
-                        <p className="text-sm font-bold text-slate-400 max-w-xs">Pick a message from the sidebar to view details and reply to users.</p>
+                        <h3 className="text-xl font-black text-slate-800 mb-2">{t('selectAConversation')}</h3>
+                        <p className="text-sm font-bold text-slate-400 max-w-xs">{t('pickAMessageFromThe')}</p>
                     </div>
                 ) : (
                     <>
@@ -158,7 +159,7 @@ export const Mailbox = () => {
                         <div className="flex-1 overflow-y-auto p-8 space-y-8 custom-scrollbar">
                             <div className="space-y-4">
                                 <div className="flex justify-between items-center text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">
-                                    <span>Subject: {selectedEmail.subject}</span>
+                                    <span>{t('subject_2')}{selectedEmail.subject}</span>
                                     <span>{new Date(selectedEmail.timestamp).toLocaleString()}</span>
                                 </div>
                                 <div className="p-8 bg-slate-50/50 border border-slate-100 rounded-[2rem] text-slate-700 leading-relaxed font-semibold whitespace-pre-wrap">
@@ -171,7 +172,7 @@ export const Mailbox = () => {
                                     <div className="flex items-center justify-between mb-2">
                                         <div className="flex items-center gap-2 text-blue-600">
                                             <Reply className="w-4 h-4" />
-                                            <span className="text-xs font-black uppercase tracking-widest">Drafting Reply</span>
+                                            <span className="text-xs font-black uppercase tracking-widest">{t('draftingReply')}</span>
                                         </div>
                                         <button onClick={() => setIsReplying(false)} className="text-slate-400 hover:text-slate-600">
                                             <X className="w-4 h-4" />
@@ -185,8 +186,8 @@ export const Mailbox = () => {
                                         onChange={e => setReplyText(e.target.value)}
                                     />
                                     <div className="flex justify-end gap-3">
-                                        <Button variant="ghost" onClick={() => setIsReplying(false)}>Cancel</Button>
-                                        <Button onClick={handleReply} className="px-8 rounded-xl shadow-lg shadow-blue-500/10">Send Message</Button>
+                                        <Button variant="ghost" onClick={() => setIsReplying(false)}>{t('cancel')}</Button>
+                                        <Button onClick={handleReply} className="px-8 rounded-xl shadow-lg shadow-blue-500/10">{t('sendMessage')}</Button>
                                     </div>
                                 </div>
                             )}
@@ -196,11 +197,9 @@ export const Mailbox = () => {
                         {!isReplying && (
                             <div className="p-6 border-t border-slate-100 flex gap-4 shrink-0">
                                 <Button onClick={() => setIsReplying(true)} className="flex-1 rounded-2xl h-14 font-black shadow-xl shadow-blue-500/10">
-                                    <Reply className="w-5 h-5 mr-2" /> Quick Reply
-                                </Button>
+                                    <Reply className="w-5 h-5 mr-2" /> {t('quickReply')}</Button>
                                 <Button variant="secondary" className="px-8 rounded-2xl h-14 font-black">
-                                    Forward
-                                </Button>
+                                    {t('forward')}</Button>
                             </div>
                         )}
                     </>

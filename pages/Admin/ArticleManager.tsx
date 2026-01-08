@@ -11,9 +11,10 @@ import {
 } from 'lucide-react';
 import { collection, query, getDocs, db, deleteDoc, doc, setDoc } from '../../services/firebase';
 import { Article } from '../../types';
+import { useTranslation } from 'react-i18next';
 
 const ArticleManager = () => {
-    const { t } = useLanguage();
+        const { t } = useLanguage();
     const { currentUser } = useGlobal();
     const [articles, setArticles] = useState<Article[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -150,7 +151,7 @@ const ArticleManager = () => {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
                     <h2 className="text-2xl font-bold text-slate-800">{t('article_hub')}</h2>
-                    <p className="text-slate-500 text-sm">Manage educational editorial content for the public website.</p>
+                    <p className="text-slate-500 text-sm">{t('manageEducationalEditorialContentFor')}</p>
                 </div>
                 <div className="flex gap-3">
                     <Button 
@@ -162,18 +163,15 @@ const ArticleManager = () => {
                         {isCrawling ? (
                             <>
                                 <Loader2 className="w-4 h-4 mr-2 animate-spin text-amber-500"/>
-                                Aiden is Crawling...
-                            </>
+                                {t('aidenIsCrawling')}</>
                         ) : (
                             <>
                                 <Zap className="w-4 h-4 mr-2 text-amber-500"/>
-                                Trigger AI Crawl
-                            </>
+                                {t('triggerAiCrawl')}</>
                         )}
                     </Button>
                     <Button onClick={() => handleOpenEditor()} className="rounded-xl shadow-lg shadow-blue-200">
-                        <Plus className="w-4 h-4 mr-2"/> New Editorial
-                    </Button>
+                        <Plus className="w-4 h-4 mr-2"/> {t('newEditorial')}</Button>
                 </div>
             </div>
 
@@ -193,17 +191,17 @@ const ArticleManager = () => {
                     <thead className="bg-slate-50 text-slate-500 uppercase text-[10px] font-black tracking-widest border-b border-slate-100">
                         <tr>
                             <th className="p-5">{t('subject')}</th>
-                            <th className="p-5">Category</th>
-                            <th className="p-5">Author</th>
-                            <th className="p-5">Stats</th>
-                            <th className="p-5 text-right">Actions</th>
+                            <th className="p-5">{t('category')}</th>
+                            <th className="p-5">{t('author')}</th>
+                            <th className="p-5">{t('stats')}</th>
+                            <th className="p-5 text-right">{t('actions')}</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-50 bg-white">
                         {isLoading ? (
-                            <tr><td colSpan={5} className="p-12 text-center text-slate-400">Loading Articles...</td></tr>
+                            <tr><td colSpan={5} className="p-12 text-center text-slate-400">{t('loadingArticles')}</td></tr>
                         ) : filtered.length === 0 ? (
-                            <tr><td colSpan={5} className="p-20 text-center text-slate-400 italic">No editorials found.</td></tr>
+                            <tr><td colSpan={5} className="p-20 text-center text-slate-400 italic">{t('noEditorialsFound')}</td></tr>
                         ) : filtered.map(article => (
                             <tr key={article.id} className="hover:bg-slate-50/50 group transition-colors">
                                 <td className="p-5">
@@ -257,7 +255,7 @@ const ArticleManager = () => {
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div className="space-y-4">
                                     <div>
-                                        <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Article Title</label>
+                                        <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">{t('articleTitle')}</label>
                                         <div className="relative">
                                             <Type className="absolute left-3 top-3 w-4 h-4 text-slate-300" />
                                             <input 
@@ -269,7 +267,7 @@ const ArticleManager = () => {
                                         </div>
                                     </div>
                                     <div>
-                                        <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">URL Slug (Optional)</label>
+                                        <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">{t('urlSlugOptional')}</label>
                                         <div className="relative">
                                             <LinkIcon className="absolute left-3 top-3 w-4 h-4 text-slate-300" />
                                             <input 
@@ -282,21 +280,21 @@ const ArticleManager = () => {
                                     </div>
                                     <div className="grid grid-cols-2 gap-4">
                                         <div>
-                                            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Category</label>
+                                            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">{t('category')}</label>
                                             <select 
                                                 className="w-full border-2 border-slate-100 p-3 rounded-2xl text-sm font-bold focus:border-blue-500 outline-none bg-slate-50/30 appearance-none"
                                                 value={editingArticle.category}
                                                 onChange={e => setEditingArticle({...editingArticle, category: e.target.value})}
                                             >
-                                                <option>Pedagogy</option>
-                                                <option>Technology</option>
-                                                <option>Administration</option>
-                                                <option>Teacher Wellness</option>
-                                                <option>MoE Updates</option>
+                                                <option>{t('pedagogy')}</option>
+                                                <option>{t('technology')}</option>
+                                                <option>{t('administration')}</option>
+                                                <option>{t('teacherWellness')}</option>
+                                                <option>{t('moeUpdates')}</option>
                                             </select>
                                         </div>
                                         <div>
-                                            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Author</label>
+                                            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">{t('author')}</label>
                                             <input 
                                                 className="w-full border-2 border-slate-100 p-3 rounded-2xl text-sm font-bold focus:border-blue-500 outline-none bg-slate-50/30" 
                                                 value={editingArticle.author}
@@ -308,7 +306,7 @@ const ArticleManager = () => {
 
                                 <div className="space-y-4">
                                     <div>
-                                        <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Short Excerpt (Meta Description)</label>
+                                        <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">{t('shortExcerptMetaDescription')}</label>
                                         <textarea 
                                             className="w-full border-2 border-slate-100 p-4 rounded-2xl text-sm font-medium h-24 focus:border-blue-500 outline-none transition-all bg-slate-50/30 resize-none" 
                                             value={editingArticle.excerpt}
@@ -317,7 +315,7 @@ const ArticleManager = () => {
                                         />
                                     </div>
                                     <div>
-                                        <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Featured Image URL</label>
+                                        <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">{t('featuredImageUrl')}</label>
                                         <div className="relative">
                                             <ImageIcon className="absolute left-3 top-3 w-4 h-4 text-slate-300" />
                                             <input 
@@ -332,7 +330,7 @@ const ArticleManager = () => {
                             </div>
 
                             <div className="pt-4">
-                                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 ml-1">Article Content (Markdown/HTML Support)</label>
+                                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 ml-1">{t('articleContentMarkdownhtmlSupport')}</label>
                                 <textarea 
                                     className="w-full border-2 border-slate-100 p-6 rounded-[2rem] text-sm font-medium h-96 focus:border-blue-500 outline-none transition-all bg-slate-50/30 resize-y shadow-inner" 
                                     value={editingArticle.content}
@@ -343,10 +341,9 @@ const ArticleManager = () => {
                         </div>
 
                         <div className="p-6 border-t bg-slate-50 flex justify-end gap-3">
-                            <Button variant="secondary" onClick={() => setIsEditorOpen(false)} disabled={isSaving} className="rounded-xl px-6">Discard</Button>
+                            <Button variant="secondary" onClick={() => setIsEditorOpen(false)} disabled={isSaving} className="rounded-xl px-6">{t('discard')}</Button>
                             <Button onClick={handleSaveArticle} isLoading={isSaving} className="rounded-xl px-10 shadow-lg shadow-blue-500/20">
-                                <Save className="w-4 h-4 mr-2"/> Publish Changes
-                            </Button>
+                                <Save className="w-4 h-4 mr-2"/> {t('publishChanges')}</Button>
                         </div>
                     </Card>
                 </div>

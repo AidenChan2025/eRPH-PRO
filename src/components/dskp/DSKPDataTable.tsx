@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Trash2, Search, FileText } from 'lucide-react';
 import { DSKPStandard } from '../../lib/dskp/parser';
+import { useTranslation } from 'react-i18next';
 
 interface DSKPDataTableProps {
     data: DSKPStandard[];
@@ -9,6 +10,7 @@ interface DSKPDataTableProps {
 }
 
 export const DSKPDataTable = ({ data, onDelete, isEditable = false }: DSKPDataTableProps) => {
+    const { t } = useTranslation();
     const [search, setSearch] = useState('');
     const [page, setPage] = useState(1);
     const LIMIT = 50;
@@ -44,19 +46,18 @@ export const DSKPDataTable = ({ data, onDelete, isEditable = false }: DSKPDataTa
                 <table className="w-full text-left text-xs">
                     <thead className="bg-slate-50 text-slate-500 font-black uppercase text-[9px] tracking-wider">
                         <tr>
-                            <th className="p-4 w-1/4">Standard Kandungan (SK)</th>
-                            <th className="p-4 w-1/4">Standard Pembelajaran (SP)</th>
-                            <th className="p-4 w-1/4">Tema / Bidang</th>
-                            <th className="p-4 w-1/4">Tajuk</th>
-                            {isEditable && <th className="p-4">Action</th>}
+                            <th className="p-4 w-1/4">{t('standardKandunganSk')}</th>
+                            <th className="p-4 w-1/4">{t('standardPembelajaranSp')}</th>
+                            <th className="p-4 w-1/4">{t('temaBidang')}</th>
+                            <th className="p-4 w-1/4">{t('tajuk')}</th>
+                            {isEditable && <th className="p-4">{t('action')}</th>}
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-slate-50">
                         {paginated.length === 0 && (
                             <tr>
                                 <td colSpan={5} className="p-8 text-center text-slate-400 italic">
-                                    No standards found matching your filter.
-                                </td>
+                                    {t('noStandardsFoundMatchingYour_1')}</td>
                             </tr>
                         )}
                         {paginated.map((row, i) => (
@@ -94,18 +95,16 @@ export const DSKPDataTable = ({ data, onDelete, isEditable = false }: DSKPDataTa
                         onClick={() => setPage(p => p - 1)}
                         className="px-3 py-1 rounded-lg text-xs font-bold bg-white border disabled:opacity-50"
                     >
-                        Prev
-                    </button>
+                        {t('prev')}</button>
                     <span className="px-3 py-1 text-xs font-bold text-slate-500">
-                        Page {page} of {totalPages}
+                        {t('page')}{page} {t('of')}{totalPages}
                     </span>
                     <button
                         disabled={page === totalPages}
                         onClick={() => setPage(p => p + 1)}
                         className="px-3 py-1 rounded-lg text-xs font-bold bg-white border disabled:opacity-50"
                     >
-                        Next
-                    </button>
+                        {t('next')}</button>
                 </div>
             )}
         </div>

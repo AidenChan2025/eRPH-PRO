@@ -9,9 +9,10 @@ import { LessonPlan, UserRole, LessonStatus } from '../types';
 import { PrintPreviewModal } from '../components/Modals';
 import { ChevronLeft, ChevronRight, Plus, Printer, Calendar, Users, List, Loader2, RefreshCw, Send } from 'lucide-react';
 import { collection, query, where, getDocs, db, orderBy, limit, startAfter, writeBatch, doc } from '../services/firebase';
+import { useTranslation } from 'react-i18next';
 
 const LessonPlanList = () => {
-    const { t } = useLanguage();
+        const { t } = useLanguage();
     const { currentUser, schools, getAcademicWeek, isSeeding } = useGlobal();
     const navigate = useNavigate();
 
@@ -202,8 +203,8 @@ const LessonPlanList = () => {
         return (
             <div className="h-full flex flex-col items-center justify-center p-12 text-center">
                 <Loader2 className="w-12 h-12 text-blue-600 animate-spin mb-4" />
-                <h3 className="text-xl font-bold text-slate-800">Database Optimizing...</h3>
-                <p className="text-slate-500 max-w-md mt-2">We are organizing your lesson plans. The new engine handles this in the background.</p>
+                <h3 className="text-xl font-bold text-slate-800">{t('databaseOptimizing')}</h3>
+                <p className="text-slate-500 max-w-md mt-2">{t('weAreOrganizingYourLesson')}</p>
             </div>
         );
     }
@@ -273,7 +274,7 @@ const LessonPlanList = () => {
                     <div className="absolute inset-0 bg-white/60 backdrop-blur-[1px] z-10 flex items-center justify-center">
                         <div className="flex flex-col items-center bg-white p-4 rounded-xl shadow-lg border">
                             <Loader2 className="w-8 h-8 text-blue-600 animate-spin mb-2" />
-                            <span className="text-xs font-bold text-slate-500">Loading Month...</span>
+                            <span className="text-xs font-bold text-slate-500">{t('loadingMonth')}</span>
                         </div>
                     </div>
                 )}
@@ -299,7 +300,7 @@ const LessonPlanList = () => {
                                                 {p.subject}
                                             </div>
                                         ))}
-                                        {plans.length > 3 && <div className="text-[9px] md:text-[10px] text-slate-400 pl-1 font-medium">+{plans.length - 3} more</div>}
+                                        {plans.length > 3 && <div className="text-[9px] md:text-[10px] text-slate-400 pl-1 font-medium">+{plans.length - 3} {t('more')}</div>}
                                     </div>
                                 </div>
                             );
@@ -371,9 +372,9 @@ const LessonPlanList = () => {
                         <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-100 mb-4">
                             <Calendar className="w-8 h-8 text-slate-400" />
                         </div>
-                        <h3 className="text-lg font-bold text-slate-700">No Lesson Plans</h3>
-                        <p className="text-slate-500">You don't have any classes scheduled for this day.</p>
-                        <Button className="mt-4" onClick={() => navigate('/portal/plans/new')}>Create Plan</Button>
+                        <h3 className="text-lg font-bold text-slate-700">{t('noLessonPlans')}</h3>
+                        <p className="text-slate-500">{t('youDontHaveAnyClasses')}</p>
+                        <Button className="mt-4" onClick={() => navigate('/portal/plans/new')}>{t('createPlan')}</Button>
                     </div>
                 ) : (
                     plans.map(p => (
@@ -397,7 +398,7 @@ const LessonPlanList = () => {
                                         </span>
                                     </div>
                                     <div className="flex items-center gap-2 mt-4 pt-3 border-t border-slate-100">
-                                        <Link to={`/portal/plans/${p.id}`} className="flex-1 text-center text-sm font-medium text-blue-600 hover:bg-blue-50 py-1.5 rounded transition-colors">View Details</Link>
+                                        <Link to={`/portal/plans/${p.id}`} className="flex-1 text-center text-sm font-medium text-blue-600 hover:bg-blue-50 py-1.5 rounded transition-colors">{t('viewDetails')}</Link>
                                     </div>
                                 </div>
                             </div>
@@ -419,8 +420,7 @@ const LessonPlanList = () => {
                     <div className="grid gap-4">
                         {lessonPlans.length === 0 ? (
                             <div className="text-center py-12 bg-white rounded-xl border border-dashed text-slate-500">
-                                No lesson plans found.
-                            </div>
+                                {t('noLessonPlansFound')}</div>
                         ) : (
                             lessonPlans.map(p => (
                                 <Card key={p.id} className="p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 hover:border-blue-300 transition-colors">
@@ -449,7 +449,7 @@ const LessonPlanList = () => {
 
                 <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-4 border-t border-slate-200">
                     <div className="text-sm text-slate-500">
-                        Page {currentPage}
+                        {t('page')}{currentPage}
                     </div>
                     <div className="flex gap-2">
                         <Button
@@ -458,15 +458,14 @@ const LessonPlanList = () => {
                             onClick={handlePrevPage}
                             disabled={currentPage === 1 || isLoadingData}
                         >
-                            <ChevronLeft className="w-4 h-4 mr-1" /> Previous
-                        </Button>
+                            <ChevronLeft className="w-4 h-4 mr-1" /> {t('previous')}</Button>
                         <Button
                             variant="secondary"
                             size="sm"
                             onClick={handleNextPage}
                             disabled={!hasMore || isLoadingData}
                         >
-                            Next <ChevronRight className="w-4 h-4 ml-1" />
+                            {t('next')}<ChevronRight className="w-4 h-4 ml-1" />
                         </Button>
                     </div>
                 </div>

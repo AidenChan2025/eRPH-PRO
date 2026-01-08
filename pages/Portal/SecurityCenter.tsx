@@ -10,9 +10,10 @@ import {
     Eye, Shield, Fingerprint, Mail, Key, Info
 } from 'lucide-react';
 import { doc, updateDoc, db } from '../../services/firebase';
+import { useTranslation } from 'react-i18next';
 
 const SecurityCenter = () => {
-    const { t } = useLanguage();
+        const { t } = useLanguage();
     const { currentUser, setCurrentUser, logout } = useGlobal();
     const [isSaving, setIsSaving] = useState(false);
 
@@ -52,13 +53,11 @@ const SecurityCenter = () => {
                         <div className="p-2 bg-emerald-100 rounded-xl text-emerald-600">
                             <ShieldCheck className="w-8 h-8" />
                         </div>
-                        Security & Privacy Center
-                    </h2>
-                    <p className="text-slate-500 mt-1 font-medium">Protect your educational registry and personal data.</p>
+                        {t('securityPrivacyCenter')}</h2>
+                    <p className="text-slate-500 mt-1 font-medium">{t('protectYourEducationalRegistryAnd')}</p>
                 </div>
                 <Button onClick={handleSave} isLoading={isSaving} className="rounded-2xl h-12 px-8 shadow-xl shadow-emerald-500/20 bg-emerald-600 hover:bg-emerald-700 border-none">
-                    <Lock className="w-4 h-4 mr-2" /> Apply Security Policy
-                </Button>
+                    <Lock className="w-4 h-4 mr-2" /> {t('applySecurityPolicy')}</Button>
             </header>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -66,8 +65,7 @@ const SecurityCenter = () => {
                 <div className="lg:col-span-2 space-y-6">
                     <Card className="p-8 rounded-3xl border-slate-100 shadow-xl shadow-slate-200/50">
                         <h3 className="font-black text-slate-800 uppercase tracking-tight text-sm mb-6 flex items-center gap-2">
-                            <Shield className="w-4 h-4 text-blue-600"/> Advanced Protection
-                        </h3>
+                            <Shield className="w-4 h-4 text-blue-600"/> {t('advancedProtection')}</h3>
                         
                         <div className="space-y-6">
                             <div className="flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100 group hover:border-blue-200 transition-all">
@@ -76,8 +74,8 @@ const SecurityCenter = () => {
                                         <Smartphone className="w-6 h-6"/>
                                     </div>
                                     <div>
-                                        <h4 className="font-bold text-slate-800">Two-Factor Authentication</h4>
-                                        <p className="text-xs text-slate-500">Add an extra layer of security via mobile app or SMS.</p>
+                                        <h4 className="font-bold text-slate-800">{t('twofactorAuthentication')}</h4>
+                                        <p className="text-xs text-slate-500">{t('addAnExtraLayerOf')}</p>
                                     </div>
                                 </div>
                                 <button 
@@ -90,20 +88,20 @@ const SecurityCenter = () => {
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
-                                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Auto-Lock Inactivity (Mins)</label>
+                                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">{t('autolockInactivityMins')}</label>
                                     <select 
                                         className="w-full border-2 border-slate-100 rounded-2xl p-3.5 text-sm font-bold focus:border-blue-500 outline-none bg-white shadow-sm"
                                         value={config.sessionTimeoutMinutes}
                                         onChange={e => setConfig({...config, sessionTimeoutMinutes: Number(e.target.value)})}
                                     >
-                                        <option value={5}>5 Minutes (Maximum Security)</option>
-                                        <option value={15}>15 Minutes (Standard)</option>
-                                        <option value={30}>30 Minutes (Balanced)</option>
-                                        <option value={60}>60 Minutes (Convenience)</option>
+                                        <option value={5}>{t('5MinutesMaximumSecurity')}</option>
+                                        <option value={15}>{t('15MinutesStandard')}</option>
+                                        <option value={30}>{t('30MinutesBalanced')}</option>
+                                        <option value={60}>{t('60MinutesConvenience')}</option>
                                     </select>
                                 </div>
                                 <div>
-                                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Account Recovery Email</label>
+                                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">{t('accountRecoveryEmail')}</label>
                                     <div className="relative">
                                         <Mail className="absolute left-4 top-3.5 w-4 h-4 text-slate-300" />
                                         <input 
@@ -119,8 +117,7 @@ const SecurityCenter = () => {
 
                     <Card className="p-8 rounded-3xl border-slate-100 shadow-xl shadow-slate-200/50">
                         <h3 className="font-black text-slate-800 uppercase tracking-tight text-sm mb-6 flex items-center gap-2">
-                            <History className="w-4 h-4 text-slate-400"/> Audit Trail: Recent Access
-                        </h3>
+                            <History className="w-4 h-4 text-slate-400"/> {t('auditTrailRecentAccess')}</h3>
                         <div className="space-y-4">
                             {mockHistory.map(log => (
                                 <div key={log.id} className="flex items-center justify-between p-4 bg-white border border-slate-100 rounded-2xl hover:shadow-md transition-shadow">
@@ -148,35 +145,33 @@ const SecurityCenter = () => {
                         <div className="absolute -right-8 -bottom-8 opacity-10">
                             <Fingerprint className="w-48 h-48"/>
                         </div>
-                        <h4 className="font-black uppercase tracking-widest text-[10px] text-blue-400 mb-4">Security Score</h4>
+                        <h4 className="font-black uppercase tracking-widest text-[10px] text-blue-400 mb-4">{t('securityScore')}</h4>
                         <div className="flex items-end gap-2 mb-4">
                             <span className="text-5xl font-black">82</span>
-                            <span className="text-blue-400 font-bold mb-1">/ 100</span>
+                            <span className="text-blue-400 font-bold mb-1">{t('100')}</span>
                         </div>
                         <div className="w-full bg-white/10 h-2 rounded-full overflow-hidden mb-6">
                             <div className="bg-blue-500 h-full w-[82%]"></div>
                         </div>
                         <ul className="space-y-3 text-xs font-medium text-slate-300">
-                            <li className="flex gap-2 items-start"><CheckCircle className="w-4 h-4 text-emerald-500 shrink-0"/> Strong Password Active</li>
-                            <li className="flex gap-2 items-start text-amber-400"><AlertCircle className="w-4 h-4 shrink-0"/> 2FA is currently disabled</li>
-                            <li className="flex gap-2 items-start"><CheckCircle className="w-4 h-4 text-emerald-500 shrink-0"/> Login alerts enabled</li>
+                            <li className="flex gap-2 items-start"><CheckCircle className="w-4 h-4 text-emerald-500 shrink-0"/> {t('strongPasswordActive')}</li>
+                            <li className="flex gap-2 items-start text-amber-400"><AlertCircle className="w-4 h-4 shrink-0"/> {t('2faIsCurrentlyDisabled')}</li>
+                            <li className="flex gap-2 items-start"><CheckCircle className="w-4 h-4 text-emerald-500 shrink-0"/> {t('loginAlertsEnabled')}</li>
                         </ul>
                     </Card>
 
                     <Card className="p-6 rounded-3xl border-slate-100 shadow-sm space-y-4">
                         <h4 className="font-black text-slate-800 text-sm flex items-center gap-2 uppercase tracking-tight">
-                            <Key className="w-4 h-4 text-amber-500"/> Credentials
-                        </h4>
-                        <p className="text-xs text-slate-500">Last changed: {config.lastPasswordChange}</p>
-                        <Button variant="secondary" className="w-full rounded-xl py-3 font-bold text-xs">Update Master Password</Button>
-                        <Button variant="danger" className="w-full rounded-xl py-3 font-bold text-xs" onClick={logout}>Terminate All Sessions</Button>
+                            <Key className="w-4 h-4 text-amber-500"/> {t('credentials')}</h4>
+                        <p className="text-xs text-slate-500">{t('lastChanged')}{config.lastPasswordChange}</p>
+                        <Button variant="secondary" className="w-full rounded-xl py-3 font-bold text-xs">{t('updateMasterPassword')}</Button>
+                        <Button variant="danger" className="w-full rounded-xl py-3 font-bold text-xs" onClick={logout}>{t('terminateAllSessions')}</Button>
                     </Card>
 
                     <div className="p-6 bg-blue-50 rounded-3xl border border-blue-100 flex gap-3">
                         <Info className="w-5 h-5 text-blue-600 shrink-0 mt-0.5" />
                         <p className="text-[10px] font-bold text-blue-800 leading-normal uppercase">
-                            eRPH Pro implements AES-256 encryption for all data at rest. Your digital signature is stored separately in an encrypted vault.
-                        </p>
+                            {t('erphProImplementsAes256Encryption')}</p>
                     </div>
                 </div>
             </div>

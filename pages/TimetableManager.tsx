@@ -7,6 +7,7 @@ import Button from '../components/Button';
 import { TimetableTemplate, TimetableSlot, DayOfWeek, UserRole, User } from '../types';
 import { collection, query, where, getDocs, db, setDoc, doc, deleteDoc, writeBatch } from '../services/firebase';
 import { Plus, Trash2, Save, Calendar as CalendarIcon, Clock, Move, X, Palette, AlertCircle, Copy, CheckCircle, Edit2, User as UserIcon, ChevronDown } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 // --- CONFIG ---
 const START_HOUR = 7; // 7:00 AM
@@ -41,7 +42,7 @@ const COLORS = [
 ];
 
 const TimetableManager = () => {
-    const { t } = useLanguage();
+        const { t } = useLanguage();
     const { currentUser, viewMode } = useGlobal();
     
     // Data State
@@ -374,7 +375,7 @@ const TimetableManager = () => {
                                 value={selectedTemplateId || ''}
                                 onChange={(e) => handleTemplateSwitch(e.target.value)}
                             >
-                                {templates.length === 0 && <option value="">No Templates</option>}
+                                {templates.length === 0 && <option value="">{t('noTemplates')}</option>}
                                 {templates.map(t => <option key={t.id} value={t.id}>{t.name} {t.isActive ? '(Active)' : ''}</option>)}
                             </select>
                             <ChevronDown className="absolute right-3 top-3 w-4 h-4 text-slate-400 pointer-events-none"/>
@@ -384,12 +385,10 @@ const TimetableManager = () => {
                     {selectedTemplateId && canEdit && (
                         isActive ? (
                              <span className="inline-flex items-center px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold border border-emerald-100 shadow-sm animate-in fade-in zoom-in-95">
-                                <CheckCircle className="w-3 h-3 mr-1.5"/> Active Schedule
-                             </span>
+                                <CheckCircle className="w-3 h-3 mr-1.5"/> {t('activeSchedule')}</span>
                         ) : (
                             <button onClick={handleSetActive} className="text-xs text-slate-400 hover:text-emerald-600 hover:underline transition-colors">
-                                Set as Active
-                            </button>
+                                {t('setAsActive')}</button>
                         )
                     )}
                 </div>
@@ -495,30 +494,30 @@ const TimetableManager = () => {
                 <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-md flex items-center justify-center z-50 p-4 animate-in fade-in duration-200">
                     <Card className="w-full max-w-sm shadow-2xl overflow-hidden border-0">
                         <div className="p-5 border-b flex justify-between items-center bg-slate-50">
-                            <h3 className="font-black text-lg text-slate-800 flex items-center gap-2 uppercase tracking-tight"><Clock className="w-5 h-5 text-blue-600"/> Modify Slot</h3>
+                            <h3 className="font-black text-lg text-slate-800 flex items-center gap-2 uppercase tracking-tight"><Clock className="w-5 h-5 text-blue-600"/> {t('modifySlot')}</h3>
                             <button onClick={() => setEditingSlot(null)} className="hover:bg-slate-200 p-2 rounded-xl transition-colors"><X className="w-5 h-5 text-slate-500"/></button>
                         </div>
                         <div className="p-6 space-y-5">
                             <div>
-                                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Subject Title</label>
+                                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">{t('subjectTitle')}</label>
                                 <input className="w-full border-2 border-slate-100 rounded-xl p-3 text-sm font-bold focus:border-blue-500 focus:ring-0 outline-none transition-all" value={editingSlot.subject} onChange={e => setEditingSlot({...editingSlot, subject: e.target.value})} autoFocus />
                             </div>
                             <div>
-                                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Target Class</label>
+                                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">{t('targetClass')}</label>
                                 <input className="w-full border-2 border-slate-100 rounded-xl p-3 text-sm font-bold focus:border-blue-500 focus:ring-0 outline-none transition-all" value={editingSlot.class} onChange={e => setEditingSlot({...editingSlot, class: e.target.value})} />
                             </div>
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Starts At</label>
+                                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">{t('startsAt')}</label>
                                     <input type="time" className="w-full border-2 border-slate-100 rounded-xl p-3 text-sm font-bold focus:border-blue-500 focus:ring-0 outline-none" value={editingSlot.startTime} onChange={e => setEditingSlot({...editingSlot, startTime: e.target.value})} />
                                 </div>
                                 <div>
-                                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">Ends At</label>
+                                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5">{t('endsAt')}</label>
                                     <input type="time" className="w-full border-2 border-slate-100 rounded-xl p-3 text-sm font-bold focus:border-blue-500 focus:ring-0 outline-none" value={editingSlot.endTime} onChange={e => setEditingSlot({...editingSlot, endTime: e.target.value})} />
                                 </div>
                             </div>
                             <div>
-                                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">Visual Label</label>
+                                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2">{t('visualLabel')}</label>
                                 <div className="flex gap-2.5 flex-wrap">
                                     {COLORS.map(c => (
                                         <button key={c} onClick={() => setEditingSlot({...editingSlot, color: c})} className={`w-9 h-9 rounded-xl border-4 transition-all shadow-sm ${editingSlot.color === c ? 'border-white ring-4 ring-blue-500 scale-110 shadow-lg' : 'border-transparent hover:scale-105'}`} style={{ backgroundColor: c }} />
@@ -527,8 +526,8 @@ const TimetableManager = () => {
                             </div>
                         </div>
                         <div className="p-5 border-t bg-slate-50 flex justify-between gap-3">
-                            <Button variant="danger" size="sm" onClick={deleteSlot} className="rounded-xl px-4 flex-1"><Trash2 className="w-4 h-4 mr-2"/> Remove</Button>
-                            <Button onClick={saveSlotChanges} className="rounded-xl px-4 flex-1 shadow-lg shadow-blue-200"><CheckCircle className="w-4 h-4 mr-2"/> Update Slot</Button>
+                            <Button variant="danger" size="sm" onClick={deleteSlot} className="rounded-xl px-4 flex-1"><Trash2 className="w-4 h-4 mr-2"/> {t('remove')}</Button>
+                            <Button onClick={saveSlotChanges} className="rounded-xl px-4 flex-1 shadow-lg shadow-blue-200"><CheckCircle className="w-4 h-4 mr-2"/> {t('updateSlot')}</Button>
                         </div>
                     </Card>
                 </div>

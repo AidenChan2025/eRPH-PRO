@@ -9,8 +9,10 @@ import Button from '../../components/Button';
 import PublicNavbar from '../../components/PublicNavbar';
 
 import { articles_data } from '../../utils/articles_data';
+import { useTranslation } from 'react-i18next';
 
 const ArticleReader = () => {
+    const { t } = useTranslation();
     const { slug } = useParams();
     const navigate = useNavigate();
     const article = articles_data[slug || "integrating-ai-math"];
@@ -37,7 +39,7 @@ const ArticleReader = () => {
         return () => { document.head.removeChild(script); };
     }, [article]);
 
-    if (!article) return <div className="p-20 text-center">Article Not Found</div>;
+    if (!article) return <div className="p-20 text-center">{t('articleNotFound')}</div>;
 
     return (
         <div className="min-h-screen bg-slate-50 pb-20 selection:bg-blue-100 selection:text-blue-900">
@@ -47,11 +49,10 @@ const ArticleReader = () => {
             <div className="h-14 bg-white/80 backdrop-blur-md border-b fixed top-16 w-full z-40">
                 <div className="max-w-6xl mx-auto px-6 h-full flex items-center justify-between">
                     <button onClick={() => navigate('/blog')} className="flex items-center gap-2 text-slate-600 hover:text-blue-600 font-black text-xs transition-all uppercase tracking-widest">
-                        <ArrowLeft className="w-4 h-4" /> Back to Article Hub
-                    </button>
+                        <ArrowLeft className="w-4 h-4" /> {t('backToArticleHub')}</button>
                     <div className="flex gap-4">
-                        <button className="flex items-center gap-2 text-slate-400 hover:text-slate-600 font-bold text-xs uppercase transition-colors"><Bookmark className="w-4 h-4" /> Save</button>
-                        <button className="flex items-center gap-2 text-slate-400 hover:text-slate-600 font-bold text-xs uppercase transition-colors"><Share2 className="w-4 h-4" /> Share</button>
+                        <button className="flex items-center gap-2 text-slate-400 hover:text-slate-600 font-bold text-xs uppercase transition-colors"><Bookmark className="w-4 h-4" /> {t('save')}</button>
+                        <button className="flex items-center gap-2 text-slate-400 hover:text-slate-600 font-bold text-xs uppercase transition-colors"><Share2 className="w-4 h-4" /> {t('share')}</button>
                     </div>
                 </div>
             </div>
@@ -62,7 +63,7 @@ const ArticleReader = () => {
                     <main className="lg:col-span-8 space-y-12">
                         <header className="space-y-8">
                             <div className="flex items-center gap-2 text-blue-600 font-black uppercase tracking-[0.2em] text-[10px]">
-                                <Sparkles className="w-4 h-4" /> AI Summary • {article.category}
+                                <Sparkles className="w-4 h-4" /> {t('aiSummary')}{article.category}
                             </div>
                             <h1 className="text-4xl md:text-6xl font-black text-slate-900 tracking-tight leading-[1.1]">
                                 {article.title}
@@ -72,10 +73,10 @@ const ArticleReader = () => {
                             </p>
                             <div className="flex flex-wrap items-center gap-8 py-6 border-y border-slate-100">
                                 <Link to="/about" className="flex items-center gap-3 group">
-                                    <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl flex items-center justify-center text-white font-black text-sm shadow-lg group-hover:scale-110 transition-transform">AC</div>
+                                    <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl flex items-center justify-center text-white font-black text-sm shadow-lg group-hover:scale-110 transition-transform">{t('ac')}</div>
                                     <div className="text-xs">
                                         <p className="font-black text-slate-900 group-hover:text-blue-600 transition-colors uppercase tracking-widest">{article.author}</p>
-                                        <p className="text-slate-400 font-bold uppercase mt-0.5">Chief Editor</p>
+                                        <p className="text-slate-400 font-bold uppercase mt-0.5">{t('chiefEditor')}</p>
                                     </div>
                                 </Link>
                                 <div className="flex items-center gap-2 text-slate-400 text-xs font-black uppercase tracking-widest">
@@ -102,8 +103,7 @@ const ArticleReader = () => {
                                                     <TrendingUp className="w-32 h-32" />
                                                 </div>
                                                 <h3 className="text-xl font-black flex items-center gap-3 uppercase tracking-widest">
-                                                    <Sparkles className="w-6 h-6 text-blue-200" /> Professional Insight
-                                                </h3>
+                                                    <Sparkles className="w-6 h-6 text-blue-200" /> {t('professionalInsight')}</h3>
                                                 <p className="text-lg font-bold text-blue-50 opacity-90 leading-relaxed relative z-10">
                                                     {section.content}
                                                 </p>
@@ -141,8 +141,7 @@ const ArticleReader = () => {
                         {/* FAQ Section */}
                         <div className="mt-20 p-10 bg-slate-900 rounded-[3rem] space-y-8 text-white">
                             <h3 className="text-2xl font-black flex items-center gap-3">
-                                <MessageSquare className="w-6 h-6 text-blue-400" /> Frequently Asked Questions
-                            </h3>
+                                <MessageSquare className="w-6 h-6 text-blue-400" /> {t('frequentlyAskedQuestions')}</h3>
                             <div className="space-y-6">
                                 {article.faqs.map((f: any, i: number) => (
                                     <div key={i} className="space-y-3 p-6 bg-white/5 rounded-2xl border border-white/10">
@@ -157,12 +156,12 @@ const ArticleReader = () => {
 
                         <div className="flex items-center justify-between pt-16 border-t border-slate-100">
                             <div className="flex gap-4">
-                                <Button variant="secondary" size="md" className="rounded-2xl bg-white shadow-sm border-slate-200"><ThumbsUp className="w-4 h-4 mr-2" /> Helpful (1.2k)</Button>
-                                <Button variant="secondary" size="md" className="rounded-2xl bg-white shadow-sm border-slate-200"><Share2 className="w-4 h-4 mr-2" /> Share Article</Button>
+                                <Button variant="secondary" size="md" className="rounded-2xl bg-white shadow-sm border-slate-200"><ThumbsUp className="w-4 h-4 mr-2" /> {t('helpful12k')}</Button>
+                                <Button variant="secondary" size="md" className="rounded-2xl bg-white shadow-sm border-slate-200"><Share2 className="w-4 h-4 mr-2" /> {t('shareArticle')}</Button>
                             </div>
                             <div className="flex gap-2">
-                                <span className="px-4 py-2 bg-slate-100 text-slate-500 rounded-full text-[10px] font-black uppercase tracking-widest">Education Architecture</span>
-                                <span className="px-4 py-2 bg-slate-100 text-slate-500 rounded-full text-[10px] font-black uppercase tracking-widest">DSKP API</span>
+                                <span className="px-4 py-2 bg-slate-100 text-slate-500 rounded-full text-[10px] font-black uppercase tracking-widest">{t('educationArchitecture')}</span>
+                                <span className="px-4 py-2 bg-slate-100 text-slate-500 rounded-full text-[10px] font-black uppercase tracking-widest">{t('dskpApi')}</span>
                             </div>
                         </div>
                     </main>
@@ -172,16 +171,15 @@ const ArticleReader = () => {
                         <div className="sticky top-40 space-y-8">
                             <div className="p-8 bg-white border border-slate-200 rounded-[2.5rem] shadow-sm space-y-6">
                                 <div className="flex items-center gap-4">
-                                    <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl flex items-center justify-center text-white font-black text-xl shadow-lg shadow-blue-200">AC</div>
+                                    <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl flex items-center justify-center text-white font-black text-xl shadow-lg shadow-blue-200">{t('ac')}</div>
                                     <div>
-                                        <p className="font-black text-slate-900 text-lg">Aiden Chan</p>
-                                        <p className="text-[10px] font-black uppercase text-slate-400 tracking-[0.2em] mt-0.5">Master Architect</p>
+                                        <p className="font-black text-slate-900 text-lg">{t('aidenChan')}</p>
+                                        <p className="text-[10px] font-black uppercase text-slate-400 tracking-[0.2em] mt-0.5">{t('masterArchitect')}</p>
                                     </div>
                                 </div>
                                 <p className="text-sm text-slate-500 font-semibold leading-relaxed">
-                                    Aiden leads the eRPH Pro engineering team, focusing on the intersection of Large Language Models and Malaysian secondary education systems.
-                                </p>
-                                <Button className="w-full rounded-2xl h-14 font-black text-xs uppercase tracking-widest shadow-xl shadow-blue-500/20">Follow Insights</Button>
+                                    {t('aidenLeadsTheErphPro')}</p>
+                                <Button className="w-full rounded-2xl h-14 font-black text-xs uppercase tracking-widest shadow-xl shadow-blue-500/20">{t('followInsights')}</Button>
                             </div>
 
                             <div className="p-8 bg-blue-600 rounded-[2.5rem] text-white shadow-2xl space-y-6 relative overflow-hidden group">
@@ -189,18 +187,17 @@ const ArticleReader = () => {
                                     <Sparkles className="w-48 h-48" />
                                 </div>
                                 <div className="relative z-10 space-y-4">
-                                    <h4 className="text-2xl font-black leading-tight">Sync your RPH with Gemini 1.5 Pro today.</h4>
-                                    <p className="text-blue-100 text-sm font-semibold opacity-90">Unlock the world's most advanced RPH engine and save 15+ hours per week.</p>
+                                    <h4 className="text-2xl font-black leading-tight">{t('syncYourRphWithGemini')}</h4>
+                                    <p className="text-blue-100 text-sm font-semibold opacity-90">{t('unlockTheWorldsMostAdvanced')}</p>
                                     <Link to="/portal/login" className="block">
-                                        <Button className="w-full rounded-2xl h-14 font-black text-xs uppercase tracking-widest bg-white text-blue-600 border-none shadow-lg">Start Free Trial</Button>
+                                        <Button className="w-full rounded-2xl h-14 font-black text-xs uppercase tracking-widest bg-white text-blue-600 border-none shadow-lg">{t('startFreeTrial')}</Button>
                                     </Link>
                                 </div>
                             </div>
 
                             <div className="p-8 bg-white border border-slate-200 rounded-[2.5rem] space-y-6">
                                 <h4 className="font-black uppercase text-[10px] tracking-widest text-slate-400 flex items-center gap-2">
-                                    <AlertCircle className="w-4 h-4" /> Recent Publications
-                                </h4>
+                                    <AlertCircle className="w-4 h-4" /> {t('recentPublications')}</h4>
                                 <div className="space-y-5">
                                     {[
                                         "Automating DSKP Mapping for SJKC",
@@ -209,7 +206,7 @@ const ArticleReader = () => {
                                     ].map((t, i) => (
                                         <Link key={i} to={`/blog`} className="block group">
                                             <p className="text-sm font-black text-slate-800 group-hover:text-blue-600 transition-colors leading-snug">{t}</p>
-                                            <p className="text-[10px] font-bold text-slate-400 uppercase mt-1">April 2025 • 4 min read</p>
+                                            <p className="text-[10px] font-bold text-slate-400 uppercase mt-1">{t('april20254MinRead')}</p>
                                         </Link>
                                     ))}
                                 </div>

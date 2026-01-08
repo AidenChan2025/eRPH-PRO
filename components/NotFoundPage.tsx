@@ -3,8 +3,10 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Home, ArrowLeft, Search, ShieldAlert } from 'lucide-react';
 import Button from './Button';
+import { useTranslation } from 'react-i18next';
 
 const NotFoundPage = () => {
+    const { t } = useTranslation();
   const navigate = useNavigate();
 
   return (
@@ -23,10 +25,9 @@ const NotFoundPage = () => {
 
         {/* Text Content */}
         <div className="space-y-3">
-          <h1 className="text-3xl font-black text-slate-900 tracking-tight">Resource Not Found</h1>
+          <h1 className="text-3xl font-black text-slate-900 tracking-tight">{t('resourceNotFound')}</h1>
           <p className="text-slate-500 leading-relaxed">
-            The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.
-          </p>
+            {t('thePageYouAreLooking')}</p>
         </div>
 
         {/* Quick Search / Helpful Links */}
@@ -46,24 +47,21 @@ const NotFoundPage = () => {
               className="w-full"
               onClick={() => navigate(-1)}
             >
-              <ArrowLeft className="w-4 h-4 mr-2" /> Go Back
-            </Button>
+              <ArrowLeft className="w-4 h-4 mr-2" /> {t('goBack')}</Button>
             <Button 
               variant="primary" 
               size="sm" 
               className="w-full"
               onClick={() => navigate('/')}
             >
-              <Home className="w-4 h-4 mr-2" /> Dashboard
-            </Button>
+              <Home className="w-4 h-4 mr-2" /> {t('dashboard')}</Button>
           </div>
         </div>
 
         {/* Footer */}
         <div className="pt-4">
           <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-            eRPH Pro &bull; Security & Registry Subsystem
-          </p>
+            {t('erphProBullSecurityRegistry')}</p>
         </div>
       </div>
     </div>

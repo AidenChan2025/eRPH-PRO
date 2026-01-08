@@ -5,8 +5,10 @@ import Card from '../../components/Card';
 import PublicNavbar from '../../components/PublicNavbar';
 import Button from '../../components/Button';
 import { articles_data } from '../../utils/articles_data';
+import { useTranslation } from 'react-i18next';
 
 const ArticleList = () => {
+    const { t } = useTranslation();
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedCategory, setSelectedCategory] = useState('All');
 
@@ -32,19 +34,17 @@ const ArticleList = () => {
                     <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6 border-b pb-8">
                         <div className="space-y-4">
                             <div className="flex items-center gap-2 text-blue-600 font-black uppercase tracking-[0.2em] text-[10px]">
-                                <Sparkles className="w-4 h-4" /> Ultimate Education Resource Hub
-                            </div>
-                            <h1 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight">The Digital Library <span className="text-slate-400 font-black italic">for Modern Educators</span></h1>
+                                <Sparkles className="w-4 h-4" /> {t('ultimateEducationResourceHub')}</div>
+                            <h1 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight">{t('theDigitalLibrary')}<span className="text-slate-400 font-black italic">{t('forModernEducators')}</span></h1>
                             <p className="text-slate-500 font-medium max-w-xl italic">
-                                Over 100+ precision-engineered articles covering Malaysian pedagogy, AI integration, and school leadership excellence.
-                            </p>
+                                {t('over100PrecisionengineeredArticlesCovering')}</p>
                         </div>
                         <div className="flex items-center gap-4">
                             <div className="text-right hidden md:block">
-                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Chief Editor</p>
-                                <p className="text-sm font-black text-slate-800 uppercase tracking-tight">Aiden Chan</p>
+                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">{t('chiefEditor')}</p>
+                                <p className="text-sm font-black text-slate-800 uppercase tracking-tight">{t('aidenChan')}</p>
                             </div>
-                            <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl flex items-center justify-center text-white font-black shadow-lg shadow-blue-200 uppercase">AC</div>
+                            <div className="w-12 h-12 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl flex items-center justify-center text-white font-black shadow-lg shadow-blue-200 uppercase">{t('ac')}</div>
                         </div>
                     </div>
 
@@ -63,7 +63,7 @@ const ArticleList = () => {
                         <div className="flex items-center gap-2 overflow-x-auto pb-2 lg:pb-0 custom-scrollbar">
                             <div className="flex items-center gap-2 px-3 py-2 bg-slate-100 rounded-xl text-slate-500 shrink-0">
                                 <Filter className="w-4 h-4" />
-                                <span className="text-[10px] font-black uppercase tracking-widest">Filter</span>
+                                <span className="text-[10px] font-black uppercase tracking-widest">{t('filter')}</span>
                             </div>
                             {categories.map(cat => (
                                 <button
@@ -99,7 +99,7 @@ const ArticleList = () => {
                                                     </div>
                                                     <div className="pt-6 flex items-center justify-between">
                                                         <span className="inline-flex items-center gap-2 text-blue-600 font-black text-xs uppercase tracking-widest">
-                                                            View Full Analysis <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                                                            {t('viewFullAnalysis')}<ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                                                         </span>
                                                         <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{article.readTime}</span>
                                                     </div>
@@ -111,7 +111,7 @@ const ArticleList = () => {
                             ) : (
                                 <div className="p-20 text-center bg-white rounded-[3rem] border border-dashed border-slate-200">
                                     <BookOpen className="w-12 h-12 text-slate-200 mx-auto mb-4" />
-                                    <p className="text-slate-400 font-bold uppercase tracking-widest">No articles found matching your criteria</p>
+                                    <p className="text-slate-400 font-bold uppercase tracking-widest">{t('noArticlesFoundMatchingYour')}</p>
                                 </div>
                             )}
                         </div>
@@ -122,21 +122,21 @@ const ArticleList = () => {
                                 <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:scale-125 transition-transform duration-700">
                                     <Sparkles className="w-32 h-32" />
                                 </div>
-                                <h3 className="text-xl font-black uppercase tracking-tight text-blue-400">Editorial Mandate</h3>
-                                <p className="text-sm font-semibold text-slate-400 leading-relaxed italic">"Every article in our hub is cross-referenced with the latest MoE circulars and DSKP mappings to ensure teacher accuracy."</p>
+                                <h3 className="text-xl font-black uppercase tracking-tight text-blue-400">{t('editorialMandate')}</h3>
+                                <p className="text-sm font-semibold text-slate-400 leading-relaxed italic">{t('everyArticleInOurHub')}</p>
                                 <div className="pt-4 border-t border-white/10 flex items-center gap-4">
-                                    <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center font-black">AC</div>
+                                    <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center font-black">{t('ac')}</div>
                                     <div className="text-xs">
-                                        <p className="font-black text-white uppercase tracking-widest transition-colors mb-0.5">Aiden's Editorial Team</p>
-                                        <p className="text-slate-500 font-bold uppercase">Malaysia HQ</p>
+                                        <p className="font-black text-white uppercase tracking-widest transition-colors mb-0.5">{t('aidensEditorialTeam')}</p>
+                                        <p className="text-slate-500 font-bold uppercase">{t('malaysiaHq')}</p>
                                     </div>
                                 </div>
                             </div>
 
                             <div className="sticky top-40 space-y-8">
                                 <Card className="p-8 rounded-[2.5rem] shadow-sm bg-white border-slate-100 flex flex-col items-center justify-center text-[10px] uppercase font-black text-slate-300 gap-2 h-96 border-dashed text-center">
-                                    <p>Google AdSense</p>
-                                    <p className="opacity-50">High Intent Educational Traffic</p>
+                                    <p>{t('googleAdsense')}</p>
+                                    <p className="opacity-50">{t('highIntentEducationalTraffic')}</p>
                                 </Card>
                             </div>
                         </aside>

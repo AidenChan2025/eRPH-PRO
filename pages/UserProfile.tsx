@@ -11,9 +11,10 @@ import {
 } from 'lucide-react';
 import { doc, updateDoc, db } from '../services/firebase';
 import { api } from '../services/api';
+import { useTranslation } from 'react-i18next';
 
 const UserProfile = () => {
-    const { t } = useLanguage();
+        const { t } = useLanguage();
     const { currentUser, setCurrentUser } = useGlobal();
     const [activeTab, setActiveTab] = useState<'personal' | 'service' | 'cloud'>('personal');
     const [isSaving, setIsSaving] = useState(false);
@@ -190,8 +191,7 @@ const UserProfile = () => {
                                     {formData.grade || 'Grade Not Set'}
                                 </span>
                                 <span className="text-blue-200 text-sm font-medium flex items-center gap-1">
-                                    <MapPin className="w-3 h-3" /> Malaysia
-                                </span>
+                                    <MapPin className="w-3 h-3" /> {t('malaysia')}</span>
                             </div>
                         </div>
                     </div>
@@ -216,7 +216,7 @@ const UserProfile = () => {
                         </h3>
                         <div className="space-y-4">
                             <div>
-                                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Professional Bio</label>
+                                <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">{t('professionalBio')}</label>
                                 <textarea
                                     className="w-full border-2 border-slate-50 bg-slate-50/30 rounded-2xl p-4 text-sm font-medium h-32 focus:border-blue-500 outline-none transition-all resize-none shadow-inner"
                                     placeholder="Tell us about your teaching philosophy..."
@@ -227,21 +227,19 @@ const UserProfile = () => {
                             <div className="p-4 bg-blue-50 rounded-2xl border border-blue-100 relative overflow-hidden">
                                 <Sparkles className="absolute top-0 right-0 p-2 w-10 h-10 text-blue-200 opacity-50" />
                                 <p className="text-xs font-bold text-blue-700 leading-relaxed relative z-10">
-                                    Your profile is visible to school administrators for validation and placement records.
-                                </p>
+                                    {t('yourProfileIsVisibleTo')}</p>
                             </div>
                         </div>
                     </Card>
 
                     <Card className="p-6 rounded-3xl border-slate-100 shadow-sm bg-slate-900 text-white">
                         <h3 className="font-black uppercase tracking-widest text-[10px] text-slate-500 mb-4 flex items-center gap-2">
-                            <PenTool className="w-3.5 h-3.5" /> Digital Signature
-                        </h3>
+                            <PenTool className="w-3.5 h-3.5" /> {t('digitalSignature')}</h3>
                         <div className="aspect-video rounded-2xl bg-white/5 border border-white/10 border-dashed flex flex-col items-center justify-center gap-3 group hover:border-blue-400 transition-colors cursor-pointer">
                             <div className="p-3 rounded-full bg-white/10 text-slate-400 group-hover:text-blue-400 transition-colors">
                                 <Plus className="w-6 h-6" />
                             </div>
-                            <span className="text-[10px] font-black uppercase text-slate-500">Register Signature</span>
+                            <span className="text-[10px] font-black uppercase text-slate-500">{t('registerSignature')}</span>
                         </div>
                     </Card>
                 </div>
@@ -253,8 +251,7 @@ const UserProfile = () => {
                             onClick={() => setActiveTab('personal')}
                             className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${ activeTab === 'personal' ? 'bg-blue-600 text-white shadow-md' : 'text-slate-500 hover:bg-slate-50' } `}
                         >
-                            <UserIcon className="w-4 h-4" /> Account Info
-                        </button>
+                            <UserIcon className="w-4 h-4" /> {t('accountInfo')}</button>
                         <button
                             onClick={() => setActiveTab('service')}
                             className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${ activeTab === 'service' ? 'bg-indigo-600 text-white shadow-md' : 'text-slate-500 hover:bg-slate-50' } `}
@@ -265,15 +262,14 @@ const UserProfile = () => {
                             onClick={() => setActiveTab('cloud')}
                             className={`flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${ activeTab === 'cloud' ? 'bg-emerald-600 text-white shadow-md' : 'text-slate-500 hover:bg-slate-50' } `}
                         >
-                            <Sparkles className="w-4 h-4" /> Cloud Backup
-                        </button>
+                            <Sparkles className="w-4 h-4" /> {t('cloudBackup')}</button>
                     </div>
 
                     {activeTab === 'personal' && (
                         <Card className="p-8 rounded-3xl border-slate-100 shadow-sm space-y-6 animate-in slide-in-from-right-4 duration-300">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
-                                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Full Name</label>
+                                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">{t('fullName')}</label>
                                     <div className="relative">
                                         <UserIcon className="absolute left-4 top-3.5 w-4 h-4 text-slate-400" />
                                         <input
@@ -284,7 +280,7 @@ const UserProfile = () => {
                                     </div>
                                 </div>
                                 <div>
-                                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Professional Grade</label>
+                                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">{t('professionalGrade')}</label>
                                     <div className="relative">
                                         <Award className="absolute left-4 top-3.5 w-4 h-4 text-slate-400" />
                                         <input
@@ -296,7 +292,7 @@ const UserProfile = () => {
                                     </div>
                                 </div>
                                 <div>
-                                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Email Address</label>
+                                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">{t('emailAddress')}</label>
                                     <div className="relative">
                                         <Mail className="absolute left-4 top-3.5 w-4 h-4 text-slate-400" />
                                         <input
@@ -307,7 +303,7 @@ const UserProfile = () => {
                                     </div>
                                 </div>
                                 <div>
-                                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Phone Number</label>
+                                    <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">{t('phoneNumber')}</label>
                                     <div className="relative">
                                         <Phone className="absolute left-4 top-3.5 w-4 h-4 text-slate-400" />
                                         <input
@@ -324,17 +320,15 @@ const UserProfile = () => {
                     {activeTab === 'service' && (
                         <div className="space-y-4 animate-in slide-in-from-right-4 duration-300">
                             <div className="flex justify-between items-center px-2">
-                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Experience Timeline</p>
+                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{t('experienceTimeline')}</p>
                                 <button onClick={addServiceRecord} className="text-xs font-black text-blue-600 hover:underline flex items-center gap-1">
-                                    <Plus className="w-3 h-3" /> Add Record
-                                </button>
+                                    <Plus className="w-3 h-3" /> {t('addRecord')}</button>
                             </div>
 
                             <div className="space-y-4">
                                 {serviceHistory.length === 0 ? (
                                     <div className="p-12 text-center bg-white rounded-3xl border border-dashed text-slate-400 italic text-sm">
-                                        No service history recorded yet.
-                                    </div>
+                                        {t('noServiceHistoryRecordedYet')}</div>
                                 ) : (
                                     serviceHistory.map((sr, idx) => (
                                         <Card key={sr.id} className="p-6 rounded-3xl border-slate-100 hover:border-blue-200 transition-colors shadow-sm relative group">
@@ -348,7 +342,7 @@ const UserProfile = () => {
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                                 <div className="space-y-4">
                                                     <div>
-                                                        <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">School Name</label>
+                                                        <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">{t('schoolName')}</label>
                                                         <input
                                                             className="w-full border-2 border-slate-50 bg-slate-50/30 rounded-2xl p-3 text-sm font-bold focus:border-blue-500 outline-none transition-all"
                                                             value={sr.schoolName}
@@ -356,7 +350,7 @@ const UserProfile = () => {
                                                         />
                                                     </div>
                                                     <div>
-                                                        <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Position / Role</label>
+                                                        <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">{t('positionRole')}</label>
                                                         <input
                                                             className="w-full border-2 border-slate-50 bg-slate-50/30 rounded-2xl p-3 text-sm font-bold focus:border-blue-500 outline-none transition-all"
                                                             value={sr.position}
@@ -366,7 +360,7 @@ const UserProfile = () => {
                                                 </div>
                                                 <div className="grid grid-cols-2 gap-4">
                                                     <div>
-                                                        <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Start Date</label>
+                                                        <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">{t('startDate')}</label>
                                                         <input
                                                             type="date"
                                                             className="w-full border-2 border-slate-50 bg-slate-50/30 rounded-2xl p-3 text-sm font-bold focus:border-blue-500 outline-none transition-all"
@@ -375,7 +369,7 @@ const UserProfile = () => {
                                                         />
                                                     </div>
                                                     <div>
-                                                        <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">End Date</label>
+                                                        <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">{t('endDate')}</label>
                                                         <input
                                                             className="w-full border-2 border-slate-50 bg-slate-50/30 rounded-2xl p-3 text-sm font-bold focus:border-blue-500 outline-none transition-all"
                                                             value={sr.endDate}
@@ -402,10 +396,9 @@ const UserProfile = () => {
                                             <Sparkles className="w-8 h-8" />
                                         </div>
                                         <div>
-                                            <h3 className="text-xl font-black text-slate-800">Cloud Backup Setup</h3>
+                                            <h3 className="text-xl font-black text-slate-800">{t('cloudBackupSetup')}</h3>
                                             <p className="text-slate-500 text-sm font-medium mt-1">
-                                                Protect your work by syncing daily lesson plan backups to your Google Drive.
-                                            </p>
+                                                {t('protectYourWorkBySyncing')}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -421,14 +414,12 @@ const UserProfile = () => {
                                             <div className="w-0.5 flex-1 bg-slate-100 my-2"></div>
                                         </div>
                                         <div className="pb-8">
-                                            <h4 className="font-bold text-slate-800 text-lg mb-2">Connect Google Account</h4>
+                                            <h4 className="font-bold text-slate-800 text-lg mb-2">{t('connectGoogleAccount')}</h4>
                                             <p className="text-slate-500 text-sm mb-4 leading-relaxed max-w-lg">
-                                                Authorize eRPH Pro to create a secure "eRPH Pro Backups" folder in your Google Drive. We only access files we create.
-                                            </p>
+                                                {t('authorizeErphProToCreate')}</p>
                                             {!currentUser.google_token && (
                                                 <Button onClick={handleConnectDrive} className="rounded-xl shadow-lg shadow-blue-500/20">
-                                                    Grant Permission
-                                                </Button>
+                                                    {t('grantPermission')}</Button>
                                             )}
                                         </div>
                                     </div>
@@ -442,33 +433,28 @@ const UserProfile = () => {
                                             </div>
                                         </div>
                                         <div>
-                                            <h4 className="font-bold text-slate-800 text-lg mb-2">Start Backup Service</h4>
+                                            <h4 className="font-bold text-slate-800 text-lg mb-2">{t('startBackupService')}</h4>
                                             <p className="text-slate-500 text-sm mb-4 leading-relaxed max-w-lg">
-                                                Your account is connected! You can now trigger an immediate backup or configure automated daily schedules (coming soon).
-                                            </p>
+                                                {t('yourAccountIsConnectedYou')}</p>
                                             
                                             {currentUser.google_token && (
                                                 <div className="bg-slate-50 border border-slate-100 rounded-2xl p-6 w-full max-w-lg">
                                                     <div className="flex items-center justify-between mb-4">
                                                         <div className="flex items-center gap-2 text-emerald-600 font-bold text-sm">
                                                             <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-                                                            System Connected
-                                                        </div>
+                                                            {t('systemConnected')}</div>
                                                         <span className="text-xs font-bold text-slate-400 bg-white px-2 py-1 rounded-md border">
-                                                            Drive Status: Active
-                                                        </span>
+                                                            {t('driveStatusActive')}</span>
                                                     </div>
                                                     <Button onClick={handleBackup} disabled={isSaving} className="w-full rounded-xl" variant="primary">
                                                         {isSaving ? (
                                                             <>
                                                                 <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                                                                Uploading Backup...
-                                                            </>
+                                                                {t('uploadingBackup')}</>
                                                         ) : (
                                                             <>
                                                                 <Save className="w-4 h-4 mr-2" />
-                                                                Run Backup Now
-                                                            </>
+                                                                {t('runBackupNow')}</>
                                                         )}
                                                     </Button>
                                                 </div>

@@ -3,9 +3,10 @@ import { Link } from 'react-router-dom';
 import { Github, Twitter, Linkedin, Facebook, Coffee, Zap } from 'lucide-react';
 import { APP_VERSION } from '../src/config/version';
 import { useLanguage } from '../context/LanguageContext';
+import { useTranslation } from 'react-i18next';
 
 const PublicFooter = () => {
-    const { t } = useLanguage();
+        const { t } = useLanguage();
 
     return (
         <footer className="bg-slate-900 border-t border-slate-800 pt-16 pb-12">
@@ -14,7 +15,7 @@ const PublicFooter = () => {
                     <div className="col-span-1 md:col-span-2 space-y-6">
                         <div className="flex items-center gap-2">
                             <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center font-black text-white text-xs">P</div>
-                            <span className="text-xl font-black text-white tracking-tight">eRPH<span className="text-blue-500">PRO</span></span>
+                            <span className="text-xl font-black text-white tracking-tight">{t('erph')}<span className="text-blue-500">{t('pro_1')}</span></span>
                         </div>
                         <p className="text-slate-400 text-sm leading-relaxed font-medium">
                             {t('footer_desc')}
@@ -50,14 +51,14 @@ const PublicFooter = () => {
 
                 <div className="pt-8 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4">
                     <p className="text-slate-500 text-xs font-bold uppercase tracking-widest">
-                        © 2026 eRPH Pro. {t('all_rights_reserved')}
+                        {t('2026ErphPro')}{t('all_rights_reserved')}
                     </p>
                     <div className="flex gap-8">
                         <span className="flex items-center gap-2">
                             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                             <span className="text-emerald-500 text-xs font-bold uppercase tracking-widest">{t('system_operational')}</span>
                         </span>
-                        <span className="text-slate-400 text-xs font-mono">v{APP_VERSION} (Stable)</span>
+                        <span className="text-slate-400 text-xs font-mono">v{APP_VERSION} {t('stable')}</span>
                     </div>
                 </div>
             </div>

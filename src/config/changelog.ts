@@ -7,6 +7,17 @@ export interface ChangeLogEntry {
 
 export const CHANGELOG: ChangeLogEntry[] = [
     {
+        version: "v1.1.1",
+        date: "Jan 08, 2026",
+        title: "Autonomous Internationalization Engine",
+        items: [
+            "🌍 **Autonomous i18n System**: Implemented self-healing translation pipeline.",
+            "🤖 **AI-Powered Translations**: 100% automated translation for Malay and Chinese using KPM glossary.",
+            "🛡️ **Deployment Gate**: Added `i18n-audit` to block deployments if translations are missing or incorrect.",
+            "✨ **Refactor**: Automated string extraction for over 500+ UI elements."
+        ]
+    },
+    {
         version: "v0.0.113",
         date: "Jan 08, 2026",
         title: "Platform Enhancement",

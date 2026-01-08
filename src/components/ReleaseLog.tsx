@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { ChevronDown, ChevronUp, Tag, Plus, RefreshCw, CheckCircle, Trash2 } from 'lucide-react';
 import { LogEntry } from '../lib/release_logs';
+import { useTranslation } from 'react-i18next';
 
 export const ReleaseLog = ({ logs }: { logs: LogEntry[] }) => {
+    const { t } = useTranslation();
     // Default open index to 0 (Latest)
     const [openIndex, setOpenIndex] = useState(0);
 
@@ -17,8 +19,8 @@ export const ReleaseLog = ({ logs }: { logs: LogEntry[] }) => {
                     <Tag className="w-5 h-5" />
                 </div>
                 <div>
-                    <h3 className="text-xl font-black text-slate-800 tracking-tight">System Updates</h3>
-                    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Release Notes & Changelog</p>
+                    <h3 className="text-xl font-black text-slate-800 tracking-tight">{t('systemUpdates')}</h3>
+                    <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">{t('releaseNotesChangelog')}</p>
                 </div>
             </div>
 
@@ -38,8 +40,7 @@ export const ReleaseLog = ({ logs }: { logs: LogEntry[] }) => {
                                 <span className={`text-lg font-black tracking-tight ${isOpen ? 'text-indigo-700' : 'text-slate-700'}`}>v{log.version}</span>
                                 {log.isLatest && (
                                     <span className="px-3 py-1 bg-emerald-100 text-emerald-700 text-[10px] font-black uppercase rounded-full shadow-sm">
-                                        Latest
-                                    </span>
+                                        {t('latest')}</span>
                                 )}
                                 <span className="text-xs font-bold text-slate-400 border-l border-slate-200 pl-4">{log.date}</span>
                             </div>
@@ -57,8 +58,7 @@ export const ReleaseLog = ({ logs }: { logs: LogEntry[] }) => {
                                     <div className="space-y-3">
                                         <h4 className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-emerald-600">
                                             <div className="p-1 bg-emerald-100 rounded text-emerald-700"><Plus className="w-3 h-3" /></div>
-                                            New Features
-                                        </h4>
+                                            {t('newFeatures')}</h4>
                                         <ul className="space-y-2 ml-2">
                                             {log.added.map((item, i) => (
                                                 <li key={i} className="text-sm font-medium text-slate-600 flex items-start gap-3">
@@ -74,8 +74,7 @@ export const ReleaseLog = ({ logs }: { logs: LogEntry[] }) => {
                                     <div className="space-y-3">
                                         <h4 className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-amber-600">
                                             <div className="p-1 bg-amber-100 rounded text-amber-700"><RefreshCw className="w-3 h-3" /></div>
-                                            Improvements
-                                        </h4>
+                                            {t('improvements')}</h4>
                                         <ul className="space-y-2 ml-2">
                                             {log.changed.map((item, i) => (
                                                 <li key={i} className="text-sm font-medium text-slate-600 flex items-start gap-3">
@@ -91,8 +90,7 @@ export const ReleaseLog = ({ logs }: { logs: LogEntry[] }) => {
                                     <div className="space-y-3">
                                         <h4 className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-blue-600">
                                             <div className="p-1 bg-blue-100 rounded text-blue-700"><CheckCircle className="w-3 h-3" /></div>
-                                            Bug Fixes
-                                        </h4>
+                                            {t('bugFixes')}</h4>
                                         <ul className="space-y-2 ml-2">
                                             {log.fixed.map((item, i) => (
                                                 <li key={i} className="text-sm font-medium text-slate-600 flex items-start gap-3">

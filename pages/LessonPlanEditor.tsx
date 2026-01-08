@@ -23,12 +23,13 @@ import { PrintPreviewModal, DskpBrowserModal, SuccessModal } from '../components
 import { ListEditor, TagSelector } from '../components/LessonPlanComponents';
 import { lessonService } from '../services/lessonService';
 import { dskpService } from '../services/dskpService';
-import { userService } from '../services/userService'; // If needed for profile syncing
+import { userService } from '../services/userService';
+import { useTranslation } from 'react-i18next';
 
 // ...
 
 const LessonPlanEditor = () => {
-    const { id } = useParams<{ id?: string }>();
+        const { id } = useParams<{ id?: string }>();
     const navigate = useNavigate();
     const { t } = useLanguage();
     const { currentUser, schools, getAcademicWeek } = useGlobal();
@@ -323,12 +324,12 @@ const LessonPlanEditor = () => {
                             >
                                 <option value="">{t('level')}</option>
                                 <optgroup label={t('primary_school')}>
-                                    {[1, 2, 3, 4, 5, 6].map(y => <option key={`y${y}`} value={`Tahun ${y}`}>Tahun {y}</option>)}
-                                    <option value="Pra Sekolah">Pra Sekolah</option>
+                                    {[1, 2, 3, 4, 5, 6].map(y => <option key={`y${y}`} value={`Tahun ${y}`}>{t('tahun')}{y}</option>)}
+                                    <option value="Pra Sekolah">{t('praSekolah')}</option>
                                 </optgroup>
                                 <optgroup label={t('secondary_school')}>
-                                    {[1, 2, 3, 4, 5].map(f => <option key={`f${f}`} value={`Tingkatan ${f}`}>Tingkatan {f}</option>)}
-                                    <option value="Peralihan">Peralihan</option>
+                                    {[1, 2, 3, 4, 5].map(f => <option key={`f${f}`} value={`Tingkatan ${f}`}>{t('tingkatan')}{f}</option>)}
+                                    <option value="Peralihan">{t('peralihan')}</option>
                                 </optgroup>
                             </select>
                             <GraduationCap className="absolute right-3 top-3.5 w-4 h-4 text-slate-400 pointer-events-none group-hover:text-blue-600 transition-colors" />
@@ -425,7 +426,7 @@ const LessonPlanEditor = () => {
                         <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1">{t('content_standard')}</label>
                         <div className="border-2 border-slate-100 rounded-3xl p-4 bg-slate-50/30 min-h-[14rem] max-h-[20rem] overflow-y-auto space-y-2">
                             {dskpContext.csOptions.length === 0 ? (
-                                <p className="text-sm text-slate-400 text-center italic mt-10">Select Subject & Year to load standards...</p>
+                                <p className="text-sm text-slate-400 text-center italic mt-10">{t('selectSubjectYearToLoad')}</p>
                             ) : (
                                 dskpContext.csOptions.map(cs => {
                                     const isSelected = plan.contentStandard?.includes(cs);
@@ -461,7 +462,7 @@ const LessonPlanEditor = () => {
                         </div>
                         <div className="border-2 border-slate-100 rounded-3xl p-4 bg-slate-50/30 min-h-[14rem] max-h-[20rem] overflow-y-auto space-y-2">
                             {dskpContext.lsOptions.length === 0 ? (
-                                <p className="text-sm text-slate-400 text-center italic mt-10">Select Content Standard first...</p>
+                                <p className="text-sm text-slate-400 text-center italic mt-10">{t('selectContentStandardFirst')}</p>
                             ) : (
                                 dskpContext.lsOptions.map(ls => {
                                     const isSelected = plan.learningStandard?.includes(ls);

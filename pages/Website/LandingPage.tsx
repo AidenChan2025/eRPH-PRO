@@ -7,9 +7,10 @@ import PublicFooter from '../../components/PublicFooter';
 import { db } from '../../services/firebase';
 
 import { useLanguage } from '../../context/LanguageContext';
+import { useTranslation } from 'react-i18next';
 
 const LandingPage = () => {
-    const { t } = useLanguage();
+        const { t } = useLanguage();
 
 
     return (
@@ -69,8 +70,8 @@ const LandingPage = () => {
                             <div className="flex items-center gap-3">
                                 <div className="p-2 bg-emerald-100 rounded-xl"><CheckCircle2 className="w-6 h-6 text-emerald-600" /></div>
                                 <div>
-                                    <p className="text-xs font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Status</p>
-                                    <p className="text-sm font-black text-slate-800">DSKP Verified</p>
+                                    <p className="text-xs font-black text-slate-400 uppercase tracking-widest leading-none mb-1">{t('status')}</p>
+                                    <p className="text-sm font-black text-slate-800">{t('dskpVerified')}</p>
                                 </div>
                             </div>
                         </div>
@@ -117,7 +118,7 @@ const LandingPage = () => {
                                 <h3 className="text-2xl font-black text-slate-800 mb-4">{f.title}</h3>
                                 <p className="text-slate-500 font-semibold leading-relaxed mb-6">{f.desc}</p>
                                 <Link to={f.link} className="flex items-center text-blue-600 font-black text-sm uppercase tracking-widest gap-2 group-hover:gap-4 transition-all">
-                                    Learn More <ArrowRight className="w-4 h-4" />
+                                    {t('learnMore')}<ArrowRight className="w-4 h-4" />
                                 </Link>
                             </div>
                         ))}
@@ -140,8 +141,8 @@ const LandingPage = () => {
                                     <Shield className="w-8 h-8 text-blue-400" />
                                 </div>
                                 <div>
-                                    <p className="text-sm font-black text-slate-500 uppercase tracking-widest mb-1">Status</p>
-                                    <p className="text-white font-bold">Ready to Deploy</p>
+                                    <p className="text-sm font-black text-slate-500 uppercase tracking-widest mb-1">{t('status')}</p>
+                                    <p className="text-white font-bold">{t('readyToDeploy')}</p>
                                 </div>
                             </div>
                         </div>

@@ -10,9 +10,10 @@ import { X, Search, BookOpen, Check, ChevronDown, ChevronUp } from 'lucide-react
 import PrintableRPH from './PrintableRPH';
 import { db, collection, getDocs } from '../services/firebase';
 import { api } from '../services/api';
+import { useTranslation } from 'react-i18next';
 
 export const PrintPreviewModal = ({ plans, onClose, schoolName, getWeek }: any) => {
-    const container = document.getElementById('print-container');
+        const container = document.getElementById('print-container');
     if (!container) return null;
 
     // Prevent background scrolling when modal is open
@@ -26,12 +27,12 @@ export const PrintPreviewModal = ({ plans, onClose, schoolName, getWeek }: any) 
             {/* Header - Hidden on Print */}
             <div className="fixed top-0 left-0 right-0 bg-white border-b border-slate-200 p-4 flex justify-between items-center shadow-md print:hidden z-[10000]">
                 <div>
-                    <h3 className="font-bold text-lg text-slate-800">Print Preview</h3>
-                    <p className="text-xs text-slate-500">{plans.length} Lesson Plan(s) selected</p>
+                    <h3 className="font-bold text-lg text-slate-800">{t('printPreview')}</h3>
+                    <p className="text-xs text-slate-500">{plans.length} {t('lessonPlansSelected')}</p>
                 </div>
                 <div className="flex gap-2">
-                    <Button variant="secondary" onClick={onClose}>Close</Button>
-                    <Button onClick={() => window.print()}>Print</Button>
+                    <Button variant="secondary" onClick={onClose}>{t('close')}</Button>
+                    <Button onClick={() => window.print()}>{t('print')}</Button>
                 </div>
             </div>
 
@@ -53,7 +54,7 @@ export const PrintPreviewModal = ({ plans, onClose, schoolName, getWeek }: any) 
 };
 
 export const HistoryModal = ({ plan, onClose, onRestore }: { plan: LessonPlan, onClose: () => void, onRestore: (version: LessonPlan) => void }) => {
-    const { t } = useLanguage();
+        const { t } = useLanguage();
     const history = plan.history || [];
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
@@ -66,7 +67,7 @@ export const HistoryModal = ({ plan, onClose, onRestore }: { plan: LessonPlan, o
                     {history.length === 0 ? <p className="text-center text-slate-500 italic">{t('no_history')}</p> : [...history].reverse().map((v: any, i) => (
                         <div key={i} className="border rounded-lg p-3 flex justify-between items-center hover:bg-slate-50">
                             <div>
-                                <div className="font-bold text-sm">Version {v.version}</div>
+                                <div className="font-bold text-sm">{t('version')}{v.version}</div>
                                 <div className="text-xs text-slate-500">{new Date(v.updatedAt).toLocaleString()}</div>
                             </div>
                             <Button size="sm" variant="secondary" onClick={() => onRestore(v as LessonPlan)}>{t('restore')}</Button>
@@ -87,7 +88,7 @@ interface DskpBrowserProps {
 }
 
 export const DskpBrowserModal = ({ isOpen, onClose, onSelect, currentSubject }: DskpBrowserProps) => {
-    const [standards, setStandards] = useState<DSKPStandard[]>([]);
+        const [standards, setStandards] = useState<DSKPStandard[]>([]);
     const [loading, setLoading] = useState(false);
 
     // Filters
@@ -188,9 +189,8 @@ export const DskpBrowserModal = ({ isOpen, onClose, onSelect, currentSubject }: 
                 <div className="p-5 border-b bg-white flex justify-between items-center">
                     <div>
                         <h3 className="font-black text-xl text-slate-800 flex items-center gap-2">
-                            <BookOpen className="w-6 h-6 text-blue-600" /> DSKP Browser
-                        </h3>
-                        <p className="text-sm font-medium text-slate-500">Select standard to auto-fill lesson plan.</p>
+                            <BookOpen className="w-6 h-6 text-blue-600" /> {t('dskpBrowser')}</h3>
+                        <p className="text-sm font-medium text-slate-500">{t('selectStandardToAutofillLesson')}</p>
                     </div>
                     <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-full transition-colors"><X className="w-6 h-6 text-slate-400" /></button>
                 </div>
@@ -199,25 +199,25 @@ export const DskpBrowserModal = ({ isOpen, onClose, onSelect, currentSubject }: 
                 <div className="grid grid-cols-1 md:grid-cols-12 border-b bg-slate-50/50">
                     <div className="md:col-span-3 p-4 border-r border-slate-200 space-y-4">
                         <div className="space-y-1">
-                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Subject</label>
+                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{t('subject')}</label>
                             <select
                                 className="w-full p-2.5 rounded-xl border border-slate-200 text-sm font-bold bg-white outline-none focus:ring-2 focus:ring-blue-500"
                                 value={selectedSubject}
                                 onChange={(e) => { setSelectedSubject(e.target.value); setSelectedGrade(''); }}
                             >
-                                <option value="">All Subjects</option>
+                                <option value="">{t('allSubjects')}</option>
                                 {subjects.map(s => <option key={s} value={s}>{s}</option>)}
                             </select>
                         </div>
                         <div className="space-y-1">
-                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Year / Grade</label>
+                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{t('yearGrade')}</label>
                             <select
                                 className="w-full p-2.5 rounded-xl border border-slate-200 text-sm font-bold bg-white outline-none focus:ring-2 focus:ring-blue-500"
                                 value={selectedGrade}
                                 onChange={(e) => setSelectedGrade(e.target.value)}
                                 disabled={!selectedSubject}
                             >
-                                <option value="">All Levels</option>
+                                <option value="">{t('allLevels')}</option>
                                 {grades.map(g => <option key={g} value={g}>{g}</option>)}
                             </select>
                         </div>
@@ -238,11 +238,11 @@ export const DskpBrowserModal = ({ isOpen, onClose, onSelect, currentSubject }: 
                     <div className="md:col-span-9 bg-slate-50 flex flex-col h-full overflow-hidden">
                         <div className="flex-1 overflow-y-auto p-6 space-y-4">
                             {loading ? (
-                                <div className="flex justify-center items-center h-full"><span className="loading loading-spinner text-blue-600">Loading DSKP...</span></div>
+                                <div className="flex justify-center items-center h-full"><span className="loading loading-spinner text-blue-600">{t('loadingDskp')}</span></div>
                             ) : Object.keys(groupedStandards).length === 0 ? (
                                 <div className="flex flex-col items-center justify-center h-full text-slate-400">
                                     <BookOpen className="w-12 h-12 mb-2 opacity-20" />
-                                    <p>No standards found matching your criteria.</p>
+                                    <p>{t('noStandardsFoundMatchingYour')}</p>
                                 </div>
                             ) : (
                                 Object.entries(groupedStandards).map(([cs, list]: [string, any[]]) => {
@@ -257,8 +257,8 @@ export const DskpBrowserModal = ({ isOpen, onClose, onSelect, currentSubject }: 
                                             >
                                                 <div>
                                                     <div className="flex items-center gap-2 mb-1">
-                                                        <span className="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-black uppercase tracking-wider">Content Standard</span>
-                                                        {selectedCount > 0 && <span className="text-[10px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded font-black">{selectedCount} Selected</span>}
+                                                        <span className="text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-black uppercase tracking-wider">{t('contentStandard')}</span>
+                                                        {selectedCount > 0 && <span className="text-[10px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded font-black">{selectedCount} {t('selected')}</span>}
                                                     </div>
                                                     <p className="font-bold text-slate-800 leading-snug">{cs}</p>
                                                 </div>
@@ -294,12 +294,11 @@ export const DskpBrowserModal = ({ isOpen, onClose, onSelect, currentSubject }: 
 
                         {/* Footer / confirm bar */}
                         <div className="p-4 bg-white border-t flex justify-between items-center">
-                            <span className="text-xs font-bold text-slate-500">{selectedLearningStandards.size} standards selected</span>
+                            <span className="text-xs font-bold text-slate-500">{selectedLearningStandards.size} {t('standardsSelected')}</span>
                             <div className="flex gap-3">
-                                <Button variant="ghost" onClick={onClose} className="rounded-xl">Cancel</Button>
+                                <Button variant="ghost" onClick={onClose} className="rounded-xl">{t('cancel')}</Button>
                                 <Button onClick={handleConfirm} disabled={selectedLearningStandards.size === 0} className="rounded-xl px-8 shadow-lg shadow-blue-500/20">
-                                    Include {selectedLearningStandards.size} Standards
-                                </Button>
+                                    {t('include')}{selectedLearningStandards.size} {t('standards')}</Button>
                             </div>
                         </div>
                     </div>
@@ -320,7 +319,7 @@ interface SuccessModalProps {
 }
 
 export const SuccessModal = ({ isOpen, onClose, title, message, onPrimaryAction, primaryActionLabel = "Continue", secondaryActionLabel = "Close" }: SuccessModalProps) => {
-    if (!isOpen) return null;
+        if (!isOpen) return null;
 
     return (
         <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">

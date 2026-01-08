@@ -14,9 +14,10 @@ import {
 } from 'lucide-react';
 import { SuccessModal } from '../components/Modals';
 import { APP_VERSION } from '../src/config/version';
+import { useTranslation } from 'react-i18next';
 
 const LoginPage = () => {
-    const { currentUser, setCurrentUser } = useGlobal();
+        const { currentUser, setCurrentUser } = useGlobal();
     const { t, language, setLanguage } = useLanguage();
     const navigate = useNavigate();
 
@@ -196,7 +197,7 @@ const LoginPage = () => {
                                 <div className="w-1.5 h-1.5 bg-blue-600 rounded-full animate-bounce [animation-delay:-0.15s]"></div>
                                 <div className="w-1.5 h-1.5 bg-blue-600 rounded-full animate-bounce"></div>
                             </div>
-                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pt-2">Security handshake in progress</p>
+                            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest pt-2">{t('securityHandshakeInProgress')}</p>
                         </div>
                     </div>
                 </div>
@@ -231,13 +232,12 @@ const LoginPage = () => {
                     </div>
 
                     <h1 className="text-5xl font-bold mb-4 tracking-tight text-white leading-tight">
-                        eRPH <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">Pro</span>
+                        {t('erph')}<span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400">{t('pro')}</span>
                         <span className="text-sm align-top ml-2 text-slate-500 font-mono">v{APP_VERSION}</span>
                     </h1>
 
                     <p className="text-slate-400 text-lg leading-relaxed mb-8 max-w-sm">
-                        Malaysia's professional digital ecosystem for educator administrative excellence.
-                    </p>
+                        {t('malaysiasProfessionalDigitalEcosystemFor')}</p>
 
                     <div className="space-y-4">
                         {[
@@ -267,8 +267,7 @@ const LoginPage = () => {
                         <div className="p-2 rounded-lg bg-slate-50 group-hover:bg-blue-50 transition-colors">
                             <Home className="w-4 h-4" />
                         </div>
-                        Back to Website
-                    </Link>
+                        {t('backToWebsite')}</Link>
 
                     <div className="relative">
                         <button onClick={() => setShowLangMenu(!showLangMenu)} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-white hover:bg-slate-50 text-slate-600 border border-slate-200 shadow-sm">
@@ -299,7 +298,7 @@ const LoginPage = () => {
                     <div className="space-y-6">
                         <form onSubmit={handleAuthAction} className="space-y-4">
                             <div>
-                                <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Email Address</label>
+                                <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">{t('emailAddress')}</label>
                                 <div className="relative">
                                     <Mail className="absolute left-4 top-3.5 w-4 h-4 text-slate-300" />
                                     <input
@@ -316,7 +315,7 @@ const LoginPage = () => {
 
                             {!isForgotPassword && (
                                 <div className="space-y-2">
-                                    <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Password</label>
+                                    <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">{t('password')}</label>
                                     <div className="relative">
                                         <Lock className="absolute left-4 top-3.5 w-4 h-4 text-slate-300" />
                                         <input
@@ -337,8 +336,7 @@ const LoginPage = () => {
                                                 className="text-[10px] font-black text-blue-600 hover:underline uppercase tracking-tighter disabled:opacity-50"
                                                 disabled={isLoggingIn}
                                             >
-                                                Forgot Password?
-                                            </button>
+                                                {t('forgotPassword')}</button>
                                         </div>
                                     )}
                                 </div>
@@ -356,7 +354,7 @@ const LoginPage = () => {
                                         />
                                     </div>
                                     <label htmlFor="pdpa" className="ml-1 text-[10px] text-slate-500 font-medium leading-tight cursor-pointer">
-                                        I agree to the <Link to="/legal" target="_blank" className="font-bold text-blue-600 hover:underline">Terms</Link>, <Link to="/legal" target="_blank" className="font-bold text-blue-600 hover:underline">Privacy Policy</Link>, and consent to the processing of my personal data in accordance with the <span className="font-bold text-slate-700">PDPA 2010 (Malaysia)</span>.
+                                        {t('iAgreeToThe')}<Link to="/legal" target="_blank" className="font-bold text-blue-600 hover:underline">{t('terms')}</Link>, <Link to="/legal" target="_blank" className="font-bold text-blue-600 hover:underline">{t('privacyPolicy')}</Link>{t('andConsentToTheProcessing')}<span className="font-bold text-slate-700">{t('pdpa2010Malaysia')}</span>.
                                     </label>
                                 </div>
                             )}
@@ -413,7 +411,7 @@ const LoginPage = () => {
                             <>
                                 <div className="relative flex py-2 items-center">
                                     <div className="flex-grow border-t border-slate-100"></div>
-                                    <span className="flex-shrink-0 mx-4 text-[10px] font-black text-slate-300 uppercase tracking-widest">Social Gateway</span>
+                                    <span className="flex-shrink-0 mx-4 text-[10px] font-black text-slate-300 uppercase tracking-widest">{t('socialGateway')}</span>
                                     <div className="flex-grow border-t border-slate-100"></div>
                                 </div>
 
@@ -423,8 +421,7 @@ const LoginPage = () => {
                                     className="w-full py-3.5 px-4 bg-white border-2 border-slate-100 text-slate-700 font-bold rounded-xl hover:bg-slate-50 transition-all flex items-center justify-center gap-3 shadow-sm disabled:opacity-50"
                                 >
                                     <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" className="w-5 h-5" alt="Google" />
-                                    Continue with Google
-                                </button>
+                                    {t('continueWithGoogle')}</button>
                             </>
                         )}
 
@@ -458,15 +455,14 @@ const LoginPage = () => {
                                     className="text-xs font-bold text-slate-500 hover:text-blue-600 flex items-center justify-center gap-1 mx-auto disabled:opacity-50"
                                     disabled={isLoggingIn}
                                 >
-                                    <ChevronLeft className="w-4 h-4" /> Back to Login
-                                </button>
+                                    <ChevronLeft className="w-4 h-4" /> {t('backToLogin')}</button>
                             )}
                         </div>
 
                     </div>
 
                     <div className="pt-8 border-t border-slate-100 flex justify-center items-center px-2">
-                        <span className="text-[10px] text-slate-400 font-mono tracking-tight font-bold uppercase">Build v{APP_VERSION}</span>
+                        <span className="text-[10px] text-slate-400 font-mono tracking-tight font-bold uppercase">{t('buildV')}{APP_VERSION}</span>
                     </div>
                 </div>
             </div>

@@ -1,13 +1,15 @@
 import React, { useState, useMemo } from 'react';
-import Card from '../Card';
-import Button from '../Button';
+import Card from '../../../components/Card';
+import Button from '../../../components/Button';
 import {
     DatabaseZap, X, AlertCircle, Link as LinkIcon, ChevronRight,
     TableProperties
 } from 'lucide-react';
 import { dskpService } from '../../lib/dskp';
+import { useTranslation } from 'react-i18next';
 
 export const SyncModal = ({ isOpen, onClose, onSynced }: { isOpen: boolean; onClose: () => void; onSynced: () => void }) => {
+    const { t } = useTranslation();
     // Default URL provided by user
     const REQUESTED_SHEET_URL = 'https://docs.google.com/spreadsheets/d/1mW401zSgjPLjtahPCaeiLFpv3Zpk3AL-2Dgc6s5sDAA/edit?usp=sharing';
 
@@ -132,8 +134,8 @@ export const SyncModal = ({ isOpen, onClose, onSynced }: { isOpen: boolean; onCl
                             <DatabaseZap className="w-6 h-6 text-white" />
                         </div>
                         <div>
-                            <h3 className="font-black text-xl text-slate-800 tracking-tight">DSKP Master Sync</h3>
-                            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">2-Stage Sync Process</p>
+                            <h3 className="font-black text-xl text-slate-800 tracking-tight">{t('dskpMasterSync')}</h3>
+                            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">{t('2stageSyncProcess')}</p>
                         </div>
                     </div>
                     <button onClick={onClose} className="p-2 hover:bg-slate-200 rounded-full transition-colors"><X className="w-5 h-5 text-slate-500" /></button>
@@ -152,8 +154,8 @@ export const SyncModal = ({ isOpen, onClose, onSynced }: { isOpen: boolean; onCl
                     {step === 1 && (
                         <div className="max-w-2xl mx-auto py-10 space-y-8 animate-in slide-in-from-bottom-4 duration-500">
                             <div className="text-center space-y-2">
-                                <h4 className="text-lg font-black text-slate-800">1. Connect Data Source</h4>
-                                <p className="text-sm text-slate-500 font-medium">Link the official curriculum Google Sheet.</p>
+                                <h4 className="text-lg font-black text-slate-800">{t('1ConnectDataSource')}</h4>
+                                <p className="text-sm text-slate-500 font-medium">{t('linkTheOfficialCurriculumGoogle')}</p>
                             </div>
                             <div className="space-y-4">
                                 <div className="relative">
@@ -166,7 +168,7 @@ export const SyncModal = ({ isOpen, onClose, onSynced }: { isOpen: boolean; onCl
                                     />
                                 </div>
                                 <Button className="w-full h-14 rounded-2xl font-black text-lg shadow-xl shadow-blue-200" onClick={handleFetch} isLoading={isFetching} disabled={!sheetUrl}>
-                                    Fetch Data <ChevronRight className="ml-2 w-5 h-5" />
+                                    {t('fetchData')}<ChevronRight className="ml-2 w-5 h-5" />
                                 </Button>
                             </div>
                         </div>
@@ -178,11 +180,11 @@ export const SyncModal = ({ isOpen, onClose, onSynced }: { isOpen: boolean; onCl
                             {/* Stats */}
                             <div className="grid grid-cols-2 gap-4">
                                 <div className="p-5 bg-slate-50 rounded-3xl border border-slate-100">
-                                    <div className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Rows Found</div>
+                                    <div className="text-[10px] font-black uppercase text-slate-400 tracking-widest">{t('rowsFound')}</div>
                                     <div className="text-2xl font-black text-slate-800">{rawRows.length}</div>
                                 </div>
                                 <div className="p-5 bg-slate-50 rounded-3xl border border-slate-100">
-                                    <div className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Columns Detected</div>
+                                    <div className="text-[10px] font-black uppercase text-slate-400 tracking-widest">{t('columnsDetected')}</div>
                                     <div className="text-2xl font-black text-slate-800">{headers.length}</div>
                                 </div>
                             </div>
@@ -191,7 +193,7 @@ export const SyncModal = ({ isOpen, onClose, onSynced }: { isOpen: boolean; onCl
                             <Card className="p-8 rounded-[2rem] border-slate-100 shadow-sm bg-slate-50/30 space-y-6">
                                 <div className="flex items-center gap-2 mb-2">
                                     <TableProperties className="w-5 h-5 text-blue-600" />
-                                    <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">Column Mapping</span>
+                                    <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest">{t('columnMapping')}</span>
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     {Object.entries(mapping).map(([key, colIndex]) => (
@@ -228,15 +230,13 @@ export const SyncModal = ({ isOpen, onClose, onSynced }: { isOpen: boolean; onCl
                                     disabled={isSaving || isStage1Complete}
                                     className={isStage1Complete ? 'opacity-50' : ''}
                                 >
-                                    Step 1: Sync Raw Data
-                                </Button>
+                                    {t('step1SyncRawData')}</Button>
                                 <Button
                                     onClick={handleProcessRegistry}
                                     disabled={isSaving || !isStage1Complete}
                                     className="flex-1"
                                 >
-                                    Step 2: Process & Map Registry
-                                </Button>
+                                    {t('step2ProcessMapRegistry')}</Button>
                             </div>
                         </div>
                     )}

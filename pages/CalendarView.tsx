@@ -11,6 +11,7 @@ import {
     BookOpen, CheckSquare, Clock, X, MapPin, Flag
 } from 'lucide-react';
 import { ACADEMIC_CALENDAR_2026, SCHOOL_HOLIDAYS_2026, SchoolGroup } from '../utils/academicCalendar';
+import { useTranslation } from 'react-i18next';
 
 type EventType = 'rph' | 'task' | 'leave' | 'event' | 'holiday' | 'term';
 
@@ -25,7 +26,7 @@ interface UnifiedEvent {
 }
 
 const CalendarView = () => {
-    const { t } = useLanguage();
+        const { t } = useLanguage();
     const { currentUser, schools } = useGlobal();
     const [currentDate, setCurrentDate] = useState(new Date());
     const [selectedDate, setSelectedDate] = useState<string | null>(null);
@@ -215,7 +216,7 @@ const CalendarView = () => {
                 <div className="flex items-center gap-4">
                     <div className="flex bg-slate-100 rounded-lg p-1">
                         <button onClick={() => navigateMonth('prev')} className="p-1 hover:bg-white rounded shadow-sm transition-all"><ChevronLeft className="w-5 h-5 text-slate-600" /></button>
-                        <button onClick={() => setCurrentDate(new Date())} className="px-3 text-sm font-bold text-slate-600 hover:text-blue-600">Today</button>
+                        <button onClick={() => setCurrentDate(new Date())} className="px-3 text-sm font-bold text-slate-600 hover:text-blue-600">{t('today')}</button>
                         <button onClick={() => navigateMonth('next')} className="p-1 hover:bg-white rounded shadow-sm transition-all"><ChevronRight className="w-5 h-5 text-slate-600" /></button>
                     </div>
                     <div>
@@ -281,8 +282,7 @@ const CalendarView = () => {
                                     ))}
                                     {dayEvents.length > 3 && (
                                         <div className="text-[10px] text-slate-500 pl-1 font-medium">
-                                            +{dayEvents.length - 3} more
-                                        </div>
+                                            +{dayEvents.length - 3} {t('more')}</div>
                                     )}
                                 </div>
                             </div>
@@ -364,7 +364,7 @@ const CalendarView = () => {
                                     />
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-bold text-slate-500 uppercase mb-1">{t('end_date')} (Optional)</label>
+                                    <label className="block text-xs font-bold text-slate-500 uppercase mb-1">{t('end_date')} {t('optional')}</label>
                                     <input
                                         type="date"
                                         className="w-full border p-2 rounded-lg text-sm"

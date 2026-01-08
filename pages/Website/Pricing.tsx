@@ -3,8 +3,10 @@ import PublicNavbar from '../../components/PublicNavbar';
 import PublicFooter from '../../components/PublicFooter';
 import { Coffee, Heart, Check, Sparkles, X } from 'lucide-react';
 import Button from '../../components/Button';
+import { useTranslation } from 'react-i18next';
 
 const Pricing = () => {
+    const { t } = useTranslation();
     const [showQR, setShowQR] = React.useState(false);
 
     return (
@@ -15,26 +17,25 @@ const Pricing = () => {
                 <div className="max-w-4xl mx-auto text-center space-y-8">
                     <div className="inline-flex items-center gap-2 px-4 py-2 bg-amber-50 rounded-full border border-amber-100 text-amber-600 font-black text-xs uppercase tracking-widest animate-in zoom-in duration-500">
                         <Coffee className="w-4 h-4" />
-                        <span>Support Development</span>
+                        <span>{t('supportDevelopment')}</span>
                     </div>
 
                     <h1 className="text-4xl md:text-6xl font-black tracking-tight text-slate-900">
-                        Fuel the <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-orange-600">Revolution.</span>
+                        {t('fuelThe')}<span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-orange-600">{t('revolution')}</span>
                     </h1>
 
                     <p className="text-lg md:text-xl text-slate-500 font-medium max-w-2xl mx-auto leading-relaxed">
-                        eRPH Pro is built by a single passionate developer dedicated to improving Malaysian education. Your support keeps the servers running and the caffeine flowing.
-                    </p>
+                        {t('erphProIsBuiltBy')}</p>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-3xl mx-auto pt-12">
                         {/* Free Tier */}
                         <div className="p-8 rounded-[2.5rem] border-2 border-slate-100 text-left hover:border-slate-200 transition-all">
-                            <h3 className="text-2xl font-black text-slate-900 mb-2">Community</h3>
+                            <h3 className="text-2xl font-black text-slate-900 mb-2">{t('community')}</h3>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-slate-900">Free</span>
-                                <span className="text-slate-400 font-bold">/ forever</span>
+                                <span className="text-4xl font-black text-slate-900">{t('free')}</span>
+                                <span className="text-slate-400 font-bold">{t('forever')}</span>
                             </div>
-                            <p className="text-slate-500 font-medium mb-8">For schools just getting started with digitalization.</p>
+                            <p className="text-slate-500 font-medium mb-8">{t('forSchoolsJustGettingStarted')}</p>
                             <ul className="space-y-4 mb-8">
                                 {[
                                     'Standard RPH Templates',
@@ -50,22 +51,21 @@ const Pricing = () => {
                                     </li>
                                 ))}
                             </ul>
-                            <Button variant="secondary" className="w-full rounded-2xl h-12 font-black">Current Plan</Button>
+                            <Button variant="secondary" className="w-full rounded-2xl h-12 font-black">{t('currentPlan')}</Button>
                         </div>
 
                         {/* Supporter Tier */}
                         <div className="relative p-8 rounded-[2.5rem] border-2 border-amber-500 bg-amber-50/10 text-left shadow-2xl shadow-amber-500/10 flex flex-col">
                             <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-amber-500 text-white px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest flex items-center gap-2">
-                                <Heart className="w-3 h-3 fill-current" /> Most Popular
-                            </div>
+                                <Heart className="w-3 h-3 fill-current" /> {t('mostPopular')}</div>
 
-                            <h3 className="text-2xl font-black text-slate-900 mb-2">Supporter</h3>
+                            <h3 className="text-2xl font-black text-slate-900 mb-2">{t('supporter')}</h3>
                             <div className="flex items-baseline gap-1 mb-6">
-                                <span className="text-4xl font-black text-slate-900">RM 10</span>
-                                <span className="text-slate-400 font-bold">/ coffee</span>
+                                <span className="text-4xl font-black text-slate-900">{t('rm10_1')}</span>
+                                <span className="text-slate-400 font-bold">{t('coffee')}</span>
                             </div>
 
-                            <p className="text-slate-500 font-medium mb-8 flex-1">Show your appreciation and help speed up development!</p>
+                            <p className="text-slate-500 font-medium mb-8 flex-1">{t('showYourAppreciationAndHelp')}</p>
                             <ul className="space-y-4 mb-8">
                                 {[
                                     'Priority Feature Requests',
@@ -85,8 +85,7 @@ const Pricing = () => {
                                 onClick={() => setShowQR(true)}
                                 className="w-full rounded-2xl h-12 font-black bg-gradient-to-r from-amber-500 to-orange-600 shadow-lg shadow-amber-500/30 hover:shadow-amber-500/40 text-white border-none"
                             >
-                                <Coffee className="w-4 h-4 mr-2" /> Treat a Coffee
-                            </Button>
+                                <Coffee className="w-4 h-4 mr-2" /> {t('treatACoffee')}</Button>
                         </div>
                     </div>
                 </div>
@@ -107,8 +106,8 @@ const Pricing = () => {
                                 <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-3 shadow-lg shadow-amber-500/20">
                                     <Coffee className="w-8 h-8 text-amber-600 animate-bounce" />
                                 </div>
-                                <h3 className="text-xl font-black text-slate-800">Buy Aiden a Coffee</h3>
-                                <p className="text-xs text-amber-800 font-bold uppercase tracking-wide mt-1">Thank you for your support!</p>
+                                <h3 className="text-xl font-black text-slate-800">{t('buyAidenACoffee')}</h3>
+                                <p className="text-xs text-amber-800 font-bold uppercase tracking-wide mt-1">{t('thankYouForYourSupport')}</p>
                             </div>
                             <div className="p-6 bg-white space-y-6">
                                 <div className="bg-slate-900 p-4 rounded-3xl shadow-inner flex flex-col items-center gap-4">
@@ -116,16 +115,15 @@ const Pricing = () => {
                                         <img src="/assets/img/tng_qr.png" alt="Touch 'n Go QR" className="w-48 h-auto object-contain rounded-lg" />
                                     </div>
                                     <div className="text-center">
-                                        <p className="text-white font-black text-lg">RM 10.00</p>
-                                        <p className="text-slate-400 text-xs font-bold uppercase tracking-widest">+ Any Tips You Like!</p>
+                                        <p className="text-white font-black text-lg">{t('rm1000')}</p>
+                                        <p className="text-slate-400 text-xs font-bold uppercase tracking-widest">{t('anyTipsYouLike')}</p>
                                     </div>
                                 </div>
                                 <Button
                                     onClick={() => setShowQR(false)}
                                     className="w-full h-12 bg-emerald-500 hover:bg-emerald-600 text-white font-black shadow-lg shadow-emerald-500/30 rounded-2xl"
                                 >
-                                    Done!
-                                </Button>
+                                    {t('done')}</Button>
                             </div>
                         </div>
                     </div>

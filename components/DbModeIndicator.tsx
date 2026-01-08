@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { isInitialized } from '../services/firebase';
 import { Zap, Wifi, WifiOff } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export const DbModeIndicator: React.FC = () => {
+    const { t } = useTranslation();
     const [connected, setConnected] = useState(false);
 
     useEffect(() => {
@@ -16,16 +18,14 @@ export const DbModeIndicator: React.FC = () => {
                     <Zap className="w-3.5 h-3.5" />
                 </div>
                 <div className="flex flex-col">
-                    <span className="text-[9px] font-black uppercase tracking-widest text-slate-500">System Status</span>
+                    <span className="text-[9px] font-black uppercase tracking-widest text-slate-500">{t('systemStatus')}</span>
                     <span className={`text-[11px] font-bold ${connected ? 'text-indigo-400' : 'text-red-500'} uppercase flex items-center gap-1.5`}>
                         {connected ? (
                             <>
-                                <Wifi className="w-3 h-3" /> Online
-                            </>
+                                <Wifi className="w-3 h-3" /> {t('online')}</>
                         ) : (
                             <>
-                                <WifiOff className="w-3 h-3" /> Error
-                            </>
+                                <WifiOff className="w-3 h-3" /> {t('error')}</>
                         )}
                     </span>
                 </div>
@@ -33,11 +33,11 @@ export const DbModeIndicator: React.FC = () => {
 
             {connected ? (
                 <div className="mt-1 flex items-start gap-1.5 px-2 py-1 bg-indigo-500/5 rounded-md border border-indigo-500/10">
-                    <p className="text-[8px] leading-tight text-indigo-400/80 font-medium">Connected to Firebase Storage</p>
+                    <p className="text-[8px] leading-tight text-indigo-400/80 font-medium">{t('connectedToFirebaseStorage')}</p>
                 </div>
             ) : (
                 <div className="mt-1 flex items-start gap-1.5 px-2 py-1 bg-red-500/10 rounded-md border border-red-500/20">
-                    <p className="text-[8px] leading-tight text-red-500 font-bold">Config Missing. Check Console.</p>
+                    <p className="text-[8px] leading-tight text-red-500 font-bold">{t('configMissingCheckConsole')}</p>
                 </div>
             )}
         </div>

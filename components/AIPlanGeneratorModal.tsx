@@ -6,6 +6,7 @@ import { Sparkles, X, Wand2, Loader2, AlertCircle, Key, ExternalLink, ShieldChec
 import { generateLessonPlan } from '../services/geminiService';
 import { LessonPlan } from '../types';
 import GeminiWizard from './GeminiWizard';
+import { useTranslation } from 'react-i18next';
 
 declare const window: any;
 
@@ -18,6 +19,7 @@ interface AIPlanGeneratorModalProps {
 }
 
 const AIPlanGeneratorModal: React.FC<AIPlanGeneratorModalProps> = ({ isOpen, onClose, onGenerated, defaultSubject, defaultGrade }) => {
+    const { t } = useTranslation();
   const [subject, setSubject] = useState(defaultSubject || '');
   const [grade, setGrade] = useState(defaultGrade || '');
   const [topic, setTopic] = useState('');
@@ -70,8 +72,8 @@ const AIPlanGeneratorModal: React.FC<AIPlanGeneratorModalProps> = ({ isOpen, onC
               <Sparkles className="w-6 h-6" />
             </div>
             <div>
-              <h3 className="text-xl font-bold tracking-tight">AI Lesson Assistant</h3>
-              <p className="text-blue-100 text-sm opacity-90 font-medium">Generate high-quality RPH in seconds.</p>
+              <h3 className="text-xl font-bold tracking-tight">{t('aiLessonAssistant')}</h3>
+              <p className="text-blue-100 text-sm opacity-90 font-medium">{t('generateHighqualityRphInSeconds')}</p>
             </div>
           </div>
         </div>
@@ -90,7 +92,7 @@ const AIPlanGeneratorModal: React.FC<AIPlanGeneratorModalProps> = ({ isOpen, onC
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Subject</label>
+                  <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">{t('subject')}</label>
                   <input 
                     className="w-full border-2 border-slate-100 p-2.5 rounded-xl text-sm font-bold focus:border-blue-500 outline-none transition-all" 
                     value={subject}
@@ -99,7 +101,7 @@ const AIPlanGeneratorModal: React.FC<AIPlanGeneratorModalProps> = ({ isOpen, onC
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Grade</label>
+                  <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">{t('grade')}</label>
                   <input 
                     className="w-full border-2 border-slate-100 p-2.5 rounded-xl text-sm font-bold focus:border-blue-500 outline-none transition-all" 
                     value={grade}
@@ -110,7 +112,7 @@ const AIPlanGeneratorModal: React.FC<AIPlanGeneratorModalProps> = ({ isOpen, onC
               </div>
 
               <div>
-                <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Lesson Topic / Focus</label>
+                <label className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">{t('lessonTopicFocus')}</label>
                 <textarea 
                   className="w-full border-2 border-slate-100 p-3 rounded-xl text-sm font-medium h-24 resize-none focus:border-blue-500 outline-none transition-all" 
                   value={topic}
@@ -120,7 +122,7 @@ const AIPlanGeneratorModal: React.FC<AIPlanGeneratorModalProps> = ({ isOpen, onC
               </div>
 
               <div className="pt-4 flex gap-3">
-                <Button variant="secondary" className="flex-1 rounded-xl h-11" onClick={onClose} disabled={loading}>Cancel</Button>
+                <Button variant="secondary" className="flex-1 rounded-xl h-11" onClick={onClose} disabled={loading}>{t('cancel')}</Button>
                 <Button 
                   className="flex-1 bg-gradient-to-r from-blue-600 to-indigo-600 border-none shadow-lg shadow-blue-200 rounded-xl h-11" 
                   onClick={handleGenerate} 
@@ -128,8 +130,7 @@ const AIPlanGeneratorModal: React.FC<AIPlanGeneratorModalProps> = ({ isOpen, onC
                   isLoading={loading}
                 >
                   {!loading && <Sparkles className="w-4 h-4 mr-2" />}
-                  Generate with Gemini
-                </Button>
+                  {t('generateWithGemini')}</Button>
               </div>
             </>
           )}

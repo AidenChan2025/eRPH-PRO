@@ -8,9 +8,10 @@ import { Shield, Globe, Mail, BarChart3, Database, Save, Server, Info, Search, B
 import { sendTestEmail } from '../../services/emailService';
 import { ReleaseLog } from '../../src/components/ReleaseLog';
 import { RELEASE_LOGS } from '../../src/lib/release_logs';
+import { useTranslation } from 'react-i18next';
 
 export const SystemConfig = () => {
-    const { t } = useLanguage();
+        const { t } = useLanguage();
     const { currentUser } = useGlobal();
     const [isSaving, setIsSaving] = useState(false);
 
@@ -58,12 +59,11 @@ export const SystemConfig = () => {
         <div className="space-y-8 max-w-6xl mx-auto p-6 animate-in fade-in duration-500">
             <div className="flex justify-between items-center">
                 <div>
-                    <h2 className="text-2xl font-bold text-slate-800">System Configuration</h2>
-                    <p className="text-slate-500 text-sm">Control eRPH Pro's global infrastructure, marketing and monetization.</p>
+                    <h2 className="text-2xl font-bold text-slate-800">{t('systemConfiguration')}</h2>
+                    <p className="text-slate-500 text-sm">{t('controlErphProsGlobalInfrastructure')}</p>
                 </div>
                 <Button onClick={handleSave} isLoading={isSaving} className="rounded-xl px-8 shadow-lg shadow-blue-500/20">
-                    <Save className="w-4 h-4 mr-2" /> Sync Master Config
-                </Button>
+                    <Save className="w-4 h-4 mr-2" /> {t('syncMasterConfig')}</Button>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -75,7 +75,7 @@ export const SystemConfig = () => {
                     </div>
                     <div className="space-y-4">
                         <div>
-                            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Editorial Author Name</label>
+                            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">{t('editorialAuthorName')}</label>
                             <input
                                 className="w-full border-2 border-slate-50 bg-slate-50/50 p-3 rounded-xl text-sm font-bold focus:border-blue-500 outline-none"
                                 value={config.cmsConfig.authorName}
@@ -83,7 +83,7 @@ export const SystemConfig = () => {
                             />
                         </div>
                         <div className="flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-100">
-                            <span className="text-xs font-bold text-slate-700">Auto-Crawl Trends</span>
+                            <span className="text-xs font-bold text-slate-700">{t('autocrawlTrends')}</span>
                             <button
                                 onClick={() => setConfig({ ...config, cmsConfig: { ...config.cmsConfig, autoCrawlEnabled: !config.cmsConfig.autoCrawlEnabled } })}
                                 className={`w-10 h-5 rounded-full relative transition-colors ${config.cmsConfig.autoCrawlEnabled ? 'bg-indigo-500' : 'bg-slate-300'}`}
@@ -93,7 +93,7 @@ export const SystemConfig = () => {
                         </div>
                         <div className="p-4 bg-indigo-50 border border-indigo-100 rounded-2xl flex gap-3">
                             <Zap className="w-5 h-5 text-indigo-600 shrink-0 mt-0.5" />
-                            <p className="text-[10px] font-bold text-indigo-800 leading-normal uppercase">The CMS uses Aiden's AI engine to crawl pedagogical trends and draft expert analysis automatically.</p>
+                            <p className="text-[10px] font-bold text-indigo-800 leading-normal uppercase">{t('theCmsUsesAidensAi')}</p>
                         </div>
                     </div>
                 </Card>
@@ -102,15 +102,15 @@ export const SystemConfig = () => {
                 <Card className="p-8 rounded-3xl space-y-6">
                     <div className="flex items-center gap-3 mb-2">
                         <div className="p-2 bg-blue-50 rounded-xl text-blue-600"><BarChart3 className="w-5 h-5" /></div>
-                        <h3 className="font-black text-slate-800 uppercase tracking-tight">Marketing & Tracking</h3>
+                        <h3 className="font-black text-slate-800 uppercase tracking-tight">{t('marketingTracking')}</h3>
                     </div>
                     <div className="space-y-4">
                         <div>
-                            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Google Analytics ID</label>
+                            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">{t('googleAnalyticsId')}</label>
                             <input className="w-full border-2 border-slate-50 bg-slate-50/50 p-3 rounded-xl text-sm font-bold focus:border-blue-500 outline-none" value={config.googleAnalyticsId} onChange={e => setConfig({ ...config, googleAnalyticsId: e.target.value })} />
                         </div>
                         <div>
-                            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Search Console Token</label>
+                            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">{t('searchConsoleToken')}</label>
                             <input className="w-full border-2 border-slate-50 bg-slate-50/50 p-3 rounded-xl text-sm font-bold focus:border-blue-500 outline-none" value={config.googleSearchConsoleId} onChange={e => setConfig({ ...config, googleSearchConsoleId: e.target.value })} />
                         </div>
                     </div>
@@ -120,16 +120,16 @@ export const SystemConfig = () => {
                 <Card className="p-8 rounded-3xl space-y-6">
                     <div className="flex items-center gap-3 mb-2">
                         <div className="p-2 bg-amber-50 rounded-xl text-amber-600"><Globe className="w-5 h-5" /></div>
-                        <h3 className="font-black text-slate-800 uppercase tracking-tight">Monetization (AdSense)</h3>
+                        <h3 className="font-black text-slate-800 uppercase tracking-tight">{t('monetizationAdsense')}</h3>
                     </div>
                     <div className="space-y-4">
                         <div>
-                            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">AdSense Publisher ID</label>
+                            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">{t('adsensePublisherId')}</label>
                             <input className="w-full border-2 border-slate-50 bg-slate-50/50 p-3 rounded-xl text-sm font-bold focus:border-amber-500 outline-none" value={config.googleAdsenseId} onChange={e => setConfig({ ...config, googleAdsenseId: e.target.value })} />
                         </div>
                         <div className="p-4 bg-amber-50 border border-amber-100 rounded-2xl flex gap-3">
                             <Shield className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
-                            <p className="text-[10px] font-bold text-amber-800 leading-normal uppercase">Ad units are strictly limited to the Article CMS platform to maintain professional portal aesthetics.</p>
+                            <p className="text-[10px] font-bold text-amber-800 leading-normal uppercase">{t('adUnitsAreStrictlyLimited')}</p>
                         </div>
                     </div>
                 </Card>
@@ -138,10 +138,10 @@ export const SystemConfig = () => {
                 <Card className="p-8 rounded-3xl space-y-6">
                     <div className="flex items-center gap-3 mb-2">
                         <div className="p-2 bg-rose-50 rounded-xl text-rose-600"><Database className="w-5 h-5" /></div>
-                        <h3 className="font-black text-slate-800 uppercase tracking-tight">Database & Demo Tools</h3>
+                        <h3 className="font-black text-slate-800 uppercase tracking-tight">{t('databaseDemoTools')}</h3>
                     </div>
                     <div className="space-y-4">
-                        <p className="text-[10px] font-bold text-slate-400 uppercase leading-relaxed">Populate the system with fresh demo data for teachers and principals. This cleans old demo records first.</p>
+                        <p className="text-[10px] font-bold text-slate-400 uppercase leading-relaxed">{t('populateTheSystemWithFresh')}</p>
                         <Button
                             variant="secondary"
                             className="w-full border-rose-100 text-rose-600 hover:bg-rose-50 h-12 rounded-xl"
@@ -153,11 +153,10 @@ export const SystemConfig = () => {
                                 }
                             }}
                         >
-                            <Zap className="w-4 h-4 mr-2" /> Re-seed Demo Data
-                        </Button>
+                            <Zap className="w-4 h-4 mr-2" /> {t('reseedDemoData')}</Button>
                         <div className="p-4 bg-rose-50 border border-rose-100 rounded-2xl flex gap-3">
                             <AlertTriangle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
-                            <p className="text-[10px] font-bold text-rose-800 leading-normal uppercase">Use with caution. Only affects demo accounts. Real user data is never touched.</p>
+                            <p className="text-[10px] font-bold text-rose-800 leading-normal uppercase">{t('useWithCautionOnlyAffects')}</p>
                         </div>
                     </div>
                 </Card>
@@ -167,16 +166,15 @@ export const SystemConfig = () => {
                     <div className="flex justify-between items-center mb-2">
                         <div className="flex items-center gap-3">
                             <div className="p-2 bg-emerald-50 rounded-xl text-emerald-600"><Server className="w-5 h-5" /></div>
-                            <h3 className="font-black text-slate-800 uppercase tracking-tight">Mail Infrastructure (Enterprise)</h3>
+                            <h3 className="font-black text-slate-800 uppercase tracking-tight">{t('mailInfrastructureEnterprise')}</h3>
                         </div>
                         <Button onClick={handleSendTest} variant="ghost" size="sm" className="text-emerald-600 hover:bg-emerald-50 rounded-xl font-black">
-                            <Send className="w-4 h-4 mr-2" /> Send Test Mail
-                        </Button>
+                            <Send className="w-4 h-4 mr-2" /> {t('sendTestMail')}</Button>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
                         <div className="md:col-span-2">
-                            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Mail Server Host (Incoming/Outgoing)</label>
+                            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">{t('mailServerHostIncomingoutgoing')}</label>
                             <input
                                 className="w-full border-2 border-slate-50 bg-slate-50/50 p-3 rounded-xl text-sm font-bold focus:border-blue-500 outline-none"
                                 value={config.smtp.host}
@@ -184,7 +182,7 @@ export const SystemConfig = () => {
                             />
                         </div>
                         <div>
-                            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">SMTP Port (SSL)</label>
+                            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">{t('smtpPortSsl')}</label>
                             <input
                                 className="w-full border-2 border-slate-50 bg-slate-50/50 p-3 rounded-xl text-sm font-bold focus:border-blue-500 outline-none"
                                 value={config.smtp.port}
@@ -192,7 +190,7 @@ export const SystemConfig = () => {
                             />
                         </div>
                         <div>
-                            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Username (Primary Admin)</label>
+                            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">{t('usernamePrimaryAdmin')}</label>
                             <input
                                 className="w-full border-2 border-slate-50 bg-slate-50/50 p-3 rounded-xl text-sm font-bold focus:border-blue-500 outline-none"
                                 value={config.smtp.user}
@@ -201,7 +199,7 @@ export const SystemConfig = () => {
                         </div>
 
                         <div>
-                            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">POP3 Port (995)</label>
+                            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">{t('pop3Port995')}</label>
                             <input
                                 className="w-full border-2 border-slate-50 bg-slate-50/50 p-3 rounded-xl text-sm font-bold focus:border-blue-500 outline-none"
                                 value={config.smtp.pop3Port}
@@ -209,7 +207,7 @@ export const SystemConfig = () => {
                             />
                         </div>
                         <div>
-                            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">IMAP Port (993)</label>
+                            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">{t('imapPort993')}</label>
                             <input
                                 className="w-full border-2 border-slate-50 bg-slate-50/50 p-3 rounded-xl text-sm font-bold focus:border-blue-500 outline-none"
                                 value={config.smtp.imapPort}
@@ -217,7 +215,7 @@ export const SystemConfig = () => {
                             />
                         </div>
                         <div className="md:col-span-2">
-                            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">Mailbox Password</label>
+                            <label className="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1">{t('mailboxPassword')}</label>
                             <input
                                 type="password"
                                 className="w-full border-2 border-slate-50 bg-slate-50/50 p-3 rounded-xl text-sm font-bold focus:border-blue-500 outline-none"
@@ -230,7 +228,7 @@ export const SystemConfig = () => {
                             <div className="flex items-center justify-between mb-4">
                                 <div className="flex items-center gap-2">
                                     <RefreshCw className="w-4 h-4 text-slate-400" />
-                                    <span className="text-xs font-black text-slate-400 uppercase tracking-widest">Auto-Reply Configuration</span>
+                                    <span className="text-xs font-black text-slate-400 uppercase tracking-widest">{t('autoreplyConfiguration')}</span>
                                 </div>
                                 <button
                                     onClick={() => setConfig({ ...config, smtp: { ...config.smtp, autoReplyEnabled: !config.smtp.autoReplyEnabled } })}

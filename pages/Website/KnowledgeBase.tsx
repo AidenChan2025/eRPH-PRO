@@ -9,9 +9,10 @@ import {
 import Button from '../../components/Button';
 
 import { CHANGELOG } from '../../src/config/changelog';
+import { useTranslation } from 'react-i18next';
 
 const KnowledgeBase = () => {
-    const { t } = useLanguage();
+        const { t } = useLanguage();
     const [searchQuery, setSearchQuery] = useState('');
     const [activeTab, setActiveTab] = useState<'updates' | 'guides' | 'faq'>('updates');
 
@@ -53,10 +54,10 @@ const KnowledgeBase = () => {
                     <div className="text-center space-y-6">
                         <div className="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 rounded-full text-xs font-black uppercase tracking-widest">
                             <Book className="w-4 h-4" />
-                            <span>Knowledge Center</span>
+                            <span>{t('knowledgeCenter')}</span>
                         </div>
                         <h1 className="text-4xl md:text-6xl font-black text-slate-900 tracking-tight">
-                            How can we <span className="text-blue-600">help you?</span>
+                            {t('howCanWe')}<span className="text-blue-600">{t('helpYou')}</span>
                         </h1>
                         <div className="max-w-xl mx-auto relative group">
                             <Search className="absolute left-5 top-5 w-6 h-6 text-slate-400 group-focus-within:text-blue-500 transition-colors" />
@@ -99,8 +100,8 @@ const KnowledgeBase = () => {
                         {activeTab === 'updates' && (
                             <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
                                 <div className="flex items-center justify-between">
-                                    <h3 className="text-2xl font-black text-slate-900">Changelog & Release Notes</h3>
-                                    <span className="text-xs font-bold bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full uppercase tracking-widest">Live</span>
+                                    <h3 className="text-2xl font-black text-slate-900">{t('changelogReleaseNotes')}</h3>
+                                    <span className="text-xs font-bold bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full uppercase tracking-widest">{t('live')}</span>
                                 </div>
 
                                 <div className="relative space-y-6 before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:ml-8 before:h-full before:w-0.5 before:bg-slate-200">
@@ -151,7 +152,7 @@ const KnowledgeBase = () => {
                         {/* FAQs */}
                         {activeTab === 'faq' && (
                             <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-3xl mx-auto">
-                                <h3 className="text-2xl font-black text-slate-900 mb-8 text-center">Frequently Asked Questions</h3>
+                                <h3 className="text-2xl font-black text-slate-900 mb-8 text-center">{t('frequentlyAskedQuestions')}</h3>
                                 <div className="grid grid-cols-1 gap-4">
                                     {[...faqs,
                                     { q: "Is the system secure for sensitive student data?", a: "Yes, we employ military-grade AES-256 encryption. All databases are isolated per school tenant, ensuring strict data sovereignty." },
@@ -184,11 +185,11 @@ const KnowledgeBase = () => {
                                         icon: Zap,
                                         content: (
                                             <div className="space-y-4 text-slate-600">
-                                                <p>Welcome to eRPH Pro! Here's how to get started:</p>
+                                                <p>{t('welcomeToErphProHeres')}</p>
                                                 <ol className="list-decimal pl-5 space-y-2">
-                                                    <li><strong>Log In</strong> using your provided credentials (IC Number).</li>
-                                                    <li>Navigate to <strong>Settings</strong> to update your profile photo and signature.</li>
-                                                    <li>Ensure your <strong>Grade & Subject</strong> details are correct.</li>
+                                                    <li><strong>{t('logIn')}</strong> {t('usingYourProvidedCredentialsIc')}</li>
+                                                    <li>{t('navigateTo')}<strong>{t('settings')}</strong> {t('toUpdateYourProfilePhoto')}</li>
+                                                    <li>{t('ensureYour')}<strong>{t('gradeSubject')}</strong> {t('detailsAreCorrect')}</li>
                                                 </ol>
                                             </div>
                                         )
@@ -199,12 +200,12 @@ const KnowledgeBase = () => {
                                         icon: FileText,
                                         content: (
                                             <div className="space-y-4 text-slate-600">
-                                                <p>Creating a lesson plan is easy:</p>
+                                                <p>{t('creatingALessonPlanIs')}</p>
                                                 <ol className="list-decimal pl-5 space-y-2">
-                                                    <li>Click <strong>New Plan</strong> in the sidebar.</li>
-                                                    <li>Select your <strong>Date, Time, Class, and Subject</strong>.</li>
-                                                    <li>Choose standards from the <strong>DSKP Selector</strong>.</li>
-                                                    <li>Click <strong>Save Draft</strong> or <strong>Submit</strong>.</li>
+                                                    <li>{t('click')}<strong>{t('newPlan')}</strong> {t('inTheSidebar')}</li>
+                                                    <li>{t('selectYour')}<strong>{t('dateTimeClassAndSubject')}</strong>.</li>
+                                                    <li>{t('chooseStandardsFromThe')}<strong>{t('dskpSelector')}</strong>.</li>
+                                                    <li>{t('click')}<strong>{t('saveDraft')}</strong> {t('or')}<strong>{t('submit')}</strong>.</li>
                                                 </ol>
                                             </div>
                                         )
@@ -215,11 +216,11 @@ const KnowledgeBase = () => {
                                         icon: Book,
                                         content: (
                                             <div className="space-y-4 text-slate-600">
-                                                <p>We've digitized the entire DSKP library for you:</p>
+                                                <p>{t('weveDigitizedTheEntireDskp')}</p>
                                                 <ul className="list-disc pl-5 space-y-2">
-                                                    <li>Use the <strong>DSKP Manager</strong> to favorite your subjects.</li>
-                                                    <li>During RPH creation, simply <strong>click to select</strong> standards.</li>
-                                                    <li>Everything is auto-filled!</li>
+                                                    <li>{t('useThe')}<strong>{t('dskpManager')}</strong> {t('toFavoriteYourSubjects')}</li>
+                                                    <li>{t('duringRphCreationSimply')}<strong>{t('clickToSelect')}</strong> {t('standards_1')}</li>
+                                                    <li>{t('everythingIsAutofilled')}</li>
                                                 </ul>
                                             </div>
                                         )
@@ -230,12 +231,12 @@ const KnowledgeBase = () => {
                                         icon: CheckCircle2,
                                         content: (
                                             <div className="space-y-4 text-slate-600">
-                                                <p>Once you're done, send it for review:</p>
+                                                <p>{t('onceYoureDoneSendIt')}</p>
                                                 <ul className="list-disc pl-5 space-y-2">
-                                                    <li>Go to <strong>My Plans</strong>.</li>
-                                                    <li>Select the plans you want to submit.</li>
-                                                    <li>Click the <strong>Submit for Review</strong> button on top.</li>
-                                                    <li>Your principal will be notified!</li>
+                                                    <li>{t('goTo')}<strong>{t('myPlans')}</strong>.</li>
+                                                    <li>{t('selectThePlansYouWant')}</li>
+                                                    <li>{t('clickThe')}<strong>{t('submitForReview')}</strong> {t('buttonOnTop')}</li>
+                                                    <li>{t('yourPrincipalWillBeNotified')}</li>
                                                 </ul>
                                             </div>
                                         )
@@ -251,7 +252,7 @@ const KnowledgeBase = () => {
                                         </div>
                                         <h4 className="text-xl font-black text-slate-900 mb-2">{guide.title}</h4>
                                         <p className="text-slate-500 font-medium mb-6">{guide.desc}</p>
-                                        <Button variant="secondary" size="sm" className="w-full">Read Guide</Button>
+                                        <Button variant="secondary" size="sm" className="w-full">{t('readGuide')}</Button>
                                     </div>
                                 ))}
                             </div>
@@ -277,7 +278,7 @@ const KnowledgeBase = () => {
                             {selectedGuide.content}
                         </div>
                         <div className="p-6 border-t border-slate-100 bg-slate-50">
-                            <Button className="w-full h-12 rounded-xl font-bold" onClick={() => setSelectedGuide(null)}>Close Guide</Button>
+                            <Button className="w-full h-12 rounded-xl font-bold" onClick={() => setSelectedGuide(null)}>{t('closeGuide')}</Button>
                         </div>
                     </div>
                 </div>

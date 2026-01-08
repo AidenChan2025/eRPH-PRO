@@ -18,6 +18,7 @@ import {
     Quote, LayoutDashboard, Palette, Zap, ArrowRight, Save, Eye, EyeOff, Sparkles,
     ChevronRight, Plus, Database, Activity
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 // --- MOCK ANALYTICS DATA ---
 const ANALYTICS_DATA = [
@@ -55,7 +56,7 @@ const StatCard = ({ title, value, icon: Icon, color, subtext }: any) => (
 );
 
 const CustomizationDrawer = ({ isOpen, onClose, config, onSave }: { isOpen: boolean, onClose: () => void, config: DashboardConfig, onSave: (newConfig: DashboardConfig) => void }) => {
-    const { t } = useLanguage();
+        const { t } = useLanguage();
     const [localConfig, setLocalConfig] = useState<DashboardConfig>(config);
     const [isSaving, setIsSaving] = useState(false);
 
@@ -158,7 +159,7 @@ const CustomizationDrawer = ({ isOpen, onClose, config, onSave }: { isOpen: bool
 };
 
 const SuperAdminDashboard = ({ stats }: { stats: any }) => {
-    const { t } = useLanguage();
+        const { t } = useLanguage();
     const navigate = useNavigate();
 
     const getRoleLabel = (role: UserRole) => {
@@ -192,17 +193,14 @@ const SuperAdminDashboard = ({ stats }: { stats: any }) => {
                     <div className="flex justify-between items-center mb-6">
                         <div>
                             <h3 className="font-bold text-slate-800 text-lg flex items-center gap-2">
-                                <Activity className="w-5 h-5 text-blue-600" /> System Traffic & Analytics
-                            </h3>
-                            <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">Real-time Session Data (Google Analytics)</p>
+                                <Activity className="w-5 h-5 text-blue-600" /> {t('systemTrafficAnalytics')}</h3>
+                            <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mt-1">{t('realtimeSessionDataGoogleAnalytics')}</p>
                         </div>
                         <div className="flex gap-2">
                             <div className="flex items-center gap-2 text-xs font-bold text-slate-500">
-                                <span className="w-2 h-2 rounded-full bg-blue-500"></span> Active Users
-                            </div>
+                                <span className="w-2 h-2 rounded-full bg-blue-500"></span> {t('activeUsers')}</div>
                             <div className="flex items-center gap-2 text-xs font-bold text-slate-500">
-                                <span className="w-2 h-2 rounded-full bg-emerald-400"></span> Page Hits
-                            </div>
+                                <span className="w-2 h-2 rounded-full bg-emerald-400"></span> {t('pageHits')}</div>
                         </div>
                     </div>
 
@@ -258,7 +256,7 @@ const SuperAdminDashboard = ({ stats }: { stats: any }) => {
 };
 
 const SchoolAdminDashboard = () => {
-    const { t } = useLanguage();
+        const { t } = useLanguage();
     const { currentUser, schools } = useGlobal();
     const navigate = useNavigate();
     const [schoolStats, setSchoolStats] = useState({ teachers: 0, plans: 0, approved: 0, pending: 0, rejected: 0 });
@@ -348,7 +346,7 @@ const SchoolAdminDashboard = () => {
 };
 
 const PersonalDashboard = () => {
-    const { currentUser, setCurrentUser } = useGlobal();
+        const { currentUser, setCurrentUser } = useGlobal();
     const navigate = useNavigate();
     const { t } = useLanguage();
 
@@ -454,8 +452,7 @@ const PersonalDashboard = () => {
                                 currentUser?.name}
                     </h1>
                     <p className="text-slate-500 font-medium flex items-center justify-center md:justify-start gap-2 mt-2">
-                        <Building className={`w-4 h-4 ${currentTheme.text}`} /> {getRoleLabel(currentUser?.role || UserRole.TEACHER)} • Malaysian Educator
-                    </p>
+                        <Building className={`w-4 h-4 ${currentTheme.text}`} /> {getRoleLabel(currentUser?.role || UserRole.TEACHER)} {t('malaysianEducator')}</p>
                 </div>
 
                 <div className="flex gap-3 z-10">
@@ -657,7 +654,7 @@ const PersonalDashboard = () => {
 };
 
 const Dashboard = () => {
-    const { t } = useLanguage();
+        const { t } = useLanguage();
     const { currentUser, viewMode } = useGlobal();
     const [saStats, setSaStats] = useState({ totalSchools: 0, totalUsers: 0, totalPlans: 0 });
 

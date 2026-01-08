@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import PublicNavbar from '../../components/PublicNavbar';
 import PublicFooter from '../../components/PublicFooter';
 import { Shield, Lock, FileText, CheckCircle2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const Legal = () => {
+    const { t } = useTranslation();
     const [activeTab, setActiveTab] = useState<'privacy' | 'terms' | 'security'>('privacy');
 
     const tabs = [
@@ -19,10 +21,9 @@ const Legal = () => {
             <main className="pt-32 pb-20 px-6">
                 <div className="max-w-4xl mx-auto space-y-12">
                     <div className="text-center space-y-4">
-                        <h1 className="text-4xl md:text-5xl font-black tracking-tight text-slate-900">Legal Center</h1>
+                        <h1 className="text-4xl md:text-5xl font-black tracking-tight text-slate-900">{t('legalCenter')}</h1>
                         <p className="text-lg text-slate-500 font-medium max-w-2xl mx-auto">
-                            Transparency is our core value. Here is everything you need to know about how we manage usage, data, and security.
-                        </p>
+                            {t('transparencyIsOurCoreValue')}</p>
                     </div>
 
                     <div className="flex flex-wrap justify-center gap-4 bg-slate-50 p-2 rounded-[2rem] border border-slate-100 max-w-2xl mx-auto">
@@ -44,59 +45,58 @@ const Legal = () => {
                     <div className="bg-white border border-slate-100 rounded-[2.5rem] p-8 md:p-12 shadow-xl shadow-slate-200/30 animate-in fade-in slide-in-from-bottom-8 duration-500">
                         {activeTab === 'privacy' && (
                             <div className="prose prose-slate prose-headings:font-black prose-p:font-medium prose-p:text-slate-600 max-w-none">
-                                <h2>Privacy Policy</h2>
-                                <p className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-8">Last Updated: Jan 07, 2026</p>
+                                <h2>{t('privacyPolicy')}</h2>
+                                <p className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-8">{t('lastUpdatedJan072026')}</p>
 
-                                <h3>1. Data Collection</h3>
-                                <p>We collect minimal data necessary for the functionality of eRPH Pro. This includes:</p>
+                                <h3>{t('1DataCollection')}</h3>
+                                <p>{t('weCollectMinimalDataNecessary')}</p>
                                 <ul>
-                                    <li>Teacher names and email addresses (for identity).</li>
-                                    <li>Lesson plan content (RPH) generated or uploaded by you.</li>
-                                    <li>School profile information.</li>
+                                    <li>{t('teacherNamesAndEmailAddresses')}</li>
+                                    <li>{t('lessonPlanContentRphGenerated')}</li>
+                                    <li>{t('schoolProfileInformation')}</li>
                                 </ul>
 
-                                <h3>2. Data Usage</h3>
-                                <p>Your data is used strictly for:</p>
+                                <h3>{t('2DataUsage')}</h3>
+                                <p>{t('yourDataIsUsedStrictly')}</p>
                                 <ul>
-                                    <li>Providing the Lesson Plan management service.</li>
-                                    <li>Generating official PDF reports for school administration.</li>
-                                    <li>Syncing with the National DSKP repository.</li>
+                                    <li>{t('providingTheLessonPlanManagement')}</li>
+                                    <li>{t('generatingOfficialPdfReportsFor')}</li>
+                                    <li>{t('syncingWithTheNationalDskp')}</li>
                                 </ul>
-                                <p><strong>We do NOT sell your data to third parties.</strong></p>
+                                <p><strong>{t('weDoNotSellYour')}</strong></p>
 
-                                <h3>3. User Rights</h3>
-                                <p>You have the right to request a full export of your data or complete account deletion at any time by contacting support.</p>
+                                <h3>{t('3UserRights')}</h3>
+                                <p>{t('youHaveTheRightTo')}</p>
                             </div>
                         )}
 
                         {activeTab === 'terms' && (
                             <div className="prose prose-slate prose-headings:font-black prose-p:font-medium prose-p:text-slate-600 max-w-none">
-                                <h2>Terms of Service</h2>
-                                <p className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-8">Effective Date: Jan 01, 2024</p>
+                                <h2>{t('termsOfService')}</h2>
+                                <p className="text-sm font-bold text-slate-400 uppercase tracking-widest mb-8">{t('effectiveDateJan012024')}</p>
 
-                                <h3>1. Usage License</h3>
-                                <p>By using eRPH Pro, you are granted a non-exclusive, limited license to access the platform for educational administration purposes.</p>
+                                <h3>{t('1UsageLicense')}</h3>
+                                <p>{t('byUsingErphProYou')}</p>
 
-                                <h3>2. Acceptable Use</h3>
-                                <p>You agree not to:</p>
+                                <h3>{t('2AcceptableUse')}</h3>
+                                <p>{t('youAgreeNotTo')}</p>
                                 <ul>
-                                    <li>Misuse the reporting tools to falsify official school records.</li>
-                                    <li>Attempt to reverse engineer the source code.</li>
-                                    <li>Share your account credentials with unauthorized users.</li>
+                                    <li>{t('misuseTheReportingToolsTo')}</li>
+                                    <li>{t('attemptToReverseEngineerThe')}</li>
+                                    <li>{t('shareYourAccountCredentialsWith')}</li>
                                 </ul>
 
-                                <h3>3. Disclaimer</h3>
-                                <p>eRPH Pro is provided "as is". While we strive for 99.9% uptime, we are not liable for any data unavailability during scheduled maintenance windows.</p>
+                                <h3>{t('3Disclaimer')}</h3>
+                                <p>{t('erphProIsProvidedAs')}</p>
                             </div>
                         )}
 
                         {activeTab === 'security' && (
                             <div className="space-y-8">
                                 <div>
-                                    <h2 className="text-2xl font-black text-slate-900 mb-2">Security Infrastructure</h2>
+                                    <h2 className="text-2xl font-black text-slate-900 mb-2">{t('securityInfrastructure')}</h2>
                                     <p className="text-slate-600 font-medium leading-relaxed">
-                                        We take the security of Malaysian educational data seriously. Our stack is built on enterprise-grade security principles.
-                                    </p>
+                                        {t('weTakeTheSecurityOf')}</p>
                                 </div>
 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -119,10 +119,9 @@ const Legal = () => {
                                 <div className="bg-blue-50 p-6 rounded-2xl border border-blue-100 flex gap-4">
                                     <Shield className="w-8 h-8 text-blue-600 shrink-0" />
                                     <div>
-                                        <h4 className="font-black text-blue-800 mb-1">AIDEN Security Subsystem</h4>
+                                        <h4 className="font-black text-blue-800 mb-1">{t('aidenSecuritySubsystem')}</h4>
                                         <p className="text-blue-700/80 text-sm font-medium">
-                                            Our proprietary active defense system monitors for suspicious login patterns and prevents unauthorized access attempts in real-time.
-                                        </p>
+                                            {t('ourProprietaryActiveDefenseSystem')}</p>
                                     </div>
                                 </div>
                             </div>

@@ -2,11 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { Coffee, X, Heart } from 'lucide-react';
 import Button from './Button';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 const COFFEE_POPUP_KEY = 'erph_coffee_last_shown';
 const POPUP_INTERVAL_DAYS = 45;
 
 export const CoffeeModal = () => {
+    const { t } = useTranslation();
     const [showQR, setShowQR] = useState(false);
     const [isOpen, setIsOpen] = useState(false);
 
@@ -78,20 +80,18 @@ export const CoffeeModal = () => {
                     <div className="w-20 h-20 bg-white rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg shadow-amber-500/20">
                         <Coffee className="w-10 h-10 text-amber-600 animate-bounce" />
                     </div>
-                    <h3 className="text-2xl font-black text-slate-800 mb-2">Fuel the Developer!</h3>
-                    <p className="text-amber-800 font-bold text-sm uppercase tracking-wide">eRPH Pro is 100% Indie Built</p>
+                    <h3 className="text-2xl font-black text-slate-800 mb-2">{t('fuelTheDeveloper')}</h3>
+                    <p className="text-amber-800 font-bold text-sm uppercase tracking-wide">{t('erphProIs100Indie')}</p>
                 </div>
 
                 <div className="p-8 space-y-6">
                     {!showQR ? (
                         <>
                             <p className="text-center text-slate-600 font-medium leading-relaxed">
-                                Hi! I'm <span className="font-black text-slate-900">Aiden</span>.
-                                I built this system alone to help teachers like you manage RPH easier.
-                                <br /><br />
-                                If eRPH Pro saved your time, consider treating me to a coffee <span className="font-black text-slate-900">(RM10)</span>.
+                                {t('hiIm')}<span className="font-black text-slate-900">{t('aiden')}</span>{t('iBuiltThisSystemAlone')}<br /><br />
+                                {t('ifErphProSavedYour')}<span className="font-black text-slate-900">{t('rm10')}</span>.
                                 <br />
-                                <span className="text-xs italic text-slate-400 mt-2 block">(Extra tips for my hard work are deeply appreciated! ❤️)</span>
+                                <span className="text-xs italic text-slate-400 mt-2 block">{t('extraTipsForMyHard')}</span>
                             </p>
 
                             <div className="flex flex-col gap-3">
@@ -99,22 +99,20 @@ export const CoffeeModal = () => {
                                     onClick={handleTreat}
                                     className="w-full h-14 bg-amber-500 hover:bg-amber-600 text-white font-black shadow-xl shadow-amber-500/30 text-lg rounded-2xl"
                                 >
-                                    Sure, I'll treat you! ☕
-                                </Button>
+                                    {t('sureIllTreatYou')}</Button>
                                 <Button
                                     onClick={() => handleClose(20)}
                                     variant="ghost"
                                     className="w-full font-bold text-slate-400 hover:text-slate-600"
                                 >
-                                    Maybe next time
-                                </Button>
+                                    {t('maybeNextTime')}</Button>
                             </div>
                         </>
                     ) : (
                         <div className="space-y-6 animate-in slide-in-from-right duration-300">
                             <div className="text-center">
-                                <h4 className="text-xl font-black text-slate-800 mb-1">Pass the Coffee!</h4>
-                                <p className="text-sm text-slate-500 font-bold">Scan with TnG eWallet</p>
+                                <h4 className="text-xl font-black text-slate-800 mb-1">{t('passTheCoffee')}</h4>
+                                <p className="text-sm text-slate-500 font-bold">{t('scanWithTngEwallet')}</p>
                             </div>
 
                             <div className="bg-slate-900 p-4 rounded-3xl shadow- inner flex flex-col items-center gap-4">
@@ -122,8 +120,8 @@ export const CoffeeModal = () => {
                                     <img src="/assets/img/tng_qr.png" alt="Touch 'n Go QR" className="w-48 h-auto object-contain rounded-lg" />
                                 </div>
                                 <div className="text-center">
-                                    <p className="text-white font-black text-lg">RM 10.00</p>
-                                    <p className="text-slate-400 text-xs font-bold uppercase tracking-widest">+ Any Tips You Like!</p>
+                                    <p className="text-white font-black text-lg">{t('rm1000')}</p>
+                                    <p className="text-slate-400 text-xs font-bold uppercase tracking-widest">{t('anyTipsYouLike')}</p>
                                 </div>
                             </div>
 
@@ -131,8 +129,7 @@ export const CoffeeModal = () => {
                                 onClick={handleDoneTreating}
                                 className="w-full h-12 bg-emerald-500 hover:bg-emerald-600 text-white font-black shadow-lg shadow-emerald-500/30 rounded-2xl"
                             >
-                                Done! (Remind me in 30 days)
-                            </Button>
+                                {t('doneRemindMeIn30')}</Button>
                         </div>
                     )}
                 </div>

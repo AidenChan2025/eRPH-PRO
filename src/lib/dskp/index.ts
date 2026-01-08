@@ -1,7 +1,7 @@
 import { dskpFetcher } from './data-fetcher';
 import { syncEngine } from './sync-engine';
 import { classifySchoolType, SchoolType, DSKPStandard } from './parser';
-import { db, doc, updateDoc, deleteDoc, getDocs, collection, query, where, limit } from '../../services/firebase';
+import { db, doc, updateDoc, deleteDoc, getDocs, collection, query, where, limit } from '../../../services/firebase';
 
 const COLLECTION = 'dskp_standards'; // Legacy for search fallback? 
 // Or update list to fail gracefully or search legacy?

@@ -3,6 +3,7 @@ import { ChevronDown, ChevronRight, School as SchoolIcon, Loader2, DatabaseZap }
 import { dskpFetcher } from '../../lib/dskp/data-fetcher'; // Import from new lib
 import { DSKPDataTable } from './DSKPDataTable';
 import { DSKPStandard } from '../../lib/dskp/parser';
+import { useTranslation } from 'react-i18next';
 
 interface DSKPMasterAccordionProps {
     isAdmin?: boolean;
@@ -10,6 +11,7 @@ interface DSKPMasterAccordionProps {
 }
 
 export const DSKPMasterAccordion = ({ isAdmin, onDeleteStandard }: DSKPMasterAccordionProps) => {
+    const { t } = useTranslation();
     // Level 1: Types
     const [types, setTypes] = useState<string[]>([]);
     const [loadingTypes, setLoadingTypes] = useState(false);
@@ -108,14 +110,14 @@ export const DSKPMasterAccordion = ({ isAdmin, onDeleteStandard }: DSKPMasterAcc
     };
 
     // Render
-    if (loadingTypes) return <div className="p-12 text-center text-slate-400"><Loader2 className="w-8 h-8 animate-spin mx-auto mb-2" />Loading Registry...</div>;
+    if (loadingTypes) return <div className="p-12 text-center text-slate-400"><Loader2 className="w-8 h-8 animate-spin mx-auto mb-2" />{t('loadingRegistry')}</div>;
 
     if (!loadingTypes && types.length === 0) {
         return (
             <div className="p-12 text-center border-2 border-dashed border-slate-200 rounded-[2.5rem] bg-slate-50">
                 <DatabaseZap className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-                <h3 className="text-lg font-black text-slate-400">Registry Empty</h3>
-                <p className="text-xs text-slate-400 mb-4">Sync data to build the hierarchy.</p>
+                <h3 className="text-lg font-black text-slate-400">{t('registryEmpty')}</h3>
+                <p className="text-xs text-slate-400 mb-4">{t('syncDataToBuildThe')}</p>
             </div>
         );
     }
@@ -141,7 +143,7 @@ export const DSKPMasterAccordion = ({ isAdmin, onDeleteStandard }: DSKPMasterAcc
                     {/* LEVEL 2: YEARS */}
                     {expandedType === type && (
                         <div className="bg-slate-50/50 border-t border-slate-100 p-4 space-y-2 animate-in slide-in-from-top-2 duration-200">
-                            {loadingYears === type && <div className="text-xs text-center text-slate-400 p-2">Loading Years...</div>}
+                            {loadingYears === type && <div className="text-xs text-center text-slate-400 p-2">{t('loadingYears')}</div>}
 
                             {yearsCache[type]?.map(year => (
                                 <div key={year} className="border border-slate-100 rounded-2xl bg-white overflow-hidden">
@@ -159,7 +161,7 @@ export const DSKPMasterAccordion = ({ isAdmin, onDeleteStandard }: DSKPMasterAcc
                                     {/* LEVEL 3: SUBJECTS */}
                                     {expandedYear === year && (
                                         <div className="bg-slate-50 p-3 space-y-2 border-t border-slate-100 animate-in slide-in-from-top-1">
-                                            {loadingSubjects === `${type}_${year}` && <div className="text-[10px] text-center text-slate-400">Loading Subjects...</div>}
+                                            {loadingSubjects === `${type}_${year}` && <div className="text-[10px] text-center text-slate-400">{t('loadingSubjects')}</div>}
 
                                             {subjectsCache[`${type}_${year}`]?.map(sub => (
                                                 <div key={sub.id} className="border border-slate-100 rounded-xl bg-white overflow-hidden">
@@ -168,7 +170,7 @@ export const DSKPMasterAccordion = ({ isAdmin, onDeleteStandard }: DSKPMasterAcc
                                                         className={`p-3 flex items-center justify-between cursor-pointer hover:bg-slate-50 ${expandedSubject === sub.title ? 'bg-indigo-50/30' : ''}`}
                                                     >
                                                         <span className="font-bold text-slate-600 text-xs ml-2">{sub.title}</span>
-                                                        <span className="text-[10px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full font-bold">{sub.count || '?'} SK</span>
+                                                        <span className="text-[10px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full font-bold">{sub.count || '?'} {t('sk')}</span>
                                                     </div>
 
                                                     {/* LEVEL 4: DATA TABLE */}

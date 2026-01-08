@@ -2620,7 +2620,7 @@ const getDefaultsFromCookie = () => {
   const decoded = match && base64Decode(match[1]);
   return decoded && JSON.parse(decoded);
 };
-const getDefaults = () => {
+const getDefaults$2 = () => {
   try {
     return getDefaultsFromPostinstall() || getDefaultsFromGlobal() || getDefaultsFromEnvVariable() || getDefaultsFromCookie();
   } catch (e) {
@@ -2630,7 +2630,7 @@ const getDefaults = () => {
 };
 const getDefaultEmulatorHost = (productName) => {
   var _a, _b;
-  return (_b = (_a = getDefaults()) === null || _a === void 0 ? void 0 : _a.emulatorHosts) === null || _b === void 0 ? void 0 : _b[productName];
+  return (_b = (_a = getDefaults$2()) === null || _a === void 0 ? void 0 : _a.emulatorHosts) === null || _b === void 0 ? void 0 : _b[productName];
 };
 const getDefaultEmulatorHostnameAndPort = (productName) => {
   const host = getDefaultEmulatorHost(productName);
@@ -2650,11 +2650,11 @@ const getDefaultEmulatorHostnameAndPort = (productName) => {
 };
 const getDefaultAppConfig = () => {
   var _a;
-  return (_a = getDefaults()) === null || _a === void 0 ? void 0 : _a.config;
+  return (_a = getDefaults$2()) === null || _a === void 0 ? void 0 : _a.config;
 };
 const getExperimentalSetting = (name) => {
   var _a;
-  return (_a = getDefaults()) === null || _a === void 0 ? void 0 : _a[`_${name}`];
+  return (_a = getDefaults$2()) === null || _a === void 0 ? void 0 : _a[`_${name}`];
 };
 /**
  * @license
@@ -2946,7 +2946,7 @@ function isMobileCordova() {
 }
 function isNode() {
   var _a;
-  const forceEnvironment = (_a = getDefaults()) === null || _a === void 0 ? void 0 : _a.forceEnvironment;
+  const forceEnvironment = (_a = getDefaults$2()) === null || _a === void 0 ? void 0 : _a.forceEnvironment;
   if (forceEnvironment === "node") {
     return true;
   } else if (forceEnvironment === "browser") {
@@ -3079,7 +3079,7 @@ function deepEqual$1(a, b) {
     }
     const aProp = a[k];
     const bProp = b[k];
-    if (isObject$1(aProp) && isObject$1(bProp)) {
+    if (isObject$2(aProp) && isObject$2(bProp)) {
       if (!deepEqual$1(aProp, bProp)) {
         return false;
       }
@@ -3094,7 +3094,7 @@ function deepEqual$1(a, b) {
   }
   return true;
 }
-function isObject$1(thing) {
+function isObject$2(thing) {
   return thing !== null && typeof thing === "object";
 }
 /**
@@ -3113,7 +3113,7 @@ function isObject$1(thing) {
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-function querystring(querystringParams) {
+function querystring$1(querystringParams) {
   const params = [];
   for (const [key, value] of Object.entries(querystringParams)) {
     if (Array.isArray(value)) {
@@ -3210,13 +3210,13 @@ class ObserverProxy {
       };
     }
     if (observer.next === void 0) {
-      observer.next = noop$1;
+      observer.next = noop$2;
     }
     if (observer.error === void 0) {
-      observer.error = noop$1;
+      observer.error = noop$2;
     }
     if (observer.complete === void 0) {
-      observer.complete = noop$1;
+      observer.complete = noop$2;
     }
     const unsub = this.unsubscribeOne.bind(this, this.observers.length);
     if (this.finalized) {
@@ -3296,7 +3296,7 @@ function implementsAnyMethods(obj, methods) {
   }
   return false;
 }
-function noop$1() {
+function noop$2() {
 }
 /**
  * @license
@@ -3809,7 +3809,7 @@ const defaultLogHandler = (instance, logType, ...args) => {
         throw new Error(`Attempted to log a message with an invalid logType (value: ${logType})`);
     }
 };
-class Logger {
+let Logger$1 = class Logger {
     /**
      * Gives you an instance of a Logger to capture messages according to
      * Firebase's logging scheme.
@@ -3884,7 +3884,7 @@ class Logger {
         this._userLogHandler && this._userLogHandler(this, LogLevel.ERROR, ...args);
         this._logHandler(this, LogLevel.ERROR, ...args);
     }
-}
+};
 
 const instanceOfAny = (object, constructors) => constructors.some((c) => object instanceof c);
 
@@ -4219,7 +4219,7 @@ const version$1$1 = "0.13.2";
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-const logger = new Logger('@firebase/app');
+const logger = new Logger$1('@firebase/app');
 
 const name$p = "@firebase/app-compat";
 
@@ -4272,7 +4272,7 @@ const name$2 = "@firebase/ai";
 const name$1$1 = "@firebase/firestore-compat";
 
 const name$r = "firebase";
-const version$2 = "11.10.0";
+const version$5 = "11.10.0";
 
 /**
  * @license
@@ -4551,7 +4551,7 @@ class FirebaseAppImpl {
  *
  * @public
  */
-const SDK_VERSION = version$2;
+const SDK_VERSION = version$5;
 function initializeApp(_options, rawConfig = {}) {
     let options = _options;
     if (typeof rawConfig !== 'object') {
@@ -5067,7 +5067,7 @@ function registerCoreComponents(variant) {
 registerCoreComponents('');
 
 var name$1 = "firebase";
-var version$1 = "11.10.0";
+var version$4 = "11.10.0";
 
 /**
  * @license
@@ -5085,7 +5085,7 @@ var version$1 = "11.10.0";
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-registerVersion(name$1, version$1, 'app');
+registerVersion(name$1, version$4, 'app');
 
 /******************************************************************************
 Copyright (c) Microsoft Corporation.
@@ -5157,7 +5157,7 @@ const _DEFAULT_AUTH_ERROR_FACTORY = new ErrorFactory('auth', 'Firebase', _prodEr
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-const logClient = new Logger('@firebase/auth');
+const logClient = new Logger$1('@firebase/auth');
 function _logWarn(msg, ...args) {
     if (logClient.logLevel <= LogLevel.WARN) {
         logClient.warn(`Auth (${SDK_VERSION}): ${msg}`, ...args);
@@ -5613,7 +5613,7 @@ async function _performApiRequest(auth, method, path, request, customErrorMap = 
                 };
             }
         }
-        const query = querystring(Object.assign({ key: auth.config.apiKey }, params)).slice(1);
+        const query = querystring$1(Object.assign({ key: auth.config.apiKey }, params)).slice(1);
         const headers = await auth._getAdditionalHeaders();
         headers["Content-Type" /* HttpHeader.CONTENT_TYPE */] = 'application/json';
         if (auth.languageCode) {
@@ -6209,7 +6209,7 @@ function extractProviderData(providers) {
  */
 async function requestStsToken(auth, refreshToken) {
     const response = await _performFetchWithErrorHandling(auth, {}, async () => {
-        const body = querystring({
+        const body = querystring$1({
             'grant_type': 'refresh_token',
             'refresh_token': refreshToken
         }).slice(1);
@@ -8701,7 +8701,7 @@ class OAuthCredential extends AuthCredential {
             if (this.nonce && !this.pendingToken) {
                 postBody['nonce'] = this.nonce;
             }
-            request.postBody = querystring(postBody);
+            request.postBody = querystring$1(postBody);
         }
         return request;
     }
@@ -11698,7 +11698,7 @@ function getIframeUrl(auth) {
     if (frameworks.length) {
         params.fw = frameworks.join(',');
     }
-    return `${url}?${querystring(params).slice(1)}`;
+    return `${url}?${querystring$1(params).slice(1)}`;
 }
 async function _openIframe(auth) {
     const context = await _loadGapi(auth);
@@ -11897,7 +11897,7 @@ async function _getRedirectUrl(auth, provider, authType, redirectUrl, eventId, a
         ? `#${FIREBASE_APP_CHECK_FRAGMENT_ID}=${encodeURIComponent(appCheckToken)}`
         : '';
     // Start at index 1 to skip the leading '&' in the query string
-    return `${getHandlerBase(auth)}?${querystring(paramsDict).slice(1)}${appCheckTokenFragment}`;
+    return `${getHandlerBase(auth)}?${querystring$1(paramsDict).slice(1)}${appCheckTokenFragment}`;
 }
 function getHandlerBase({ config }) {
     if (!config.emulator) {
@@ -12019,7 +12019,7 @@ class BrowserPopupRedirectResolver {
 const browserPopupRedirectResolver = BrowserPopupRedirectResolver;
 
 var name = "@firebase/auth";
-var version = "1.10.8";
+var version$3 = "1.10.8";
 
 /**
  * @license
@@ -12160,9 +12160,9 @@ function registerAuth(clientPlatform) {
         const auth = _castAuth(container.getProvider("auth" /* _ComponentName.AUTH */).getImmediate());
         return (auth => new AuthInterop(auth))(auth);
     }, "PRIVATE" /* ComponentType.PRIVATE */).setInstantiationMode("EXPLICIT" /* InstantiationMode.EXPLICIT */));
-    registerVersion(name, version, getVersionForPlatform(clientPlatform));
+    registerVersion(name, version$3, getVersionForPlatform(clientPlatform));
     // BUILD_TARGET will be replaced by values like esm2017, cjs2017, etc during the compilation
-    registerVersion(name, version, 'esm2017');
+    registerVersion(name, version$3, 'esm2017');
 }
 
 /**
@@ -12488,7 +12488,7 @@ let x$1 = "11.10.0";
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-const O = new Logger("@firebase/firestore");
+const O = new Logger$1("@firebase/firestore");
 
 // Helper methods are needed because variables can't be exported as read/write
 function __PRIVATE_getLogLevel() {
@@ -14247,7 +14247,7 @@ function __PRIVATE_encodeResourcePath(e) {
     return t;
 }
 
-function forEach(e, t) {
+function forEach$1(e, t) {
     for (const n in e) Object.prototype.hasOwnProperty.call(e, n) && t(n, e[n]);
 }
 
@@ -15377,7 +15377,7 @@ function __PRIVATE_estimateByteSize(e) {
       case 11 /* TypeOrder.ObjectValue */ :
         return function __PRIVATE_estimateMapByteSize(e) {
             let t = 0;
-            return forEach(e.fields, ((e, n) => {
+            return forEach$1(e.fields, ((e, n) => {
                 t += e.length + __PRIVATE_estimateByteSize(n);
             })), t;
         }(e.mapValue);
@@ -15435,7 +15435,7 @@ function isArray(e) {
                 fields: {}
             }
         };
-        return forEach(e.mapValue.fields, ((e, n) => t.mapValue.fields[e] = __PRIVATE_deepClone(n))), 
+        return forEach$1(e.mapValue.fields, ((e, n) => t.mapValue.fields[e] = __PRIVATE_deepClone(n))), 
         t;
     }
     if (e.arrayValue) {
@@ -15555,7 +15555,7 @@ function isArray(e) {
      * Modifies `fieldsMap` by adding, replacing or deleting the specified
      * entries.
      */    applyChanges(e, t, n) {
-        forEach(t, ((t, n) => e[t] = n));
+        forEach$1(t, ((t, n) => e[t] = n));
         for (const t of n) delete e[t];
     }
     clone() {
@@ -15567,7 +15567,7 @@ function isArray(e) {
  * Returns a FieldMask built from all fields in a MapValue.
  */ function __PRIVATE_extractFieldMask(e) {
     const t = [];
-    return forEach(e.fields, ((e, n) => {
+    return forEach$1(e.fields, ((e, n) => {
         const r = new FieldPath$1([ e ]);
         if (__PRIVATE_isMapValue(n)) {
             const e = __PRIVATE_extractFieldMask(n.mapValue).fields;
@@ -16436,7 +16436,7 @@ function __PRIVATE_compareDocs(e, t, n) {
         return false;
     }
     forEach(e) {
-        forEach(this.inner, ((t, n) => {
+        forEach$1(this.inner, ((t, n) => {
             for (const [t, r] of n) e(t, r);
         }));
     }
@@ -23254,10 +23254,10 @@ function __PRIVATE_raiseSnapshotsInSyncEvent(e) {
     }));
 }
 
-var en, tn;
+var en$1, tn;
 
 /** Listen to both cache and server changes */
-(tn = en || (en = {})).Fa = "default", 
+(tn = en$1 || (en$1 = {})).Fa = "default", 
 /** Listen to changes in cache only */
 tn.Cache = "cache";
 
@@ -23334,7 +23334,7 @@ class __PRIVATE_QueryListener {
         this.xa = true, this.Ma.next(e);
     }
     ba() {
-        return this.options.source !== en.Cache;
+        return this.options.source !== en$1.Cache;
     }
 }
 
@@ -25886,7 +25886,7 @@ class __PRIVATE_DeleteFieldValueImpl extends FieldValue {
     const i = e.Dc(1 /* UserDataSource.Update */ , t, n);
     __PRIVATE_validatePlainObject("Data must be an object, but it was:", i, r);
     const s = [], o = ObjectValue.empty();
-    forEach(r, ((e, r) => {
+    forEach$1(r, ((e, r) => {
         const _ = __PRIVATE_fieldPathFromDotSeparatedString(t, e, n);
         // For Compat types, we have to "extract" the underlying types before
         // performing validation.
@@ -26092,7 +26092,7 @@ function __PRIVATE_parseObject(e, t) {
     return isEmpty(e) ? 
     // If we encounter an empty object, we explicitly add it to the update
     // mask to ensure that the server creates a map entry.
-    t.path && t.path.length > 0 && t.fieldMask.push(t.path) : forEach(e, ((e, r) => {
+    t.path && t.path.length > 0 && t.fieldMask.push(t.path) : forEach$1(e, ((e, r) => {
         const i = __PRIVATE_parseData(r, t.Vc(e));
         null != i && (n[e] = i);
     })), {
@@ -26734,7 +26734,7 @@ class AbstractUserDataWriter {
      * @internal
      */    convertObjectMap(e, t = "none") {
         const n = {};
-        return forEach(e, ((e, r) => {
+        return forEach$1(e, ((e, r) => {
             n[e] = this.convertValue(r, t);
         })), n;
     }
@@ -30728,6 +30728,25 @@ const TableProperties = createLucideIcon("TableProperties", [
  */
 
 
+const Tag = createLucideIcon("Tag", [
+  [
+    "path",
+    {
+      d: "M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z",
+      key: "vktsd0"
+    }
+  ],
+  ["circle", { cx: "7.5", cy: "7.5", r: ".5", fill: "currentColor", key: "kqv944" }]
+]);
+
+/**
+ * @license lucide-react v0.468.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+
+
 const Target = createLucideIcon("Target", [
   ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
   ["circle", { cx: "12", cy: "12", r: "6", key: "1vlfrh" }],
@@ -30954,7 +30973,2600 @@ const Zap = createLucideIcon("Zap", [
   ]
 ]);
 
+const isString$2 = obj => typeof obj === 'string';
+const defer = () => {
+  let res;
+  let rej;
+  const promise = new Promise((resolve, reject) => {
+    res = resolve;
+    rej = reject;
+  });
+  promise.resolve = res;
+  promise.reject = rej;
+  return promise;
+};
+const makeString = object => {
+  if (object == null) return '';
+  return '' + object;
+};
+const copy$2 = (a, s, t) => {
+  a.forEach(m => {
+    if (s[m]) t[m] = s[m];
+  });
+};
+const lastOfPathSeparatorRegExp = /###/g;
+const cleanKey = key => key && key.indexOf('###') > -1 ? key.replace(lastOfPathSeparatorRegExp, '.') : key;
+const canNotTraverseDeeper = object => !object || isString$2(object);
+const getLastOfPath = (object, path, Empty) => {
+  const stack = !isString$2(path) ? path : path.split('.');
+  let stackIndex = 0;
+  while (stackIndex < stack.length - 1) {
+    if (canNotTraverseDeeper(object)) return {};
+    const key = cleanKey(stack[stackIndex]);
+    if (!object[key] && Empty) object[key] = new Empty();
+    if (Object.prototype.hasOwnProperty.call(object, key)) {
+      object = object[key];
+    } else {
+      object = {};
+    }
+    ++stackIndex;
+  }
+  if (canNotTraverseDeeper(object)) return {};
+  return {
+    obj: object,
+    k: cleanKey(stack[stackIndex])
+  };
+};
+const setPath = (object, path, newValue) => {
+  const {
+    obj,
+    k
+  } = getLastOfPath(object, path, Object);
+  if (obj !== undefined || path.length === 1) {
+    obj[k] = newValue;
+    return;
+  }
+  let e = path[path.length - 1];
+  let p = path.slice(0, path.length - 1);
+  let last = getLastOfPath(object, p, Object);
+  while (last.obj === undefined && p.length) {
+    e = `${p[p.length - 1]}.${e}`;
+    p = p.slice(0, p.length - 1);
+    last = getLastOfPath(object, p, Object);
+    if (last?.obj && typeof last.obj[`${last.k}.${e}`] !== 'undefined') {
+      last.obj = undefined;
+    }
+  }
+  last.obj[`${last.k}.${e}`] = newValue;
+};
+const pushPath = (object, path, newValue, concat) => {
+  const {
+    obj,
+    k
+  } = getLastOfPath(object, path, Object);
+  obj[k] = obj[k] || [];
+  obj[k].push(newValue);
+};
+const getPath$2 = (object, path) => {
+  const {
+    obj,
+    k
+  } = getLastOfPath(object, path);
+  if (!obj) return undefined;
+  if (!Object.prototype.hasOwnProperty.call(obj, k)) return undefined;
+  return obj[k];
+};
+const getPathWithDefaults = (data, defaultData, key) => {
+  const value = getPath$2(data, key);
+  if (value !== undefined) {
+    return value;
+  }
+  return getPath$2(defaultData, key);
+};
+const deepExtend = (target, source, overwrite) => {
+  for (const prop in source) {
+    if (prop !== '__proto__' && prop !== 'constructor') {
+      if (prop in target) {
+        if (isString$2(target[prop]) || target[prop] instanceof String || isString$2(source[prop]) || source[prop] instanceof String) {
+          if (overwrite) target[prop] = source[prop];
+        } else {
+          deepExtend(target[prop], source[prop], overwrite);
+        }
+      } else {
+        target[prop] = source[prop];
+      }
+    }
+  }
+  return target;
+};
+const regexEscape = str => str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, '\\$&');
+var _entityMap = {
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;',
+  '"': '&quot;',
+  "'": '&#39;',
+  '/': '&#x2F;'
+};
+const escape = data => {
+  if (isString$2(data)) {
+    return data.replace(/[&<>"'\/]/g, s => _entityMap[s]);
+  }
+  return data;
+};
+class RegExpCache {
+  constructor(capacity) {
+    this.capacity = capacity;
+    this.regExpMap = new Map();
+    this.regExpQueue = [];
+  }
+  getRegExp(pattern) {
+    const regExpFromCache = this.regExpMap.get(pattern);
+    if (regExpFromCache !== undefined) {
+      return regExpFromCache;
+    }
+    const regExpNew = new RegExp(pattern);
+    if (this.regExpQueue.length === this.capacity) {
+      this.regExpMap.delete(this.regExpQueue.shift());
+    }
+    this.regExpMap.set(pattern, regExpNew);
+    this.regExpQueue.push(pattern);
+    return regExpNew;
+  }
+}
+const chars = [' ', ',', '?', '!', ';'];
+const looksLikeObjectPathRegExpCache = new RegExpCache(20);
+const looksLikeObjectPath = (key, nsSeparator, keySeparator) => {
+  nsSeparator = nsSeparator || '';
+  keySeparator = keySeparator || '';
+  const possibleChars = chars.filter(c => nsSeparator.indexOf(c) < 0 && keySeparator.indexOf(c) < 0);
+  if (possibleChars.length === 0) return true;
+  const r = looksLikeObjectPathRegExpCache.getRegExp(`(${possibleChars.map(c => c === '?' ? '\\?' : c).join('|')})`);
+  let matched = !r.test(key);
+  if (!matched) {
+    const ki = key.indexOf(keySeparator);
+    if (ki > 0 && !r.test(key.substring(0, ki))) {
+      matched = true;
+    }
+  }
+  return matched;
+};
+const deepFind = (obj, path, keySeparator = '.') => {
+  if (!obj) return undefined;
+  if (obj[path]) {
+    if (!Object.prototype.hasOwnProperty.call(obj, path)) return undefined;
+    return obj[path];
+  }
+  const tokens = path.split(keySeparator);
+  let current = obj;
+  for (let i = 0; i < tokens.length;) {
+    if (!current || typeof current !== 'object') {
+      return undefined;
+    }
+    let next;
+    let nextPath = '';
+    for (let j = i; j < tokens.length; ++j) {
+      if (j !== i) {
+        nextPath += keySeparator;
+      }
+      nextPath += tokens[j];
+      next = current[nextPath];
+      if (next !== undefined) {
+        if (['string', 'number', 'boolean'].indexOf(typeof next) > -1 && j < tokens.length - 1) {
+          continue;
+        }
+        i += j - i + 1;
+        break;
+      }
+    }
+    current = next;
+  }
+  return current;
+};
+const getCleanedCode = code => code?.replace('_', '-');
+
+const consoleLogger = {
+  type: 'logger',
+  log(args) {
+    this.output('log', args);
+  },
+  warn(args) {
+    this.output('warn', args);
+  },
+  error(args) {
+    this.output('error', args);
+  },
+  output(type, args) {
+    console?.[type]?.apply?.(console, args);
+  }
+};
+class Logger {
+  constructor(concreteLogger, options = {}) {
+    this.init(concreteLogger, options);
+  }
+  init(concreteLogger, options = {}) {
+    this.prefix = options.prefix || 'i18next:';
+    this.logger = concreteLogger || consoleLogger;
+    this.options = options;
+    this.debug = options.debug;
+  }
+  log(...args) {
+    return this.forward(args, 'log', '', true);
+  }
+  warn(...args) {
+    return this.forward(args, 'warn', '', true);
+  }
+  error(...args) {
+    return this.forward(args, 'error', '');
+  }
+  deprecate(...args) {
+    return this.forward(args, 'warn', 'WARNING DEPRECATED: ', true);
+  }
+  forward(args, lvl, prefix, debugOnly) {
+    if (debugOnly && !this.debug) return null;
+    if (isString$2(args[0])) args[0] = `${prefix}${this.prefix} ${args[0]}`;
+    return this.logger[lvl](args);
+  }
+  create(moduleName) {
+    return new Logger(this.logger, {
+      ...{
+        prefix: `${this.prefix}:${moduleName}:`
+      },
+      ...this.options
+    });
+  }
+  clone(options) {
+    options = options || this.options;
+    options.prefix = options.prefix || this.prefix;
+    return new Logger(this.logger, options);
+  }
+}
+var baseLogger = new Logger();
+
+let EventEmitter$1 = class EventEmitter {
+  constructor() {
+    this.observers = {};
+  }
+  on(events, listener) {
+    events.split(' ').forEach(event => {
+      if (!this.observers[event]) this.observers[event] = new Map();
+      const numListeners = this.observers[event].get(listener) || 0;
+      this.observers[event].set(listener, numListeners + 1);
+    });
+    return this;
+  }
+  off(event, listener) {
+    if (!this.observers[event]) return;
+    if (!listener) {
+      delete this.observers[event];
+      return;
+    }
+    this.observers[event].delete(listener);
+  }
+  emit(event, ...args) {
+    if (this.observers[event]) {
+      const cloned = Array.from(this.observers[event].entries());
+      cloned.forEach(([observer, numTimesAdded]) => {
+        for (let i = 0; i < numTimesAdded; i++) {
+          observer(...args);
+        }
+      });
+    }
+    if (this.observers['*']) {
+      const cloned = Array.from(this.observers['*'].entries());
+      cloned.forEach(([observer, numTimesAdded]) => {
+        for (let i = 0; i < numTimesAdded; i++) {
+          observer.apply(observer, [event, ...args]);
+        }
+      });
+    }
+  }
+};
+
+class ResourceStore extends EventEmitter$1 {
+  constructor(data, options = {
+    ns: ['translation'],
+    defaultNS: 'translation'
+  }) {
+    super();
+    this.data = data || {};
+    this.options = options;
+    if (this.options.keySeparator === undefined) {
+      this.options.keySeparator = '.';
+    }
+    if (this.options.ignoreJSONStructure === undefined) {
+      this.options.ignoreJSONStructure = true;
+    }
+  }
+  addNamespaces(ns) {
+    if (this.options.ns.indexOf(ns) < 0) {
+      this.options.ns.push(ns);
+    }
+  }
+  removeNamespaces(ns) {
+    const index = this.options.ns.indexOf(ns);
+    if (index > -1) {
+      this.options.ns.splice(index, 1);
+    }
+  }
+  getResource(lng, ns, key, options = {}) {
+    const keySeparator = options.keySeparator !== undefined ? options.keySeparator : this.options.keySeparator;
+    const ignoreJSONStructure = options.ignoreJSONStructure !== undefined ? options.ignoreJSONStructure : this.options.ignoreJSONStructure;
+    let path;
+    if (lng.indexOf('.') > -1) {
+      path = lng.split('.');
+    } else {
+      path = [lng, ns];
+      if (key) {
+        if (Array.isArray(key)) {
+          path.push(...key);
+        } else if (isString$2(key) && keySeparator) {
+          path.push(...key.split(keySeparator));
+        } else {
+          path.push(key);
+        }
+      }
+    }
+    const result = getPath$2(this.data, path);
+    if (!result && !ns && !key && lng.indexOf('.') > -1) {
+      lng = path[0];
+      ns = path[1];
+      key = path.slice(2).join('.');
+    }
+    if (result || !ignoreJSONStructure || !isString$2(key)) return result;
+    return deepFind(this.data?.[lng]?.[ns], key, keySeparator);
+  }
+  addResource(lng, ns, key, value, options = {
+    silent: false
+  }) {
+    const keySeparator = options.keySeparator !== undefined ? options.keySeparator : this.options.keySeparator;
+    let path = [lng, ns];
+    if (key) path = path.concat(keySeparator ? key.split(keySeparator) : key);
+    if (lng.indexOf('.') > -1) {
+      path = lng.split('.');
+      value = ns;
+      ns = path[1];
+    }
+    this.addNamespaces(ns);
+    setPath(this.data, path, value);
+    if (!options.silent) this.emit('added', lng, ns, key, value);
+  }
+  addResources(lng, ns, resources, options = {
+    silent: false
+  }) {
+    for (const m in resources) {
+      if (isString$2(resources[m]) || Array.isArray(resources[m])) this.addResource(lng, ns, m, resources[m], {
+        silent: true
+      });
+    }
+    if (!options.silent) this.emit('added', lng, ns, resources);
+  }
+  addResourceBundle(lng, ns, resources, deep, overwrite, options = {
+    silent: false,
+    skipCopy: false
+  }) {
+    let path = [lng, ns];
+    if (lng.indexOf('.') > -1) {
+      path = lng.split('.');
+      deep = resources;
+      resources = ns;
+      ns = path[1];
+    }
+    this.addNamespaces(ns);
+    let pack = getPath$2(this.data, path) || {};
+    if (!options.skipCopy) resources = JSON.parse(JSON.stringify(resources));
+    if (deep) {
+      deepExtend(pack, resources, overwrite);
+    } else {
+      pack = {
+        ...pack,
+        ...resources
+      };
+    }
+    setPath(this.data, path, pack);
+    if (!options.silent) this.emit('added', lng, ns, resources);
+  }
+  removeResourceBundle(lng, ns) {
+    if (this.hasResourceBundle(lng, ns)) {
+      delete this.data[lng][ns];
+    }
+    this.removeNamespaces(ns);
+    this.emit('removed', lng, ns);
+  }
+  hasResourceBundle(lng, ns) {
+    return this.getResource(lng, ns) !== undefined;
+  }
+  getResourceBundle(lng, ns) {
+    if (!ns) ns = this.options.defaultNS;
+    return this.getResource(lng, ns);
+  }
+  getDataByLanguage(lng) {
+    return this.data[lng];
+  }
+  hasLanguageSomeTranslations(lng) {
+    const data = this.getDataByLanguage(lng);
+    const n = data && Object.keys(data) || [];
+    return !!n.find(v => data[v] && Object.keys(data[v]).length > 0);
+  }
+  toJSON() {
+    return this.data;
+  }
+}
+
+var postProcessor = {
+  processors: {},
+  addPostProcessor(module) {
+    this.processors[module.name] = module;
+  },
+  handle(processors, value, key, options, translator) {
+    processors.forEach(processor => {
+      value = this.processors[processor]?.process(value, key, options, translator) ?? value;
+    });
+    return value;
+  }
+};
+
+const PATH_KEY = Symbol('i18next/PATH_KEY');
+function createProxy() {
+  const state = [];
+  const handler = Object.create(null);
+  let proxy;
+  handler.get = (target, key) => {
+    proxy?.revoke?.();
+    if (key === PATH_KEY) return state;
+    state.push(key);
+    proxy = Proxy.revocable(target, handler);
+    return proxy.proxy;
+  };
+  return Proxy.revocable(Object.create(null), handler).proxy;
+}
+function keysFromSelector(selector, opts) {
+  const {
+    [PATH_KEY]: path
+  } = selector(createProxy());
+  return path.join(opts?.keySeparator ?? '.');
+}
+
+const checkedLoadedFor = {};
+const shouldHandleAsObject = res => !isString$2(res) && typeof res !== 'boolean' && typeof res !== 'number';
+class Translator extends EventEmitter$1 {
+  constructor(services, options = {}) {
+    super();
+    copy$2(['resourceStore', 'languageUtils', 'pluralResolver', 'interpolator', 'backendConnector', 'i18nFormat', 'utils'], services, this);
+    this.options = options;
+    if (this.options.keySeparator === undefined) {
+      this.options.keySeparator = '.';
+    }
+    this.logger = baseLogger.create('translator');
+  }
+  changeLanguage(lng) {
+    if (lng) this.language = lng;
+  }
+  exists(key, o = {
+    interpolation: {}
+  }) {
+    const opt = {
+      ...o
+    };
+    if (key == null) return false;
+    const resolved = this.resolve(key, opt);
+    if (resolved?.res === undefined) return false;
+    const isObject = shouldHandleAsObject(resolved.res);
+    if (opt.returnObjects === false && isObject) {
+      return false;
+    }
+    return true;
+  }
+  extractFromKey(key, opt) {
+    let nsSeparator = opt.nsSeparator !== undefined ? opt.nsSeparator : this.options.nsSeparator;
+    if (nsSeparator === undefined) nsSeparator = ':';
+    const keySeparator = opt.keySeparator !== undefined ? opt.keySeparator : this.options.keySeparator;
+    let namespaces = opt.ns || this.options.defaultNS || [];
+    const wouldCheckForNsInKey = nsSeparator && key.indexOf(nsSeparator) > -1;
+    const seemsNaturalLanguage = !this.options.userDefinedKeySeparator && !opt.keySeparator && !this.options.userDefinedNsSeparator && !opt.nsSeparator && !looksLikeObjectPath(key, nsSeparator, keySeparator);
+    if (wouldCheckForNsInKey && !seemsNaturalLanguage) {
+      const m = key.match(this.interpolator.nestingRegexp);
+      if (m && m.length > 0) {
+        return {
+          key,
+          namespaces: isString$2(namespaces) ? [namespaces] : namespaces
+        };
+      }
+      const parts = key.split(nsSeparator);
+      if (nsSeparator !== keySeparator || nsSeparator === keySeparator && this.options.ns.indexOf(parts[0]) > -1) namespaces = parts.shift();
+      key = parts.join(keySeparator);
+    }
+    return {
+      key,
+      namespaces: isString$2(namespaces) ? [namespaces] : namespaces
+    };
+  }
+  translate(keys, o, lastKey) {
+    let opt = typeof o === 'object' ? {
+      ...o
+    } : o;
+    if (typeof opt !== 'object' && this.options.overloadTranslationOptionHandler) {
+      opt = this.options.overloadTranslationOptionHandler(arguments);
+    }
+    if (typeof opt === 'object') opt = {
+      ...opt
+    };
+    if (!opt) opt = {};
+    if (keys == null) return '';
+    if (typeof keys === 'function') keys = keysFromSelector(keys, {
+      ...this.options,
+      ...opt
+    });
+    if (!Array.isArray(keys)) keys = [String(keys)];
+    const returnDetails = opt.returnDetails !== undefined ? opt.returnDetails : this.options.returnDetails;
+    const keySeparator = opt.keySeparator !== undefined ? opt.keySeparator : this.options.keySeparator;
+    const {
+      key,
+      namespaces
+    } = this.extractFromKey(keys[keys.length - 1], opt);
+    const namespace = namespaces[namespaces.length - 1];
+    let nsSeparator = opt.nsSeparator !== undefined ? opt.nsSeparator : this.options.nsSeparator;
+    if (nsSeparator === undefined) nsSeparator = ':';
+    const lng = opt.lng || this.language;
+    const appendNamespaceToCIMode = opt.appendNamespaceToCIMode || this.options.appendNamespaceToCIMode;
+    if (lng?.toLowerCase() === 'cimode') {
+      if (appendNamespaceToCIMode) {
+        if (returnDetails) {
+          return {
+            res: `${namespace}${nsSeparator}${key}`,
+            usedKey: key,
+            exactUsedKey: key,
+            usedLng: lng,
+            usedNS: namespace,
+            usedParams: this.getUsedParamsDetails(opt)
+          };
+        }
+        return `${namespace}${nsSeparator}${key}`;
+      }
+      if (returnDetails) {
+        return {
+          res: key,
+          usedKey: key,
+          exactUsedKey: key,
+          usedLng: lng,
+          usedNS: namespace,
+          usedParams: this.getUsedParamsDetails(opt)
+        };
+      }
+      return key;
+    }
+    const resolved = this.resolve(keys, opt);
+    let res = resolved?.res;
+    const resUsedKey = resolved?.usedKey || key;
+    const resExactUsedKey = resolved?.exactUsedKey || key;
+    const noObject = ['[object Number]', '[object Function]', '[object RegExp]'];
+    const joinArrays = opt.joinArrays !== undefined ? opt.joinArrays : this.options.joinArrays;
+    const handleAsObjectInI18nFormat = !this.i18nFormat || this.i18nFormat.handleAsObject;
+    const needsPluralHandling = opt.count !== undefined && !isString$2(opt.count);
+    const hasDefaultValue = Translator.hasDefaultValue(opt);
+    const defaultValueSuffix = needsPluralHandling ? this.pluralResolver.getSuffix(lng, opt.count, opt) : '';
+    const defaultValueSuffixOrdinalFallback = opt.ordinal && needsPluralHandling ? this.pluralResolver.getSuffix(lng, opt.count, {
+      ordinal: false
+    }) : '';
+    const needsZeroSuffixLookup = needsPluralHandling && !opt.ordinal && opt.count === 0;
+    const defaultValue = needsZeroSuffixLookup && opt[`defaultValue${this.options.pluralSeparator}zero`] || opt[`defaultValue${defaultValueSuffix}`] || opt[`defaultValue${defaultValueSuffixOrdinalFallback}`] || opt.defaultValue;
+    let resForObjHndl = res;
+    if (handleAsObjectInI18nFormat && !res && hasDefaultValue) {
+      resForObjHndl = defaultValue;
+    }
+    const handleAsObject = shouldHandleAsObject(resForObjHndl);
+    const resType = Object.prototype.toString.apply(resForObjHndl);
+    if (handleAsObjectInI18nFormat && resForObjHndl && handleAsObject && noObject.indexOf(resType) < 0 && !(isString$2(joinArrays) && Array.isArray(resForObjHndl))) {
+      if (!opt.returnObjects && !this.options.returnObjects) {
+        if (!this.options.returnedObjectHandler) {
+          this.logger.warn('accessing an object - but returnObjects options is not enabled!');
+        }
+        const r = this.options.returnedObjectHandler ? this.options.returnedObjectHandler(resUsedKey, resForObjHndl, {
+          ...opt,
+          ns: namespaces
+        }) : `key '${key} (${this.language})' returned an object instead of string.`;
+        if (returnDetails) {
+          resolved.res = r;
+          resolved.usedParams = this.getUsedParamsDetails(opt);
+          return resolved;
+        }
+        return r;
+      }
+      if (keySeparator) {
+        const resTypeIsArray = Array.isArray(resForObjHndl);
+        const copy = resTypeIsArray ? [] : {};
+        const newKeyToUse = resTypeIsArray ? resExactUsedKey : resUsedKey;
+        for (const m in resForObjHndl) {
+          if (Object.prototype.hasOwnProperty.call(resForObjHndl, m)) {
+            const deepKey = `${newKeyToUse}${keySeparator}${m}`;
+            if (hasDefaultValue && !res) {
+              copy[m] = this.translate(deepKey, {
+                ...opt,
+                defaultValue: shouldHandleAsObject(defaultValue) ? defaultValue[m] : undefined,
+                ...{
+                  joinArrays: false,
+                  ns: namespaces
+                }
+              });
+            } else {
+              copy[m] = this.translate(deepKey, {
+                ...opt,
+                ...{
+                  joinArrays: false,
+                  ns: namespaces
+                }
+              });
+            }
+            if (copy[m] === deepKey) copy[m] = resForObjHndl[m];
+          }
+        }
+        res = copy;
+      }
+    } else if (handleAsObjectInI18nFormat && isString$2(joinArrays) && Array.isArray(res)) {
+      res = res.join(joinArrays);
+      if (res) res = this.extendTranslation(res, keys, opt, lastKey);
+    } else {
+      let usedDefault = false;
+      let usedKey = false;
+      if (!this.isValidLookup(res) && hasDefaultValue) {
+        usedDefault = true;
+        res = defaultValue;
+      }
+      if (!this.isValidLookup(res)) {
+        usedKey = true;
+        res = key;
+      }
+      const missingKeyNoValueFallbackToKey = opt.missingKeyNoValueFallbackToKey || this.options.missingKeyNoValueFallbackToKey;
+      const resForMissing = missingKeyNoValueFallbackToKey && usedKey ? undefined : res;
+      const updateMissing = hasDefaultValue && defaultValue !== res && this.options.updateMissing;
+      if (usedKey || usedDefault || updateMissing) {
+        this.logger.log(updateMissing ? 'updateKey' : 'missingKey', lng, namespace, key, updateMissing ? defaultValue : res);
+        if (keySeparator) {
+          const fk = this.resolve(key, {
+            ...opt,
+            keySeparator: false
+          });
+          if (fk && fk.res) this.logger.warn('Seems the loaded translations were in flat JSON format instead of nested. Either set keySeparator: false on init or make sure your translations are published in nested format.');
+        }
+        let lngs = [];
+        const fallbackLngs = this.languageUtils.getFallbackCodes(this.options.fallbackLng, opt.lng || this.language);
+        if (this.options.saveMissingTo === 'fallback' && fallbackLngs && fallbackLngs[0]) {
+          for (let i = 0; i < fallbackLngs.length; i++) {
+            lngs.push(fallbackLngs[i]);
+          }
+        } else if (this.options.saveMissingTo === 'all') {
+          lngs = this.languageUtils.toResolveHierarchy(opt.lng || this.language);
+        } else {
+          lngs.push(opt.lng || this.language);
+        }
+        const send = (l, k, specificDefaultValue) => {
+          const defaultForMissing = hasDefaultValue && specificDefaultValue !== res ? specificDefaultValue : resForMissing;
+          if (this.options.missingKeyHandler) {
+            this.options.missingKeyHandler(l, namespace, k, defaultForMissing, updateMissing, opt);
+          } else if (this.backendConnector?.saveMissing) {
+            this.backendConnector.saveMissing(l, namespace, k, defaultForMissing, updateMissing, opt);
+          }
+          this.emit('missingKey', l, namespace, k, res);
+        };
+        if (this.options.saveMissing) {
+          if (this.options.saveMissingPlurals && needsPluralHandling) {
+            lngs.forEach(language => {
+              const suffixes = this.pluralResolver.getSuffixes(language, opt);
+              if (needsZeroSuffixLookup && opt[`defaultValue${this.options.pluralSeparator}zero`] && suffixes.indexOf(`${this.options.pluralSeparator}zero`) < 0) {
+                suffixes.push(`${this.options.pluralSeparator}zero`);
+              }
+              suffixes.forEach(suffix => {
+                send([language], key + suffix, opt[`defaultValue${suffix}`] || defaultValue);
+              });
+            });
+          } else {
+            send(lngs, key, defaultValue);
+          }
+        }
+      }
+      res = this.extendTranslation(res, keys, opt, resolved, lastKey);
+      if (usedKey && res === key && this.options.appendNamespaceToMissingKey) {
+        res = `${namespace}${nsSeparator}${key}`;
+      }
+      if ((usedKey || usedDefault) && this.options.parseMissingKeyHandler) {
+        res = this.options.parseMissingKeyHandler(this.options.appendNamespaceToMissingKey ? `${namespace}${nsSeparator}${key}` : key, usedDefault ? res : undefined, opt);
+      }
+    }
+    if (returnDetails) {
+      resolved.res = res;
+      resolved.usedParams = this.getUsedParamsDetails(opt);
+      return resolved;
+    }
+    return res;
+  }
+  extendTranslation(res, key, opt, resolved, lastKey) {
+    if (this.i18nFormat?.parse) {
+      res = this.i18nFormat.parse(res, {
+        ...this.options.interpolation.defaultVariables,
+        ...opt
+      }, opt.lng || this.language || resolved.usedLng, resolved.usedNS, resolved.usedKey, {
+        resolved
+      });
+    } else if (!opt.skipInterpolation) {
+      if (opt.interpolation) this.interpolator.init({
+        ...opt,
+        ...{
+          interpolation: {
+            ...this.options.interpolation,
+            ...opt.interpolation
+          }
+        }
+      });
+      const skipOnVariables = isString$2(res) && (opt?.interpolation?.skipOnVariables !== undefined ? opt.interpolation.skipOnVariables : this.options.interpolation.skipOnVariables);
+      let nestBef;
+      if (skipOnVariables) {
+        const nb = res.match(this.interpolator.nestingRegexp);
+        nestBef = nb && nb.length;
+      }
+      let data = opt.replace && !isString$2(opt.replace) ? opt.replace : opt;
+      if (this.options.interpolation.defaultVariables) data = {
+        ...this.options.interpolation.defaultVariables,
+        ...data
+      };
+      res = this.interpolator.interpolate(res, data, opt.lng || this.language || resolved.usedLng, opt);
+      if (skipOnVariables) {
+        const na = res.match(this.interpolator.nestingRegexp);
+        const nestAft = na && na.length;
+        if (nestBef < nestAft) opt.nest = false;
+      }
+      if (!opt.lng && resolved && resolved.res) opt.lng = this.language || resolved.usedLng;
+      if (opt.nest !== false) res = this.interpolator.nest(res, (...args) => {
+        if (lastKey?.[0] === args[0] && !opt.context) {
+          this.logger.warn(`It seems you are nesting recursively key: ${args[0]} in key: ${key[0]}`);
+          return null;
+        }
+        return this.translate(...args, key);
+      }, opt);
+      if (opt.interpolation) this.interpolator.reset();
+    }
+    const postProcess = opt.postProcess || this.options.postProcess;
+    const postProcessorNames = isString$2(postProcess) ? [postProcess] : postProcess;
+    if (res != null && postProcessorNames?.length && opt.applyPostProcessor !== false) {
+      res = postProcessor.handle(postProcessorNames, res, key, this.options && this.options.postProcessPassResolved ? {
+        i18nResolved: {
+          ...resolved,
+          usedParams: this.getUsedParamsDetails(opt)
+        },
+        ...opt
+      } : opt, this);
+    }
+    return res;
+  }
+  resolve(keys, opt = {}) {
+    let found;
+    let usedKey;
+    let exactUsedKey;
+    let usedLng;
+    let usedNS;
+    if (isString$2(keys)) keys = [keys];
+    keys.forEach(k => {
+      if (this.isValidLookup(found)) return;
+      const extracted = this.extractFromKey(k, opt);
+      const key = extracted.key;
+      usedKey = key;
+      let namespaces = extracted.namespaces;
+      if (this.options.fallbackNS) namespaces = namespaces.concat(this.options.fallbackNS);
+      const needsPluralHandling = opt.count !== undefined && !isString$2(opt.count);
+      const needsZeroSuffixLookup = needsPluralHandling && !opt.ordinal && opt.count === 0;
+      const needsContextHandling = opt.context !== undefined && (isString$2(opt.context) || typeof opt.context === 'number') && opt.context !== '';
+      const codes = opt.lngs ? opt.lngs : this.languageUtils.toResolveHierarchy(opt.lng || this.language, opt.fallbackLng);
+      namespaces.forEach(ns => {
+        if (this.isValidLookup(found)) return;
+        usedNS = ns;
+        if (!checkedLoadedFor[`${codes[0]}-${ns}`] && this.utils?.hasLoadedNamespace && !this.utils?.hasLoadedNamespace(usedNS)) {
+          checkedLoadedFor[`${codes[0]}-${ns}`] = true;
+          this.logger.warn(`key "${usedKey}" for languages "${codes.join(', ')}" won't get resolved as namespace "${usedNS}" was not yet loaded`, 'This means something IS WRONG in your setup. You access the t function before i18next.init / i18next.loadNamespace / i18next.changeLanguage was done. Wait for the callback or Promise to resolve before accessing it!!!');
+        }
+        codes.forEach(code => {
+          if (this.isValidLookup(found)) return;
+          usedLng = code;
+          const finalKeys = [key];
+          if (this.i18nFormat?.addLookupKeys) {
+            this.i18nFormat.addLookupKeys(finalKeys, key, code, ns, opt);
+          } else {
+            let pluralSuffix;
+            if (needsPluralHandling) pluralSuffix = this.pluralResolver.getSuffix(code, opt.count, opt);
+            const zeroSuffix = `${this.options.pluralSeparator}zero`;
+            const ordinalPrefix = `${this.options.pluralSeparator}ordinal${this.options.pluralSeparator}`;
+            if (needsPluralHandling) {
+              if (opt.ordinal && pluralSuffix.indexOf(ordinalPrefix) === 0) {
+                finalKeys.push(key + pluralSuffix.replace(ordinalPrefix, this.options.pluralSeparator));
+              }
+              finalKeys.push(key + pluralSuffix);
+              if (needsZeroSuffixLookup) {
+                finalKeys.push(key + zeroSuffix);
+              }
+            }
+            if (needsContextHandling) {
+              const contextKey = `${key}${this.options.contextSeparator || '_'}${opt.context}`;
+              finalKeys.push(contextKey);
+              if (needsPluralHandling) {
+                if (opt.ordinal && pluralSuffix.indexOf(ordinalPrefix) === 0) {
+                  finalKeys.push(contextKey + pluralSuffix.replace(ordinalPrefix, this.options.pluralSeparator));
+                }
+                finalKeys.push(contextKey + pluralSuffix);
+                if (needsZeroSuffixLookup) {
+                  finalKeys.push(contextKey + zeroSuffix);
+                }
+              }
+            }
+          }
+          let possibleKey;
+          while (possibleKey = finalKeys.pop()) {
+            if (!this.isValidLookup(found)) {
+              exactUsedKey = possibleKey;
+              found = this.getResource(code, ns, possibleKey, opt);
+            }
+          }
+        });
+      });
+    });
+    return {
+      res: found,
+      usedKey,
+      exactUsedKey,
+      usedLng,
+      usedNS
+    };
+  }
+  isValidLookup(res) {
+    return res !== undefined && !(!this.options.returnNull && res === null) && !(!this.options.returnEmptyString && res === '');
+  }
+  getResource(code, ns, key, options = {}) {
+    if (this.i18nFormat?.getResource) return this.i18nFormat.getResource(code, ns, key, options);
+    return this.resourceStore.getResource(code, ns, key, options);
+  }
+  getUsedParamsDetails(options = {}) {
+    const optionsKeys = ['defaultValue', 'ordinal', 'context', 'replace', 'lng', 'lngs', 'fallbackLng', 'ns', 'keySeparator', 'nsSeparator', 'returnObjects', 'returnDetails', 'joinArrays', 'postProcess', 'interpolation'];
+    const useOptionsReplaceForData = options.replace && !isString$2(options.replace);
+    let data = useOptionsReplaceForData ? options.replace : options;
+    if (useOptionsReplaceForData && typeof options.count !== 'undefined') {
+      data.count = options.count;
+    }
+    if (this.options.interpolation.defaultVariables) {
+      data = {
+        ...this.options.interpolation.defaultVariables,
+        ...data
+      };
+    }
+    if (!useOptionsReplaceForData) {
+      data = {
+        ...data
+      };
+      for (const key of optionsKeys) {
+        delete data[key];
+      }
+    }
+    return data;
+  }
+  static hasDefaultValue(options) {
+    const prefix = 'defaultValue';
+    for (const option in options) {
+      if (Object.prototype.hasOwnProperty.call(options, option) && prefix === option.substring(0, prefix.length) && undefined !== options[option]) {
+        return true;
+      }
+    }
+    return false;
+  }
+}
+
+class LanguageUtil {
+  constructor(options) {
+    this.options = options;
+    this.supportedLngs = this.options.supportedLngs || false;
+    this.logger = baseLogger.create('languageUtils');
+  }
+  getScriptPartFromCode(code) {
+    code = getCleanedCode(code);
+    if (!code || code.indexOf('-') < 0) return null;
+    const p = code.split('-');
+    if (p.length === 2) return null;
+    p.pop();
+    if (p[p.length - 1].toLowerCase() === 'x') return null;
+    return this.formatLanguageCode(p.join('-'));
+  }
+  getLanguagePartFromCode(code) {
+    code = getCleanedCode(code);
+    if (!code || code.indexOf('-') < 0) return code;
+    const p = code.split('-');
+    return this.formatLanguageCode(p[0]);
+  }
+  formatLanguageCode(code) {
+    if (isString$2(code) && code.indexOf('-') > -1) {
+      let formattedCode;
+      try {
+        formattedCode = Intl.getCanonicalLocales(code)[0];
+      } catch (e) {}
+      if (formattedCode && this.options.lowerCaseLng) {
+        formattedCode = formattedCode.toLowerCase();
+      }
+      if (formattedCode) return formattedCode;
+      if (this.options.lowerCaseLng) {
+        return code.toLowerCase();
+      }
+      return code;
+    }
+    return this.options.cleanCode || this.options.lowerCaseLng ? code.toLowerCase() : code;
+  }
+  isSupportedCode(code) {
+    if (this.options.load === 'languageOnly' || this.options.nonExplicitSupportedLngs) {
+      code = this.getLanguagePartFromCode(code);
+    }
+    return !this.supportedLngs || !this.supportedLngs.length || this.supportedLngs.indexOf(code) > -1;
+  }
+  getBestMatchFromCodes(codes) {
+    if (!codes) return null;
+    let found;
+    codes.forEach(code => {
+      if (found) return;
+      const cleanedLng = this.formatLanguageCode(code);
+      if (!this.options.supportedLngs || this.isSupportedCode(cleanedLng)) found = cleanedLng;
+    });
+    if (!found && this.options.supportedLngs) {
+      codes.forEach(code => {
+        if (found) return;
+        const lngScOnly = this.getScriptPartFromCode(code);
+        if (this.isSupportedCode(lngScOnly)) return found = lngScOnly;
+        const lngOnly = this.getLanguagePartFromCode(code);
+        if (this.isSupportedCode(lngOnly)) return found = lngOnly;
+        found = this.options.supportedLngs.find(supportedLng => {
+          if (supportedLng === lngOnly) return supportedLng;
+          if (supportedLng.indexOf('-') < 0 && lngOnly.indexOf('-') < 0) return;
+          if (supportedLng.indexOf('-') > 0 && lngOnly.indexOf('-') < 0 && supportedLng.substring(0, supportedLng.indexOf('-')) === lngOnly) return supportedLng;
+          if (supportedLng.indexOf(lngOnly) === 0 && lngOnly.length > 1) return supportedLng;
+        });
+      });
+    }
+    if (!found) found = this.getFallbackCodes(this.options.fallbackLng)[0];
+    return found;
+  }
+  getFallbackCodes(fallbacks, code) {
+    if (!fallbacks) return [];
+    if (typeof fallbacks === 'function') fallbacks = fallbacks(code);
+    if (isString$2(fallbacks)) fallbacks = [fallbacks];
+    if (Array.isArray(fallbacks)) return fallbacks;
+    if (!code) return fallbacks.default || [];
+    let found = fallbacks[code];
+    if (!found) found = fallbacks[this.getScriptPartFromCode(code)];
+    if (!found) found = fallbacks[this.formatLanguageCode(code)];
+    if (!found) found = fallbacks[this.getLanguagePartFromCode(code)];
+    if (!found) found = fallbacks.default;
+    return found || [];
+  }
+  toResolveHierarchy(code, fallbackCode) {
+    const fallbackCodes = this.getFallbackCodes((fallbackCode === false ? [] : fallbackCode) || this.options.fallbackLng || [], code);
+    const codes = [];
+    const addCode = c => {
+      if (!c) return;
+      if (this.isSupportedCode(c)) {
+        codes.push(c);
+      } else {
+        this.logger.warn(`rejecting language code not found in supportedLngs: ${c}`);
+      }
+    };
+    if (isString$2(code) && (code.indexOf('-') > -1 || code.indexOf('_') > -1)) {
+      if (this.options.load !== 'languageOnly') addCode(this.formatLanguageCode(code));
+      if (this.options.load !== 'languageOnly' && this.options.load !== 'currentOnly') addCode(this.getScriptPartFromCode(code));
+      if (this.options.load !== 'currentOnly') addCode(this.getLanguagePartFromCode(code));
+    } else if (isString$2(code)) {
+      addCode(this.formatLanguageCode(code));
+    }
+    fallbackCodes.forEach(fc => {
+      if (codes.indexOf(fc) < 0) addCode(this.formatLanguageCode(fc));
+    });
+    return codes;
+  }
+}
+
+const suffixesOrder = {
+  zero: 0,
+  one: 1,
+  two: 2,
+  few: 3,
+  many: 4,
+  other: 5
+};
+const dummyRule = {
+  select: count => count === 1 ? 'one' : 'other',
+  resolvedOptions: () => ({
+    pluralCategories: ['one', 'other']
+  })
+};
+class PluralResolver {
+  constructor(languageUtils, options = {}) {
+    this.languageUtils = languageUtils;
+    this.options = options;
+    this.logger = baseLogger.create('pluralResolver');
+    this.pluralRulesCache = {};
+  }
+  clearCache() {
+    this.pluralRulesCache = {};
+  }
+  getRule(code, options = {}) {
+    const cleanedCode = getCleanedCode(code === 'dev' ? 'en' : code);
+    const type = options.ordinal ? 'ordinal' : 'cardinal';
+    const cacheKey = JSON.stringify({
+      cleanedCode,
+      type
+    });
+    if (cacheKey in this.pluralRulesCache) {
+      return this.pluralRulesCache[cacheKey];
+    }
+    let rule;
+    try {
+      rule = new Intl.PluralRules(cleanedCode, {
+        type
+      });
+    } catch (err) {
+      if (!Intl) {
+        this.logger.error('No Intl support, please use an Intl polyfill!');
+        return dummyRule;
+      }
+      if (!code.match(/-|_/)) return dummyRule;
+      const lngPart = this.languageUtils.getLanguagePartFromCode(code);
+      rule = this.getRule(lngPart, options);
+    }
+    this.pluralRulesCache[cacheKey] = rule;
+    return rule;
+  }
+  needsPlural(code, options = {}) {
+    let rule = this.getRule(code, options);
+    if (!rule) rule = this.getRule('dev', options);
+    return rule?.resolvedOptions().pluralCategories.length > 1;
+  }
+  getPluralFormsOfKey(code, key, options = {}) {
+    return this.getSuffixes(code, options).map(suffix => `${key}${suffix}`);
+  }
+  getSuffixes(code, options = {}) {
+    let rule = this.getRule(code, options);
+    if (!rule) rule = this.getRule('dev', options);
+    if (!rule) return [];
+    return rule.resolvedOptions().pluralCategories.sort((pluralCategory1, pluralCategory2) => suffixesOrder[pluralCategory1] - suffixesOrder[pluralCategory2]).map(pluralCategory => `${this.options.prepend}${options.ordinal ? `ordinal${this.options.prepend}` : ''}${pluralCategory}`);
+  }
+  getSuffix(code, count, options = {}) {
+    const rule = this.getRule(code, options);
+    if (rule) {
+      return `${this.options.prepend}${options.ordinal ? `ordinal${this.options.prepend}` : ''}${rule.select(count)}`;
+    }
+    this.logger.warn(`no plural rule found for: ${code}`);
+    return this.getSuffix('dev', count, options);
+  }
+}
+
+const deepFindWithDefaults = (data, defaultData, key, keySeparator = '.', ignoreJSONStructure = true) => {
+  let path = getPathWithDefaults(data, defaultData, key);
+  if (!path && ignoreJSONStructure && isString$2(key)) {
+    path = deepFind(data, key, keySeparator);
+    if (path === undefined) path = deepFind(defaultData, key, keySeparator);
+  }
+  return path;
+};
+const regexSafe = val => val.replace(/\$/g, '$$$$');
+class Interpolator {
+  constructor(options = {}) {
+    this.logger = baseLogger.create('interpolator');
+    this.options = options;
+    this.format = options?.interpolation?.format || (value => value);
+    this.init(options);
+  }
+  init(options = {}) {
+    if (!options.interpolation) options.interpolation = {
+      escapeValue: true
+    };
+    const {
+      escape: escape$1,
+      escapeValue,
+      useRawValueToEscape,
+      prefix,
+      prefixEscaped,
+      suffix,
+      suffixEscaped,
+      formatSeparator,
+      unescapeSuffix,
+      unescapePrefix,
+      nestingPrefix,
+      nestingPrefixEscaped,
+      nestingSuffix,
+      nestingSuffixEscaped,
+      nestingOptionsSeparator,
+      maxReplaces,
+      alwaysFormat
+    } = options.interpolation;
+    this.escape = escape$1 !== undefined ? escape$1 : escape;
+    this.escapeValue = escapeValue !== undefined ? escapeValue : true;
+    this.useRawValueToEscape = useRawValueToEscape !== undefined ? useRawValueToEscape : false;
+    this.prefix = prefix ? regexEscape(prefix) : prefixEscaped || '{{';
+    this.suffix = suffix ? regexEscape(suffix) : suffixEscaped || '}}';
+    this.formatSeparator = formatSeparator || ',';
+    this.unescapePrefix = unescapeSuffix ? '' : unescapePrefix || '-';
+    this.unescapeSuffix = this.unescapePrefix ? '' : unescapeSuffix || '';
+    this.nestingPrefix = nestingPrefix ? regexEscape(nestingPrefix) : nestingPrefixEscaped || regexEscape('$t(');
+    this.nestingSuffix = nestingSuffix ? regexEscape(nestingSuffix) : nestingSuffixEscaped || regexEscape(')');
+    this.nestingOptionsSeparator = nestingOptionsSeparator || ',';
+    this.maxReplaces = maxReplaces || 1000;
+    this.alwaysFormat = alwaysFormat !== undefined ? alwaysFormat : false;
+    this.resetRegExp();
+  }
+  reset() {
+    if (this.options) this.init(this.options);
+  }
+  resetRegExp() {
+    const getOrResetRegExp = (existingRegExp, pattern) => {
+      if (existingRegExp?.source === pattern) {
+        existingRegExp.lastIndex = 0;
+        return existingRegExp;
+      }
+      return new RegExp(pattern, 'g');
+    };
+    this.regexp = getOrResetRegExp(this.regexp, `${this.prefix}(.+?)${this.suffix}`);
+    this.regexpUnescape = getOrResetRegExp(this.regexpUnescape, `${this.prefix}${this.unescapePrefix}(.+?)${this.unescapeSuffix}${this.suffix}`);
+    this.nestingRegexp = getOrResetRegExp(this.nestingRegexp, `${this.nestingPrefix}((?:[^()"']+|"[^"]*"|'[^']*'|\\((?:[^()]|"[^"]*"|'[^']*')*\\))*?)${this.nestingSuffix}`);
+  }
+  interpolate(str, data, lng, options) {
+    let match;
+    let value;
+    let replaces;
+    const defaultData = this.options && this.options.interpolation && this.options.interpolation.defaultVariables || {};
+    const handleFormat = key => {
+      if (key.indexOf(this.formatSeparator) < 0) {
+        const path = deepFindWithDefaults(data, defaultData, key, this.options.keySeparator, this.options.ignoreJSONStructure);
+        return this.alwaysFormat ? this.format(path, undefined, lng, {
+          ...options,
+          ...data,
+          interpolationkey: key
+        }) : path;
+      }
+      const p = key.split(this.formatSeparator);
+      const k = p.shift().trim();
+      const f = p.join(this.formatSeparator).trim();
+      return this.format(deepFindWithDefaults(data, defaultData, k, this.options.keySeparator, this.options.ignoreJSONStructure), f, lng, {
+        ...options,
+        ...data,
+        interpolationkey: k
+      });
+    };
+    this.resetRegExp();
+    const missingInterpolationHandler = options?.missingInterpolationHandler || this.options.missingInterpolationHandler;
+    const skipOnVariables = options?.interpolation?.skipOnVariables !== undefined ? options.interpolation.skipOnVariables : this.options.interpolation.skipOnVariables;
+    const todos = [{
+      regex: this.regexpUnescape,
+      safeValue: val => regexSafe(val)
+    }, {
+      regex: this.regexp,
+      safeValue: val => this.escapeValue ? regexSafe(this.escape(val)) : regexSafe(val)
+    }];
+    todos.forEach(todo => {
+      replaces = 0;
+      while (match = todo.regex.exec(str)) {
+        const matchedVar = match[1].trim();
+        value = handleFormat(matchedVar);
+        if (value === undefined) {
+          if (typeof missingInterpolationHandler === 'function') {
+            const temp = missingInterpolationHandler(str, match, options);
+            value = isString$2(temp) ? temp : '';
+          } else if (options && Object.prototype.hasOwnProperty.call(options, matchedVar)) {
+            value = '';
+          } else if (skipOnVariables) {
+            value = match[0];
+            continue;
+          } else {
+            this.logger.warn(`missed to pass in variable ${matchedVar} for interpolating ${str}`);
+            value = '';
+          }
+        } else if (!isString$2(value) && !this.useRawValueToEscape) {
+          value = makeString(value);
+        }
+        const safeValue = todo.safeValue(value);
+        str = str.replace(match[0], safeValue);
+        if (skipOnVariables) {
+          todo.regex.lastIndex += value.length;
+          todo.regex.lastIndex -= match[0].length;
+        } else {
+          todo.regex.lastIndex = 0;
+        }
+        replaces++;
+        if (replaces >= this.maxReplaces) {
+          break;
+        }
+      }
+    });
+    return str;
+  }
+  nest(str, fc, options = {}) {
+    let match;
+    let value;
+    let clonedOptions;
+    const handleHasOptions = (key, inheritedOptions) => {
+      const sep = this.nestingOptionsSeparator;
+      if (key.indexOf(sep) < 0) return key;
+      const c = key.split(new RegExp(`${sep}[ ]*{`));
+      let optionsString = `{${c[1]}`;
+      key = c[0];
+      optionsString = this.interpolate(optionsString, clonedOptions);
+      const matchedSingleQuotes = optionsString.match(/'/g);
+      const matchedDoubleQuotes = optionsString.match(/"/g);
+      if ((matchedSingleQuotes?.length ?? 0) % 2 === 0 && !matchedDoubleQuotes || matchedDoubleQuotes.length % 2 !== 0) {
+        optionsString = optionsString.replace(/'/g, '"');
+      }
+      try {
+        clonedOptions = JSON.parse(optionsString);
+        if (inheritedOptions) clonedOptions = {
+          ...inheritedOptions,
+          ...clonedOptions
+        };
+      } catch (e) {
+        this.logger.warn(`failed parsing options string in nesting for key ${key}`, e);
+        return `${key}${sep}${optionsString}`;
+      }
+      if (clonedOptions.defaultValue && clonedOptions.defaultValue.indexOf(this.prefix) > -1) delete clonedOptions.defaultValue;
+      return key;
+    };
+    while (match = this.nestingRegexp.exec(str)) {
+      let formatters = [];
+      clonedOptions = {
+        ...options
+      };
+      clonedOptions = clonedOptions.replace && !isString$2(clonedOptions.replace) ? clonedOptions.replace : clonedOptions;
+      clonedOptions.applyPostProcessor = false;
+      delete clonedOptions.defaultValue;
+      const keyEndIndex = /{.*}/.test(match[1]) ? match[1].lastIndexOf('}') + 1 : match[1].indexOf(this.formatSeparator);
+      if (keyEndIndex !== -1) {
+        formatters = match[1].slice(keyEndIndex).split(this.formatSeparator).map(elem => elem.trim()).filter(Boolean);
+        match[1] = match[1].slice(0, keyEndIndex);
+      }
+      value = fc(handleHasOptions.call(this, match[1].trim(), clonedOptions), clonedOptions);
+      if (value && match[0] === str && !isString$2(value)) return value;
+      if (!isString$2(value)) value = makeString(value);
+      if (!value) {
+        this.logger.warn(`missed to resolve ${match[1]} for nesting ${str}`);
+        value = '';
+      }
+      if (formatters.length) {
+        value = formatters.reduce((v, f) => this.format(v, f, options.lng, {
+          ...options,
+          interpolationkey: match[1].trim()
+        }), value.trim());
+      }
+      str = str.replace(match[0], value);
+      this.regexp.lastIndex = 0;
+    }
+    return str;
+  }
+}
+
+const parseFormatStr = formatStr => {
+  let formatName = formatStr.toLowerCase().trim();
+  const formatOptions = {};
+  if (formatStr.indexOf('(') > -1) {
+    const p = formatStr.split('(');
+    formatName = p[0].toLowerCase().trim();
+    const optStr = p[1].substring(0, p[1].length - 1);
+    if (formatName === 'currency' && optStr.indexOf(':') < 0) {
+      if (!formatOptions.currency) formatOptions.currency = optStr.trim();
+    } else if (formatName === 'relativetime' && optStr.indexOf(':') < 0) {
+      if (!formatOptions.range) formatOptions.range = optStr.trim();
+    } else {
+      const opts = optStr.split(';');
+      opts.forEach(opt => {
+        if (opt) {
+          const [key, ...rest] = opt.split(':');
+          const val = rest.join(':').trim().replace(/^'+|'+$/g, '');
+          const trimmedKey = key.trim();
+          if (!formatOptions[trimmedKey]) formatOptions[trimmedKey] = val;
+          if (val === 'false') formatOptions[trimmedKey] = false;
+          if (val === 'true') formatOptions[trimmedKey] = true;
+          if (!isNaN(val)) formatOptions[trimmedKey] = parseInt(val, 10);
+        }
+      });
+    }
+  }
+  return {
+    formatName,
+    formatOptions
+  };
+};
+const createCachedFormatter = fn => {
+  const cache = {};
+  return (v, l, o) => {
+    let optForCache = o;
+    if (o && o.interpolationkey && o.formatParams && o.formatParams[o.interpolationkey] && o[o.interpolationkey]) {
+      optForCache = {
+        ...optForCache,
+        [o.interpolationkey]: undefined
+      };
+    }
+    const key = l + JSON.stringify(optForCache);
+    let frm = cache[key];
+    if (!frm) {
+      frm = fn(getCleanedCode(l), o);
+      cache[key] = frm;
+    }
+    return frm(v);
+  };
+};
+const createNonCachedFormatter = fn => (v, l, o) => fn(getCleanedCode(l), o)(v);
+class Formatter {
+  constructor(options = {}) {
+    this.logger = baseLogger.create('formatter');
+    this.options = options;
+    this.init(options);
+  }
+  init(services, options = {
+    interpolation: {}
+  }) {
+    this.formatSeparator = options.interpolation.formatSeparator || ',';
+    const cf = options.cacheInBuiltFormats ? createCachedFormatter : createNonCachedFormatter;
+    this.formats = {
+      number: cf((lng, opt) => {
+        const formatter = new Intl.NumberFormat(lng, {
+          ...opt
+        });
+        return val => formatter.format(val);
+      }),
+      currency: cf((lng, opt) => {
+        const formatter = new Intl.NumberFormat(lng, {
+          ...opt,
+          style: 'currency'
+        });
+        return val => formatter.format(val);
+      }),
+      datetime: cf((lng, opt) => {
+        const formatter = new Intl.DateTimeFormat(lng, {
+          ...opt
+        });
+        return val => formatter.format(val);
+      }),
+      relativetime: cf((lng, opt) => {
+        const formatter = new Intl.RelativeTimeFormat(lng, {
+          ...opt
+        });
+        return val => formatter.format(val, opt.range || 'day');
+      }),
+      list: cf((lng, opt) => {
+        const formatter = new Intl.ListFormat(lng, {
+          ...opt
+        });
+        return val => formatter.format(val);
+      })
+    };
+  }
+  add(name, fc) {
+    this.formats[name.toLowerCase().trim()] = fc;
+  }
+  addCached(name, fc) {
+    this.formats[name.toLowerCase().trim()] = createCachedFormatter(fc);
+  }
+  format(value, format, lng, options = {}) {
+    const formats = format.split(this.formatSeparator);
+    if (formats.length > 1 && formats[0].indexOf('(') > 1 && formats[0].indexOf(')') < 0 && formats.find(f => f.indexOf(')') > -1)) {
+      const lastIndex = formats.findIndex(f => f.indexOf(')') > -1);
+      formats[0] = [formats[0], ...formats.splice(1, lastIndex)].join(this.formatSeparator);
+    }
+    const result = formats.reduce((mem, f) => {
+      const {
+        formatName,
+        formatOptions
+      } = parseFormatStr(f);
+      if (this.formats[formatName]) {
+        let formatted = mem;
+        try {
+          const valOptions = options?.formatParams?.[options.interpolationkey] || {};
+          const l = valOptions.locale || valOptions.lng || options.locale || options.lng || lng;
+          formatted = this.formats[formatName](mem, l, {
+            ...formatOptions,
+            ...options,
+            ...valOptions
+          });
+        } catch (error) {
+          this.logger.warn(error);
+        }
+        return formatted;
+      } else {
+        this.logger.warn(`there was no format function for ${formatName}`);
+      }
+      return mem;
+    }, value);
+    return result;
+  }
+}
+
+const removePending = (q, name) => {
+  if (q.pending[name] !== undefined) {
+    delete q.pending[name];
+    q.pendingCount--;
+  }
+};
+class Connector extends EventEmitter$1 {
+  constructor(backend, store, services, options = {}) {
+    super();
+    this.backend = backend;
+    this.store = store;
+    this.services = services;
+    this.languageUtils = services.languageUtils;
+    this.options = options;
+    this.logger = baseLogger.create('backendConnector');
+    this.waitingReads = [];
+    this.maxParallelReads = options.maxParallelReads || 10;
+    this.readingCalls = 0;
+    this.maxRetries = options.maxRetries >= 0 ? options.maxRetries : 5;
+    this.retryTimeout = options.retryTimeout >= 1 ? options.retryTimeout : 350;
+    this.state = {};
+    this.queue = [];
+    this.backend?.init?.(services, options.backend, options);
+  }
+  queueLoad(languages, namespaces, options, callback) {
+    const toLoad = {};
+    const pending = {};
+    const toLoadLanguages = {};
+    const toLoadNamespaces = {};
+    languages.forEach(lng => {
+      let hasAllNamespaces = true;
+      namespaces.forEach(ns => {
+        const name = `${lng}|${ns}`;
+        if (!options.reload && this.store.hasResourceBundle(lng, ns)) {
+          this.state[name] = 2;
+        } else if (this.state[name] < 0) ; else if (this.state[name] === 1) {
+          if (pending[name] === undefined) pending[name] = true;
+        } else {
+          this.state[name] = 1;
+          hasAllNamespaces = false;
+          if (pending[name] === undefined) pending[name] = true;
+          if (toLoad[name] === undefined) toLoad[name] = true;
+          if (toLoadNamespaces[ns] === undefined) toLoadNamespaces[ns] = true;
+        }
+      });
+      if (!hasAllNamespaces) toLoadLanguages[lng] = true;
+    });
+    if (Object.keys(toLoad).length || Object.keys(pending).length) {
+      this.queue.push({
+        pending,
+        pendingCount: Object.keys(pending).length,
+        loaded: {},
+        errors: [],
+        callback
+      });
+    }
+    return {
+      toLoad: Object.keys(toLoad),
+      pending: Object.keys(pending),
+      toLoadLanguages: Object.keys(toLoadLanguages),
+      toLoadNamespaces: Object.keys(toLoadNamespaces)
+    };
+  }
+  loaded(name, err, data) {
+    const s = name.split('|');
+    const lng = s[0];
+    const ns = s[1];
+    if (err) this.emit('failedLoading', lng, ns, err);
+    if (!err && data) {
+      this.store.addResourceBundle(lng, ns, data, undefined, undefined, {
+        skipCopy: true
+      });
+    }
+    this.state[name] = err ? -1 : 2;
+    if (err && data) this.state[name] = 0;
+    const loaded = {};
+    this.queue.forEach(q => {
+      pushPath(q.loaded, [lng], ns);
+      removePending(q, name);
+      if (err) q.errors.push(err);
+      if (q.pendingCount === 0 && !q.done) {
+        Object.keys(q.loaded).forEach(l => {
+          if (!loaded[l]) loaded[l] = {};
+          const loadedKeys = q.loaded[l];
+          if (loadedKeys.length) {
+            loadedKeys.forEach(n => {
+              if (loaded[l][n] === undefined) loaded[l][n] = true;
+            });
+          }
+        });
+        q.done = true;
+        if (q.errors.length) {
+          q.callback(q.errors);
+        } else {
+          q.callback();
+        }
+      }
+    });
+    this.emit('loaded', loaded);
+    this.queue = this.queue.filter(q => !q.done);
+  }
+  read(lng, ns, fcName, tried = 0, wait = this.retryTimeout, callback) {
+    if (!lng.length) return callback(null, {});
+    if (this.readingCalls >= this.maxParallelReads) {
+      this.waitingReads.push({
+        lng,
+        ns,
+        fcName,
+        tried,
+        wait,
+        callback
+      });
+      return;
+    }
+    this.readingCalls++;
+    const resolver = (err, data) => {
+      this.readingCalls--;
+      if (this.waitingReads.length > 0) {
+        const next = this.waitingReads.shift();
+        this.read(next.lng, next.ns, next.fcName, next.tried, next.wait, next.callback);
+      }
+      if (err && data && tried < this.maxRetries) {
+        setTimeout(() => {
+          this.read.call(this, lng, ns, fcName, tried + 1, wait * 2, callback);
+        }, wait);
+        return;
+      }
+      callback(err, data);
+    };
+    const fc = this.backend[fcName].bind(this.backend);
+    if (fc.length === 2) {
+      try {
+        const r = fc(lng, ns);
+        if (r && typeof r.then === 'function') {
+          r.then(data => resolver(null, data)).catch(resolver);
+        } else {
+          resolver(null, r);
+        }
+      } catch (err) {
+        resolver(err);
+      }
+      return;
+    }
+    return fc(lng, ns, resolver);
+  }
+  prepareLoading(languages, namespaces, options = {}, callback) {
+    if (!this.backend) {
+      this.logger.warn('No backend was added via i18next.use. Will not load resources.');
+      return callback && callback();
+    }
+    if (isString$2(languages)) languages = this.languageUtils.toResolveHierarchy(languages);
+    if (isString$2(namespaces)) namespaces = [namespaces];
+    const toLoad = this.queueLoad(languages, namespaces, options, callback);
+    if (!toLoad.toLoad.length) {
+      if (!toLoad.pending.length) callback();
+      return null;
+    }
+    toLoad.toLoad.forEach(name => {
+      this.loadOne(name);
+    });
+  }
+  load(languages, namespaces, callback) {
+    this.prepareLoading(languages, namespaces, {}, callback);
+  }
+  reload(languages, namespaces, callback) {
+    this.prepareLoading(languages, namespaces, {
+      reload: true
+    }, callback);
+  }
+  loadOne(name, prefix = '') {
+    const s = name.split('|');
+    const lng = s[0];
+    const ns = s[1];
+    this.read(lng, ns, 'read', undefined, undefined, (err, data) => {
+      if (err) this.logger.warn(`${prefix}loading namespace ${ns} for language ${lng} failed`, err);
+      if (!err && data) this.logger.log(`${prefix}loaded namespace ${ns} for language ${lng}`, data);
+      this.loaded(name, err, data);
+    });
+  }
+  saveMissing(languages, namespace, key, fallbackValue, isUpdate, options = {}, clb = () => {}) {
+    if (this.services?.utils?.hasLoadedNamespace && !this.services?.utils?.hasLoadedNamespace(namespace)) {
+      this.logger.warn(`did not save key "${key}" as the namespace "${namespace}" was not yet loaded`, 'This means something IS WRONG in your setup. You access the t function before i18next.init / i18next.loadNamespace / i18next.changeLanguage was done. Wait for the callback or Promise to resolve before accessing it!!!');
+      return;
+    }
+    if (key === undefined || key === null || key === '') return;
+    if (this.backend?.create) {
+      const opts = {
+        ...options,
+        isUpdate
+      };
+      const fc = this.backend.create.bind(this.backend);
+      if (fc.length < 6) {
+        try {
+          let r;
+          if (fc.length === 5) {
+            r = fc(languages, namespace, key, fallbackValue, opts);
+          } else {
+            r = fc(languages, namespace, key, fallbackValue);
+          }
+          if (r && typeof r.then === 'function') {
+            r.then(data => clb(null, data)).catch(clb);
+          } else {
+            clb(null, r);
+          }
+        } catch (err) {
+          clb(err);
+        }
+      } else {
+        fc(languages, namespace, key, fallbackValue, clb, opts);
+      }
+    }
+    if (!languages || !languages[0]) return;
+    this.store.addResource(languages[0], namespace, key, fallbackValue);
+  }
+}
+
+const get$1 = () => ({
+  debug: false,
+  initAsync: true,
+  ns: ['translation'],
+  defaultNS: ['translation'],
+  fallbackLng: ['dev'],
+  fallbackNS: false,
+  supportedLngs: false,
+  nonExplicitSupportedLngs: false,
+  load: 'all',
+  preload: false,
+  simplifyPluralSuffix: true,
+  keySeparator: '.',
+  nsSeparator: ':',
+  pluralSeparator: '_',
+  contextSeparator: '_',
+  partialBundledLanguages: false,
+  saveMissing: false,
+  updateMissing: false,
+  saveMissingTo: 'fallback',
+  saveMissingPlurals: true,
+  missingKeyHandler: false,
+  missingInterpolationHandler: false,
+  postProcess: false,
+  postProcessPassResolved: false,
+  returnNull: false,
+  returnEmptyString: true,
+  returnObjects: false,
+  joinArrays: false,
+  returnedObjectHandler: false,
+  parseMissingKeyHandler: false,
+  appendNamespaceToMissingKey: false,
+  appendNamespaceToCIMode: false,
+  overloadTranslationOptionHandler: args => {
+    let ret = {};
+    if (typeof args[1] === 'object') ret = args[1];
+    if (isString$2(args[1])) ret.defaultValue = args[1];
+    if (isString$2(args[2])) ret.tDescription = args[2];
+    if (typeof args[2] === 'object' || typeof args[3] === 'object') {
+      const options = args[3] || args[2];
+      Object.keys(options).forEach(key => {
+        ret[key] = options[key];
+      });
+    }
+    return ret;
+  },
+  interpolation: {
+    escapeValue: true,
+    format: value => value,
+    prefix: '{{',
+    suffix: '}}',
+    formatSeparator: ',',
+    unescapePrefix: '-',
+    nestingPrefix: '$t(',
+    nestingSuffix: ')',
+    nestingOptionsSeparator: ',',
+    maxReplaces: 1000,
+    skipOnVariables: true
+  },
+  cacheInBuiltFormats: true
+});
+const transformOptions = options => {
+  if (isString$2(options.ns)) options.ns = [options.ns];
+  if (isString$2(options.fallbackLng)) options.fallbackLng = [options.fallbackLng];
+  if (isString$2(options.fallbackNS)) options.fallbackNS = [options.fallbackNS];
+  if (options.supportedLngs?.indexOf?.('cimode') < 0) {
+    options.supportedLngs = options.supportedLngs.concat(['cimode']);
+  }
+  if (typeof options.initImmediate === 'boolean') options.initAsync = options.initImmediate;
+  return options;
+};
+
+const noop$1 = () => {};
+const bindMemberFunctions = inst => {
+  const mems = Object.getOwnPropertyNames(Object.getPrototypeOf(inst));
+  mems.forEach(mem => {
+    if (typeof inst[mem] === 'function') {
+      inst[mem] = inst[mem].bind(inst);
+    }
+  });
+};
+class I18n extends EventEmitter$1 {
+  constructor(options = {}, callback) {
+    super();
+    this.options = transformOptions(options);
+    this.services = {};
+    this.logger = baseLogger;
+    this.modules = {
+      external: []
+    };
+    bindMemberFunctions(this);
+    if (callback && !this.isInitialized && !options.isClone) {
+      if (!this.options.initAsync) {
+        this.init(options, callback);
+        return this;
+      }
+      setTimeout(() => {
+        this.init(options, callback);
+      }, 0);
+    }
+  }
+  init(options = {}, callback) {
+    this.isInitializing = true;
+    if (typeof options === 'function') {
+      callback = options;
+      options = {};
+    }
+    if (options.defaultNS == null && options.ns) {
+      if (isString$2(options.ns)) {
+        options.defaultNS = options.ns;
+      } else if (options.ns.indexOf('translation') < 0) {
+        options.defaultNS = options.ns[0];
+      }
+    }
+    const defOpts = get$1();
+    this.options = {
+      ...defOpts,
+      ...this.options,
+      ...transformOptions(options)
+    };
+    this.options.interpolation = {
+      ...defOpts.interpolation,
+      ...this.options.interpolation
+    };
+    if (options.keySeparator !== undefined) {
+      this.options.userDefinedKeySeparator = options.keySeparator;
+    }
+    if (options.nsSeparator !== undefined) {
+      this.options.userDefinedNsSeparator = options.nsSeparator;
+    }
+    if (typeof this.options.overloadTranslationOptionHandler !== 'function') {
+      this.options.overloadTranslationOptionHandler = defOpts.overloadTranslationOptionHandler;
+    }
+    const createClassOnDemand = ClassOrObject => {
+      if (!ClassOrObject) return null;
+      if (typeof ClassOrObject === 'function') return new ClassOrObject();
+      return ClassOrObject;
+    };
+    if (!this.options.isClone) {
+      if (this.modules.logger) {
+        baseLogger.init(createClassOnDemand(this.modules.logger), this.options);
+      } else {
+        baseLogger.init(null, this.options);
+      }
+      let formatter;
+      if (this.modules.formatter) {
+        formatter = this.modules.formatter;
+      } else {
+        formatter = Formatter;
+      }
+      const lu = new LanguageUtil(this.options);
+      this.store = new ResourceStore(this.options.resources, this.options);
+      const s = this.services;
+      s.logger = baseLogger;
+      s.resourceStore = this.store;
+      s.languageUtils = lu;
+      s.pluralResolver = new PluralResolver(lu, {
+        prepend: this.options.pluralSeparator,
+        simplifyPluralSuffix: this.options.simplifyPluralSuffix
+      });
+      const usingLegacyFormatFunction = this.options.interpolation.format && this.options.interpolation.format !== defOpts.interpolation.format;
+      if (usingLegacyFormatFunction) {
+        this.logger.deprecate(`init: you are still using the legacy format function, please use the new approach: https://www.i18next.com/translation-function/formatting`);
+      }
+      if (formatter && (!this.options.interpolation.format || this.options.interpolation.format === defOpts.interpolation.format)) {
+        s.formatter = createClassOnDemand(formatter);
+        if (s.formatter.init) s.formatter.init(s, this.options);
+        this.options.interpolation.format = s.formatter.format.bind(s.formatter);
+      }
+      s.interpolator = new Interpolator(this.options);
+      s.utils = {
+        hasLoadedNamespace: this.hasLoadedNamespace.bind(this)
+      };
+      s.backendConnector = new Connector(createClassOnDemand(this.modules.backend), s.resourceStore, s, this.options);
+      s.backendConnector.on('*', (event, ...args) => {
+        this.emit(event, ...args);
+      });
+      if (this.modules.languageDetector) {
+        s.languageDetector = createClassOnDemand(this.modules.languageDetector);
+        if (s.languageDetector.init) s.languageDetector.init(s, this.options.detection, this.options);
+      }
+      if (this.modules.i18nFormat) {
+        s.i18nFormat = createClassOnDemand(this.modules.i18nFormat);
+        if (s.i18nFormat.init) s.i18nFormat.init(this);
+      }
+      this.translator = new Translator(this.services, this.options);
+      this.translator.on('*', (event, ...args) => {
+        this.emit(event, ...args);
+      });
+      this.modules.external.forEach(m => {
+        if (m.init) m.init(this);
+      });
+    }
+    this.format = this.options.interpolation.format;
+    if (!callback) callback = noop$1;
+    if (this.options.fallbackLng && !this.services.languageDetector && !this.options.lng) {
+      const codes = this.services.languageUtils.getFallbackCodes(this.options.fallbackLng);
+      if (codes.length > 0 && codes[0] !== 'dev') this.options.lng = codes[0];
+    }
+    if (!this.services.languageDetector && !this.options.lng) {
+      this.logger.warn('init: no languageDetector is used and no lng is defined');
+    }
+    const storeApi = ['getResource', 'hasResourceBundle', 'getResourceBundle', 'getDataByLanguage'];
+    storeApi.forEach(fcName => {
+      this[fcName] = (...args) => this.store[fcName](...args);
+    });
+    const storeApiChained = ['addResource', 'addResources', 'addResourceBundle', 'removeResourceBundle'];
+    storeApiChained.forEach(fcName => {
+      this[fcName] = (...args) => {
+        this.store[fcName](...args);
+        return this;
+      };
+    });
+    const deferred = defer();
+    const load = () => {
+      const finish = (err, t) => {
+        this.isInitializing = false;
+        if (this.isInitialized && !this.initializedStoreOnce) this.logger.warn('init: i18next is already initialized. You should call init just once!');
+        this.isInitialized = true;
+        if (!this.options.isClone) this.logger.log('initialized', this.options);
+        this.emit('initialized', this.options);
+        deferred.resolve(t);
+        callback(err, t);
+      };
+      if (this.languages && !this.isInitialized) return finish(null, this.t.bind(this));
+      this.changeLanguage(this.options.lng, finish);
+    };
+    if (this.options.resources || !this.options.initAsync) {
+      load();
+    } else {
+      setTimeout(load, 0);
+    }
+    return deferred;
+  }
+  loadResources(language, callback = noop$1) {
+    let usedCallback = callback;
+    const usedLng = isString$2(language) ? language : this.language;
+    if (typeof language === 'function') usedCallback = language;
+    if (!this.options.resources || this.options.partialBundledLanguages) {
+      if (usedLng?.toLowerCase() === 'cimode' && (!this.options.preload || this.options.preload.length === 0)) return usedCallback();
+      const toLoad = [];
+      const append = lng => {
+        if (!lng) return;
+        if (lng === 'cimode') return;
+        const lngs = this.services.languageUtils.toResolveHierarchy(lng);
+        lngs.forEach(l => {
+          if (l === 'cimode') return;
+          if (toLoad.indexOf(l) < 0) toLoad.push(l);
+        });
+      };
+      if (!usedLng) {
+        const fallbacks = this.services.languageUtils.getFallbackCodes(this.options.fallbackLng);
+        fallbacks.forEach(l => append(l));
+      } else {
+        append(usedLng);
+      }
+      this.options.preload?.forEach?.(l => append(l));
+      this.services.backendConnector.load(toLoad, this.options.ns, e => {
+        if (!e && !this.resolvedLanguage && this.language) this.setResolvedLanguage(this.language);
+        usedCallback(e);
+      });
+    } else {
+      usedCallback(null);
+    }
+  }
+  reloadResources(lngs, ns, callback) {
+    const deferred = defer();
+    if (typeof lngs === 'function') {
+      callback = lngs;
+      lngs = undefined;
+    }
+    if (typeof ns === 'function') {
+      callback = ns;
+      ns = undefined;
+    }
+    if (!lngs) lngs = this.languages;
+    if (!ns) ns = this.options.ns;
+    if (!callback) callback = noop$1;
+    this.services.backendConnector.reload(lngs, ns, err => {
+      deferred.resolve();
+      callback(err);
+    });
+    return deferred;
+  }
+  use(module) {
+    if (!module) throw new Error('You are passing an undefined module! Please check the object you are passing to i18next.use()');
+    if (!module.type) throw new Error('You are passing a wrong module! Please check the object you are passing to i18next.use()');
+    if (module.type === 'backend') {
+      this.modules.backend = module;
+    }
+    if (module.type === 'logger' || module.log && module.warn && module.error) {
+      this.modules.logger = module;
+    }
+    if (module.type === 'languageDetector') {
+      this.modules.languageDetector = module;
+    }
+    if (module.type === 'i18nFormat') {
+      this.modules.i18nFormat = module;
+    }
+    if (module.type === 'postProcessor') {
+      postProcessor.addPostProcessor(module);
+    }
+    if (module.type === 'formatter') {
+      this.modules.formatter = module;
+    }
+    if (module.type === '3rdParty') {
+      this.modules.external.push(module);
+    }
+    return this;
+  }
+  setResolvedLanguage(l) {
+    if (!l || !this.languages) return;
+    if (['cimode', 'dev'].indexOf(l) > -1) return;
+    for (let li = 0; li < this.languages.length; li++) {
+      const lngInLngs = this.languages[li];
+      if (['cimode', 'dev'].indexOf(lngInLngs) > -1) continue;
+      if (this.store.hasLanguageSomeTranslations(lngInLngs)) {
+        this.resolvedLanguage = lngInLngs;
+        break;
+      }
+    }
+    if (!this.resolvedLanguage && this.languages.indexOf(l) < 0 && this.store.hasLanguageSomeTranslations(l)) {
+      this.resolvedLanguage = l;
+      this.languages.unshift(l);
+    }
+  }
+  changeLanguage(lng, callback) {
+    this.isLanguageChangingTo = lng;
+    const deferred = defer();
+    this.emit('languageChanging', lng);
+    const setLngProps = l => {
+      this.language = l;
+      this.languages = this.services.languageUtils.toResolveHierarchy(l);
+      this.resolvedLanguage = undefined;
+      this.setResolvedLanguage(l);
+    };
+    const done = (err, l) => {
+      if (l) {
+        if (this.isLanguageChangingTo === lng) {
+          setLngProps(l);
+          this.translator.changeLanguage(l);
+          this.isLanguageChangingTo = undefined;
+          this.emit('languageChanged', l);
+          this.logger.log('languageChanged', l);
+        }
+      } else {
+        this.isLanguageChangingTo = undefined;
+      }
+      deferred.resolve((...args) => this.t(...args));
+      if (callback) callback(err, (...args) => this.t(...args));
+    };
+    const setLng = lngs => {
+      if (!lng && !lngs && this.services.languageDetector) lngs = [];
+      const fl = isString$2(lngs) ? lngs : lngs && lngs[0];
+      const l = this.store.hasLanguageSomeTranslations(fl) ? fl : this.services.languageUtils.getBestMatchFromCodes(isString$2(lngs) ? [lngs] : lngs);
+      if (l) {
+        if (!this.language) {
+          setLngProps(l);
+        }
+        if (!this.translator.language) this.translator.changeLanguage(l);
+        this.services.languageDetector?.cacheUserLanguage?.(l);
+      }
+      this.loadResources(l, err => {
+        done(err, l);
+      });
+    };
+    if (!lng && this.services.languageDetector && !this.services.languageDetector.async) {
+      setLng(this.services.languageDetector.detect());
+    } else if (!lng && this.services.languageDetector && this.services.languageDetector.async) {
+      if (this.services.languageDetector.detect.length === 0) {
+        this.services.languageDetector.detect().then(setLng);
+      } else {
+        this.services.languageDetector.detect(setLng);
+      }
+    } else {
+      setLng(lng);
+    }
+    return deferred;
+  }
+  getFixedT(lng, ns, keyPrefix) {
+    const fixedT = (key, opts, ...rest) => {
+      let o;
+      if (typeof opts !== 'object') {
+        o = this.options.overloadTranslationOptionHandler([key, opts].concat(rest));
+      } else {
+        o = {
+          ...opts
+        };
+      }
+      o.lng = o.lng || fixedT.lng;
+      o.lngs = o.lngs || fixedT.lngs;
+      o.ns = o.ns || fixedT.ns;
+      if (o.keyPrefix !== '') o.keyPrefix = o.keyPrefix || keyPrefix || fixedT.keyPrefix;
+      const keySeparator = this.options.keySeparator || '.';
+      let resultKey;
+      if (o.keyPrefix && Array.isArray(key)) {
+        resultKey = key.map(k => {
+          if (typeof k === 'function') k = keysFromSelector(k, {
+            ...this.options,
+            ...opts
+          });
+          return `${o.keyPrefix}${keySeparator}${k}`;
+        });
+      } else {
+        if (typeof key === 'function') key = keysFromSelector(key, {
+          ...this.options,
+          ...opts
+        });
+        resultKey = o.keyPrefix ? `${o.keyPrefix}${keySeparator}${key}` : key;
+      }
+      return this.t(resultKey, o);
+    };
+    if (isString$2(lng)) {
+      fixedT.lng = lng;
+    } else {
+      fixedT.lngs = lng;
+    }
+    fixedT.ns = ns;
+    fixedT.keyPrefix = keyPrefix;
+    return fixedT;
+  }
+  t(...args) {
+    return this.translator?.translate(...args);
+  }
+  exists(...args) {
+    return this.translator?.exists(...args);
+  }
+  setDefaultNamespace(ns) {
+    this.options.defaultNS = ns;
+  }
+  hasLoadedNamespace(ns, options = {}) {
+    if (!this.isInitialized) {
+      this.logger.warn('hasLoadedNamespace: i18next was not initialized', this.languages);
+      return false;
+    }
+    if (!this.languages || !this.languages.length) {
+      this.logger.warn('hasLoadedNamespace: i18n.languages were undefined or empty', this.languages);
+      return false;
+    }
+    const lng = options.lng || this.resolvedLanguage || this.languages[0];
+    const fallbackLng = this.options ? this.options.fallbackLng : false;
+    const lastLng = this.languages[this.languages.length - 1];
+    if (lng.toLowerCase() === 'cimode') return true;
+    const loadNotPending = (l, n) => {
+      const loadState = this.services.backendConnector.state[`${l}|${n}`];
+      return loadState === -1 || loadState === 0 || loadState === 2;
+    };
+    if (options.precheck) {
+      const preResult = options.precheck(this, loadNotPending);
+      if (preResult !== undefined) return preResult;
+    }
+    if (this.hasResourceBundle(lng, ns)) return true;
+    if (!this.services.backendConnector.backend || this.options.resources && !this.options.partialBundledLanguages) return true;
+    if (loadNotPending(lng, ns) && (!fallbackLng || loadNotPending(lastLng, ns))) return true;
+    return false;
+  }
+  loadNamespaces(ns, callback) {
+    const deferred = defer();
+    if (!this.options.ns) {
+      if (callback) callback();
+      return Promise.resolve();
+    }
+    if (isString$2(ns)) ns = [ns];
+    ns.forEach(n => {
+      if (this.options.ns.indexOf(n) < 0) this.options.ns.push(n);
+    });
+    this.loadResources(err => {
+      deferred.resolve();
+      if (callback) callback(err);
+    });
+    return deferred;
+  }
+  loadLanguages(lngs, callback) {
+    const deferred = defer();
+    if (isString$2(lngs)) lngs = [lngs];
+    const preloaded = this.options.preload || [];
+    const newLngs = lngs.filter(lng => preloaded.indexOf(lng) < 0 && this.services.languageUtils.isSupportedCode(lng));
+    if (!newLngs.length) {
+      if (callback) callback();
+      return Promise.resolve();
+    }
+    this.options.preload = preloaded.concat(newLngs);
+    this.loadResources(err => {
+      deferred.resolve();
+      if (callback) callback(err);
+    });
+    return deferred;
+  }
+  dir(lng) {
+    if (!lng) lng = this.resolvedLanguage || (this.languages?.length > 0 ? this.languages[0] : this.language);
+    if (!lng) return 'rtl';
+    try {
+      const l = new Intl.Locale(lng);
+      if (l && l.getTextInfo) {
+        const ti = l.getTextInfo();
+        if (ti && ti.direction) return ti.direction;
+      }
+    } catch (e) {}
+    const rtlLngs = ['ar', 'shu', 'sqr', 'ssh', 'xaa', 'yhd', 'yud', 'aao', 'abh', 'abv', 'acm', 'acq', 'acw', 'acx', 'acy', 'adf', 'ads', 'aeb', 'aec', 'afb', 'ajp', 'apc', 'apd', 'arb', 'arq', 'ars', 'ary', 'arz', 'auz', 'avl', 'ayh', 'ayl', 'ayn', 'ayp', 'bbz', 'pga', 'he', 'iw', 'ps', 'pbt', 'pbu', 'pst', 'prp', 'prd', 'ug', 'ur', 'ydd', 'yds', 'yih', 'ji', 'yi', 'hbo', 'men', 'xmn', 'fa', 'jpr', 'peo', 'pes', 'prs', 'dv', 'sam', 'ckb'];
+    const languageUtils = this.services?.languageUtils || new LanguageUtil(get$1());
+    if (lng.toLowerCase().indexOf('-latn') > 1) return 'ltr';
+    return rtlLngs.indexOf(languageUtils.getLanguagePartFromCode(lng)) > -1 || lng.toLowerCase().indexOf('-arab') > 1 ? 'rtl' : 'ltr';
+  }
+  static createInstance(options = {}, callback) {
+    const instance = new I18n(options, callback);
+    instance.createInstance = I18n.createInstance;
+    return instance;
+  }
+  cloneInstance(options = {}, callback = noop$1) {
+    const forkResourceStore = options.forkResourceStore;
+    if (forkResourceStore) delete options.forkResourceStore;
+    const mergedOptions = {
+      ...this.options,
+      ...options,
+      ...{
+        isClone: true
+      }
+    };
+    const clone = new I18n(mergedOptions);
+    if (options.debug !== undefined || options.prefix !== undefined) {
+      clone.logger = clone.logger.clone(options);
+    }
+    const membersToCopy = ['store', 'services', 'language'];
+    membersToCopy.forEach(m => {
+      clone[m] = this[m];
+    });
+    clone.services = {
+      ...this.services
+    };
+    clone.services.utils = {
+      hasLoadedNamespace: clone.hasLoadedNamespace.bind(clone)
+    };
+    if (forkResourceStore) {
+      const clonedData = Object.keys(this.store.data).reduce((prev, l) => {
+        prev[l] = {
+          ...this.store.data[l]
+        };
+        prev[l] = Object.keys(prev[l]).reduce((acc, n) => {
+          acc[n] = {
+            ...prev[l][n]
+          };
+          return acc;
+        }, prev[l]);
+        return prev;
+      }, {});
+      clone.store = new ResourceStore(clonedData, mergedOptions);
+      clone.services.resourceStore = clone.store;
+    }
+    if (options.interpolation) {
+      const defOpts = get$1();
+      const mergedInterpolation = {
+        ...defOpts.interpolation,
+        ...this.options.interpolation,
+        ...options.interpolation
+      };
+      const mergedForInterpolator = {
+        ...mergedOptions,
+        interpolation: mergedInterpolation
+      };
+      clone.services.interpolator = new Interpolator(mergedForInterpolator);
+    }
+    clone.translator = new Translator(clone.services, mergedOptions);
+    clone.translator.on('*', (event, ...args) => {
+      clone.emit(event, ...args);
+    });
+    clone.init(mergedOptions, callback);
+    clone.translator.options = mergedOptions;
+    clone.translator.backendConnector.services.utils = {
+      hasLoadedNamespace: clone.hasLoadedNamespace.bind(clone)
+    };
+    return clone;
+  }
+  toJSON() {
+    return {
+      options: this.options,
+      store: this.store,
+      language: this.language,
+      languages: this.languages,
+      resolvedLanguage: this.resolvedLanguage
+    };
+  }
+}
+const instance = I18n.createInstance();
+
+instance.createInstance;
+instance.dir;
+instance.init;
+instance.loadResources;
+instance.reloadResources;
+instance.use;
+instance.changeLanguage;
+instance.getFixedT;
+instance.t;
+instance.exists;
+instance.setDefaultNamespace;
+instance.hasLoadedNamespace;
+instance.loadNamespaces;
+instance.loadLanguages;
+
+const warn$1 = (i18n, code, msg, rest) => {
+  const args = [msg, {
+    code,
+    ...(rest || {})
+  }];
+  if (i18n?.services?.logger?.forward) {
+    return i18n.services.logger.forward(args, 'warn', 'react-i18next::', true);
+  }
+  if (isString$1(args[0])) args[0] = `react-i18next:: ${args[0]}`;
+  if (i18n?.services?.logger?.warn) {
+    i18n.services.logger.warn(...args);
+  } else if (console?.warn) {
+    console.warn(...args);
+  }
+};
+const alreadyWarned = {};
+const warnOnce = (i18n, code, msg, rest) => {
+  if (isString$1(msg) && alreadyWarned[msg]) return;
+  if (isString$1(msg)) alreadyWarned[msg] = new Date();
+  warn$1(i18n, code, msg, rest);
+};
+const loadedClb = (i18n, cb) => () => {
+  if (i18n.isInitialized) {
+    cb();
+  } else {
+    const initialized = () => {
+      setTimeout(() => {
+        i18n.off('initialized', initialized);
+      }, 0);
+      cb();
+    };
+    i18n.on('initialized', initialized);
+  }
+};
+const loadNamespaces = (i18n, ns, cb) => {
+  i18n.loadNamespaces(ns, loadedClb(i18n, cb));
+};
+const loadLanguages = (i18n, lng, ns, cb) => {
+  if (isString$1(ns)) ns = [ns];
+  if (i18n.options.preload && i18n.options.preload.indexOf(lng) > -1) return loadNamespaces(i18n, ns, cb);
+  ns.forEach(n => {
+    if (i18n.options.ns.indexOf(n) < 0) i18n.options.ns.push(n);
+  });
+  i18n.loadLanguages(lng, loadedClb(i18n, cb));
+};
+const hasLoadedNamespace = (ns, i18n, options = {}) => {
+  if (!i18n.languages || !i18n.languages.length) {
+    warnOnce(i18n, 'NO_LANGUAGES', 'i18n.languages were undefined or empty', {
+      languages: i18n.languages
+    });
+    return true;
+  }
+  return i18n.hasLoadedNamespace(ns, {
+    lng: options.lng,
+    precheck: (i18nInstance, loadNotPending) => {
+      if (options.bindI18n && options.bindI18n.indexOf('languageChanging') > -1 && i18nInstance.services.backendConnector.backend && i18nInstance.isLanguageChangingTo && !loadNotPending(i18nInstance.isLanguageChangingTo, ns)) return false;
+    }
+  });
+};
+const isString$1 = obj => typeof obj === 'string';
+const isObject$1 = obj => typeof obj === 'object' && obj !== null;
+
+const matchHtmlEntity = /&(?:amp|#38|lt|#60|gt|#62|apos|#39|quot|#34|nbsp|#160|copy|#169|reg|#174|hellip|#8230|#x2F|#47);/g;
+const htmlEntities = {
+  '&amp;': '&',
+  '&#38;': '&',
+  '&lt;': '<',
+  '&#60;': '<',
+  '&gt;': '>',
+  '&#62;': '>',
+  '&apos;': "'",
+  '&#39;': "'",
+  '&quot;': '"',
+  '&#34;': '"',
+  '&nbsp;': ' ',
+  '&#160;': ' ',
+  '&copy;': '©',
+  '&#169;': '©',
+  '&reg;': '®',
+  '&#174;': '®',
+  '&hellip;': '…',
+  '&#8230;': '…',
+  '&#x2F;': '/',
+  '&#47;': '/'
+};
+const unescapeHtmlEntity = m => htmlEntities[m];
+const unescape = text => text.replace(matchHtmlEntity, unescapeHtmlEntity);
+
+let defaultOptions = {
+  bindI18n: 'languageChanged',
+  bindI18nStore: '',
+  transEmptyNodeValue: '',
+  transSupportBasicHtmlNodes: true,
+  transWrapTextNodes: '',
+  transKeepBasicHtmlNodesFor: ['br', 'strong', 'i', 'p'],
+  useSuspense: true,
+  unescape,
+  transDefaultProps: undefined
+};
+const setDefaults = (options = {}) => {
+  defaultOptions = {
+    ...defaultOptions,
+    ...options
+  };
+};
+const getDefaults$1 = () => defaultOptions;
+
+let i18nInstance;
+const setI18n = instance => {
+  i18nInstance = instance;
+};
+const getI18n = () => i18nInstance;
+
+const initReactI18next = {
+  type: '3rdParty',
+  init(instance) {
+    setDefaults(instance.options.react);
+    setI18n(instance);
+  }
+};
+
+const I18nContext = reactExports.createContext();
+class ReportNamespaces {
+  constructor() {
+    this.usedNamespaces = {};
+  }
+  addUsedNamespaces(namespaces) {
+    namespaces.forEach(ns => {
+      if (!this.usedNamespaces[ns]) this.usedNamespaces[ns] = true;
+    });
+  }
+  getUsedNamespaces() {
+    return Object.keys(this.usedNamespaces);
+  }
+}
+
+var shim = {exports: {}};
+
+var useSyncExternalStoreShim_production = {};
+
+/**
+ * @license React
+ * use-sync-external-store-shim.production.js
+ *
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+var hasRequiredUseSyncExternalStoreShim_production;
+
+function requireUseSyncExternalStoreShim_production () {
+	if (hasRequiredUseSyncExternalStoreShim_production) return useSyncExternalStoreShim_production;
+	hasRequiredUseSyncExternalStoreShim_production = 1;
+	var React = requireReact();
+	function is(x, y) {
+	  return (x === y && (0 !== x || 1 / x === 1 / y)) || (x !== x && y !== y);
+	}
+	var objectIs = "function" === typeof Object.is ? Object.is : is,
+	  useState = React.useState,
+	  useEffect = React.useEffect,
+	  useLayoutEffect = React.useLayoutEffect,
+	  useDebugValue = React.useDebugValue;
+	function useSyncExternalStore$2(subscribe, getSnapshot) {
+	  var value = getSnapshot(),
+	    _useState = useState({ inst: { value: value, getSnapshot: getSnapshot } }),
+	    inst = _useState[0].inst,
+	    forceUpdate = _useState[1];
+	  useLayoutEffect(
+	    function () {
+	      inst.value = value;
+	      inst.getSnapshot = getSnapshot;
+	      checkIfSnapshotChanged(inst) && forceUpdate({ inst: inst });
+	    },
+	    [subscribe, value, getSnapshot]
+	  );
+	  useEffect(
+	    function () {
+	      checkIfSnapshotChanged(inst) && forceUpdate({ inst: inst });
+	      return subscribe(function () {
+	        checkIfSnapshotChanged(inst) && forceUpdate({ inst: inst });
+	      });
+	    },
+	    [subscribe]
+	  );
+	  useDebugValue(value);
+	  return value;
+	}
+	function checkIfSnapshotChanged(inst) {
+	  var latestGetSnapshot = inst.getSnapshot;
+	  inst = inst.value;
+	  try {
+	    var nextValue = latestGetSnapshot();
+	    return !objectIs(inst, nextValue);
+	  } catch (error) {
+	    return true;
+	  }
+	}
+	function useSyncExternalStore$1(subscribe, getSnapshot) {
+	  return getSnapshot();
+	}
+	var shim =
+	  "undefined" === typeof window ||
+	  "undefined" === typeof window.document ||
+	  "undefined" === typeof window.document.createElement
+	    ? useSyncExternalStore$1
+	    : useSyncExternalStore$2;
+	useSyncExternalStoreShim_production.useSyncExternalStore =
+	  void 0 !== React.useSyncExternalStore ? React.useSyncExternalStore : shim;
+	return useSyncExternalStoreShim_production;
+}
+
+var hasRequiredShim;
+
+function requireShim () {
+	if (hasRequiredShim) return shim.exports;
+	hasRequiredShim = 1;
+	{
+	  shim.exports = requireUseSyncExternalStoreShim_production();
+	}
+	return shim.exports;
+}
+
+var shimExports = requireShim();
+
+const notReadyT = (k, optsOrDefaultValue) => {
+  if (isString$1(optsOrDefaultValue)) return optsOrDefaultValue;
+  if (isObject$1(optsOrDefaultValue) && isString$1(optsOrDefaultValue.defaultValue)) return optsOrDefaultValue.defaultValue;
+  return Array.isArray(k) ? k[k.length - 1] : k;
+};
+const notReadySnapshot = {
+  t: notReadyT,
+  ready: false
+};
+const dummySubscribe = () => () => {};
+const useTranslation = (ns, props = {}) => {
+  const {
+    i18n: i18nFromProps
+  } = props;
+  const {
+    i18n: i18nFromContext,
+    defaultNS: defaultNSFromContext
+  } = reactExports.useContext(I18nContext) || {};
+  const i18n = i18nFromProps || i18nFromContext || getI18n();
+  if (i18n && !i18n.reportNamespaces) i18n.reportNamespaces = new ReportNamespaces();
+  if (!i18n) {
+    warnOnce(i18n, 'NO_I18NEXT_INSTANCE', 'useTranslation: You will need to pass in an i18next instance by using initReactI18next');
+  }
+  const i18nOptions = reactExports.useMemo(() => ({
+    ...getDefaults$1(),
+    ...i18n?.options?.react,
+    ...props
+  }), [i18n, props]);
+  const {
+    useSuspense,
+    keyPrefix
+  } = i18nOptions;
+  const nsOrContext = defaultNSFromContext || i18n?.options?.defaultNS;
+  const unstableNamespaces = isString$1(nsOrContext) ? [nsOrContext] : nsOrContext || ['translation'];
+  const namespaces = reactExports.useMemo(() => unstableNamespaces, unstableNamespaces);
+  i18n?.reportNamespaces?.addUsedNamespaces?.(namespaces);
+  const revisionRef = reactExports.useRef(0);
+  const subscribe = reactExports.useCallback(callback => {
+    if (!i18n) return dummySubscribe;
+    const {
+      bindI18n,
+      bindI18nStore
+    } = i18nOptions;
+    const wrappedCallback = () => {
+      revisionRef.current += 1;
+      callback();
+    };
+    if (bindI18n) i18n.on(bindI18n, wrappedCallback);
+    if (bindI18nStore) i18n.store.on(bindI18nStore, wrappedCallback);
+    return () => {
+      if (bindI18n) bindI18n.split(' ').forEach(e => i18n.off(e, wrappedCallback));
+      if (bindI18nStore) bindI18nStore.split(' ').forEach(e => i18n.store.off(e, wrappedCallback));
+    };
+  }, [i18n, i18nOptions]);
+  const snapshotRef = reactExports.useRef();
+  const getSnapshot = reactExports.useCallback(() => {
+    if (!i18n) {
+      return notReadySnapshot;
+    }
+    const calculatedReady = !!(i18n.isInitialized || i18n.initializedStoreOnce) && namespaces.every(n => hasLoadedNamespace(n, i18n, i18nOptions));
+    const currentLng = props.lng || i18n.language;
+    const currentRevision = revisionRef.current;
+    const lastSnapshot = snapshotRef.current;
+    if (lastSnapshot && lastSnapshot.ready === calculatedReady && lastSnapshot.lng === currentLng && lastSnapshot.keyPrefix === keyPrefix && lastSnapshot.revision === currentRevision) {
+      return lastSnapshot;
+    }
+    const calculatedT = i18n.getFixedT(currentLng, i18nOptions.nsMode === 'fallback' ? namespaces : namespaces[0], keyPrefix);
+    const newSnapshot = {
+      t: calculatedT,
+      ready: calculatedReady,
+      lng: currentLng,
+      keyPrefix,
+      revision: currentRevision
+    };
+    snapshotRef.current = newSnapshot;
+    return newSnapshot;
+  }, [i18n, namespaces, keyPrefix, i18nOptions, props.lng]);
+  const [loadCount, setLoadCount] = reactExports.useState(0);
+  const {
+    t,
+    ready
+  } = shimExports.useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
+  reactExports.useEffect(() => {
+    if (i18n && !ready && !useSuspense) {
+      const onLoaded = () => setLoadCount(c => c + 1);
+      if (props.lng) {
+        loadLanguages(i18n, props.lng, namespaces, onLoaded);
+      } else {
+        loadNamespaces(i18n, namespaces, onLoaded);
+      }
+    }
+  }, [i18n, props.lng, namespaces, ready, useSuspense, loadCount]);
+  const finalI18n = i18n || {};
+  const wrapperRef = reactExports.useRef(null);
+  const wrapperLangRef = reactExports.useRef();
+  const createI18nWrapper = original => {
+    const descriptors = Object.getOwnPropertyDescriptors(original);
+    if (descriptors.__original) delete descriptors.__original;
+    const wrapper = Object.create(Object.getPrototypeOf(original), descriptors);
+    if (!Object.prototype.hasOwnProperty.call(wrapper, '__original')) {
+      try {
+        Object.defineProperty(wrapper, '__original', {
+          value: original,
+          writable: false,
+          enumerable: false,
+          configurable: false
+        });
+      } catch (_) {}
+    }
+    return wrapper;
+  };
+  const ret = reactExports.useMemo(() => {
+    const original = finalI18n;
+    const lang = original?.language;
+    let i18nWrapper = original;
+    if (original) {
+      if (wrapperRef.current && wrapperRef.current.__original === original) {
+        if (wrapperLangRef.current !== lang) {
+          i18nWrapper = createI18nWrapper(original);
+          wrapperRef.current = i18nWrapper;
+          wrapperLangRef.current = lang;
+        } else {
+          i18nWrapper = wrapperRef.current;
+        }
+      } else {
+        i18nWrapper = createI18nWrapper(original);
+        wrapperRef.current = i18nWrapper;
+        wrapperLangRef.current = lang;
+      }
+    }
+    const arr = [t, i18nWrapper, ready];
+    arr.t = t;
+    arr.i18n = i18nWrapper;
+    arr.ready = ready;
+    return arr;
+  }, [t, finalI18n, ready, finalI18n.resolvedLanguage, finalI18n.language, finalI18n.languages]);
+  if (i18n && useSuspense && !ready) {
+    throw new Promise(resolve => {
+      const onLoaded = () => resolve();
+      if (props.lng) {
+        loadLanguages(i18n, props.lng, namespaces, onLoaded);
+      } else {
+        loadNamespaces(i18n, namespaces, onLoaded);
+      }
+    });
+  }
+  return ret;
+};
+
 const DbModeIndicator = () => {
+  const { t } = useTranslation();
   const [connected, setConnected] = reactExports.useState(false);
   reactExports.useEffect(() => {
     setConnected(isInitialized());
@@ -30963,21 +33575,23 @@ const DbModeIndicator = () => {
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `p-1.5 rounded-lg ${connected ? "bg-indigo-500/10 text-indigo-400" : "bg-red-500/10 text-red-500"}`, children: /* @__PURE__ */ jsxRuntimeExports.jsx(Zap, { className: "w-3.5 h-3.5" }) }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[9px] font-black uppercase tracking-widest text-slate-500", children: "System Status" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[9px] font-black uppercase tracking-widest text-slate-500", children: t("systemStatus") }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: `text-[11px] font-bold ${connected ? "text-indigo-400" : "text-red-500"} uppercase flex items-center gap-1.5`, children: connected ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(Wifi, { className: "w-3 h-3" }),
-          " Online"
+          " ",
+          t("online")
         ] }) : /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(WifiOff, { className: "w-3 h-3" }),
-          " Error"
+          " ",
+          t("error")
         ] }) })
       ] })
     ] }),
-    connected ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mt-1 flex items-start gap-1.5 px-2 py-1 bg-indigo-500/5 rounded-md border border-indigo-500/10", children: /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[8px] leading-tight text-indigo-400/80 font-medium", children: "Connected to Firebase Storage" }) }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mt-1 flex items-start gap-1.5 px-2 py-1 bg-red-500/10 rounded-md border border-red-500/20", children: /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[8px] leading-tight text-red-500 font-bold", children: "Config Missing. Check Console." }) })
+    connected ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mt-1 flex items-start gap-1.5 px-2 py-1 bg-indigo-500/5 rounded-md border border-indigo-500/10", children: /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[8px] leading-tight text-indigo-400/80 font-medium", children: t("connectedToFirebaseStorage") }) }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mt-1 flex items-start gap-1.5 px-2 py-1 bg-red-500/10 rounded-md border border-red-500/20", children: /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[8px] leading-tight text-red-500 font-bold", children: t("configMissingCheckConsole") }) })
   ] });
 };
 
-const APP_VERSION = "0.0.113";
+const APP_VERSION = "1.1.1";
 
 const SidebarContent = ({ user, onLogout, t, onClose }) => {
   const location = useLocation();
@@ -31038,7 +33652,7 @@ const SidebarContent = ({ user, onLogout, t, onClose }) => {
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-2 bg-blue-600 rounded-xl shadow-lg shadow-blue-500/20", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Sparkles, { className: "w-5 h-5 text-white" }) }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "text-lg font-bold text-white tracking-tight leading-none", children: "eRPH Pro" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "text-lg font-bold text-white tracking-tight leading-none", children: t("erphPro") }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[10px] font-medium text-slate-500 mt-1 uppercase tracking-wider", children: getRoleLabel(user.role) })
         ] })
       ] }),
@@ -31242,6 +33856,7 @@ const Button = ({
   as: Component = "button",
   ...props
 }) => {
+  const { t } = useTranslation();
   const baseStyles = "inline-flex items-center justify-center rounded-lg font-semibold transition-all duration-200 active:scale-95 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed";
   const variants = {
     primary: "bg-blue-600 text-white hover:bg-blue-700 shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 focus:ring-blue-500",
@@ -31266,13 +33881,14 @@ const Button = ({
           /* @__PURE__ */ jsxRuntimeExports.jsx("circle", { className: "opacity-25", cx: "12", cy: "12", r: "10", stroke: "currentColor", strokeWidth: "4" }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("path", { className: "opacity-75", fill: "currentColor", d: "M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" })
         ] }),
-        "Processing..."
+        t("processing")
       ] }) : children
     }
   );
 };
 
 const NotFoundPage = () => {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "min-h-screen flex items-center justify-center bg-slate-50 p-6", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "max-w-md w-full text-center space-y-8 animate-in fade-in zoom-in duration-500", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative", children: [
@@ -31281,8 +33897,8 @@ const NotFoundPage = () => {
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute -top-2 -right-2 w-8 h-8 bg-amber-100 rounded-xl flex items-center justify-center border border-amber-200 shadow-sm animate-bounce", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-amber-700 font-bold text-xs", children: "404" }) })
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-3", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "text-3xl font-black text-slate-900 tracking-tight", children: "Resource Not Found" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-500 leading-relaxed", children: "The page you are looking for might have been removed, had its name changed, or is temporarily unavailable." })
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "text-3xl font-black text-slate-900 tracking-tight", children: t("resourceNotFound") }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-500 leading-relaxed", children: t("thePageYouAreLooking") })
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative", children: [
@@ -31306,7 +33922,8 @@ const NotFoundPage = () => {
             onClick: () => navigate(-1),
             children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowLeft, { className: "w-4 h-4 mr-2" }),
-              " Go Back"
+              " ",
+              t("goBack")
             ]
           }
         ),
@@ -31319,13 +33936,14 @@ const NotFoundPage = () => {
             onClick: () => navigate("/"),
             children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx(House, { className: "w-4 h-4 mr-2" }),
-              " Dashboard"
+              " ",
+              t("dashboard")
             ]
           }
         )
       ] })
     ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "pt-4", children: /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[10px] font-black text-slate-400 uppercase tracking-widest", children: "eRPH Pro • Security & Registry Subsystem" }) })
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "pt-4", children: /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[10px] font-black text-slate-400 uppercase tracking-widest", children: t("erphProBullSecurityRegistry") }) })
   ] }) });
 };
 
@@ -31343,8 +33961,8 @@ const PublicNavbar = () => {
     /* @__PURE__ */ jsxRuntimeExports.jsxs(Link$1, { to: "/", className: "flex items-center gap-2 group", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-2 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl shadow-lg shadow-blue-500/30 group-hover:scale-105 transition-transform", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Sparkles, { className: "w-5 h-5 text-white" }) }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-2xl font-black text-slate-900 tracking-tighter", children: [
-        "eRPH ",
-        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-blue-600", children: "Pro" })
+        t("erph"),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-blue-600", children: t("pro") })
       ] })
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "hidden md:flex items-center gap-10", children: navLinks.map((link) => /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -31408,8 +34026,8 @@ const PublicFooter = () => {
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center font-black text-white text-xs", children: "P" }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-xl font-black text-white tracking-tight", children: [
-            "eRPH",
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-blue-500", children: "PRO" })
+            t("erph"),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-blue-500", children: t("pro_1") })
           ] })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-400 text-sm leading-relaxed font-medium", children: t("footer_desc") }),
@@ -31441,7 +34059,7 @@ const PublicFooter = () => {
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "pt-8 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-slate-500 text-xs font-bold uppercase tracking-widest", children: [
-        "© 2026 eRPH Pro. ",
+        t("2026ErphPro"),
         t("all_rights_reserved")
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-8", children: [
@@ -31452,7 +34070,8 @@ const PublicFooter = () => {
         /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-slate-400 text-xs font-mono", children: [
           "v",
           APP_VERSION,
-          " (Stable)"
+          " ",
+          t("stable")
         ] })
       ] })
     ] })
@@ -31506,8 +34125,8 @@ const LandingPage = () => {
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute -top-10 -right-10 p-6 bg-white rounded-3xl shadow-2xl border border-slate-100 hidden lg:block hover:translate-y-[-4px] transition-transform duration-300", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-2 bg-emerald-100 rounded-xl", children: /* @__PURE__ */ jsxRuntimeExports.jsx(CircleCheck, { className: "w-6 h-6 text-emerald-600" }) }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs font-black text-slate-400 uppercase tracking-widest leading-none mb-1", children: "Status" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-black text-slate-800", children: "DSKP Verified" })
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs font-black text-slate-400 uppercase tracking-widest leading-none mb-1", children: t("status") }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-black text-slate-800", children: t("dskpVerified") })
             ] })
           ] }) })
         ] })
@@ -31549,7 +34168,7 @@ const LandingPage = () => {
         /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-2xl font-black text-slate-800 mb-4", children: f.title }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-500 font-semibold leading-relaxed mb-6", children: f.desc }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs(Link$1, { to: f.link, className: "flex items-center text-blue-600 font-black text-sm uppercase tracking-widest gap-2 group-hover:gap-4 transition-all", children: [
-          "Learn More ",
+          t("learnMore"),
           /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowRight, { className: "w-4 h-4" })
         ] })
       ] }, i)) })
@@ -31568,8 +34187,8 @@ const LandingPage = () => {
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-6", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-4 bg-blue-600/20 rounded-2xl border border-blue-500/30", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Shield, { className: "w-8 h-8 text-blue-400" }) }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-black text-slate-500 uppercase tracking-widest mb-1", children: "Status" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-white font-bold", children: "Ready to Deploy" })
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-black text-slate-500 uppercase tracking-widest mb-1", children: t("status") }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-white font-bold", children: t("readyToDeploy") })
             ] })
           ] })
         ] }),
@@ -31661,6 +34280,17 @@ const FeaturePage = () => {
 };
 
 const CHANGELOG = [
+  {
+    version: "v1.1.1",
+    date: "Jan 08, 2026",
+    title: "Autonomous Internationalization Engine",
+    items: [
+      "🌍 **Autonomous i18n System**: Implemented self-healing translation pipeline.",
+      "🤖 **AI-Powered Translations**: 100% automated translation for Malay and Chinese using KPM glossary.",
+      "🛡️ **Deployment Gate**: Added `i18n-audit` to block deployments if translations are missing or incorrect.",
+      "✨ **Refactor**: Automated string extraction for over 500+ UI elements."
+    ]
+  },
   {
     version: "v0.0.113",
     date: "Jan 08, 2026",
@@ -32235,11 +34865,11 @@ const KnowledgeBase = () => {
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-center space-y-6", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "inline-flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-600 rounded-full text-xs font-black uppercase tracking-widest", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(Book, { className: "w-4 h-4" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Knowledge Center" })
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: t("knowledgeCenter") })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("h1", { className: "text-4xl md:text-6xl font-black text-slate-900 tracking-tight", children: [
-          "How can we ",
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-blue-600", children: "help you?" })
+          t("howCanWe"),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-blue-600", children: t("helpYou") })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "max-w-xl mx-auto relative group", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(Search, { className: "absolute left-5 top-5 w-6 h-6 text-slate-400 group-focus-within:text-blue-500 transition-colors" }),
@@ -32274,8 +34904,8 @@ const KnowledgeBase = () => {
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-h-[400px]", children: [
         activeTab === "updates" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-2xl font-black text-slate-900", children: "Changelog & Release Notes" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs font-bold bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full uppercase tracking-widest", children: "Live" })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-2xl font-black text-slate-900", children: t("changelogReleaseNotes") }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs font-bold bg-emerald-100 text-emerald-700 px-3 py-1 rounded-full uppercase tracking-widest", children: t("live") })
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "relative space-y-6 before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:ml-8 before:h-full before:w-0.5 before:bg-slate-200", children: updateLogs.filter((l) => l.title.toLowerCase().includes(searchQuery.toLowerCase()) || l.version.includes(searchQuery)).map((log, i) => {
             const isExpanded = expandedLog === log.version;
@@ -32308,7 +34938,7 @@ const KnowledgeBase = () => {
           }) })
         ] }),
         activeTab === "faq" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500 max-w-3xl mx-auto", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-2xl font-black text-slate-900 mb-8 text-center", children: "Frequently Asked Questions" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-2xl font-black text-slate-900 mb-8 text-center", children: t("frequentlyAskedQuestions") }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-1 gap-4", children: [
             ...faqs,
             { q: "Is the system secure for sensitive student data?", a: "Yes, we employ military-grade AES-256 encryption. All databases are isolated per school tenant, ensuring strict data sovereignty." },
@@ -32330,21 +34960,24 @@ const KnowledgeBase = () => {
             desc: "Setting up your profile and first login.",
             icon: Zap,
             content: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4 text-slate-600", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: "Welcome to eRPH Pro! Here's how to get started:" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: t("welcomeToErphProHeres") }),
               /* @__PURE__ */ jsxRuntimeExports.jsxs("ol", { className: "list-decimal pl-5 space-y-2", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("li", { children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "Log In" }),
-                  " using your provided credentials (IC Number)."
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: t("logIn") }),
+                  " ",
+                  t("usingYourProvidedCredentialsIc")
                 ] }),
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("li", { children: [
-                  "Navigate to ",
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "Settings" }),
-                  " to update your profile photo and signature."
+                  t("navigateTo"),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: t("settings") }),
+                  " ",
+                  t("toUpdateYourProfilePhoto")
                 ] }),
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("li", { children: [
-                  "Ensure your ",
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "Grade & Subject" }),
-                  " details are correct."
+                  t("ensureYour"),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: t("gradeSubject") }),
+                  " ",
+                  t("detailsAreCorrect")
                 ] })
               ] })
             ] })
@@ -32354,28 +34987,30 @@ const KnowledgeBase = () => {
             desc: "Step-by-step to your first lesson plan.",
             icon: FileText,
             content: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4 text-slate-600", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: "Creating a lesson plan is easy:" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: t("creatingALessonPlanIs") }),
               /* @__PURE__ */ jsxRuntimeExports.jsxs("ol", { className: "list-decimal pl-5 space-y-2", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("li", { children: [
-                  "Click ",
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "New Plan" }),
-                  " in the sidebar."
+                  t("click"),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: t("newPlan") }),
+                  " ",
+                  t("inTheSidebar")
                 ] }),
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("li", { children: [
-                  "Select your ",
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "Date, Time, Class, and Subject" }),
+                  t("selectYour"),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: t("dateTimeClassAndSubject") }),
                   "."
                 ] }),
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("li", { children: [
-                  "Choose standards from the ",
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "DSKP Selector" }),
+                  t("chooseStandardsFromThe"),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: t("dskpSelector") }),
                   "."
                 ] }),
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("li", { children: [
-                  "Click ",
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "Save Draft" }),
-                  " or ",
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "Submit" }),
+                  t("click"),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: t("saveDraft") }),
+                  " ",
+                  t("or"),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: t("submit") }),
                   "."
                 ] })
               ] })
@@ -32386,19 +35021,21 @@ const KnowledgeBase = () => {
             desc: "Linking standards to your lessons.",
             icon: Book,
             content: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4 text-slate-600", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: "We've digitized the entire DSKP library for you:" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: t("weveDigitizedTheEntireDskp") }),
               /* @__PURE__ */ jsxRuntimeExports.jsxs("ul", { className: "list-disc pl-5 space-y-2", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("li", { children: [
-                  "Use the ",
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "DSKP Manager" }),
-                  " to favorite your subjects."
+                  t("useThe"),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: t("dskpManager") }),
+                  " ",
+                  t("toFavoriteYourSubjects")
                 ] }),
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("li", { children: [
-                  "During RPH creation, simply ",
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "click to select" }),
-                  " standards."
+                  t("duringRphCreationSimply"),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: t("clickToSelect") }),
+                  " ",
+                  t("standards_1")
                 ] }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: "Everything is auto-filled!" })
+                /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: t("everythingIsAutofilled") })
               ] })
             ] })
           },
@@ -32407,20 +35044,21 @@ const KnowledgeBase = () => {
             desc: "Sending weekly plans for review.",
             icon: CircleCheck,
             content: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4 text-slate-600", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: "Once you're done, send it for review:" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: t("onceYoureDoneSendIt") }),
               /* @__PURE__ */ jsxRuntimeExports.jsxs("ul", { className: "list-disc pl-5 space-y-2", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("li", { children: [
-                  "Go to ",
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "My Plans" }),
+                  t("goTo"),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: t("myPlans") }),
                   "."
                 ] }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: "Select the plans you want to submit." }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: t("selectThePlansYouWant") }),
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("li", { children: [
-                  "Click the ",
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "Submit for Review" }),
-                  " button on top."
+                  t("clickThe"),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: t("submitForReview") }),
+                  " ",
+                  t("buttonOnTop")
                 ] }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: "Your principal will be notified!" })
+                /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: t("yourPrincipalWillBeNotified") })
               ] })
             ] })
           }
@@ -32433,7 +35071,7 @@ const KnowledgeBase = () => {
               /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-12 h-12 bg-blue-50 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform", children: /* @__PURE__ */ jsxRuntimeExports.jsx(guide.icon, { className: "w-6 h-6 text-blue-600" }) }),
               /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "text-xl font-black text-slate-900 mb-2", children: guide.title }),
               /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-500 font-medium mb-6", children: guide.desc }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "secondary", size: "sm", className: "w-full", children: "Read Guide" })
+              /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "secondary", size: "sm", className: "w-full", children: t("readGuide") })
             ]
           },
           i
@@ -32456,7 +35094,7 @@ const KnowledgeBase = () => {
         )
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-8 max-h-[60vh] overflow-y-auto custom-scrollbar", children: selectedGuide.content }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-6 border-t border-slate-100 bg-slate-50", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { className: "w-full h-12 rounded-xl font-bold", onClick: () => setSelectedGuide(null), children: "Close Guide" }) })
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-6 border-t border-slate-100 bg-slate-50", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { className: "w-full h-12 rounded-xl font-bold", onClick: () => setSelectedGuide(null), children: t("closeGuide") }) })
     ] }) }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(PublicFooter, {})
   ] });
@@ -32573,6 +35211,7 @@ for (let i = 1; i <= 99; i++) {
 }
 
 const ArticleList = () => {
+  const { t } = useTranslation();
   const [searchQuery, setSearchQuery] = reactExports.useState("");
   const [selectedCategory, setSelectedCategory] = reactExports.useState("All");
   const allArticles = reactExports.useMemo(() => Object.values(articles_data), []);
@@ -32591,20 +35230,21 @@ const ArticleList = () => {
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 text-blue-600 font-black uppercase tracking-[0.2em] text-[10px]", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(Sparkles, { className: "w-4 h-4" }),
-            " Ultimate Education Resource Hub"
+            " ",
+            t("ultimateEducationResourceHub")
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("h1", { className: "text-4xl md:text-5xl font-black text-slate-900 tracking-tight", children: [
-            "The Digital Library ",
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-slate-400 font-black italic", children: "for Modern Educators" })
+            t("theDigitalLibrary"),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-slate-400 font-black italic", children: t("forModernEducators") })
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-500 font-medium max-w-xl italic", children: "Over 100+ precision-engineered articles covering Malaysian pedagogy, AI integration, and school leadership excellence." })
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-500 font-medium max-w-xl italic", children: t("over100PrecisionengineeredArticlesCovering") })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-4", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-right hidden md:block", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1", children: "Chief Editor" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-black text-slate-800 uppercase tracking-tight", children: "Aiden Chan" })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1", children: t("chiefEditor") }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-black text-slate-800 uppercase tracking-tight", children: t("aidenChan") })
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-12 h-12 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl flex items-center justify-center text-white font-black shadow-lg shadow-blue-200 uppercase", children: "AC" })
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-12 h-12 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl flex items-center justify-center text-white font-black shadow-lg shadow-blue-200 uppercase", children: t("ac") })
         ] })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col lg:flex-row gap-6 mb-12", children: [
@@ -32624,7 +35264,7 @@ const ArticleList = () => {
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 overflow-x-auto pb-2 lg:pb-0 custom-scrollbar", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 px-3 py-2 bg-slate-100 rounded-xl text-slate-500 shrink-0", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(Filter, { className: "w-4 h-4" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-black uppercase tracking-widest", children: "Filter" })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-black uppercase tracking-widest", children: t("filter") })
           ] }),
           categories.map((cat) => /* @__PURE__ */ jsxRuntimeExports.jsx(
             "button",
@@ -32652,7 +35292,7 @@ const ArticleList = () => {
             ] }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "pt-6 flex items-center justify-between", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "inline-flex items-center gap-2 text-blue-600 font-black text-xs uppercase tracking-widest", children: [
-                "View Full Analysis ",
+                t("viewFullAnalysis"),
                 /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronRight, { className: "w-4 h-4 group-hover:translate-x-1 transition-transform" })
               ] }),
               /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-bold text-slate-400 uppercase tracking-widest", children: article.readTime })
@@ -32660,24 +35300,24 @@ const ArticleList = () => {
           ] })
         ] }) }) }, article.slug)) : /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-20 text-center bg-white rounded-[3rem] border border-dashed border-slate-200", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(BookOpen, { className: "w-12 h-12 text-slate-200 mx-auto mb-4" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-400 font-bold uppercase tracking-widest", children: "No articles found matching your criteria" })
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-400 font-bold uppercase tracking-widest", children: t("noArticlesFoundMatchingYour") })
         ] }) }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("aside", { className: "lg:col-span-4 space-y-8", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-8 bg-slate-900 rounded-[2.5rem] space-y-6 text-white shadow-2xl relative overflow-hidden group", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute top-0 right-0 p-6 opacity-10 group-hover:scale-125 transition-transform duration-700", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Sparkles, { className: "w-32 h-32" }) }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-xl font-black uppercase tracking-tight text-blue-400", children: "Editorial Mandate" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-semibold text-slate-400 leading-relaxed italic", children: '"Every article in our hub is cross-referenced with the latest MoE circulars and DSKP mappings to ensure teacher accuracy."' }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-xl font-black uppercase tracking-tight text-blue-400", children: t("editorialMandate") }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-semibold text-slate-400 leading-relaxed italic", children: t("everyArticleInOurHub") }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "pt-4 border-t border-white/10 flex items-center gap-4", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center font-black", children: "AC" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center font-black", children: t("ac") }),
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-xs", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-black text-white uppercase tracking-widest transition-colors mb-0.5", children: "Aiden's Editorial Team" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-500 font-bold uppercase", children: "Malaysia HQ" })
+                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-black text-white uppercase tracking-widest transition-colors mb-0.5", children: t("aidensEditorialTeam") }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-500 font-bold uppercase", children: t("malaysiaHq") })
               ] })
             ] })
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "sticky top-40 space-y-8", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Card, { className: "p-8 rounded-[2.5rem] shadow-sm bg-white border-slate-100 flex flex-col items-center justify-center text-[10px] uppercase font-black text-slate-300 gap-2 h-96 border-dashed text-center", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: "Google AdSense" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "opacity-50", children: "High Intent Educational Traffic" })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: t("googleAdsense") }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "opacity-50", children: t("highIntentEducationalTraffic") })
           ] }) })
         ] })
       ] })
@@ -32686,6 +35326,7 @@ const ArticleList = () => {
 };
 
 const ArticleReader = () => {
+  const { t } = useTranslation();
   const { slug } = useParams();
   const navigate = useNavigate();
   const article = articles_data[slug || "integrating-ai-math"];
@@ -32711,22 +35352,25 @@ const ArticleReader = () => {
       document.head.removeChild(script);
     };
   }, [article]);
-  if (!article) return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-20 text-center", children: "Article Not Found" });
+  if (!article) return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-20 text-center", children: t("articleNotFound") });
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-h-screen bg-slate-50 pb-20 selection:bg-blue-100 selection:text-blue-900", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(PublicNavbar, {}),
     /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-14 bg-white/80 backdrop-blur-md border-b fixed top-16 w-full z-40", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "max-w-6xl mx-auto px-6 h-full flex items-center justify-between", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("button", { onClick: () => navigate("/blog"), className: "flex items-center gap-2 text-slate-600 hover:text-blue-600 font-black text-xs transition-all uppercase tracking-widest", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(ArrowLeft, { className: "w-4 h-4" }),
-        " Back to Article Hub"
+        " ",
+        t("backToArticleHub")
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-4", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("button", { className: "flex items-center gap-2 text-slate-400 hover:text-slate-600 font-bold text-xs uppercase transition-colors", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(Bookmark, { className: "w-4 h-4" }),
-          " Save"
+          " ",
+          t("save")
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("button", { className: "flex items-center gap-2 text-slate-400 hover:text-slate-600 font-bold text-xs uppercase transition-colors", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(Share2, { className: "w-4 h-4" }),
-          " Share"
+          " ",
+          t("share")
         ] })
       ] })
     ] }) }),
@@ -32735,17 +35379,18 @@ const ArticleReader = () => {
         /* @__PURE__ */ jsxRuntimeExports.jsxs("header", { className: "space-y-8", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 text-blue-600 font-black uppercase tracking-[0.2em] text-[10px]", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(Sparkles, { className: "w-4 h-4" }),
-            " AI Summary • ",
+            " ",
+            t("aiSummary"),
             article.category
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "text-4xl md:text-6xl font-black text-slate-900 tracking-tight leading-[1.1]", children: article.title }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xl text-slate-500 font-semibold leading-relaxed italic border-l-4 border-blue-600 pl-6 py-2 bg-blue-50/30 rounded-r-2xl", children: article.summary }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-wrap items-center gap-8 py-6 border-y border-slate-100", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs(Link$1, { to: "/about", className: "flex items-center gap-3 group", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-12 h-12 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl flex items-center justify-center text-white font-black text-sm shadow-lg group-hover:scale-110 transition-transform", children: "AC" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-12 h-12 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl flex items-center justify-center text-white font-black text-sm shadow-lg group-hover:scale-110 transition-transform", children: t("ac") }),
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-xs", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-black text-slate-900 group-hover:text-blue-600 transition-colors uppercase tracking-widest", children: article.author }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-400 font-bold uppercase mt-0.5", children: "Chief Editor" })
+                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-400 font-bold uppercase mt-0.5", children: t("chiefEditor") })
               ] })
             ] }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 text-slate-400 text-xs font-black uppercase tracking-widest", children: [
@@ -32771,7 +35416,8 @@ const ArticleReader = () => {
                 /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute top-0 right-0 p-8 opacity-10 group-hover:scale-125 transition-transform duration-700", children: /* @__PURE__ */ jsxRuntimeExports.jsx(TrendingUp, { className: "w-32 h-32" }) }),
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { className: "text-xl font-black flex items-center gap-3 uppercase tracking-widest", children: [
                   /* @__PURE__ */ jsxRuntimeExports.jsx(Sparkles, { className: "w-6 h-6 text-blue-200" }),
-                  " Professional Insight"
+                  " ",
+                  t("professionalInsight")
                 ] }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-lg font-bold text-blue-50 opacity-90 leading-relaxed relative z-10", children: section.content })
               ] }, i);
@@ -32787,7 +35433,8 @@ const ArticleReader = () => {
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-20 p-10 bg-slate-900 rounded-[3rem] space-y-8 text-white", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { className: "text-2xl font-black flex items-center gap-3", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(MessageSquare, { className: "w-6 h-6 text-blue-400" }),
-            " Frequently Asked Questions"
+            " ",
+            t("frequentlyAskedQuestions")
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "space-y-6", children: article.faqs.map((f, i) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-3 p-6 bg-white/5 rounded-2xl border border-white/10", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "font-black text-blue-400 flex items-center gap-2", children: [
@@ -32802,51 +35449,54 @@ const ArticleReader = () => {
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-4", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { variant: "secondary", size: "md", className: "rounded-2xl bg-white shadow-sm border-slate-200", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx(ThumbsUp, { className: "w-4 h-4 mr-2" }),
-              " Helpful (1.2k)"
+              " ",
+              t("helpful12k")
             ] }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { variant: "secondary", size: "md", className: "rounded-2xl bg-white shadow-sm border-slate-200", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx(Share2, { className: "w-4 h-4 mr-2" }),
-              " Share Article"
+              " ",
+              t("shareArticle")
             ] })
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-2", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "px-4 py-2 bg-slate-100 text-slate-500 rounded-full text-[10px] font-black uppercase tracking-widest", children: "Education Architecture" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "px-4 py-2 bg-slate-100 text-slate-500 rounded-full text-[10px] font-black uppercase tracking-widest", children: "DSKP API" })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "px-4 py-2 bg-slate-100 text-slate-500 rounded-full text-[10px] font-black uppercase tracking-widest", children: t("educationArchitecture") }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "px-4 py-2 bg-slate-100 text-slate-500 rounded-full text-[10px] font-black uppercase tracking-widest", children: t("dskpApi") })
           ] })
         ] })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("aside", { className: "lg:col-span-4 space-y-8", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "sticky top-40 space-y-8", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-8 bg-white border border-slate-200 rounded-[2.5rem] shadow-sm space-y-6", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-4", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-16 h-16 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl flex items-center justify-center text-white font-black text-xl shadow-lg shadow-blue-200", children: "AC" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-16 h-16 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl flex items-center justify-center text-white font-black text-xl shadow-lg shadow-blue-200", children: t("ac") }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-black text-slate-900 text-lg", children: "Aiden Chan" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[10px] font-black uppercase text-slate-400 tracking-[0.2em] mt-0.5", children: "Master Architect" })
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-black text-slate-900 text-lg", children: t("aidenChan") }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[10px] font-black uppercase text-slate-400 tracking-[0.2em] mt-0.5", children: t("masterArchitect") })
             ] })
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-slate-500 font-semibold leading-relaxed", children: "Aiden leads the eRPH Pro engineering team, focusing on the intersection of Large Language Models and Malaysian secondary education systems." }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { className: "w-full rounded-2xl h-14 font-black text-xs uppercase tracking-widest shadow-xl shadow-blue-500/20", children: "Follow Insights" })
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-slate-500 font-semibold leading-relaxed", children: t("aidenLeadsTheErphPro") }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { className: "w-full rounded-2xl h-14 font-black text-xs uppercase tracking-widest shadow-xl shadow-blue-500/20", children: t("followInsights") })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-8 bg-blue-600 rounded-[2.5rem] text-white shadow-2xl space-y-6 relative overflow-hidden group", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute -bottom-10 -right-10 opacity-20 group-hover:rotate-12 transition-transform duration-700", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Sparkles, { className: "w-48 h-48" }) }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative z-10 space-y-4", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "text-2xl font-black leading-tight", children: "Sync your RPH with Gemini 1.5 Pro today." }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-blue-100 text-sm font-semibold opacity-90", children: "Unlock the world's most advanced RPH engine and save 15+ hours per week." }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Link$1, { to: "/portal/login", className: "block", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { className: "w-full rounded-2xl h-14 font-black text-xs uppercase tracking-widest bg-white text-blue-600 border-none shadow-lg", children: "Start Free Trial" }) })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "text-2xl font-black leading-tight", children: t("syncYourRphWithGemini") }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-blue-100 text-sm font-semibold opacity-90", children: t("unlockTheWorldsMostAdvanced") }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Link$1, { to: "/portal/login", className: "block", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { className: "w-full rounded-2xl h-14 font-black text-xs uppercase tracking-widest bg-white text-blue-600 border-none shadow-lg", children: t("startFreeTrial") }) })
           ] })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-8 bg-white border border-slate-200 rounded-[2.5rem] space-y-6", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { className: "font-black uppercase text-[10px] tracking-widest text-slate-400 flex items-center gap-2", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(CircleAlert, { className: "w-4 h-4" }),
-            " Recent Publications"
+            " ",
+            t("recentPublications")
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "space-y-5", children: [
             "Automating DSKP Mapping for SJKC",
             "The Economics of Digital Schooling",
             "KSSM Standard 4 Physics: AI Insights"
-          ].map((t, i) => /* @__PURE__ */ jsxRuntimeExports.jsxs(Link$1, { to: `/blog`, className: "block group", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-black text-slate-800 group-hover:text-blue-600 transition-colors leading-snug", children: t }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[10px] font-bold text-slate-400 uppercase mt-1", children: "April 2025 • 4 min read" })
+          ].map((t2, i) => /* @__PURE__ */ jsxRuntimeExports.jsxs(Link$1, { to: `/blog`, className: "block group", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-black text-slate-800 group-hover:text-blue-600 transition-colors leading-snug", children: t2 }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[10px] font-bold text-slate-400 uppercase mt-1", children: t2("april20254MinRead") })
           ] }, i)) })
         ] })
       ] }) })
@@ -32855,6 +35505,7 @@ const ArticleReader = () => {
 };
 
 const Legal = () => {
+  const { t } = useTranslation();
   const [activeTab, setActiveTab] = reactExports.useState("privacy");
   const tabs = [
     { id: "privacy", label: "Privacy Policy", icon: Lock },
@@ -32865,8 +35516,8 @@ const Legal = () => {
     /* @__PURE__ */ jsxRuntimeExports.jsx(PublicNavbar, {}),
     /* @__PURE__ */ jsxRuntimeExports.jsx("main", { className: "pt-32 pb-20 px-6", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "max-w-4xl mx-auto space-y-12", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-center space-y-4", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "text-4xl md:text-5xl font-black tracking-tight text-slate-900", children: "Legal Center" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-lg text-slate-500 font-medium max-w-2xl mx-auto", children: "Transparency is our core value. Here is everything you need to know about how we manage usage, data, and security." })
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "text-4xl md:text-5xl font-black tracking-tight text-slate-900", children: t("legalCenter") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-lg text-slate-500 font-medium max-w-2xl mx-auto", children: t("transparencyIsOurCoreValue") })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex flex-wrap justify-center gap-4 bg-slate-50 p-2 rounded-[2rem] border border-slate-100 max-w-2xl mx-auto", children: tabs.map((tab) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "button",
@@ -32882,45 +35533,45 @@ const Legal = () => {
       )) }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white border border-slate-100 rounded-[2.5rem] p-8 md:p-12 shadow-xl shadow-slate-200/30 animate-in fade-in slide-in-from-bottom-8 duration-500", children: [
         activeTab === "privacy" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "prose prose-slate prose-headings:font-black prose-p:font-medium prose-p:text-slate-600 max-w-none", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { children: "Privacy Policy" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-bold text-slate-400 uppercase tracking-widest mb-8", children: "Last Updated: Jan 07, 2026" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { children: "1. Data Collection" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: "We collect minimal data necessary for the functionality of eRPH Pro. This includes:" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { children: t("privacyPolicy") }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-bold text-slate-400 uppercase tracking-widest mb-8", children: t("lastUpdatedJan072026") }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { children: t("1DataCollection") }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: t("weCollectMinimalDataNecessary") }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("ul", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: "Teacher names and email addresses (for identity)." }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: "Lesson plan content (RPH) generated or uploaded by you." }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: "School profile information." })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: t("teacherNamesAndEmailAddresses") }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: t("lessonPlanContentRphGenerated") }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: t("schoolProfileInformation") })
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { children: "2. Data Usage" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: "Your data is used strictly for:" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { children: t("2DataUsage") }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: t("yourDataIsUsedStrictly") }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("ul", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: "Providing the Lesson Plan management service." }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: "Generating official PDF reports for school administration." }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: "Syncing with the National DSKP repository." })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: t("providingTheLessonPlanManagement") }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: t("generatingOfficialPdfReportsFor") }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: t("syncingWithTheNationalDskp") })
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: "We do NOT sell your data to third parties." }) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { children: "3. User Rights" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: "You have the right to request a full export of your data or complete account deletion at any time by contacting support." })
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { children: t("weDoNotSellYour") }) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { children: t("3UserRights") }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: t("youHaveTheRightTo") })
         ] }),
         activeTab === "terms" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "prose prose-slate prose-headings:font-black prose-p:font-medium prose-p:text-slate-600 max-w-none", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { children: "Terms of Service" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-bold text-slate-400 uppercase tracking-widest mb-8", children: "Effective Date: Jan 01, 2024" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { children: "1. Usage License" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: "By using eRPH Pro, you are granted a non-exclusive, limited license to access the platform for educational administration purposes." }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { children: "2. Acceptable Use" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: "You agree not to:" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { children: t("termsOfService") }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-bold text-slate-400 uppercase tracking-widest mb-8", children: t("effectiveDateJan012024") }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { children: t("1UsageLicense") }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: t("byUsingErphProYou") }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { children: t("2AcceptableUse") }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: t("youAgreeNotTo") }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("ul", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: "Misuse the reporting tools to falsify official school records." }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: "Attempt to reverse engineer the source code." }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: "Share your account credentials with unauthorized users." })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: t("misuseTheReportingToolsTo") }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: t("attemptToReverseEngineerThe") }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("li", { children: t("shareYourAccountCredentialsWith") })
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { children: "3. Disclaimer" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: 'eRPH Pro is provided "as is". While we strive for 99.9% uptime, we are not liable for any data unavailability during scheduled maintenance windows.' })
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { children: t("3Disclaimer") }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: t("erphProIsProvidedAs") })
         ] }),
         activeTab === "security" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-8", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-2xl font-black text-slate-900 mb-2", children: "Security Infrastructure" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-600 font-medium leading-relaxed", children: "We take the security of Malaysian educational data seriously. Our stack is built on enterprise-grade security principles." })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-2xl font-black text-slate-900 mb-2", children: t("securityInfrastructure") }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-600 font-medium leading-relaxed", children: t("weTakeTheSecurityOf") })
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-6", children: [
             { title: "Encryption at Rest", desc: "All database volumes are encrypted using AES-256 standards." },
@@ -32937,8 +35588,8 @@ const Legal = () => {
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-blue-50 p-6 rounded-2xl border border-blue-100 flex gap-4", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(Shield, { className: "w-8 h-8 text-blue-600 shrink-0" }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "font-black text-blue-800 mb-1", children: "AIDEN Security Subsystem" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-blue-700/80 text-sm font-medium", children: "Our proprietary active defense system monitors for suspicious login patterns and prevents unauthorized access attempts in real-time." })
+              /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "font-black text-blue-800 mb-1", children: t("aidenSecuritySubsystem") }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-blue-700/80 text-sm font-medium", children: t("ourProprietaryActiveDefenseSystem") })
             ] })
           ] })
         ] })
@@ -32949,27 +35600,28 @@ const Legal = () => {
 };
 
 const Pricing = () => {
+  const { t } = useTranslation();
   const [showQR, setShowQR] = React.useState(false);
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-h-screen bg-white font-sans text-slate-900 selection:bg-blue-100 selection:text-blue-900", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(PublicNavbar, {}),
     /* @__PURE__ */ jsxRuntimeExports.jsx("main", { className: "pt-32 pb-20 px-6", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "max-w-4xl mx-auto text-center space-y-8", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "inline-flex items-center gap-2 px-4 py-2 bg-amber-50 rounded-full border border-amber-100 text-amber-600 font-black text-xs uppercase tracking-widest animate-in zoom-in duration-500", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(Coffee, { className: "w-4 h-4" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Support Development" })
+        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: t("supportDevelopment") })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("h1", { className: "text-4xl md:text-6xl font-black tracking-tight text-slate-900", children: [
-        "Fuel the ",
-        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-orange-600", children: "Revolution." })
+        t("fuelThe"),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-transparent bg-clip-text bg-gradient-to-r from-amber-500 to-orange-600", children: t("revolution") })
       ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-lg md:text-xl text-slate-500 font-medium max-w-2xl mx-auto leading-relaxed", children: "eRPH Pro is built by a single passionate developer dedicated to improving Malaysian education. Your support keeps the servers running and the caffeine flowing." }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-lg md:text-xl text-slate-500 font-medium max-w-2xl mx-auto leading-relaxed", children: t("erphProIsBuiltBy") }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-8 max-w-3xl mx-auto pt-12", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-8 rounded-[2.5rem] border-2 border-slate-100 text-left hover:border-slate-200 transition-all", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-2xl font-black text-slate-900 mb-2", children: "Community" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-2xl font-black text-slate-900 mb-2", children: t("community") }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-baseline gap-1 mb-6", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-4xl font-black text-slate-900", children: "Free" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-slate-400 font-bold", children: "/ forever" })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-4xl font-black text-slate-900", children: t("free") }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-slate-400 font-bold", children: t("forever") })
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-500 font-medium mb-8", children: "For schools just getting started with digitalization." }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-500 font-medium mb-8", children: t("forSchoolsJustGettingStarted") }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "space-y-4 mb-8", children: [
             "Standard RPH Templates",
             "Access to Public Knowledge Base",
@@ -32979,19 +35631,20 @@ const Pricing = () => {
             /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center shrink-0", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Check, { className: "w-3.5 h-3.5 text-slate-500" }) }),
             feature
           ] }, i)) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "secondary", className: "w-full rounded-2xl h-12 font-black", children: "Current Plan" })
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "secondary", className: "w-full rounded-2xl h-12 font-black", children: t("currentPlan") })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative p-8 rounded-[2.5rem] border-2 border-amber-500 bg-amber-50/10 text-left shadow-2xl shadow-amber-500/10 flex flex-col", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "absolute -top-4 left-1/2 -translate-x-1/2 bg-amber-500 text-white px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-widest flex items-center gap-2", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(Heart, { className: "w-3 h-3 fill-current" }),
-            " Most Popular"
+            " ",
+            t("mostPopular")
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-2xl font-black text-slate-900 mb-2", children: "Supporter" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-2xl font-black text-slate-900 mb-2", children: t("supporter") }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-baseline gap-1 mb-6", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-4xl font-black text-slate-900", children: "RM 10" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-slate-400 font-bold", children: "/ coffee" })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-4xl font-black text-slate-900", children: t("rm10_1") }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-slate-400 font-bold", children: t("coffee") })
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-500 font-medium mb-8 flex-1", children: "Show your appreciation and help speed up development!" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-500 font-medium mb-8 flex-1", children: t("showYourAppreciationAndHelp") }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "space-y-4 mb-8", children: [
             "Priority Feature Requests",
             "Direct Dev Support Chat",
@@ -33008,7 +35661,8 @@ const Pricing = () => {
               className: "w-full rounded-2xl h-12 font-black bg-gradient-to-r from-amber-500 to-orange-600 shadow-lg shadow-amber-500/30 hover:shadow-amber-500/40 text-white border-none",
               children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx(Coffee, { className: "w-4 h-4 mr-2" }),
-                " Treat a Coffee"
+                " ",
+                t("treatACoffee")
               ]
             }
           )
@@ -33026,15 +35680,15 @@ const Pricing = () => {
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-amber-50 p-8 text-center border-b border-amber-100", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-16 h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-3 shadow-lg shadow-amber-500/20", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Coffee, { className: "w-8 h-8 text-amber-600 animate-bounce" }) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-xl font-black text-slate-800", children: "Buy Aiden a Coffee" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-amber-800 font-bold uppercase tracking-wide mt-1", children: "Thank you for your support!" })
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-xl font-black text-slate-800", children: t("buyAidenACoffee") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-amber-800 font-bold uppercase tracking-wide mt-1", children: t("thankYouForYourSupport") })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-6 bg-white space-y-6", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-slate-900 p-4 rounded-3xl shadow-inner flex flex-col items-center gap-4", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-white p-2 rounded-xl", children: /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: "/assets/img/tng_qr.png", alt: "Touch 'n Go QR", className: "w-48 h-auto object-contain rounded-lg" }) }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-center", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-white font-black text-lg", children: "RM 10.00" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-400 text-xs font-bold uppercase tracking-widest", children: "+ Any Tips You Like!" })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-white font-black text-lg", children: t("rm1000") }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-400 text-xs font-bold uppercase tracking-widest", children: t("anyTipsYouLike") })
           ] })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -33042,7 +35696,7 @@ const Pricing = () => {
           {
             onClick: () => setShowQR(false),
             className: "w-full h-12 bg-emerald-500 hover:bg-emerald-600 text-white font-black shadow-lg shadow-emerald-500/30 rounded-2xl",
-            children: "Done!"
+            children: t("done")
           }
         )
       ] })
@@ -33062,6 +35716,7 @@ const getRPHLanguage = (subject) => {
 };
 
 const PrintableRPH = ({ plan, schoolName, weekNumber }) => {
+  const { t } = useTranslation();
   const rphLang = getRPHLanguage(plan.subject);
   const tr = (key) => translations[rphLang]?.[key] || translations[Language.EN][key] || key;
   const dateObj = new Date(plan.date);
@@ -33070,10 +35725,10 @@ const PrintableRPH = ({ plan, schoolName, weekNumber }) => {
   const renderList = (items, type = "disc") => !items || items.length === 0 ? "-" : /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: `list-${type} list-inside m-0 p-0`, children: items.map((item, i) => /* @__PURE__ */ jsxRuntimeExports.jsx("li", { className: "mb-1 leading-snug", children: item }, i)) });
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white text-black font-sans text-sm leading-tight border-2 border-black w-full max-w-[210mm] mx-auto print-border shadow-lg print:shadow-none", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex border-b border-black", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-24 border-r border-black flex items-center justify-center p-2", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-14 h-14 border border-black flex items-center justify-center text-[8px] text-center font-bold", children: "LOGO" }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-24 border-r border-black flex items-center justify-center p-2", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-14 h-14 border border-black flex items-center justify-center text-[8px] text-center font-bold", children: t("logo") }) }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 text-center p-2 bg-purple-100 print:bg-purple-100 border-r border-black flex flex-col justify-center", children: /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "text-xl font-bold uppercase", children: schoolName }) }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "w-48 text-xs flex flex-col", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-blue-200 border-b border-black p-1 text-center font-bold print:bg-blue-200", children: "NILAI PENDIDIKAN SIVIK" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-blue-200 border-b border-black p-1 text-center font-bold print:bg-blue-200", children: t("nilaiPendidikanSivik") }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-2 text-center flex-1 flex flex-col justify-center", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { children: plan.civicValues || "Kasih Sayang" }) })
       ] })
     ] }),
@@ -33081,13 +35736,13 @@ const PrintableRPH = ({ plan, schoolName, weekNumber }) => {
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "w-32 bg-blue-200 p-2 font-bold border-r border-black flex flex-col justify-center text-center text-xs print:bg-blue-200", children: [
         tr("teacher"),
         /* @__PURE__ */ jsxRuntimeExports.jsx("br", {}),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "uppercase text-[10px]", children: "NAMA GURU" })
+        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "uppercase text-[10px]", children: t("namaGuru") })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 p-2 uppercase font-bold bg-white flex items-center text-sm", children: plan.teacherName }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "w-20 bg-blue-200 p-2 font-bold border-l border-r border-black flex flex-col justify-center text-center text-xs print:bg-blue-200", children: [
         tr("week"),
         /* @__PURE__ */ jsxRuntimeExports.jsx("br", {}),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px]", children: "MINGGU" })
+        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px]", children: t("minggu") })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-20 flex items-center justify-center font-bold text-xl bg-yellow-50 print:bg-yellow-50", children: weekNumber || "1" })
     ] }),
@@ -33095,80 +35750,81 @@ const PrintableRPH = ({ plan, schoolName, weekNumber }) => {
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 border-r border-black flex flex-col", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-blue-200 font-bold p-1 border-b border-black print:bg-blue-200 text-[10px]", children: [
           tr("date"),
-          " / TARIKH"
+          " ",
+          t("tarikh")
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 flex items-center justify-center font-bold bg-yellow-50 print:bg-yellow-50", children: formattedDate })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 border-r border-black flex flex-col", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-blue-200 font-bold p-1 border-b border-black print:bg-blue-200 text-[10px]", children: "HARI" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-blue-200 font-bold p-1 border-b border-black print:bg-blue-200 text-[10px]", children: t("hari") }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 flex items-center justify-center font-bold uppercase bg-yellow-50 print:bg-yellow-50", children: dayName })
       ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-[2] flex items-center justify-center bg-blue-200 font-bold text-slate-800 uppercase border-r border-black print:bg-blue-200 text-xs px-2", children: "DISAHKAN OLEH / HANTAR eRPH" })
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-[2] flex items-center justify-center bg-blue-200 font-bold text-slate-800 uppercase border-r border-black print:bg-blue-200 text-xs px-2", children: t("disahkanOlehHantarErph") })
     ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-blue-300 border-b border-black p-1.5 text-center font-bold text-sm print:bg-blue-300 uppercase border-t border-black", children: "RANCANGAN PENGAJARAN HARIAN TS25 (CUP)" }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-blue-300 border-b border-black p-1.5 text-center font-bold text-sm print:bg-blue-300 uppercase border-t border-black", children: t("rancanganPengajaranHarianTs25Cup") }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex border-b border-black min-h-[40px] text-xs", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 flex flex-col", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-blue-200 border-b border-black text-center font-bold p-1", children: "TIME" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-blue-200 border-b border-black text-center font-bold p-1", children: t("time") }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 flex items-center justify-center font-bold p-1 border-r border-black", children: plan.time })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 flex flex-col", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-blue-200 border-b border-black text-center font-bold p-1", children: "CLASS" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-blue-200 border-b border-black text-center font-bold p-1", children: t("class") }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 flex items-center justify-center font-bold p-1 border-r border-black", children: plan.className || plan.grade })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-[2] flex flex-col", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-blue-200 border-b border-black text-center font-bold p-1", children: "SUBJECT" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-blue-200 border-b border-black text-center font-bold p-1", children: t("subject_1") }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 flex items-center justify-center font-bold p-1 uppercase", children: plan.subject })
       ] })
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex border-b border-black", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-48 bg-blue-200 p-2 font-bold border-r border-black text-xs shrink-0 print:bg-blue-200", children: "THEME / TOPIC" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-48 bg-blue-200 p-2 font-bold border-r border-black text-xs shrink-0 print:bg-blue-200", children: t("themeTopic") }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 p-2 font-semibold", children: plan.topic })
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex border-b border-black", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-48 bg-blue-200 p-2 font-bold border-r border-black text-xs shrink-0 print:bg-blue-200", children: "STANDARD" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-48 bg-blue-200 p-2 font-bold border-r border-black text-xs shrink-0 print:bg-blue-200", children: t("standard") }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 p-2", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mb-2", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-bold text-xs block text-slate-500", children: "CONTENT STANDARD:" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-bold text-xs block text-slate-500", children: t("contentStandard_1") }),
           " ",
           plan.contentStandard
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-bold text-xs block text-slate-500", children: "LEARNING STANDARD:" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-bold text-xs block text-slate-500", children: t("learningStandard") }),
           " ",
           plan.learningStandard
         ] })
       ] })
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex border-b border-black", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-48 bg-blue-200 p-2 font-bold border-r border-black text-xs shrink-0 print:bg-blue-200", children: "OBJECTIVES" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-48 bg-blue-200 p-2 font-bold border-r border-black text-xs shrink-0 print:bg-blue-200", children: t("objectives") }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 p-2", children: renderList(plan.objectives, "decimal") })
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex border-b border-black", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-48 bg-blue-200 p-2 font-bold border-r border-black text-xs shrink-0 print:bg-blue-200", children: "SUCCESS CRITERIA" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-48 bg-blue-200 p-2 font-bold border-r border-black text-xs shrink-0 print:bg-blue-200", children: t("successCriteria") }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 p-2", children: renderList(plan.successCriteria, "disc") })
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex border-b border-black", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-48 bg-blue-200 p-2 font-bold border-r border-black text-xs shrink-0 print:bg-blue-200", children: "ACTIVITIES" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-48 bg-blue-200 p-2 font-bold border-r border-black text-xs shrink-0 print:bg-blue-200", children: t("activities") }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 p-2", children: [
         renderList(plan.activities),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-4 pt-2 border-t border-dashed border-slate-400 grid grid-cols-2 gap-2 text-xs", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { className: "block text-slate-500 mb-1", children: "BBM (Teaching Aids):" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { className: "block text-slate-500 mb-1", children: t("bbmTeachingAids") }),
             " ",
             plan.teachingAids?.length ? plan.teachingAids.join(", ") : "-"
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { className: "block text-slate-500 mb-1", children: "PAK-21:" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { className: "block text-slate-500 mb-1", children: t("pak21") }),
             " ",
             plan.pak21?.length ? plan.pak21.join(", ") : "-"
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { className: "block text-slate-500 mb-1", children: "KBAT (HOTS):" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { className: "block text-slate-500 mb-1", children: t("kbatHots") }),
             " ",
             plan.hots?.length ? plan.hots.join(", ") : "-"
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { className: "block text-slate-500 mb-1", children: "Assessment:" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("strong", { className: "block text-slate-500 mb-1", children: t("assessment") }),
             " ",
             plan.assessment?.length ? plan.assessment.join(", ") : "-"
           ] })
@@ -33176,8 +35832,8 @@ const PrintableRPH = ({ plan, schoolName, weekNumber }) => {
       ] })
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex min-h-[80px]", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-48 bg-blue-200 p-2 font-bold border-r border-black text-xs shrink-0 print:bg-blue-200", children: "REFLECTION" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 p-2 italic", children: plan.reflection || /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-slate-300", children: "No reflection recorded." }) })
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-48 bg-blue-200 p-2 font-bold border-r border-black text-xs shrink-0 print:bg-blue-200", children: t("reflection") }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 p-2 italic", children: plan.reflection || /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-slate-300", children: t("noReflectionRecorded") }) })
     ] })
   ] });
 };
@@ -33281,15 +35937,16 @@ const PrintPreviewModal = ({ plans, onClose, schoolName, getWeek }) => {
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "fixed inset-0 z-[9999] bg-slate-800/50 backdrop-blur-sm overflow-y-auto print:overflow-visible print:bg-white print:static print:h-auto print:block", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "fixed top-0 left-0 right-0 bg-white border-b border-slate-200 p-4 flex justify-between items-center shadow-md print:hidden z-[10000]", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-bold text-lg text-slate-800", children: "Print Preview" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-bold text-lg text-slate-800", children: t("printPreview") }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-xs text-slate-500", children: [
             plans.length,
-            " Lesson Plan(s) selected"
+            " ",
+            t("lessonPlansSelected")
           ] })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-2", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "secondary", onClick: onClose, children: "Close" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { onClick: () => window.print(), children: "Print" })
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "secondary", onClick: onClose, children: t("close") }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { onClick: () => window.print(), children: t("print") })
         ] })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "min-h-screen pt-24 pb-10 flex flex-col items-center print:p-0 print:block print:min-h-0", children: plans.map((p, index) => /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "page-break mb-8 last:mb-0 print:mb-0 w-full flex justify-center print:block", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -33377,16 +36034,17 @@ const DskpBrowserModal = ({ isOpen, onClose, onSelect, currentSubject }) => {
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { className: "font-black text-xl text-slate-800 flex items-center gap-2", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(BookOpen, { className: "w-6 h-6 text-blue-600" }),
-          " DSKP Browser"
+          " ",
+          t("dskpBrowser")
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-medium text-slate-500", children: "Select standard to auto-fill lesson plan." })
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-medium text-slate-500", children: t("selectStandardToAutofillLesson") })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: onClose, className: "p-2 hover:bg-slate-100 rounded-full transition-colors", children: /* @__PURE__ */ jsxRuntimeExports.jsx(X, { className: "w-6 h-6 text-slate-400" }) })
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-1 md:grid-cols-12 border-b bg-slate-50/50", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "md:col-span-3 p-4 border-r border-slate-200 space-y-4", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "text-[10px] font-black text-slate-400 uppercase tracking-widest", children: "Subject" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "text-[10px] font-black text-slate-400 uppercase tracking-widest", children: t("subject") }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs(
             "select",
             {
@@ -33397,14 +36055,14 @@ const DskpBrowserModal = ({ isOpen, onClose, onSelect, currentSubject }) => {
                 setSelectedGrade("");
               },
               children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "", children: "All Subjects" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "", children: t("allSubjects") }),
                 subjects.map((s) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: s, children: s }, s))
               ]
             }
           )
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "text-[10px] font-black text-slate-400 uppercase tracking-widest", children: "Year / Grade" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "text-[10px] font-black text-slate-400 uppercase tracking-widest", children: t("yearGrade") }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs(
             "select",
             {
@@ -33413,7 +36071,7 @@ const DskpBrowserModal = ({ isOpen, onClose, onSelect, currentSubject }) => {
               onChange: (e) => setSelectedGrade(e.target.value),
               disabled: !selectedSubject,
               children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "", children: "All Levels" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "", children: t("allLevels") }),
                 grades.map((g) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: g, children: g }, g))
               ]
             }
@@ -33433,9 +36091,9 @@ const DskpBrowserModal = ({ isOpen, onClose, onSelect, currentSubject }) => {
         ] }) })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "md:col-span-9 bg-slate-50 flex flex-col h-full overflow-hidden", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 overflow-y-auto p-6 space-y-4", children: loading ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex justify-center items-center h-full", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "loading loading-spinner text-blue-600", children: "Loading DSKP..." }) }) : Object.keys(groupedStandards).length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col items-center justify-center h-full text-slate-400", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 overflow-y-auto p-6 space-y-4", children: loading ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex justify-center items-center h-full", children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "loading loading-spinner text-blue-600", children: t("loadingDskp") }) }) : Object.keys(groupedStandards).length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col items-center justify-center h-full text-slate-400", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(BookOpen, { className: "w-12 h-12 mb-2 opacity-20" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: "No standards found matching your criteria." })
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { children: t("noStandardsFoundMatchingYour") })
         ] }) : Object.entries(groupedStandards).map(([cs, list]) => {
           const isExpanded = expandedContent === cs;
           const selectedCount = list.filter((item) => selectedLearningStandards.has(item.learningStandard)).length;
@@ -33448,10 +36106,11 @@ const DskpBrowserModal = ({ isOpen, onClose, onSelect, currentSubject }) => {
                 children: [
                   /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
                     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 mb-1", children: [
-                      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-black uppercase tracking-wider", children: "Content Standard" }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] bg-slate-100 text-slate-600 px-2 py-0.5 rounded font-black uppercase tracking-wider", children: t("contentStandard") }),
                       selectedCount > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[10px] bg-blue-100 text-blue-700 px-2 py-0.5 rounded font-black", children: [
                         selectedCount,
-                        " Selected"
+                        " ",
+                        t("selected")
                       ] })
                     ] }),
                     /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-bold text-slate-800 leading-snug", children: cs })
@@ -33480,14 +36139,16 @@ const DskpBrowserModal = ({ isOpen, onClose, onSelect, currentSubject }) => {
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-4 bg-white border-t flex justify-between items-center", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-xs font-bold text-slate-500", children: [
             selectedLearningStandards.size,
-            " standards selected"
+            " ",
+            t("standardsSelected")
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-3", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "ghost", onClick: onClose, className: "rounded-xl", children: "Cancel" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "ghost", onClick: onClose, className: "rounded-xl", children: t("cancel") }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { onClick: handleConfirm, disabled: selectedLearningStandards.size === 0, className: "rounded-xl px-8 shadow-lg shadow-blue-500/20", children: [
-              "Include ",
+              t("include"),
               selectedLearningStandards.size,
-              " Standards"
+              " ",
+              t("standards")
             ] })
           ] })
         ] })
@@ -33662,7 +36323,7 @@ const LoginPage = () => {
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-1.5 h-1.5 bg-blue-600 rounded-full animate-bounce [animation-delay:-0.15s]" }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-1.5 h-1.5 bg-blue-600 rounded-full animate-bounce" })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[10px] font-bold text-slate-400 uppercase tracking-widest pt-2", children: "Security handshake in progress" })
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[10px] font-bold text-slate-400 uppercase tracking-widest pt-2", children: t("securityHandshakeInProgress") })
       ] })
     ] }) }),
     /* @__PURE__ */ jsxRuntimeExports.jsx("style", { children: `
@@ -33690,14 +36351,14 @@ const LoginPage = () => {
           /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-mono text-emerald-400 tracking-widest uppercase min-h-[1.5em]", children: typedText || "_" })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("h1", { className: "text-5xl font-bold mb-4 tracking-tight text-white leading-tight", children: [
-          "eRPH ",
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400", children: "Pro" }),
+          t("erph"),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-400", children: t("pro") }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-sm align-top ml-2 text-slate-500 font-mono", children: [
             "v",
             APP_VERSION
           ] })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-400 text-lg leading-relaxed mb-8 max-w-sm", children: "Malaysia's professional digital ecosystem for educator administrative excellence." }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-400 text-lg leading-relaxed mb-8 max-w-sm", children: t("malaysiasProfessionalDigitalEcosystemFor") }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "space-y-4", children: [
           { icon: PanelsTopLeft, text: "Standardized Workflow", sub: "Simplified lesson planning" },
           { icon: ShieldCheck, text: "Digital Validation", sub: "Secure approval registry" },
@@ -33715,7 +36376,7 @@ const LoginPage = () => {
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "absolute top-6 left-6 right-6 flex justify-between items-center z-20", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs(Link$1, { to: "/", className: "flex items-center gap-2 text-slate-500 hover:text-blue-600 font-bold text-sm transition-colors group", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-2 rounded-lg bg-slate-50 group-hover:bg-blue-50 transition-colors", children: /* @__PURE__ */ jsxRuntimeExports.jsx(House, { className: "w-4 h-4" }) }),
-          "Back to Website"
+          t("backToWebsite")
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("button", { onClick: () => setShowLangMenu(!showLangMenu), className: "flex items-center gap-2 px-3 py-2 rounded-lg bg-white hover:bg-slate-50 text-slate-600 border border-slate-200 shadow-sm", children: [
@@ -33734,7 +36395,7 @@ const LoginPage = () => {
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-6", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("form", { onSubmit: handleAuthAction, className: "space-y-4", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-xs font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1", children: "Email Address" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-xs font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1", children: t("emailAddress") }),
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx(Mail, { className: "absolute left-4 top-3.5 w-4 h-4 text-slate-300" }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -33752,7 +36413,7 @@ const LoginPage = () => {
               ] })
             ] }),
             !isForgotPassword && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-xs font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1", children: "Password" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-xs font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1", children: t("password") }),
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx(Lock, { className: "absolute left-4 top-3.5 w-4 h-4 text-slate-300" }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -33775,7 +36436,7 @@ const LoginPage = () => {
                   onClick: () => setIsForgotPassword(true),
                   className: "text-[10px] font-black text-blue-600 hover:underline uppercase tracking-tighter disabled:opacity-50",
                   disabled: isLoggingIn,
-                  children: "Forgot Password?"
+                  children: t("forgotPassword")
                 }
               ) })
             ] }),
@@ -33791,12 +36452,12 @@ const LoginPage = () => {
                 }
               ) }),
               /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { htmlFor: "pdpa", className: "ml-1 text-[10px] text-slate-500 font-medium leading-tight cursor-pointer", children: [
-                "I agree to the ",
-                /* @__PURE__ */ jsxRuntimeExports.jsx(Link$1, { to: "/legal", target: "_blank", className: "font-bold text-blue-600 hover:underline", children: "Terms" }),
+                t("iAgreeToThe"),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(Link$1, { to: "/legal", target: "_blank", className: "font-bold text-blue-600 hover:underline", children: t("terms") }),
                 ", ",
-                /* @__PURE__ */ jsxRuntimeExports.jsx(Link$1, { to: "/legal", target: "_blank", className: "font-bold text-blue-600 hover:underline", children: "Privacy Policy" }),
-                ", and consent to the processing of my personal data in accordance with the ",
-                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-bold text-slate-700", children: "PDPA 2010 (Malaysia)" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx(Link$1, { to: "/legal", target: "_blank", className: "font-bold text-blue-600 hover:underline", children: t("privacyPolicy") }),
+                t("andConsentToTheProcessing"),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-bold text-slate-700", children: t("pdpa2010Malaysia") }),
                 "."
               ] })
             ] }),
@@ -33847,7 +36508,7 @@ const LoginPage = () => {
           !isForgotPassword && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative flex py-2 items-center", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-grow border-t border-slate-100" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "flex-shrink-0 mx-4 text-[10px] font-black text-slate-300 uppercase tracking-widest", children: "Social Gateway" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "flex-shrink-0 mx-4 text-[10px] font-black text-slate-300 uppercase tracking-widest", children: t("socialGateway") }),
               /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-grow border-t border-slate-100" })
             ] }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs(
@@ -33858,7 +36519,7 @@ const LoginPage = () => {
                 className: "w-full py-3.5 px-4 bg-white border-2 border-slate-100 text-slate-700 font-bold rounded-xl hover:bg-slate-50 transition-all flex items-center justify-center gap-3 shadow-sm disabled:opacity-50",
                 children: [
                   /* @__PURE__ */ jsxRuntimeExports.jsx("img", { src: "https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg", className: "w-5 h-5", alt: "Google" }),
-                  "Continue with Google"
+                  t("continueWithGoogle")
                 ]
               }
             )
@@ -33895,13 +36556,14 @@ const LoginPage = () => {
               disabled: isLoggingIn,
               children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronLeft, { className: "w-4 h-4" }),
-                " Back to Login"
+                " ",
+                t("backToLogin")
               ]
             }
           ) })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "pt-8 border-t border-slate-100 flex justify-center items-center px-2", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[10px] text-slate-400 font-mono tracking-tight font-bold uppercase", children: [
-          "Build v",
+          t("buildV"),
           APP_VERSION
         ] }) })
       ] })
@@ -46631,7 +49293,7 @@ function calendar(ticks, tickInterval, year, month, week, day, hour, minute, sec
   return scale;
 }
 
-function time() {
+function time$3() {
   return initRange.apply(calendar(timeTicks, timeTickInterval, timeYear, timeMonth, timeSunday, timeDay, timeHour, timeMinute, second, timeFormat).domain([new Date(2000, 0, 1), new Date(2000, 0, 2)]), arguments);
 }
 
@@ -46897,7 +49559,7 @@ const d3Scales = /*#__PURE__*/Object.freeze(/*#__PURE__*/Object.defineProperty({
   scaleSqrt: sqrt,
   scaleSymlog: symlog,
   scaleThreshold: threshold,
-  scaleTime: time,
+  scaleTime: time$3,
   scaleUtc: utcTime,
   tickFormat
 }, Symbol.toStringTag, { value: 'Module' }));
@@ -47241,7 +49903,7 @@ var MAX_DIGITS = 1e9,                        // 0 to 1e9
 
 
   // The initial configuration properties of the Decimal constructor.
-  defaults = {
+  defaults$1 = {
 
     // These values must be integers within the stated ranges (inclusive).
     // Most of these values can be changed during run-time using `Decimal.config`.
@@ -49200,7 +51862,7 @@ function config(obj) {
 
 
 // Create and configure initial Decimal constructor.
-var Decimal = clone(defaults);
+var Decimal = clone(defaults$1);
 
 // Internal constant.
 ONE = new Decimal(1);
@@ -62498,18 +65160,21 @@ const SuperAdminDashboard = ({ stats }) => {
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { className: "font-bold text-slate-800 text-lg flex items-center gap-2", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx(Activity, { className: "w-5 h-5 text-blue-600" }),
-              " System Traffic & Analytics"
+              " ",
+              t("systemTrafficAnalytics")
             ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-400 font-bold uppercase tracking-widest mt-1", children: "Real-time Session Data (Google Analytics)" })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-400 font-bold uppercase tracking-widest mt-1", children: t("realtimeSessionDataGoogleAnalytics") })
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-2", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 text-xs font-bold text-slate-500", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "w-2 h-2 rounded-full bg-blue-500" }),
-              " Active Users"
+              " ",
+              t("activeUsers")
             ] }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 text-xs font-bold text-slate-500", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "w-2 h-2 rounded-full bg-emerald-400" }),
-              " Page Hits"
+              " ",
+              t("pageHits")
             ] })
           ] })
         ] }),
@@ -62766,7 +65431,8 @@ const PersonalDashboard = () => {
           /* @__PURE__ */ jsxRuntimeExports.jsx(Building, { className: `w-4 h-4 ${currentTheme.text}` }),
           " ",
           getRoleLabel(currentUser?.role || UserRole.TEACHER),
-          " • Malaysian Educator"
+          " ",
+          t("malaysianEducator")
         ] })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-3 z-10", children: [
@@ -63126,8 +65792,8 @@ const LessonPlanList = () => {
   if (isSeeding && lessonPlans.length === 0) {
     return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "h-full flex flex-col items-center justify-center p-12 text-center", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "w-12 h-12 text-blue-600 animate-spin mb-4" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-xl font-bold text-slate-800", children: "Database Optimizing..." }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-500 max-w-md mt-2", children: "We are organizing your lesson plans. The new engine handles this in the background." })
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-xl font-bold text-slate-800", children: t("databaseOptimizing") }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-500 max-w-md mt-2", children: t("weAreOrganizingYourLesson") })
     ] });
   }
   const renderHeader = () => {
@@ -63191,7 +65857,7 @@ const LessonPlanList = () => {
     return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white border rounded-xl shadow-sm overflow-hidden relative min-h-[500px] overflow-x-auto", children: [
       isLoadingData && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 bg-white/60 backdrop-blur-[1px] z-10 flex items-center justify-center", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col items-center bg-white p-4 rounded-xl shadow-lg border", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "w-8 h-8 text-blue-600 animate-spin mb-2" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs font-bold text-slate-500", children: "Loading Month..." })
+        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs font-bold text-slate-500", children: t("loadingMonth") })
       ] }) }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "min-w-[700px]", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-7 bg-slate-50 border-b", children: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map((d) => /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "py-3 text-center text-xs font-bold text-slate-500 uppercase tracking-wider", children: d }, d)) }),
@@ -63213,7 +65879,8 @@ const LessonPlanList = () => {
               plans.length > 3 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[9px] md:text-[10px] text-slate-400 pl-1 font-medium", children: [
                 "+",
                 plans.length - 3,
-                " more"
+                " ",
+                t("more")
               ] })
             ] })
           ] }, i);
@@ -63259,9 +65926,9 @@ const LessonPlanList = () => {
       isLoadingData && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute inset-0 bg-white/60 backdrop-blur-[1px] z-10 flex items-center justify-center h-32", children: /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "w-8 h-8 text-blue-600 animate-spin" }) }),
       plans.length === 0 && !isLoadingData ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white p-12 rounded-xl border shadow-sm text-center", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-100 mb-4", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Calendar, { className: "w-8 h-8 text-slate-400" }) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-lg font-bold text-slate-700", children: "No Lesson Plans" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-500", children: "You don't have any classes scheduled for this day." }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { className: "mt-4", onClick: () => navigate("/portal/plans/new"), children: "Create Plan" })
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-lg font-bold text-slate-700", children: t("noLessonPlans") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-500", children: t("youDontHaveAnyClasses") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { className: "mt-4", onClick: () => navigate("/portal/plans/new"), children: t("createPlan") })
       ] }) : plans.map((p) => /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-white rounded-xl border shadow-sm overflow-hidden hover:shadow-md transition-shadow", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "w-24 bg-slate-50 border-r flex flex-col items-center justify-center p-4", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-sm font-bold text-slate-600", children: (p.time || "").split("-")[0] }),
@@ -63282,14 +65949,14 @@ const LessonPlanList = () => {
             ] }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: `px-2 py-1 rounded text-xs font-bold border ${p.status === "Approved" ? "bg-green-50 text-green-700 border-green-200" : p.status === "Submitted" ? "bg-blue-50 text-blue-700 border-blue-200" : "bg-amber-50 text-amber-700 border-amber-200"}`, children: p.status })
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-2 mt-4 pt-3 border-t border-slate-100", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Link$1, { to: `/portal/plans/${p.id}`, className: "flex-1 text-center text-sm font-medium text-blue-600 hover:bg-blue-50 py-1.5 rounded transition-colors", children: "View Details" }) })
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-2 mt-4 pt-3 border-t border-slate-100", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Link$1, { to: `/portal/plans/${p.id}`, className: "flex-1 text-center text-sm font-medium text-blue-600 hover:bg-blue-50 py-1.5 rounded transition-colors", children: t("viewDetails") }) })
         ] })
       ] }) }, p.id))
     ] });
   };
   const renderList = () => {
     return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4", children: [
-      isLoadingData ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex justify-center p-12", children: /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "w-8 h-8 text-blue-600 animate-spin" }) }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid gap-4", children: lessonPlans.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-center py-12 bg-white rounded-xl border border-dashed text-slate-500", children: "No lesson plans found." }) : lessonPlans.map((p) => /* @__PURE__ */ jsxRuntimeExports.jsxs(Card, { className: "p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 hover:border-blue-300 transition-colors", children: [
+      isLoadingData ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex justify-center p-12", children: /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "w-8 h-8 text-blue-600 animate-spin" }) }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid gap-4", children: lessonPlans.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-center py-12 bg-white rounded-xl border border-dashed text-slate-500", children: t("noLessonPlansFound") }) : lessonPlans.map((p) => /* @__PURE__ */ jsxRuntimeExports.jsxs(Card, { className: "p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 hover:border-blue-300 transition-colors", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "font-bold text-slate-800", children: p.subject }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-slate-500", children: p.topic }),
@@ -63306,7 +65973,7 @@ const LessonPlanList = () => {
       ] }, p.id)) }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col sm:flex-row justify-between items-center gap-4 pt-4 border-t border-slate-200", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-sm text-slate-500", children: [
-          "Page ",
+          t("page"),
           currentPage
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-2", children: [
@@ -63319,7 +65986,8 @@ const LessonPlanList = () => {
               disabled: currentPage === 1 || isLoadingData,
               children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronLeft, { className: "w-4 h-4 mr-1" }),
-                " Previous"
+                " ",
+                t("previous")
               ]
             }
           ),
@@ -63331,7 +65999,7 @@ const LessonPlanList = () => {
               onClick: handleNextPage,
               disabled: !hasMore || isLoadingData,
               children: [
-                "Next ",
+                t("next"),
                 /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronRight, { className: "w-4 h-4 ml-1" })
               ]
             }
@@ -63606,18 +66274,18 @@ const lessonService = {
 const COLLECTION = "dskp_standards";
 const METADATA_COLLECTION = "metadata";
 const STRUCTURE_DOC = "dskp_structure";
-const STAGING_COLLECTION = "dskp_raw";
-const REGISTRY_COLLECTION = "dskp_final";
-const ROOT_COLLECTION = REGISTRY_COLLECTION;
-const sanitizeId = (id) => id.replace(/\//g, "_").trim();
-const dskpService = {
+const STAGING_COLLECTION$1 = "dskp_raw";
+const REGISTRY_COLLECTION$2 = "dskp_final";
+const ROOT_COLLECTION$1 = REGISTRY_COLLECTION$2;
+const sanitizeId$2 = (id) => id.replace(/\//g, "_").trim();
+const dskpService$1 = {
   // --- STAGE 1: SYNC RAW DATA TO STAGING ---
   // --- STAGE 1: SYNC RAW DATA TO STAGING ---
   syncRawToStaging: async (rawRows) => {
     try {
       console.log("Stage 1: Syncing Raw Data to Staging...", rawRows.length);
-      console.log("Clearing existing raw data in", STAGING_COLLECTION);
-      const rawCol = collection(db, STAGING_COLLECTION);
+      console.log("Clearing existing raw data in", STAGING_COLLECTION$1);
+      const rawCol = collection(db, STAGING_COLLECTION$1);
       const rawSnap = await getDocs(rawCol);
       let deleteBatch = writeBatch(db);
       let deleteCount = 0;
@@ -63637,7 +66305,7 @@ const dskpService = {
       let totalProcessed = 0;
       for (let i = 0; i < rawRows.length; i++) {
         const row = rawRows[i];
-        const ref = doc(db, STAGING_COLLECTION, `row_${i.toString().padStart(5, "0")}`);
+        const ref = doc(db, STAGING_COLLECTION$1, `row_${i.toString().padStart(5, "0")}`);
         batch.set(ref, {
           rowIndex: i,
           data: row,
@@ -63666,7 +66334,7 @@ const dskpService = {
   processStagingToRegistry: async (mapping) => {
     try {
       console.log("Stage 2: Processing Staging to Registry...");
-      const q = query(collection(db, STAGING_COLLECTION), orderBy("rowIndex"));
+      const q = query(collection(db, STAGING_COLLECTION$1), orderBy("rowIndex"));
       const snap = await getDocs(q);
       const stagingDocs = snap.docs.map((d) => d.data());
       let batch = writeBatch(db);
@@ -63718,17 +66386,17 @@ const dskpService = {
         processedCount++;
       }
       for (const type of Object.keys(hierarchy)) {
-        const typeRef = doc(db, `${REGISTRY_COLLECTION}/${type}`);
+        const typeRef = doc(db, `${REGISTRY_COLLECTION$2}/${type}`);
         batch.set(typeRef, { lastUpdated: (/* @__PURE__ */ new Date()).toISOString() }, { merge: true });
         operationCount++;
         for (const year of Object.keys(hierarchy[type])) {
-          const safeYear = sanitizeId(year);
-          const yearRef = doc(db, `${REGISTRY_COLLECTION}/${type}/years/${safeYear}`);
+          const safeYear = sanitizeId$2(year);
+          const yearRef = doc(db, `${REGISTRY_COLLECTION$2}/${type}/years/${safeYear}`);
           batch.set(yearRef, { lastUpdated: (/* @__PURE__ */ new Date()).toISOString() }, { merge: true });
           operationCount++;
           for (const subject of Object.keys(hierarchy[type][year])) {
-            const safeSubject = sanitizeId(subject);
-            const subjectRef = doc(db, `${REGISTRY_COLLECTION}/${type}/years/${safeYear}/subjects/${safeSubject}`);
+            const safeSubject = sanitizeId$2(subject);
+            const subjectRef = doc(db, `${REGISTRY_COLLECTION$2}/${type}/years/${safeYear}/subjects/${safeSubject}`);
             const standards = hierarchy[type][year][subject];
             batch.set(subjectRef, {
               title: subject,
@@ -63758,7 +66426,7 @@ const dskpService = {
   // Level 1: Get School Types
   getSchoolTypes: async () => {
     try {
-      const snap = await getDocs(collection(db, ROOT_COLLECTION));
+      const snap = await getDocs(collection(db, ROOT_COLLECTION$1));
       return { success: true, data: snap.docs.map((d) => d.id) };
     } catch (err) {
       return { success: false, error: err.message };
@@ -63767,7 +66435,7 @@ const dskpService = {
   // Level 2: Get Years for a Type
   getYears: async (type) => {
     try {
-      const snap = await getDocs(collection(db, `${ROOT_COLLECTION}/${type}/years`));
+      const snap = await getDocs(collection(db, `${ROOT_COLLECTION$1}/${type}/years`));
       return { success: true, data: snap.docs.map((d) => d.id).sort() };
     } catch (err) {
       return { success: false, error: err.message };
@@ -63776,8 +66444,8 @@ const dskpService = {
   // Level 3: Get Subjects for a Year
   getSubjects: async (type, year) => {
     try {
-      const safeYear = sanitizeId(year);
-      const snap = await getDocs(collection(db, `${ROOT_COLLECTION}/${type}/years/${safeYear}/subjects`));
+      const safeYear = sanitizeId$2(year);
+      const snap = await getDocs(collection(db, `${ROOT_COLLECTION$1}/${type}/years/${safeYear}/subjects`));
       return { success: true, data: snap.docs.map((d) => ({ id: d.id, ...d.data() })) };
     } catch (err) {
       return { success: false, error: err.message };
@@ -63786,9 +66454,9 @@ const dskpService = {
   // Level 4: Get Standards (Already in Subject Doc, but helper for clarity)
   getStandards: async (type, year, subject) => {
     try {
-      const safeYear = sanitizeId(year);
-      const safeSubject = sanitizeId(subject);
-      const docRef = doc(db, `${ROOT_COLLECTION}/${type}/years/${safeYear}/subjects/${safeSubject}`);
+      const safeYear = sanitizeId$2(year);
+      const safeSubject = sanitizeId$2(subject);
+      const docRef = doc(db, `${ROOT_COLLECTION$1}/${type}/years/${safeYear}/subjects/${safeSubject}`);
       const snap = await getDoc(docRef);
       if (snap.exists()) {
         const data = snap.data();
@@ -63952,7 +66620,7 @@ const LessonPlanEditor = () => {
   const [dbSubjects, setDbSubjects] = reactExports.useState([]);
   const DEFAULT_SUBJECTS = reactExports.useMemo(() => ["Bahasa Melayu", "English", "Matematik", "Sains", "Sejarah", "Reka Bentuk dan Teknologi", "Pendidikan Islam", "Pendidikan Moral", "Pendidikan Jasmani dan Kesihatan", "Pendidikan Seni Visual", "Pendidikan Muzik", "Bahasa Arab", "Bahasa Cina", "Bahasa Tamil", "Bahasa Iban", "Bahasa Kadazandusun", "Bahasa Semai"], []);
   reactExports.useEffect(() => {
-    dskpService.getOptions().then((res) => {
+    dskpService$1.getOptions().then((res) => {
       if (res.success && res.subjects) {
         setDbSubjects(res.subjects);
       }
@@ -63966,7 +66634,7 @@ const LessonPlanEditor = () => {
   const [localTheme, setLocalTheme] = reactExports.useState("");
   reactExports.useEffect(() => {
     if (plan.subject && plan.grade) {
-      dskpService.list({ subject: plan.subject, grade: plan.grade }).then((res) => {
+      dskpService$1.list({ subject: plan.subject, grade: plan.grade }).then((res) => {
         if (res.success && Array.isArray(res.data)) {
           setDskpRecords(res.data);
         }
@@ -64173,17 +66841,17 @@ const LessonPlanEditor = () => {
                   /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "", children: t("level") }),
                   /* @__PURE__ */ jsxRuntimeExports.jsxs("optgroup", { label: t("primary_school"), children: [
                     [1, 2, 3, 4, 5, 6].map((y) => /* @__PURE__ */ jsxRuntimeExports.jsxs("option", { value: `Tahun ${y}`, children: [
-                      "Tahun ",
+                      t("tahun"),
                       y
                     ] }, `y${y}`)),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "Pra Sekolah", children: "Pra Sekolah" })
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "Pra Sekolah", children: t("praSekolah") })
                   ] }),
                   /* @__PURE__ */ jsxRuntimeExports.jsxs("optgroup", { label: t("secondary_school"), children: [
                     [1, 2, 3, 4, 5].map((f) => /* @__PURE__ */ jsxRuntimeExports.jsxs("option", { value: `Tingkatan ${f}`, children: [
-                      "Tingkatan ",
+                      t("tingkatan"),
                       f
                     ] }, `f${f}`)),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "Peralihan", children: "Peralihan" })
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "Peralihan", children: t("peralihan") })
                   ] })
                 ]
               }
@@ -64276,7 +66944,7 @@ const LessonPlanEditor = () => {
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-6 pt-4", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1", children: t("content_standard") }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "border-2 border-slate-100 rounded-3xl p-4 bg-slate-50/30 min-h-[14rem] max-h-[20rem] overflow-y-auto space-y-2", children: dskpContext.csOptions.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-slate-400 text-center italic mt-10", children: "Select Subject & Year to load standards..." }) : dskpContext.csOptions.map((cs) => {
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "border-2 border-slate-100 rounded-3xl p-4 bg-slate-50/30 min-h-[14rem] max-h-[20rem] overflow-y-auto space-y-2", children: dskpContext.csOptions.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-slate-400 text-center italic mt-10", children: t("selectSubjectYearToLoad") }) : dskpContext.csOptions.map((cs) => {
             const isSelected = plan.contentStandard?.includes(cs);
             return /* @__PURE__ */ jsxRuntimeExports.jsx(
               "div",
@@ -64308,7 +66976,7 @@ const LessonPlanEditor = () => {
               }
             )
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "border-2 border-slate-100 rounded-3xl p-4 bg-slate-50/30 min-h-[14rem] max-h-[20rem] overflow-y-auto space-y-2", children: dskpContext.lsOptions.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-slate-400 text-center italic mt-10", children: "Select Content Standard first..." }) : dskpContext.lsOptions.map((ls) => {
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "border-2 border-slate-100 rounded-3xl p-4 bg-slate-50/30 min-h-[14rem] max-h-[20rem] overflow-y-auto space-y-2", children: dskpContext.lsOptions.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-slate-400 text-center italic mt-10", children: t("selectContentStandardFirst") }) : dskpContext.lsOptions.map((ls) => {
             const isSelected = plan.learningStandard?.includes(ls);
             return /* @__PURE__ */ jsxRuntimeExports.jsx(
               "div",
@@ -64750,7 +67418,8 @@ const UserProfile = () => {
               /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "px-3 py-1 rounded-full bg-blue-500 text-white text-[10px] font-black uppercase tracking-widest border border-blue-400", children: formData.grade || "Grade Not Set" }),
               /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-blue-200 text-sm font-medium flex items-center gap-1", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx(MapPin, { className: "w-3 h-3" }),
-                " Malaysia"
+                " ",
+                t("malaysia")
               ] })
             ] })
           ] })
@@ -64775,7 +67444,7 @@ const UserProfile = () => {
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1", children: "Professional Bio" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1", children: t("professionalBio") }),
               /* @__PURE__ */ jsxRuntimeExports.jsx(
                 "textarea",
                 {
@@ -64788,18 +67457,19 @@ const UserProfile = () => {
             ] }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-4 bg-blue-50 rounded-2xl border border-blue-100 relative overflow-hidden", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx(Sparkles, { className: "absolute top-0 right-0 p-2 w-10 h-10 text-blue-200 opacity-50" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs font-bold text-blue-700 leading-relaxed relative z-10", children: "Your profile is visible to school administrators for validation and placement records." })
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs font-bold text-blue-700 leading-relaxed relative z-10", children: t("yourProfileIsVisibleTo") })
             ] })
           ] })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs(Card, { className: "p-6 rounded-3xl border-slate-100 shadow-sm bg-slate-900 text-white", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { className: "font-black uppercase tracking-widest text-[10px] text-slate-500 mb-4 flex items-center gap-2", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(PenTool, { className: "w-3.5 h-3.5" }),
-            " Digital Signature"
+            " ",
+            t("digitalSignature")
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "aspect-video rounded-2xl bg-white/5 border border-white/10 border-dashed flex flex-col items-center justify-center gap-3 group hover:border-blue-400 transition-colors cursor-pointer", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-3 rounded-full bg-white/10 text-slate-400 group-hover:text-blue-400 transition-colors", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Plus, { className: "w-6 h-6" }) }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-black uppercase text-slate-500", children: "Register Signature" })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-black uppercase text-slate-500", children: t("registerSignature") })
           ] })
         ] })
       ] }),
@@ -64812,7 +67482,8 @@ const UserProfile = () => {
               className: `flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${activeTab === "personal" ? "bg-blue-600 text-white shadow-md" : "text-slate-500 hover:bg-slate-50"} `,
               children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx(User, { className: "w-4 h-4" }),
-                " Account Info"
+                " ",
+                t("accountInfo")
               ]
             }
           ),
@@ -64835,14 +67506,15 @@ const UserProfile = () => {
               className: `flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-bold transition-all ${activeTab === "cloud" ? "bg-emerald-600 text-white shadow-md" : "text-slate-500 hover:bg-slate-50"} `,
               children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx(Sparkles, { className: "w-4 h-4" }),
-                " Cloud Backup"
+                " ",
+                t("cloudBackup")
               ]
             }
           )
         ] }),
         activeTab === "personal" && /* @__PURE__ */ jsxRuntimeExports.jsx(Card, { className: "p-8 rounded-3xl border-slate-100 shadow-sm space-y-6 animate-in slide-in-from-right-4 duration-300", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-6", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1", children: "Full Name" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1", children: t("fullName") }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx(User, { className: "absolute left-4 top-3.5 w-4 h-4 text-slate-400" }),
               /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -64856,7 +67528,7 @@ const UserProfile = () => {
             ] })
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1", children: "Professional Grade" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1", children: t("professionalGrade") }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx(Award, { className: "absolute left-4 top-3.5 w-4 h-4 text-slate-400" }),
               /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -64871,7 +67543,7 @@ const UserProfile = () => {
             ] })
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1", children: "Email Address" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1", children: t("emailAddress") }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx(Mail, { className: "absolute left-4 top-3.5 w-4 h-4 text-slate-400" }),
               /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -64885,7 +67557,7 @@ const UserProfile = () => {
             ] })
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1", children: "Phone Number" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1", children: t("phoneNumber") }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx(Phone, { className: "absolute left-4 top-3.5 w-4 h-4 text-slate-400" }),
               /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -64901,13 +67573,14 @@ const UserProfile = () => {
         ] }) }),
         activeTab === "service" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4 animate-in slide-in-from-right-4 duration-300", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-between items-center px-2", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[10px] font-black text-slate-400 uppercase tracking-widest", children: "Experience Timeline" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[10px] font-black text-slate-400 uppercase tracking-widest", children: t("experienceTimeline") }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("button", { onClick: addServiceRecord, className: "text-xs font-black text-blue-600 hover:underline flex items-center gap-1", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx(Plus, { className: "w-3 h-3" }),
-              " Add Record"
+              " ",
+              t("addRecord")
             ] })
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "space-y-4", children: serviceHistory.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-12 text-center bg-white rounded-3xl border border-dashed text-slate-400 italic text-sm", children: "No service history recorded yet." }) : serviceHistory.map((sr, idx) => /* @__PURE__ */ jsxRuntimeExports.jsxs(Card, { className: "p-6 rounded-3xl border-slate-100 hover:border-blue-200 transition-colors shadow-sm relative group", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "space-y-4", children: serviceHistory.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-12 text-center bg-white rounded-3xl border border-dashed text-slate-400 italic text-sm", children: t("noServiceHistoryRecordedYet") }) : serviceHistory.map((sr, idx) => /* @__PURE__ */ jsxRuntimeExports.jsxs(Card, { className: "p-6 rounded-3xl border-slate-100 hover:border-blue-200 transition-colors shadow-sm relative group", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               "button",
               {
@@ -64919,7 +67592,7 @@ const UserProfile = () => {
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-6", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1", children: "School Name" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1", children: t("schoolName") }),
                   /* @__PURE__ */ jsxRuntimeExports.jsx(
                     "input",
                     {
@@ -64930,7 +67603,7 @@ const UserProfile = () => {
                   )
                 ] }),
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1", children: "Position / Role" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1", children: t("positionRole") }),
                   /* @__PURE__ */ jsxRuntimeExports.jsx(
                     "input",
                     {
@@ -64943,7 +67616,7 @@ const UserProfile = () => {
               ] }),
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-2 gap-4", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1", children: "Start Date" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1", children: t("startDate") }),
                   /* @__PURE__ */ jsxRuntimeExports.jsx(
                     "input",
                     {
@@ -64955,7 +67628,7 @@ const UserProfile = () => {
                   )
                 ] }),
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1", children: "End Date" }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1", children: t("endDate") }),
                   /* @__PURE__ */ jsxRuntimeExports.jsx(
                     "input",
                     {
@@ -64974,8 +67647,8 @@ const UserProfile = () => {
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-emerald-50/50 p-8 border-b border-emerald-100", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-4", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-3 bg-white rounded-2xl shadow-sm border border-emerald-100 text-emerald-600", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Sparkles, { className: "w-8 h-8" }) }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-xl font-black text-slate-800", children: "Cloud Backup Setup" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-500 text-sm font-medium mt-1", children: "Protect your work by syncing daily lesson plan backups to your Google Drive." })
+              /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-xl font-black text-slate-800", children: t("cloudBackupSetup") }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-500 text-sm font-medium mt-1", children: t("protectYourWorkBySyncing") })
             ] })
           ] }) }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-8 space-y-8", children: [
@@ -64986,31 +67659,31 @@ const UserProfile = () => {
                 /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-0.5 flex-1 bg-slate-100 my-2" })
               ] }),
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "pb-8", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "font-bold text-slate-800 text-lg mb-2", children: "Connect Google Account" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-500 text-sm mb-4 leading-relaxed max-w-lg", children: 'Authorize eRPH Pro to create a secure "eRPH Pro Backups" folder in your Google Drive. We only access files we create.' }),
-                !currentUser.google_token && /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { onClick: handleConnectDrive, className: "rounded-xl shadow-lg shadow-blue-500/20", children: "Grant Permission" })
+                /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "font-bold text-slate-800 text-lg mb-2", children: t("connectGoogleAccount") }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-500 text-sm mb-4 leading-relaxed max-w-lg", children: t("authorizeErphProToCreate") }),
+                !currentUser.google_token && /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { onClick: handleConnectDrive, className: "rounded-xl shadow-lg shadow-blue-500/20", children: t("grantPermission") })
               ] })
             ] }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: `relative flex gap-6 ${!currentUser.google_token ? "opacity-50 pointer-events-none" : ""} `, children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex flex-col items-center", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm z-10 
                                                 ${currentUser.google_token ? "bg-blue-600 text-white shadow-lg shadow-blue-200" : "bg-slate-100 text-slate-400"} `, children: "2" }) }),
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "font-bold text-slate-800 text-lg mb-2", children: "Start Backup Service" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-500 text-sm mb-4 leading-relaxed max-w-lg", children: "Your account is connected! You can now trigger an immediate backup or configure automated daily schedules (coming soon)." }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "font-bold text-slate-800 text-lg mb-2", children: t("startBackupService") }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-500 text-sm mb-4 leading-relaxed max-w-lg", children: t("yourAccountIsConnectedYou") }),
                 currentUser.google_token && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-slate-50 border border-slate-100 rounded-2xl p-6 w-full max-w-lg", children: [
                   /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between mb-4", children: [
                     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 text-emerald-600 font-bold text-sm", children: [
                       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-2 h-2 rounded-full bg-emerald-500 animate-pulse" }),
-                      "System Connected"
+                      t("systemConnected")
                     ] }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs font-bold text-slate-400 bg-white px-2 py-1 rounded-md border", children: "Drive Status: Active" })
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs font-bold text-slate-400 bg-white px-2 py-1 rounded-md border", children: t("driveStatusActive") })
                   ] }),
                   /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { onClick: handleBackup, disabled: isSaving, className: "w-full rounded-xl", variant: "primary", children: isSaving ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
                     /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "w-4 h-4 animate-spin mr-2" }),
-                    "Uploading Backup..."
+                    t("uploadingBackup")
                   ] }) : /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
                     /* @__PURE__ */ jsxRuntimeExports.jsx(Save, { className: "w-4 h-4 mr-2" }),
-                    "Run Backup Now"
+                    t("runBackupNow")
                   ] }) })
                 ] })
               ] })
@@ -65056,13 +67729,14 @@ const SecurityCenter = () => {
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("h2", { className: "text-3xl font-black text-slate-900 tracking-tight flex items-center gap-3", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-2 bg-emerald-100 rounded-xl text-emerald-600", children: /* @__PURE__ */ jsxRuntimeExports.jsx(ShieldCheck, { className: "w-8 h-8" }) }),
-          "Security & Privacy Center"
+          t("securityPrivacyCenter")
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-500 mt-1 font-medium", children: "Protect your educational registry and personal data." })
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-500 mt-1 font-medium", children: t("protectYourEducationalRegistryAnd") })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { onClick: handleSave, isLoading: isSaving, className: "rounded-2xl h-12 px-8 shadow-xl shadow-emerald-500/20 bg-emerald-600 hover:bg-emerald-700 border-none", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(Lock, { className: "w-4 h-4 mr-2" }),
-        " Apply Security Policy"
+        " ",
+        t("applySecurityPolicy")
       ] })
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-1 lg:grid-cols-3 gap-8", children: [
@@ -65070,15 +67744,16 @@ const SecurityCenter = () => {
         /* @__PURE__ */ jsxRuntimeExports.jsxs(Card, { className: "p-8 rounded-3xl border-slate-100 shadow-xl shadow-slate-200/50", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { className: "font-black text-slate-800 uppercase tracking-tight text-sm mb-6 flex items-center gap-2", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(Shield, { className: "w-4 h-4 text-blue-600" }),
-            " Advanced Protection"
+            " ",
+            t("advancedProtection")
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-6", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-100 group hover:border-blue-200 transition-all", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-4", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-3 bg-white rounded-xl shadow-sm text-blue-600 group-hover:scale-110 transition-transform", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Smartphone, { className: "w-6 h-6" }) }),
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "font-bold text-slate-800", children: "Two-Factor Authentication" }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-500", children: "Add an extra layer of security via mobile app or SMS." })
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "font-bold text-slate-800", children: t("twofactorAuthentication") }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-500", children: t("addAnExtraLayerOf") })
                 ] })
               ] }),
               /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -65092,7 +67767,7 @@ const SecurityCenter = () => {
             ] }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-6", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1", children: "Auto-Lock Inactivity (Mins)" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1", children: t("autolockInactivityMins") }),
                 /* @__PURE__ */ jsxRuntimeExports.jsxs(
                   "select",
                   {
@@ -65100,16 +67775,16 @@ const SecurityCenter = () => {
                     value: config.sessionTimeoutMinutes,
                     onChange: (e) => setConfig({ ...config, sessionTimeoutMinutes: Number(e.target.value) }),
                     children: [
-                      /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: 5, children: "5 Minutes (Maximum Security)" }),
-                      /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: 15, children: "15 Minutes (Standard)" }),
-                      /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: 30, children: "30 Minutes (Balanced)" }),
-                      /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: 60, children: "60 Minutes (Convenience)" })
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: 5, children: t("5MinutesMaximumSecurity") }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: 15, children: t("15MinutesStandard") }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: 30, children: t("30MinutesBalanced") }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: 60, children: t("60MinutesConvenience") })
                     ]
                   }
                 )
               ] }),
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1", children: "Account Recovery Email" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1", children: t("accountRecoveryEmail") }),
                 /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative", children: [
                   /* @__PURE__ */ jsxRuntimeExports.jsx(Mail, { className: "absolute left-4 top-3.5 w-4 h-4 text-slate-300" }),
                   /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -65128,7 +67803,8 @@ const SecurityCenter = () => {
         /* @__PURE__ */ jsxRuntimeExports.jsxs(Card, { className: "p-8 rounded-3xl border-slate-100 shadow-xl shadow-slate-200/50", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { className: "font-black text-slate-800 uppercase tracking-tight text-sm mb-6 flex items-center gap-2", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(History, { className: "w-4 h-4 text-slate-400" }),
-            " Audit Trail: Recent Access"
+            " ",
+            t("auditTrailRecentAccess")
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "space-y-4", children: mockHistory.map((log) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between p-4 bg-white border border-slate-100 rounded-2xl hover:shadow-md transition-shadow", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-4", children: [
@@ -65153,42 +67829,46 @@ const SecurityCenter = () => {
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-6", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs(Card, { className: "p-6 rounded-3xl bg-slate-900 text-white border-none shadow-2xl relative overflow-hidden", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute -right-8 -bottom-8 opacity-10", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Fingerprint, { className: "w-48 h-48" }) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "font-black uppercase tracking-widest text-[10px] text-blue-400 mb-4", children: "Security Score" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "font-black uppercase tracking-widest text-[10px] text-blue-400 mb-4", children: t("securityScore") }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-end gap-2 mb-4", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-5xl font-black", children: "82" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-blue-400 font-bold mb-1", children: "/ 100" })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-blue-400 font-bold mb-1", children: t("100") })
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-full bg-white/10 h-2 rounded-full overflow-hidden mb-6", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-blue-500 h-full w-[82%]" }) }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("ul", { className: "space-y-3 text-xs font-medium text-slate-300", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs("li", { className: "flex gap-2 items-start", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx(CircleCheckBig, { className: "w-4 h-4 text-emerald-500 shrink-0" }),
-              " Strong Password Active"
+              " ",
+              t("strongPasswordActive")
             ] }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("li", { className: "flex gap-2 items-start text-amber-400", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx(CircleAlert, { className: "w-4 h-4 shrink-0" }),
-              " 2FA is currently disabled"
+              " ",
+              t("2faIsCurrentlyDisabled")
             ] }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("li", { className: "flex gap-2 items-start", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx(CircleCheckBig, { className: "w-4 h-4 text-emerald-500 shrink-0" }),
-              " Login alerts enabled"
+              " ",
+              t("loginAlertsEnabled")
             ] })
           ] })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs(Card, { className: "p-6 rounded-3xl border-slate-100 shadow-sm space-y-4", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { className: "font-black text-slate-800 text-sm flex items-center gap-2 uppercase tracking-tight", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(Key, { className: "w-4 h-4 text-amber-500" }),
-            " Credentials"
+            " ",
+            t("credentials")
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-xs text-slate-500", children: [
-            "Last changed: ",
+            t("lastChanged"),
             config.lastPasswordChange
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "secondary", className: "w-full rounded-xl py-3 font-bold text-xs", children: "Update Master Password" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "danger", className: "w-full rounded-xl py-3 font-bold text-xs", onClick: logout, children: "Terminate All Sessions" })
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "secondary", className: "w-full rounded-xl py-3 font-bold text-xs", children: t("updateMasterPassword") }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "danger", className: "w-full rounded-xl py-3 font-bold text-xs", onClick: logout, children: t("terminateAllSessions") })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-6 bg-blue-50 rounded-3xl border border-blue-100 flex gap-3", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(Info, { className: "w-5 h-5 text-blue-600 shrink-0 mt-0.5" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[10px] font-bold text-blue-800 leading-normal uppercase", children: "eRPH Pro implements AES-256 encryption for all data at rest. Your digital signature is stored separately in an encrypted vault." })
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[10px] font-bold text-blue-800 leading-normal uppercase", children: t("erphProImplementsAes256Encryption") })
         ] })
       ] })
     ] })
@@ -65514,7 +68194,7 @@ const TimetableManager = () => {
                 value: selectedTemplateId || "",
                 onChange: (e) => handleTemplateSwitch(e.target.value),
                 children: [
-                  templates.length === 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "", children: "No Templates" }),
+                  templates.length === 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "", children: t("noTemplates") }),
                   templates.map((t2) => /* @__PURE__ */ jsxRuntimeExports.jsxs("option", { value: t2.id, children: [
                     t2.name,
                     " ",
@@ -65528,8 +68208,9 @@ const TimetableManager = () => {
         ] }),
         selectedTemplateId && canEdit && (isActive ? /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "inline-flex items-center px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs font-bold border border-emerald-100 shadow-sm animate-in fade-in zoom-in-95", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(CircleCheckBig, { className: "w-3 h-3 mr-1.5" }),
-          " Active Schedule"
-        ] }) : /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: handleSetActive, className: "text-xs text-slate-400 hover:text-emerald-600 hover:underline transition-colors", children: "Set as Active" }))
+          " ",
+          t("activeSchedule")
+        ] }) : /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: handleSetActive, className: "text-xs text-slate-400 hover:text-emerald-600 hover:underline transition-colors", children: t("setAsActive") }))
       ] }),
       canEdit && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-4 w-full md:w-auto mt-4 md:mt-0", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex bg-slate-100 rounded-xl p-1 shadow-inner", children: [
@@ -65617,42 +68298,45 @@ const TimetableManager = () => {
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-5 border-b flex justify-between items-center bg-slate-50", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { className: "font-black text-lg text-slate-800 flex items-center gap-2 uppercase tracking-tight", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(Clock, { className: "w-5 h-5 text-blue-600" }),
-          " Modify Slot"
+          " ",
+          t("modifySlot")
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: () => setEditingSlot(null), className: "hover:bg-slate-200 p-2 rounded-xl transition-colors", children: /* @__PURE__ */ jsxRuntimeExports.jsx(X, { className: "w-5 h-5 text-slate-500" }) })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-6 space-y-5", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5", children: "Subject Title" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5", children: t("subjectTitle") }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("input", { className: "w-full border-2 border-slate-100 rounded-xl p-3 text-sm font-bold focus:border-blue-500 focus:ring-0 outline-none transition-all", value: editingSlot.subject, onChange: (e) => setEditingSlot({ ...editingSlot, subject: e.target.value }), autoFocus: true })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5", children: "Target Class" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5", children: t("targetClass") }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("input", { className: "w-full border-2 border-slate-100 rounded-xl p-3 text-sm font-bold focus:border-blue-500 focus:ring-0 outline-none transition-all", value: editingSlot.class, onChange: (e) => setEditingSlot({ ...editingSlot, class: e.target.value }) })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-2 gap-4", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5", children: "Starts At" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5", children: t("startsAt") }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("input", { type: "time", className: "w-full border-2 border-slate-100 rounded-xl p-3 text-sm font-bold focus:border-blue-500 focus:ring-0 outline-none", value: editingSlot.startTime, onChange: (e) => setEditingSlot({ ...editingSlot, startTime: e.target.value }) })
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5", children: "Ends At" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5", children: t("endsAt") }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("input", { type: "time", className: "w-full border-2 border-slate-100 rounded-xl p-3 text-sm font-bold focus:border-blue-500 focus:ring-0 outline-none", value: editingSlot.endTime, onChange: (e) => setEditingSlot({ ...editingSlot, endTime: e.target.value }) })
           ] })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2", children: "Visual Label" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2", children: t("visualLabel") }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex gap-2.5 flex-wrap", children: COLORS.map((c) => /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: () => setEditingSlot({ ...editingSlot, color: c }), className: `w-9 h-9 rounded-xl border-4 transition-all shadow-sm ${editingSlot.color === c ? "border-white ring-4 ring-blue-500 scale-110 shadow-lg" : "border-transparent hover:scale-105"}`, style: { backgroundColor: c } }, c)) })
         ] })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-5 border-t bg-slate-50 flex justify-between gap-3", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { variant: "danger", size: "sm", onClick: deleteSlot, className: "rounded-xl px-4 flex-1", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(Trash2, { className: "w-4 h-4 mr-2" }),
-          " Remove"
+          " ",
+          t("remove")
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { onClick: saveSlotChanges, className: "rounded-xl px-4 flex-1 shadow-lg shadow-blue-200", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(CircleCheckBig, { className: "w-4 h-4 mr-2" }),
-          " Update Slot"
+          " ",
+          t("updateSlot")
         ] })
       ] })
     ] }) })
@@ -65840,7 +68524,7 @@ const ReferenceManager = () => {
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col md:flex-row justify-between items-start md:items-center gap-4", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-2xl font-bold text-slate-800", children: t("references") }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-500 text-sm", children: "Centralized repository for educational resources and school directives." })
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-500 text-sm", children: t("centralizedRepositoryForEducationalResources") })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-2", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "secondary", onClick: fetchReferences, children: /* @__PURE__ */ jsxRuntimeExports.jsx(RefreshCw, { className: `w-4 h-4 ${isLoading ? "animate-spin" : ""}` }) }),
@@ -65909,11 +68593,11 @@ const ReferenceManager = () => {
     ] }),
     isLoading ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-20 text-center text-slate-400", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(Loader2, { className: "w-10 h-10 animate-spin mx-auto mb-4 opacity-20" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-medium", children: "Syncing Resource Database..." })
+      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "font-medium", children: t("syncingResourceDatabase") })
     ] }) : filteredRefs.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-24 text-center bg-white rounded-3xl border border-dashed border-slate-200 shadow-inner", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(HardDrive, { className: "w-16 h-16 mx-auto mb-4 opacity-10 text-slate-900" }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-xl font-bold text-slate-800", children: t("ref_no_data") }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-400 text-sm max-w-sm mx-auto mt-2", children: "No items shared here yet. Use the share button to add Google Drive links or templates." })
+      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-400 text-sm max-w-sm mx-auto mt-2", children: t("noItemsSharedHereYet") })
     ] }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6", children: filteredRefs.map((ref) => {
       const permission = canManageRef(ref);
       return /* @__PURE__ */ jsxRuntimeExports.jsxs(Card, { className: "group hover:border-blue-400 transition-all shadow-sm rounded-3xl overflow-hidden flex flex-col h-full border-slate-100 bg-white", children: [
@@ -65947,7 +68631,7 @@ const ReferenceManager = () => {
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-7 h-7 rounded-full bg-slate-200 border-2 border-white flex items-center justify-center text-[10px] font-bold text-slate-600", children: ref.uploaderName.charAt(0) }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-black text-slate-400 uppercase leading-none", children: "Shared By" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-black text-slate-400 uppercase leading-none", children: t("sharedBy") }),
               /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[11px] font-bold text-slate-600 truncate max-w-[120px]", children: ref.uploaderName })
             ] })
           ] }),
@@ -65959,7 +68643,7 @@ const ReferenceManager = () => {
               rel: "noopener noreferrer",
               className: `inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-black uppercase tracking-tight transition-all ${ref.source === ReferenceSource.PUBLIC ? "bg-blue-600 text-white hover:bg-blue-700 shadow-blue-100" : "bg-indigo-600 text-white hover:bg-indigo-700 shadow-indigo-100"} shadow-lg`,
               children: [
-                "Open ",
+                t("open"),
                 /* @__PURE__ */ jsxRuntimeExports.jsx(ExternalLink, { className: "w-3.5 h-3.5" })
               ]
             }
@@ -66004,7 +68688,8 @@ const ReferenceManager = () => {
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-[10px] text-amber-600 mt-2 ml-1 italic flex items-center gap-1 font-bold", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(ShieldAlert, { className: "w-3 h-3" }),
-            " Verify link access settings are public before sharing."
+            " ",
+            t("verifyLinkAccessSettingsAre")
           ] })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-2 gap-4", children: [
@@ -66017,11 +68702,11 @@ const ReferenceManager = () => {
                 value: formData.category,
                 onChange: (e) => setForm({ ...formData, category: e.target.value }),
                 children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("option", { children: "General" }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("option", { children: "DSKP / Syllabus" }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("option", { children: "RPH Templates" }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("option", { children: "School Circular" }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("option", { children: "Media Resources" })
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("option", { children: t("general") }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("option", { children: t("dskpSyllabus") }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("option", { children: t("rphTemplates") }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("option", { children: t("schoolCircular") }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("option", { children: t("mediaResources") })
                 ]
               }
             )
@@ -66035,8 +68720,8 @@ const ReferenceManager = () => {
                 value: formData.source,
                 onChange: (e) => setForm({ ...formData, source: e.target.value }),
                 children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: ReferenceSource.SCHOOL, children: "School Repository Only" }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: ReferenceSource.PUBLIC, children: "Public Hub (All Schools)" })
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: ReferenceSource.SCHOOL, children: t("schoolRepositoryOnly") }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: ReferenceSource.PUBLIC, children: t("publicHubAllSchools") })
                 ]
               }
             )
@@ -66326,7 +69011,7 @@ const CalendarView = () => {
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-4", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex bg-slate-100 rounded-lg p-1", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: () => navigateMonth("prev"), className: "p-1 hover:bg-white rounded shadow-sm transition-all", children: /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronLeft, { className: "w-5 h-5 text-slate-600" }) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: () => setCurrentDate(/* @__PURE__ */ new Date()), className: "px-3 text-sm font-bold text-slate-600 hover:text-blue-600", children: "Today" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: () => setCurrentDate(/* @__PURE__ */ new Date()), className: "px-3 text-sm font-bold text-slate-600 hover:text-blue-600", children: t("today") }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: () => navigateMonth("next"), className: "p-1 hover:bg-white rounded shadow-sm transition-all", children: /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronRight, { className: "w-5 h-5 text-slate-600" }) })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
@@ -66380,7 +69065,8 @@ const CalendarView = () => {
                 dayEvents.length > 3 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[10px] text-slate-500 pl-1 font-medium", children: [
                   "+",
                   dayEvents.length - 3,
-                  " more"
+                  " ",
+                  t("more")
                 ] })
               ] })
             ]
@@ -66451,7 +69137,8 @@ const CalendarView = () => {
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "block text-xs font-bold text-slate-500 uppercase mb-1", children: [
               t("end_date"),
-              " (Optional)"
+              " ",
+              t("optional")
             ] }),
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               "input",
@@ -66575,18 +69262,19 @@ const LeaveManagement = () => {
       ] }),
       !isSchoolAdmin && /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { onClick: () => setShowAddModal(true), className: "rounded-xl shadow-xl shadow-blue-200", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(Plus, { className: "w-4 h-4 mr-2" }),
-        " New Record"
+        " ",
+        t("newRecord")
       ] })
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(Card, { className: "rounded-[2.5rem] overflow-hidden border-slate-100 shadow-xl", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "overflow-x-auto", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("table", { className: "w-full", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx("thead", { className: "bg-slate-50 border-b border-slate-100", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest", children: "Teacher" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest", children: "Type" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest", children: "Timeline" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest", children: "Reason / Evidence" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "px-6 py-4 text-right text-[10px] font-black text-slate-400 uppercase tracking-widest", children: "Status" })
+        /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest", children: t("teacher") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest", children: t("type") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest", children: t("timeline") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "px-6 py-4 text-left text-[10px] font-black text-slate-400 uppercase tracking-widest", children: t("reasonEvidence") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "px-6 py-4 text-right text-[10px] font-black text-slate-400 uppercase tracking-widest", children: t("status") })
       ] }) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("tbody", { className: "divide-y divide-slate-50", children: records.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("tr", { children: /* @__PURE__ */ jsxRuntimeExports.jsx("td", { colSpan: 5, className: "px-6 py-12 text-center text-slate-400 italic", children: "No leave records found." }) }) : records.map((r) => /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { className: "hover:bg-slate-50/50 transition-colors", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("tbody", { className: "divide-y divide-slate-50", children: records.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("tr", { children: /* @__PURE__ */ jsxRuntimeExports.jsx("td", { colSpan: 5, className: "px-6 py-12 text-center text-slate-400 italic", children: t("noLeaveRecordsFound") }) }) : records.map((r) => /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { className: "hover:bg-slate-50/50 transition-colors", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-6 py-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-500 text-xs", children: r.teacherName.charAt(0) }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-bold text-slate-700 text-sm", children: r.teacherName })
@@ -66595,7 +69283,7 @@ const LeaveManagement = () => {
         /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-6 py-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs font-bold text-slate-700", children: r.startDate }),
           r.startDate !== r.endDate && /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[10px] text-slate-400 font-medium", children: [
-            "to ",
+            t("to"),
             r.endDate
           ] })
         ] }) }),
@@ -66603,52 +69291,54 @@ const LeaveManagement = () => {
           /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs font-medium text-slate-600 max-w-xs truncate", children: r.reason }),
           r.evidenceUrl && /* @__PURE__ */ jsxRuntimeExports.jsxs("a", { href: r.evidenceUrl, target: "_blank", rel: "noopener noreferrer", className: "flex items-center gap-1 mt-1 text-[10px] font-bold text-blue-500 hover:underline", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(FileText, { className: "w-3 h-3" }),
-            " View Evidence"
+            " ",
+            t("viewEvidence")
           ] })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "px-6 py-4 text-right", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-600 text-[10px] font-black uppercase tracking-wide", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(Check, { className: "w-3 h-3" }),
-          " Recorded"
+          " ",
+          t("recorded")
         ] }) })
       ] }, r.id)) })
     ] }) }) }),
     showAddModal && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Card, { className: "w-full max-w-lg shadow-2xl animate-in slide-in-from-bottom-4 zoom-in-95", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("form", { onSubmit: handleSubmit, children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-6 border-b flex justify-between items-center bg-slate-50", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-bold text-slate-800", children: "New Leave Record" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-bold text-slate-800", children: t("newLeaveRecord") }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("button", { type: "button", onClick: () => setShowAddModal(false), children: /* @__PURE__ */ jsxRuntimeExports.jsx(X, { className: "w-5 h-5 text-slate-400" }) })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-6 space-y-4", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-2 gap-4", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1", children: "Leave Type" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1", children: t("leaveType") }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("select", { className: "w-full border p-2.5 rounded-xl text-sm outline-none", value: newRecord.type, onChange: (e) => setNewRecord({ ...newRecord, type: e.target.value }), children: Object.values(LeaveType).map((t2) => /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: t2, children: t2 }, t2)) })
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1", children: [
-              "Location ",
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-slate-300", children: "(Optional)" })
+              t("location"),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-slate-300", children: t("optional") })
             ] }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("input", { className: "w-full border p-2.5 rounded-xl text-sm outline-none", value: newRecord.location, onChange: (e) => setNewRecord({ ...newRecord, location: e.target.value }), placeholder: "e.g. Hospital" })
           ] })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-2 gap-4", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1", children: "Start Date" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1", children: t("startDate") }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("input", { type: "date", className: "w-full border p-2.5 rounded-xl text-sm outline-none", value: newRecord.startDate, onChange: (e) => setNewRecord({ ...newRecord, startDate: e.target.value }) })
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1", children: "End Date" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1", children: t("endDate") }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("input", { type: "date", className: "w-full border p-2.5 rounded-xl text-sm outline-none", value: newRecord.endDate, onChange: (e) => setNewRecord({ ...newRecord, endDate: e.target.value }) })
           ] })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1", children: "Reason" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1", children: t("reason") }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("textarea", { className: "w-full border p-3 rounded-xl text-sm outline-none resize-none h-20", value: newRecord.reason, onChange: (e) => setNewRecord({ ...newRecord, reason: e.target.value }), placeholder: "Briefly describe the reason..." })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("label", { className: "text-[10px] font-black text-slate-400 uppercase tracking-widest block mb-1 flex items-center gap-2", children: [
-            "Evidence Upload ",
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "bg-blue-100 text-blue-600 px-1.5 py-0.5 rounded text-[9px]", children: "New" })
+            t("evidenceUpload"),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "bg-blue-100 text-blue-600 px-1.5 py-0.5 rounded text-[9px]", children: t("new") })
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "border-2 border-dashed border-slate-200 rounded-xl p-6 flex flex-col items-center justify-center text-center hover:bg-slate-50 transition-colors", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -66664,18 +69354,18 @@ const LeaveManagement = () => {
             /* @__PURE__ */ jsxRuntimeExports.jsx("label", { htmlFor: "evidence-upload", className: "cursor-pointer flex flex-col items-center", children: newRecord.evidenceFile ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx(FileText, { className: "w-8 h-8 text-blue-500 mb-2" }),
               /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-sm font-bold text-slate-700", children: newRecord.evidenceFile.name }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs text-green-500 font-bold mt-1", children: "Ready to upload" })
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs text-green-500 font-bold mt-1", children: t("readyToUpload") })
             ] }) : /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-3 bg-slate-100 text-slate-400 rounded-full mb-2", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Printer, { className: "w-6 h-6" }) }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-sm font-bold text-slate-600", children: "Click to attach file" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] text-slate-400 mt-1", children: "MC, Letter, or Photo (Max 5MB)" })
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-sm font-bold text-slate-600", children: t("clickToAttachFile") }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] text-slate-400 mt-1", children: t("mcLetterOrPhotoMax") })
             ] }) })
           ] })
         ] })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-6 border-t bg-slate-50 flex gap-3", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { type: "button", variant: "secondary", onClick: () => setShowAddModal(false), className: "flex-1", children: "Cancel" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { type: "submit", isLoading: false, className: "flex-1 shadow-lg shadow-blue-500/20", children: "Save Record" })
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { type: "button", variant: "secondary", onClick: () => setShowAddModal(false), className: "flex-1", children: t("cancel") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { type: "submit", isLoading: false, className: "flex-1 shadow-lg shadow-blue-500/20", children: t("saveRecord") })
       ] })
     ] }) }) })
   ] });
@@ -66749,7 +69439,7 @@ const WeeklyReviewView = ({ teachers, schoolId }) => {
         /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "ghost", size: "sm", onClick: () => setSelectedDate(new Date(selectedDate.setDate(selectedDate.getDate() - 7))), children: /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronLeft, { className: "w-5 h-5" }) }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-center", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-[10px] font-black text-blue-600 uppercase tracking-widest", children: [
-            "Minggu Akademik ",
+            t("mingguAkademik"),
             getAcademicWeek(startOfWeek)
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { className: "font-bold text-slate-800 text-sm", children: [
@@ -66760,11 +69450,11 @@ const WeeklyReviewView = ({ teachers, schoolId }) => {
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "ghost", size: "sm", onClick: () => setSelectedDate(new Date(selectedDate.setDate(selectedDate.getDate() + 7))), children: /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronRight, { className: "w-5 h-5" }) })
       ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "secondary", size: "sm", className: "rounded-xl", onClick: () => setSelectedDate(/* @__PURE__ */ new Date()), children: "Today" })
+      /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "secondary", size: "sm", className: "rounded-xl", onClick: () => setSelectedDate(/* @__PURE__ */ new Date()), children: t("today") })
     ] }),
     isLoading ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-20 text-center text-slate-400", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(RefreshCw, { className: "w-8 h-8 animate-spin mx-auto mb-4 opacity-20" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-bold uppercase tracking-widest", children: "Loading Weekly RPH..." })
+      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-bold uppercase tracking-widest", children: t("loadingWeeklyRph") })
     ] }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid gap-4", children: weeklyPlans.map(({ teacher, plans, status }) => /* @__PURE__ */ jsxRuntimeExports.jsx(Card, { className: "p-6 rounded-[2rem] border-slate-100 hover:shadow-lg transition-all group", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col md:flex-row justify-between items-start md:items-center gap-4", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-4", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `w-12 h-12 rounded-2xl flex items-center justify-center font-black text-lg shadow-sm ${status === "approved" ? "bg-emerald-50 text-emerald-600" : "bg-slate-50 text-slate-400"}`, children: teacher.name.charAt(0) }),
@@ -66774,13 +69464,14 @@ const WeeklyReviewView = ({ teachers, schoolId }) => {
             teacher.grade,
             " • ",
             plans.length,
-            " Lessons Scheduled"
+            " ",
+            t("lessonsScheduled")
           ] })
         ] })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-3 w-full md:w-auto", children: status === "approved" ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 px-4 py-2 bg-emerald-50 text-emerald-600 rounded-xl border border-emerald-100", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(CircleCheck, { className: "w-4 h-4" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs font-black uppercase", children: "Verified" })
+        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs font-black uppercase", children: t("verified") })
       ] }) : status === "pending" ? /* @__PURE__ */ jsxRuntimeExports.jsxs(
         Button,
         {
@@ -66790,7 +69481,8 @@ const WeeklyReviewView = ({ teachers, schoolId }) => {
           onClick: () => handleBatchApprove(teacher.id, plans),
           children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(CircleCheck, { className: "w-4 h-4 mr-2" }),
-            " Batch Verify"
+            " ",
+            t("batchVerify")
           ]
         }
       ) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "px-4 py-2 bg-slate-50 text-slate-400 rounded-xl border border-slate-100 text-xs font-bold uppercase", children: status === "empty" ? "No Submission" : "In Progress" }) })
@@ -66846,13 +69538,14 @@ const MonthlyReportView = ({ teachers, schoolId }) => {
           /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "border p-3 text-center", children: d.grade }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("td", { className: "border p-3 text-center", children: [
             d.plans.length,
-            " RPH"
+            " ",
+            t("rph")
           ] })
         ] }, d.id)) })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-12 flex justify-between items-end", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-xs text-slate-400", children: [
-          "Generated by ",
+          t("generatedBy"),
           t("app_name")
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-64 text-center border-t border-slate-400 pt-2 text-xs font-bold uppercase", children: t("principal_signature") })
@@ -66882,7 +69575,461 @@ const ReviewDashboard = () => {
   ] });
 };
 
-const GoogleSheetSyncModal = ({ isOpen, onClose, onSynced }) => {
+const REGISTRY_COLLECTION$1 = "dskp_final";
+const ROOT_COLLECTION = REGISTRY_COLLECTION$1;
+const sanitizeId$1 = (id) => id.replace(/\//g, "_").trim();
+const dskpFetcher = {
+  // Level 1: Get School Types
+  getSchoolTypes: async () => {
+    try {
+      const snap = await getDocs(collection(db, ROOT_COLLECTION));
+      return { success: true, data: snap.docs.map((d) => d.id) };
+    } catch (err) {
+      return { success: false, error: err.message };
+    }
+  },
+  // Level 2: Get Years
+  getYears: async (type) => {
+    try {
+      const snap = await getDocs(collection(db, `${ROOT_COLLECTION}/${type}/years`));
+      return { success: true, data: snap.docs.map((d) => d.id).sort() };
+    } catch (err) {
+      return { success: false, error: err.message };
+    }
+  },
+  // Level 3: Get Subjects
+  getSubjects: async (type, year) => {
+    try {
+      const safeYear = sanitizeId$1(year);
+      const snap = await getDocs(collection(db, `${ROOT_COLLECTION}/${type}/years/${safeYear}/subjects`));
+      return { success: true, data: snap.docs.map((d) => ({ id: d.id, ...d.data() })) };
+    } catch (err) {
+      return { success: false, error: err.message };
+    }
+  },
+  // Level 4: Get Standards
+  getStandards: async (type, year, subject) => {
+    try {
+      const safeYear = sanitizeId$1(year);
+      const safeSubject = sanitizeId$1(subject);
+      const docRef = doc(db, `${ROOT_COLLECTION}/${type}/years/${safeYear}/subjects/${safeSubject}`);
+      const snap = await getDoc(docRef);
+      if (snap.exists()) {
+        const data = snap.data();
+        return { success: true, data: data.standards };
+      }
+      return { success: false, error: "Subject not found" };
+    } catch (err) {
+      return { success: false, error: err.message };
+    }
+  }
+};
+
+const DSKPDataTable = ({ data, onDelete, isEditable = false }) => {
+  const { t } = useTranslation();
+  const [search, setSearch] = reactExports.useState("");
+  const [page, setPage] = reactExports.useState(1);
+  const LIMIT = 50;
+  const filtered = data.filter((item) => {
+    if (!search) return true;
+    const lower = search.toLowerCase();
+    return item.contentStandard.toLowerCase().includes(lower) || item.learningStandard.toLowerCase().includes(lower) || item.tema.toLowerCase().includes(lower) || item.tajuk.toLowerCase().includes(lower);
+  });
+  const totalPages = Math.ceil(filtered.length / LIMIT);
+  const paginated = filtered.slice((page - 1) * LIMIT, page * LIMIT);
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative max-w-sm", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(Search, { className: "absolute left-3 top-3 w-4 h-4 text-slate-400" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "input",
+        {
+          className: "w-full pl-10 pr-4 py-2 rounded-xl border border-slate-200 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-blue-500/20",
+          placeholder: "Filter current list...",
+          value: search,
+          onChange: (e) => {
+            setSearch(e.target.value);
+            setPage(1);
+          }
+        }
+      )
+    ] }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "overflow-x-auto rounded-xl border border-slate-100 bg-white shadow-sm", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("table", { className: "w-full text-left text-xs", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("thead", { className: "bg-slate-50 text-slate-500 font-black uppercase text-[9px] tracking-wider", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "p-4 w-1/4", children: t("standardKandunganSk") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "p-4 w-1/4", children: t("standardPembelajaranSp") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "p-4 w-1/4", children: t("temaBidang") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "p-4 w-1/4", children: t("tajuk") }),
+        isEditable && /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "p-4", children: t("action") })
+      ] }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("tbody", { className: "divide-y divide-slate-50", children: [
+        paginated.length === 0 && /* @__PURE__ */ jsxRuntimeExports.jsx("tr", { children: /* @__PURE__ */ jsxRuntimeExports.jsx("td", { colSpan: 5, className: "p-8 text-center text-slate-400 italic", children: t("noStandardsFoundMatchingYour_1") }) }),
+        paginated.map((row, i) => /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { className: "hover:bg-slate-50 transition-colors group", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "p-4 align-top", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-bold text-slate-700", children: row.contentStandard }) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "p-4 align-top", children: /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-slate-600 font-medium", children: row.learningStandard }) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "p-4 align-top text-slate-500", children: row.tema || row.temaBidang || "-" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "p-4 align-top text-slate-500", children: row.tajuk || row.tajukKemahiran || "-" }),
+          isEditable && /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "p-4 align-top", children: /* @__PURE__ */ jsxRuntimeExports.jsx(
+            "button",
+            {
+              onClick: () => onDelete?.(row.id),
+              className: "p-2 text-slate-300 hover:text-red-500 transition-colors rounded-full hover:bg-red-50",
+              title: "Delete Standard",
+              children: /* @__PURE__ */ jsxRuntimeExports.jsx(Trash2, { className: "w-4 h-4" })
+            }
+          ) })
+        ] }, row.id || i))
+      ] })
+    ] }) }),
+    totalPages > 1 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-center gap-2", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "button",
+        {
+          disabled: page === 1,
+          onClick: () => setPage((p) => p - 1),
+          className: "px-3 py-1 rounded-lg text-xs font-bold bg-white border disabled:opacity-50",
+          children: t("prev")
+        }
+      ),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "px-3 py-1 text-xs font-bold text-slate-500", children: [
+        t("page"),
+        page,
+        " ",
+        t("of"),
+        totalPages
+      ] }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(
+        "button",
+        {
+          disabled: page === totalPages,
+          onClick: () => setPage((p) => p + 1),
+          className: "px-3 py-1 rounded-lg text-xs font-bold bg-white border disabled:opacity-50",
+          children: t("next")
+        }
+      )
+    ] })
+  ] });
+};
+
+const DSKPMasterAccordion = ({ isAdmin, onDeleteStandard }) => {
+  const { t } = useTranslation();
+  const [types, setTypes] = reactExports.useState([]);
+  const [loadingTypes, setLoadingTypes] = reactExports.useState(false);
+  const [expandedType, setExpandedType] = reactExports.useState(null);
+  const [yearsCache, setYearsCache] = reactExports.useState({});
+  const [loadingYears, setLoadingYears] = reactExports.useState(null);
+  const [expandedYear, setExpandedYear] = reactExports.useState(null);
+  const [subjectsCache, setSubjectsCache] = reactExports.useState({});
+  const [loadingSubjects, setLoadingSubjects] = reactExports.useState(null);
+  const [expandedSubject, setExpandedSubject] = reactExports.useState(null);
+  const [standardsCache, setStandardsCache] = reactExports.useState({});
+  const [loadingStandards, setLoadingStandards] = reactExports.useState(null);
+  reactExports.useEffect(() => {
+    const loadTypes = async () => {
+      setLoadingTypes(true);
+      const res = await dskpFetcher.getSchoolTypes();
+      if (res.success && res.data) {
+        const sorted = res.data.sort((a, b) => {
+          if (a === "SK") return -1;
+          if (b === "SK") return 1;
+          return a.localeCompare(b);
+        });
+        setTypes(sorted);
+      }
+      setLoadingTypes(false);
+    };
+    loadTypes();
+  }, []);
+  const toggleType = async (type) => {
+    if (expandedType === type) {
+      setExpandedType(null);
+      return;
+    }
+    setExpandedType(type);
+    setExpandedYear(null);
+    setExpandedSubject(null);
+    if (!yearsCache[type]) {
+      setLoadingYears(type);
+      const res = await dskpFetcher.getYears(type);
+      if (res.success && res.data) {
+        setYearsCache((prev) => ({ ...prev, [type]: res.data }));
+      }
+      setLoadingYears(null);
+    }
+  };
+  const toggleYear = async (year) => {
+    if (!expandedType) return;
+    if (expandedYear === year) {
+      setExpandedYear(null);
+      return;
+    }
+    setExpandedYear(year);
+    setExpandedSubject(null);
+    const key = `${expandedType}_${year}`;
+    if (!subjectsCache[key]) {
+      setLoadingSubjects(key);
+      const res = await dskpFetcher.getSubjects(expandedType, year);
+      if (res.success && res.data) {
+        const sorted = res.data.sort((a, b) => a.title.localeCompare(b.title));
+        setSubjectsCache((prev) => ({ ...prev, [key]: sorted }));
+      }
+      setLoadingSubjects(null);
+    }
+  };
+  const toggleSubject = async (subjectTitle) => {
+    if (!expandedType || !expandedYear) return;
+    if (expandedSubject === subjectTitle) {
+      setExpandedSubject(null);
+      return;
+    }
+    setExpandedSubject(subjectTitle);
+    const key = `${expandedType}_${expandedYear}_${subjectTitle}`;
+    if (!standardsCache[key]) {
+      setLoadingStandards(key);
+      const res = await dskpFetcher.getStandards(expandedType, expandedYear, subjectTitle);
+      if (res.success && res.data) {
+        setStandardsCache((prev) => ({ ...prev, [key]: res.data }));
+      }
+      setLoadingStandards(null);
+    }
+  };
+  if (loadingTypes) return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-12 text-center text-slate-400", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "w-8 h-8 animate-spin mx-auto mb-2" }),
+    t("loadingRegistry")
+  ] });
+  if (!loadingTypes && types.length === 0) {
+    return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-12 text-center border-2 border-dashed border-slate-200 rounded-[2.5rem] bg-slate-50", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx(DatabaseZap, { className: "w-12 h-12 text-slate-300 mx-auto mb-4" }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-lg font-black text-slate-400", children: t("registryEmpty") }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-400 mb-4", children: t("syncDataToBuildThe") })
+    ] });
+  }
+  return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "space-y-4", children: types.map((type) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "border border-slate-100 rounded-3xl overflow-hidden bg-white shadow-sm transition-all", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs(
+      "div",
+      {
+        onClick: () => toggleType(type),
+        className: `p-5 flex items-center justify-between cursor-pointer hover:bg-slate-50 transition-colors ${expandedType === type ? "bg-slate-50" : ""}`,
+        children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-4", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `p-2.5 rounded-xl ${expandedType === type ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-500"}`, children: /* @__PURE__ */ jsxRuntimeExports.jsx(School, { className: "w-5 h-5" }) }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-black text-slate-700 text-lg tracking-tight", children: type })
+          ] }),
+          expandedType === type ? /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronDown, { className: "w-5 h-5 text-slate-400" }) : /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronRight, { className: "w-5 h-5 text-slate-300" })
+        ]
+      }
+    ),
+    expandedType === type && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-slate-50/50 border-t border-slate-100 p-4 space-y-2 animate-in slide-in-from-top-2 duration-200", children: [
+      loadingYears === type && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs text-center text-slate-400 p-2", children: t("loadingYears") }),
+      yearsCache[type]?.map((year) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "border border-slate-100 rounded-2xl bg-white overflow-hidden", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "div",
+          {
+            onClick: (e) => {
+              e.stopPropagation();
+              toggleYear(year);
+            },
+            className: `p-4 flex items-center justify-between cursor-pointer hover:bg-slate-50 ${expandedYear === year ? "bg-blue-50/30" : ""}`,
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `w-1.5 h-1.5 rounded-full ${expandedYear === year ? "bg-blue-500" : "bg-slate-300"}` }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-bold text-slate-700 text-sm", children: year })
+              ] }),
+              expandedYear === year ? /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronDown, { className: "w-4 h-4 text-slate-400" }) : /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronRight, { className: "w-4 h-4 text-slate-300" })
+            ]
+          }
+        ),
+        expandedYear === year && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-slate-50 p-3 space-y-2 border-t border-slate-100 animate-in slide-in-from-top-1", children: [
+          loadingSubjects === `${type}_${year}` && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[10px] text-center text-slate-400", children: t("loadingSubjects") }),
+          subjectsCache[`${type}_${year}`]?.map((sub) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "border border-slate-100 rounded-xl bg-white overflow-hidden", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "div",
+              {
+                onClick: (e) => {
+                  e.stopPropagation();
+                  toggleSubject(sub.title);
+                },
+                className: `p-3 flex items-center justify-between cursor-pointer hover:bg-slate-50 ${expandedSubject === sub.title ? "bg-indigo-50/30" : ""}`,
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-bold text-slate-600 text-xs ml-2", children: sub.title }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[10px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full font-bold", children: [
+                    sub.count || "?",
+                    " ",
+                    t("sk")
+                  ] })
+                ]
+              }
+            ),
+            expandedSubject === sub.title && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-white border-t border-slate-100 p-4 animate-in fade-in", children: loadingStandards === `${type}_${year}_${sub.title}` ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-8 text-center", children: /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "w-5 h-5 animate-spin mx-auto text-indigo-500" }) }) : /* @__PURE__ */ jsxRuntimeExports.jsx(
+              DSKPDataTable,
+              {
+                data: standardsCache[`${type}_${year}_${sub.title}`] || [],
+                isEditable: isAdmin,
+                onDelete: onDeleteStandard
+              }
+            ) })
+          ] }, sub.id))
+        ] })
+      ] }, year))
+    ] })
+  ] }, type)) });
+};
+
+const classifySchoolType = (subject) => {
+  const s = subject.toUpperCase();
+  if (s.includes("PEMULIHAN")) return "PEMULIHAN" /* PEMULIHAN */;
+  if (s.includes("PRASEKOLAH") || s.includes("PRA SEKOLAH")) return "PRASEKOLAH" /* PRASEKOLAH */;
+  if (s.includes("SJKT") || s.includes("TAMIL")) return "SJKT" /* SJKT */;
+  if (s.includes("SJKC")) return "SJKC" /* SJKC */;
+  if (s.includes("BERCANTUM")) return "KELAS_BERCANTUM" /* KELAS_BERCANTUM */;
+  return "SK" /* SK */;
+};
+
+const STAGING_COLLECTION = "dskp_raw";
+const REGISTRY_COLLECTION = "dskp_final";
+const sanitizeId = (id) => id.replace(/\//g, "_").trim();
+const syncEngine = {
+  // Stage 1: Sync Raw
+  syncRawToStaging: async (rawRows) => {
+    try {
+      console.log("Stage 1: Syncing Raw Data to Staging...", rawRows.length);
+      console.log("Clearing existing raw data in", STAGING_COLLECTION);
+      const rawCol = collection(db, STAGING_COLLECTION);
+      const rawSnap = await getDocs(rawCol);
+      let deleteBatch = writeBatch(db);
+      let deleteCount = 0;
+      for (const doc2 of rawSnap.docs) {
+        deleteBatch.delete(doc2.ref);
+        deleteCount++;
+        if (deleteCount >= 200) {
+          await deleteBatch.commit();
+          deleteBatch = writeBatch(db);
+          deleteCount = 0;
+        }
+      }
+      if (deleteCount > 0) await deleteBatch.commit();
+      let batch = writeBatch(db);
+      let operationCount = 0;
+      let totalProcessed = 0;
+      for (let i = 0; i < rawRows.length; i++) {
+        const row = rawRows[i];
+        const ref = doc(db, STAGING_COLLECTION, `row_${i.toString().padStart(5, "0")}`);
+        batch.set(ref, {
+          rowIndex: i,
+          data: row,
+          timestamp: Date.now()
+        });
+        operationCount++;
+        totalProcessed++;
+        if (operationCount >= 100) {
+          await batch.commit();
+          batch = writeBatch(db);
+          operationCount = 0;
+          await new Promise((r) => setTimeout(r, 2e3));
+        }
+      }
+      if (operationCount > 0) await batch.commit();
+      return { success: true, count: totalProcessed };
+    } catch (err) {
+      console.error("Stage 1 Failed", err);
+      return { success: false, message: err.message };
+    }
+  },
+  // Stage 2: Process & Map
+  processStagingToRegistry: async (mapping) => {
+    try {
+      console.log("Stage 2: Processing Staging to Registry...");
+      const stagingRef = collection(db, STAGING_COLLECTION);
+      const q = query(stagingRef, orderBy("rowIndex"));
+      const snapshot = await getDocs(q);
+      const stagingDocs = snapshot.docs.map((d) => d.data());
+      let batch = writeBatch(db);
+      let operationCount = 0;
+      let processedCount = 0;
+      const hierarchy = {};
+      for (const docData of stagingDocs) {
+        const row = docData.data;
+        const subject = String(row[mapping.subject] || "").trim();
+        const year = String(row[mapping.grade] || "").trim();
+        const sk = String(row[mapping.contentStandard] || "").trim();
+        const sp = String(row[mapping.learningStandard] || "").trim();
+        if (!subject || !sk || !sp) continue;
+        let category = classifySchoolType(subject);
+        if (!hierarchy[category]) hierarchy[category] = {};
+        if (!hierarchy[category][year]) hierarchy[category][year] = {};
+        if (!hierarchy[category][year][subject]) hierarchy[category][year][subject] = [];
+        const standard = {
+          id: `dskp-${Date.now()}-${docData.rowIndex}`,
+          schoolType: category,
+          grade: year,
+          subject,
+          contentStandard: sk,
+          learningStandard: sp,
+          temaBidang: String(row[mapping.temaBidang] || ""),
+          tema: String(row[mapping.temaBidang] || ""),
+          tajukKemahiran: String(row[mapping.tajukKemahiran] || ""),
+          tajuk: String(row[mapping.tajukKemahiran] || "")
+        };
+        hierarchy[category][year][subject].push(standard);
+        processedCount++;
+      }
+      for (const type of Object.keys(hierarchy)) {
+        const typeRef = doc(db, `${REGISTRY_COLLECTION}/${type}`);
+        batch.set(typeRef, { lastUpdated: (/* @__PURE__ */ new Date()).toISOString() }, { merge: true });
+        operationCount++;
+        for (const year of Object.keys(hierarchy[type])) {
+          const safeYear = sanitizeId(year);
+          const yearRef = doc(db, `${REGISTRY_COLLECTION}/${type}/years/${safeYear}`);
+          batch.set(yearRef, { lastUpdated: (/* @__PURE__ */ new Date()).toISOString() }, { merge: true });
+          operationCount++;
+          for (const subject of Object.keys(hierarchy[type][year])) {
+            const safeSubject = sanitizeId(subject);
+            const subjectRef = doc(db, `${REGISTRY_COLLECTION}/${type}/years/${safeYear}/subjects/${safeSubject}`);
+            const standards = hierarchy[type][year][subject];
+            batch.set(subjectRef, {
+              title: subject,
+              standards,
+              count: standards.length,
+              lastUpdated: (/* @__PURE__ */ new Date()).toISOString()
+            });
+            operationCount++;
+            if (operationCount >= 100) {
+              await batch.commit();
+              batch = writeBatch(db);
+              operationCount = 0;
+              await new Promise((r) => setTimeout(r, 2e3));
+            }
+          }
+        }
+      }
+      if (operationCount > 0) await batch.commit();
+      return { success: true, count: processedCount };
+    } catch (err) {
+      console.error("Stage 2 Failed", err);
+      return { success: false, message: err.message };
+    }
+  }
+};
+
+const dskpService = {
+  ...dskpFetcher,
+  ...syncEngine,
+  // CRUD
+  delete: async (id) => {
+    try {
+      console.warn("Delete by ID not supported in new hierarchy without context.");
+      return { success: false, message: "Delete requires refactor to pass full object." };
+    } catch (e) {
+      return { success: false, message: e.message };
+    }
+  },
+  // Legacy List (Search)
+  list: async (filters) => {
+    return { success: true, data: [] };
+  }
+};
+
+const SyncModal = ({ isOpen, onClose, onSynced }) => {
+  const { t } = useTranslation();
   const REQUESTED_SHEET_URL = "https://docs.google.com/spreadsheets/d/1mW401zSgjPLjtahPCaeiLFpv3Zpk3AL-2Dgc6s5sDAA/edit?usp=sharing";
   const [sheetUrl, setSheetUrl] = reactExports.useState(REQUESTED_SHEET_URL);
   const [step, setStep] = reactExports.useState(1);
@@ -66986,23 +70133,14 @@ ${res.count} standards have been processed and mapped to the registry.`);
       setIsSaving(false);
     }
   };
-  reactExports.useMemo(() => {
-    return rawRows.slice(0, 5).map((row, idx) => ({
-      id: idx,
-      subject: row[mapping.subject] || "",
-      grade: row[mapping.grade] || "",
-      sk: row[mapping.contentStandard] || "",
-      sp: row[mapping.learningStandard] || ""
-    }));
-  }, [rawRows, mapping]);
   if (!isOpen) return null;
   return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-md animate-in fade-in duration-300", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Card, { className: "w-full max-w-5xl shadow-2xl overflow-hidden border-0 rounded-[2.5rem] max-h-[90vh] flex flex-col bg-white", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-8 border-b flex justify-between items-center bg-slate-50/50", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-4", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-3 bg-blue-600 rounded-2xl shadow-xl shadow-blue-200", children: /* @__PURE__ */ jsxRuntimeExports.jsx(DatabaseZap, { className: "w-6 h-6 text-white" }) }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-black text-xl text-slate-800 tracking-tight", children: "DSKP Master Sync" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs font-bold text-slate-400 uppercase tracking-widest", children: "2-Stage Sync Process" })
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-black text-xl text-slate-800 tracking-tight", children: t("dskpMasterSync") }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs font-bold text-slate-400 uppercase tracking-widest", children: t("2stageSyncProcess") })
         ] })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: onClose, className: "p-2 hover:bg-slate-200 rounded-full transition-colors", children: /* @__PURE__ */ jsxRuntimeExports.jsx(X, { className: "w-5 h-5 text-slate-500" }) })
@@ -67014,8 +70152,8 @@ ${res.count} standards have been processed and mapped to the registry.`);
       ] }),
       step === 1 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "max-w-2xl mx-auto py-10 space-y-8 animate-in slide-in-from-bottom-4 duration-500", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-center space-y-2", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "text-lg font-black text-slate-800", children: "1. Connect Data Source" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-slate-500 font-medium", children: "Link the official curriculum Google Sheet." })
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "text-lg font-black text-slate-800", children: t("1ConnectDataSource") }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-slate-500 font-medium", children: t("linkTheOfficialCurriculumGoogle") })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative", children: [
@@ -67031,7 +70169,7 @@ ${res.count} standards have been processed and mapped to the registry.`);
             )
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { className: "w-full h-14 rounded-2xl font-black text-lg shadow-xl shadow-blue-200", onClick: handleFetch, isLoading: isFetching, disabled: !sheetUrl, children: [
-            "Fetch Data ",
+            t("fetchData"),
             /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronRight, { className: "ml-2 w-5 h-5" })
           ] })
         ] })
@@ -67039,18 +70177,18 @@ ${res.count} standards have been processed and mapped to the registry.`);
       step === 2 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-8 animate-in slide-in-from-right-4 duration-500", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-2 gap-4", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-5 bg-slate-50 rounded-3xl border border-slate-100", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[10px] font-black uppercase text-slate-400 tracking-widest", children: "Rows Found" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[10px] font-black uppercase text-slate-400 tracking-widest", children: t("rowsFound") }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-2xl font-black text-slate-800", children: rawRows.length })
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-5 bg-slate-50 rounded-3xl border border-slate-100", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[10px] font-black uppercase text-slate-400 tracking-widest", children: "Columns Detected" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[10px] font-black uppercase text-slate-400 tracking-widest", children: t("columnsDetected") }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-2xl font-black text-slate-800", children: headers.length })
           ] })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs(Card, { className: "p-8 rounded-[2rem] border-slate-100 shadow-sm bg-slate-50/30 space-y-6", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 mb-2", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(TableProperties, { className: "w-5 h-5 text-blue-600" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-black uppercase text-slate-400 tracking-widest", children: "Column Mapping" })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-black uppercase text-slate-400 tracking-widest", children: t("columnMapping") })
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-4", children: Object.entries(mapping).map(([key, colIndex]) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1", children: key }),
@@ -67078,32 +70216,20 @@ ${res.count} standards have been processed and mapped to the registry.`);
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             Button,
             {
+              variant: "secondary",
               onClick: handleSyncRaw,
               disabled: isSaving || isStage1Complete,
-              className: `flex-1 h-16 rounded-2xl font-black text-lg transition-all shadow-xl
-                                        ${isStage1Complete ? "bg-emerald-100 text-emerald-600 shadow-none border-2 border-emerald-200 cursor-default hover:bg-emerald-100" : "bg-white text-slate-700 border-2 border-slate-200 hover:border-blue-500 hover:text-blue-600"}
-                                    `,
-              children: isStage1Complete ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(CircleCheckBig, { className: "w-6 h-6" }),
-                " Raw Sync Done"
-              ] }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-2", children: isSaving ? /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "w-5 h-5 animate-spin" }) : "1. Sync Raw Data" })
+              className: isStage1Complete ? "opacity-50" : "",
+              children: t("step1SyncRawData")
             }
           ),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             Button,
             {
               onClick: handleProcessRegistry,
-              disabled: !isStage1Complete || isSaving,
-              className: `flex-1 h-16 rounded-2xl font-black text-lg shadow-xl
-                                        ${!isStage1Complete ? "bg-slate-100 text-slate-300 shadow-none cursor-not-allowed" : "bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-500/20"}
-                                    `,
-              children: isSaving && isStage1Complete ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "w-6 h-6 animate-spin" }),
-                " Processing..."
-              ] }) : /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx(Zap, { className: "w-6 h-6" }),
-                " 2. Process & Map"
-              ] })
+              disabled: isSaving || !isStage1Complete,
+              className: "flex-1",
+              children: t("step2ProcessMapRegistry")
             }
           )
         ] })
@@ -67111,6 +70237,50 @@ ${res.count} standards have been processed and mapped to the registry.`);
     ] })
   ] }) });
 };
+
+const DSKPContainer = () => {
+  const { t } = useTranslation();
+  const { type, year } = useParams();
+  const { currentUser } = useGlobal();
+  const isSuperAdmin = currentUser?.role === UserRole.SUPER_ADMIN;
+  const [isSyncModalOpen, setIsSyncModalOpen] = React.useState(false);
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-6 max-w-7xl mx-auto p-4 md:p-8 animate-in fade-in duration-500", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col md:flex-row justify-between items-center gap-4", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-3xl font-black text-slate-800 tracking-tight", children: t("dskpManagement") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-500 text-sm font-medium", children: t("hierarchicalRegistryExplorer") })
+      ] }),
+      isSuperAdmin && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex gap-2", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "button",
+        {
+          onClick: () => setIsSyncModalOpen(true),
+          className: "bg-blue-600 text-white px-6 py-3 rounded-xl shadow-lg shadow-blue-500/20 flex items-center gap-2 font-bold hover:bg-blue-700 transition-colors",
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Upload, { className: "w-4 h-4" }),
+            " ",
+            t("syncRegistry")
+          ]
+        }
+      ) })
+    ] }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(
+      DSKPMasterAccordion,
+      {
+        isAdmin: isSuperAdmin,
+        onDeleteStandard: (id) => console.log("Delete", id)
+      }
+    ),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(
+      SyncModal,
+      {
+        isOpen: isSyncModalOpen,
+        onClose: () => setIsSyncModalOpen(false),
+        onSynced: () => window.location.reload()
+      }
+    )
+  ] });
+};
+
 const SchoolSettings = () => {
   const { t } = useLanguage();
   const { currentUser, schools, refreshGlobalData } = useGlobal();
@@ -67159,7 +70329,7 @@ const SchoolSettings = () => {
     const times = ["07:30 - 08:30", "08:30 - 09:30", "09:45 - 10:45", "10:45 - 11:45", "11:45 - 12:45", "12:45 - 13:45"];
     setSchool({ ...school, settings: { ...school.settings, customSubjects: subjects, customClasses: classes, customTimeSlots: times } });
   };
-  if (!school) return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-12 text-center text-slate-400 font-medium", children: "Loading School Profile..." });
+  if (!school) return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-12 text-center text-slate-400 font-medium", children: t("loadingSchoolProfile") });
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-8 max-w-6xl mx-auto p-4 md:p-8 animate-in fade-in duration-500", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col md:flex-row justify-between items-start md:items-center gap-6", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
@@ -67170,8 +70340,8 @@ const SchoolSettings = () => {
         /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-500 mt-1 font-medium", children: t("manage_school_profile") })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-3", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "secondary", onClick: () => usePresets("sk"), className: "rounded-xl px-4 text-xs font-bold uppercase border-2", children: "SK Preset" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "secondary", onClick: () => usePresets("smk"), className: "rounded-xl px-4 text-xs font-bold uppercase border-2", children: "SMK Preset" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "secondary", onClick: () => usePresets("sk"), className: "rounded-xl px-4 text-xs font-bold uppercase border-2", children: t("skPreset") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "secondary", onClick: () => usePresets("smk"), className: "rounded-xl px-4 text-xs font-bold uppercase border-2", children: t("smkPreset") }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { onClick: handleSave, isLoading: isSaving, className: "rounded-xl px-8 shadow-xl shadow-blue-500/20 font-bold h-12", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(Save, { className: "w-4 h-4 mr-2" }),
           " ",
@@ -67196,7 +70366,7 @@ const SchoolSettings = () => {
               /* @__PURE__ */ jsxRuntimeExports.jsx("input", { className: "w-full border-2 border-slate-50 bg-slate-50/50 p-3.5 rounded-2xl text-sm font-bold focus:border-blue-500 outline-none transition-all", value: school.code, onChange: (e) => setSchool({ ...school, code: e.target.value }) })
             ] }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2 md:col-span-2", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1", children: "Academic Calendar Group" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1", children: t("academicCalendarGroup") }),
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-4", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsxs(
                   "button",
@@ -67205,10 +70375,10 @@ const SchoolSettings = () => {
                     className: `p-4 rounded-2xl border-2 text-left transition-all ${school.settings?.schoolGroup === "A" ? "border-blue-600 bg-blue-50 ring-4 ring-blue-500/10" : "border-slate-100 hover:border-blue-200"}`,
                     children: [
                       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between mb-2", children: [
-                        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: `text-sm font-black ${school.settings?.schoolGroup === "A" ? "text-blue-700" : "text-slate-700"}`, children: "Kumpulan A" }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: `text-sm font-black ${school.settings?.schoolGroup === "A" ? "text-blue-700" : "text-slate-700"}`, children: t("kumpulanA") }),
                         school.settings?.schoolGroup === "A" && /* @__PURE__ */ jsxRuntimeExports.jsx(CircleCheckBig, { className: "w-5 h-5 text-blue-600" })
                       ] }),
-                      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[10px] text-slate-400 font-medium leading-relaxed", children: "Johor, Kedah, Kelantan & Terengganu" })
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[10px] text-slate-400 font-medium leading-relaxed", children: t("johorKedahKelantanTerengganu") })
                     ]
                   }
                 ),
@@ -67219,10 +70389,10 @@ const SchoolSettings = () => {
                     className: `p-4 rounded-2xl border-2 text-left transition-all ${school.settings?.schoolGroup === "B" ? "border-blue-600 bg-blue-50 ring-4 ring-blue-500/10" : "border-slate-100 hover:border-blue-200"}`,
                     children: [
                       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between mb-2", children: [
-                        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: `text-sm font-black ${school.settings?.schoolGroup === "B" ? "text-blue-700" : "text-slate-700"}`, children: "Kumpulan B" }),
+                        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: `text-sm font-black ${school.settings?.schoolGroup === "B" ? "text-blue-700" : "text-slate-700"}`, children: t("kumpulanB") }),
                         school.settings?.schoolGroup === "B" && /* @__PURE__ */ jsxRuntimeExports.jsx(CircleCheckBig, { className: "w-5 h-5 text-blue-600" })
                       ] }),
-                      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[10px] text-slate-400 font-medium leading-relaxed", children: "Melaka, Negeri Sembilan, Pahang, Perak, Perlis, Pulau Pinang, Sabah, Sarawak, Selangor, WP" })
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[10px] text-slate-400 font-medium leading-relaxed", children: t("melakaNegeriSembilanPahangPerak") })
                     ]
                   }
                 )
@@ -67233,7 +70403,7 @@ const SchoolSettings = () => {
         /* @__PURE__ */ jsxRuntimeExports.jsxs(Card, { className: "p-8 rounded-[2.5rem] border-slate-100 shadow-xl space-y-6", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex justify-between items-center border-b pb-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-2 bg-emerald-50 rounded-xl text-emerald-600", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Clock, { className: "w-5 h-5" }) }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-black text-slate-800 uppercase tracking-tight", children: "Operating Hours" })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-black text-slate-800 uppercase tracking-tight", children: t("operatingHours") })
           ] }) }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-3", children: [
@@ -67251,7 +70421,8 @@ const SchoolSettings = () => {
         /* @__PURE__ */ jsxRuntimeExports.jsxs(Card, { className: "p-6 rounded-[2rem] border-slate-100 shadow-xl space-y-4", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { className: "font-black text-slate-800 uppercase text-xs flex items-center gap-2", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(BookOpen, { className: "w-4 h-4 text-indigo-600" }),
-            " Subjects"
+            " ",
+            t("subjects")
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-2", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("input", { className: "flex-1 border-2 border-slate-50 p-2.5 rounded-xl text-xs font-bold outline-none", placeholder: "Add...", value: newSubject, onChange: (e) => setNewSubject(e.target.value) }),
@@ -67265,7 +70436,8 @@ const SchoolSettings = () => {
         /* @__PURE__ */ jsxRuntimeExports.jsxs(Card, { className: "p-6 rounded-[2rem] border-slate-100 shadow-xl space-y-4", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { className: "font-black text-slate-800 uppercase text-xs flex items-center gap-2", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(Users, { className: "w-4 h-4 text-amber-600" }),
-            " Classes"
+            " ",
+            t("classes")
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-2", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("input", { className: "flex-1 border-2 border-slate-50 p-2.5 rounded-xl text-xs font-bold outline-none", placeholder: "Add...", value: newClass, onChange: (e) => setNewClass(e.target.value) }),
@@ -67278,310 +70450,6 @@ const SchoolSettings = () => {
         ] })
       ] })
     ] })
-  ] });
-};
-const DSKPManager = () => {
-  const { t } = useLanguage();
-  const { currentUser } = useGlobal();
-  const isSuperAdmin = currentUser?.role === UserRole.SUPER_ADMIN;
-  const [schoolTypes, setSchoolTypes] = reactExports.useState([]);
-  const [isLoadingTypes, setIsLoadingTypes] = reactExports.useState(false);
-  const [expandedType, setExpandedType] = reactExports.useState(null);
-  const [yearsCache, setYearsCache] = reactExports.useState({});
-  const [loadingYears, setLoadingYears] = reactExports.useState(null);
-  const [expandedYear, setExpandedYear] = reactExports.useState(null);
-  const [subjectsCache, setSubjectsCache] = reactExports.useState({});
-  const [loadingSubjects, setLoadingSubjects] = reactExports.useState(null);
-  const [expandedSubject, setExpandedSubject] = reactExports.useState(null);
-  const [standardsCache, setStandardsCache] = reactExports.useState({});
-  const [loadingStandards, setLoadingStandards] = reactExports.useState(null);
-  const [currentPage, setCurrentPage] = reactExports.useState(1);
-  const ITEMS_PER_PAGE = 50;
-  const [isSyncModalOpen, setIsSyncModalOpen] = reactExports.useState(false);
-  const [searchQuery, setSearchQuery] = reactExports.useState("");
-  const [searchResults, setSearchResults] = reactExports.useState([]);
-  const [isSearching, setIsSearching] = reactExports.useState(false);
-  const fetchSchoolTypes = async () => {
-    setIsLoadingTypes(true);
-    const res = await dskpService.getSchoolTypes();
-    if (res.success && res.data) {
-      const sorted = res.data.sort((a, b) => {
-        if (a === "SK") return -1;
-        if (b === "SK") return 1;
-        return a.localeCompare(b);
-      });
-      setSchoolTypes(sorted);
-    }
-    setIsLoadingTypes(false);
-  };
-  reactExports.useEffect(() => {
-    fetchSchoolTypes();
-  }, []);
-  const handleSynced = () => {
-    setYearsCache({});
-    setSubjectsCache({});
-    setStandardsCache({});
-    setExpandedType(null);
-    setExpandedYear(null);
-    setExpandedSubject(null);
-    fetchSchoolTypes();
-  };
-  const toggleType = async (type) => {
-    if (expandedType === type) {
-      setExpandedType(null);
-      return;
-    }
-    setExpandedType(type);
-    setExpandedYear(null);
-    setExpandedSubject(null);
-    if (!yearsCache[type]) {
-      setLoadingYears(type);
-      const res = await dskpService.getYears(type);
-      if (res.success && res.data) {
-        const sorted = res.data.sort((a, b) => {
-          const numA = parseInt(a.replace(/\D/g, "")) || 99;
-          const numB = parseInt(b.replace(/\D/g, "")) || 99;
-          return numA - numB;
-        });
-        setYearsCache((prev) => ({ ...prev, [type]: sorted }));
-      }
-      setLoadingYears(null);
-    }
-  };
-  const toggleYear = async (year) => {
-    const type = expandedType;
-    if (!type) return;
-    const key = `${type}_${year}`;
-    if (expandedYear === year) {
-      setExpandedYear(null);
-      return;
-    }
-    setExpandedYear(year);
-    setExpandedSubject(null);
-    if (!subjectsCache[key]) {
-      setLoadingSubjects(key);
-      const res = await dskpService.getSubjects(type, year);
-      if (res.success && res.data) {
-        const sorted = res.data.sort((a, b) => a.title.localeCompare(b.title));
-        setSubjectsCache((prev) => ({ ...prev, [key]: sorted }));
-      }
-      setLoadingSubjects(null);
-    }
-  };
-  const toggleSubject = async (subject) => {
-    const type = expandedType;
-    const year = expandedYear;
-    if (!type || !year) return;
-    const key = `${type}_${year}_${subject}`;
-    if (expandedSubject === subject) {
-      setExpandedSubject(null);
-      return;
-    }
-    setExpandedSubject(subject);
-    setCurrentPage(1);
-    if (!standardsCache[key]) {
-      setLoadingStandards(key);
-      const res = await dskpService.getStandards(type, year, subject);
-      if (res.success && res.data) {
-        const sorted = res.data.sort(
-          (a, b) => a.contentStandard.localeCompare(b.contentStandard) || a.learningStandard.localeCompare(b.learningStandard)
-        );
-        setStandardsCache((prev) => ({ ...prev, [key]: sorted }));
-      }
-      setLoadingStandards(null);
-    }
-  };
-  const activeStandards = expandedType && expandedYear && expandedSubject ? standardsCache[`${expandedType}_${expandedYear}_${expandedSubject}`] || [] : [];
-  const totalPages = Math.ceil(activeStandards.length / ITEMS_PER_PAGE);
-  const paginatedStandards = activeStandards.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
-  const handleSearch = async (e) => {
-    e.preventDefault();
-    if (!searchQuery.trim()) return;
-    setIsSearching(true);
-    const res = await dskpService.list({ search: searchQuery });
-    if (res.success && res.data) setSearchResults(res.data);
-    setIsSearching(false);
-  };
-  const handleDelete = async (id) => {
-    if (!confirm("Delete this standard?")) return;
-    await dskpService.delete(id);
-    setSearchResults((prev) => prev.filter((i) => i.id !== id));
-    if (expandedType && expandedYear && expandedSubject) {
-      const key = `${expandedType}_${expandedYear}_${expandedSubject}`;
-      const newCache = { ...standardsCache };
-      delete newCache[key];
-      setStandardsCache(newCache);
-      toggleSubject(expandedSubject);
-      const res = await dskpService.getStandards(expandedType, expandedYear, expandedSubject);
-      if (res.success) setStandardsCache((prev) => ({ ...prev, [key]: res.data }));
-    }
-  };
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-6 max-w-7xl mx-auto p-4 md:p-8 animate-in fade-in duration-500", children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col md:flex-row justify-between items-center gap-4", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-3xl font-black text-slate-800 tracking-tight", children: t("dskp_management") }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-500 text-sm font-medium", children: "Hierarchical Registry Explorer" })
-      ] }),
-      isSuperAdmin && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex gap-2", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { onClick: () => setIsSyncModalOpen(true), className: "rounded-xl shadow-lg shadow-blue-500/20 px-6", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Upload, { className: "w-4 h-4 mr-2" }),
-        " Sync Registry"
-      ] }) })
-    ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("form", { onSubmit: handleSearch, className: "relative w-full max-w-xl", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(
-        "input",
-        {
-          className: "w-full pl-10 pr-4 py-3 rounded-2xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 font-medium text-slate-600",
-          placeholder: "Search standards...",
-          value: searchQuery,
-          onChange: (e) => {
-            setSearchQuery(e.target.value);
-            if (!e.target.value) setSearchResults([]);
-          }
-        }
-      ),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(Search, { className: "absolute left-3 top-3.5 w-5 h-5 text-slate-400" })
-    ] }),
-    searchQuery ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { className: "font-bold text-slate-800", children: [
-        "Search Results (",
-        searchResults.length,
-        ")"
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs(Card, { className: "overflow-hidden rounded-3xl border-slate-100 shadow-sm bg-white p-4", children: [
-        searchResults.length === 0 && !isSearching ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-center text-slate-400 p-8", children: "No results found." }) : null,
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "overflow-x-auto", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("table", { className: "w-full text-sm text-left", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("thead", { className: "bg-slate-50 text-slate-500 uppercase text-[9px] font-black tracking-widest", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "p-3", children: "Standard" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "p-3", children: "Details" })
-          ] }) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("tbody", { className: "divide-y divide-slate-100", children: searchResults.map((s) => /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("td", { className: "p-3 align-top", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-bold text-slate-700", children: s.contentStandard }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-slate-500 text-xs", children: s.learningStandard })
-            ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("td", { className: "p-3 align-top text-xs text-slate-400", children: [
-              s.subject,
-              " • ",
-              s.grade
-            ] })
-          ] }, s.id)) })
-        ] }) })
-      ] })
-    ] }) : /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4", children: [
-      isLoadingTypes && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-8 text-center text-slate-400", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "w-6 h-6 animate-spin mx-auto" }),
-        " Loading Registry..."
-      ] }),
-      !isLoadingTypes && schoolTypes.length === 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-12 text-center border-2 border-dashed border-slate-200 rounded-[2.5rem] bg-slate-50", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(DatabaseZap, { className: "w-12 h-12 text-slate-300 mx-auto mb-4" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-lg font-black text-slate-400", children: "Registry Empty" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-400 mb-4", children: "Sync data to build the hierarchy." })
-      ] }),
-      schoolTypes.map((type) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "border border-slate-100 rounded-3xl overflow-hidden bg-white shadow-sm transition-all", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs(
-          "div",
-          {
-            onClick: () => toggleType(type),
-            className: `p-5 flex items-center justify-between cursor-pointer hover:bg-slate-50 transition-colors ${expandedType === type ? "bg-slate-50" : ""}`,
-            children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-4", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `p-2.5 rounded-xl ${expandedType === type ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-500"}`, children: /* @__PURE__ */ jsxRuntimeExports.jsx(School, { className: "w-5 h-5" }) }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-black text-slate-700 text-lg tracking-tight", children: type })
-              ] }),
-              expandedType === type ? /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronDown, { className: "w-5 h-5 text-slate-400" }) : /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronRight, { className: "w-5 h-5 text-slate-300" })
-            ]
-          }
-        ),
-        expandedType === type && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-slate-50/50 border-t border-slate-100 p-4 space-y-2 animate-in slide-in-from-top-2 duration-200", children: [
-          loadingYears === type && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs text-center text-slate-400 p-2", children: "Loading Years..." }),
-          yearsCache[type]?.map((year) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "border border-slate-100 rounded-2xl bg-white overflow-hidden", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs(
-              "div",
-              {
-                onClick: (e) => {
-                  e.stopPropagation();
-                  toggleYear(year);
-                },
-                className: `p-4 flex items-center justify-between cursor-pointer hover:bg-slate-50 ${expandedYear === year ? "bg-blue-50/30" : ""}`,
-                children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3", children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `w-1.5 h-1.5 rounded-full ${expandedYear === year ? "bg-blue-500" : "bg-slate-300"}` }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-bold text-slate-700 text-sm", children: year })
-                  ] }),
-                  expandedYear === year ? /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronDown, { className: "w-4 h-4 text-slate-400" }) : /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronRight, { className: "w-4 h-4 text-slate-300" })
-                ]
-              }
-            ),
-            expandedYear === year && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-slate-50 p-3 space-y-2 border-t border-slate-100 animate-in slide-in-from-top-1", children: [
-              loadingSubjects === `${type}_${year}` && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[10px] text-center text-slate-400", children: "Loading Subjects..." }),
-              subjectsCache[`${type}_${year}`]?.map((sub) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "border border-slate-100 rounded-xl bg-white overflow-hidden", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsxs(
-                  "div",
-                  {
-                    onClick: (e) => {
-                      e.stopPropagation();
-                      toggleSubject(sub.title);
-                    },
-                    className: `p-3 flex items-center justify-between cursor-pointer hover:bg-slate-50 ${expandedSubject === sub.title ? "bg-indigo-50/30" : ""}`,
-                    children: [
-                      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-bold text-slate-600 text-xs ml-2", children: sub.title }),
-                      /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[10px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full font-bold", children: [
-                        sub.count || "?",
-                        " SK"
-                      ] })
-                    ]
-                  }
-                ),
-                expandedSubject === sub.title && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-white border-t border-slate-100 p-2 animate-in fade-in", children: loadingStandards === `${type}_${year}_${sub.title}` ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-8 text-center", children: /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "w-5 h-5 animate-spin mx-auto text-indigo-500" }) }) : /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-3", children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "overflow-x-auto rounded-lg border border-slate-100", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("table", { className: "w-full text-left text-xs", children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("thead", { className: "bg-slate-50 text-slate-400 font-bold uppercase text-[9px]", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { children: [
-                      /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "p-3 w-1/4", children: "Standard Kandungan (SK)" }),
-                      /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "p-3 w-1/4", children: "Standard Pembelajaran (SP)" }),
-                      /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "p-3 w-1/4", children: "Tema / Bidang" }),
-                      /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "p-3 w-1/4", children: "Tajuk" }),
-                      isSuperAdmin && /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "p-3", children: "Act" })
-                    ] }) }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("tbody", { className: "divide-y divide-slate-50", children: paginatedStandards.map((std, i) => /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { className: "hover:bg-slate-50", children: [
-                      /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "p-3 font-bold text-slate-600 align-top", children: std.contentStandard }),
-                      /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "p-3 text-slate-500 align-top", children: std.learningStandard }),
-                      /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "p-3 text-slate-500 align-top", children: std.tema || std.temaBidang || "-" }),
-                      /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "p-3 text-slate-500 align-top", children: std.tajuk || std.tajukKemahiran || "-" }),
-                      isSuperAdmin && /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "p-3 align-top", children: /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: () => handleDelete(std.id), className: "text-red-400 hover:text-red-600", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Trash2, { className: "w-3 h-3" }) }) })
-                    ] }, i)) })
-                  ] }) }),
-                  totalPages > 1 && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex justify-center gap-2 pt-2", children: Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                    let p = i + 1;
-                    if (currentPage > 3 && totalPages > 5) p = currentPage - 2 + i;
-                    if (p > totalPages) return null;
-                    return /* @__PURE__ */ jsxRuntimeExports.jsx(
-                      "button",
-                      {
-                        onClick: () => setCurrentPage(p),
-                        className: `w-8 h-8 rounded-lg text-xs font-bold ${currentPage === p ? "bg-indigo-600 text-white" : "bg-slate-100 text-slate-500 hover:bg-slate-200"}`,
-                        children: p
-                      },
-                      p
-                    );
-                  }) })
-                ] }) })
-              ] }, sub.id))
-            ] })
-          ] }, year))
-        ] })
-      ] }, type))
-    ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(
-      GoogleSheetSyncModal,
-      {
-        isOpen: isSyncModalOpen,
-        onClose: () => setIsSyncModalOpen(false),
-        onSynced: () => {
-          handleSynced();
-          setIsSyncModalOpen(false);
-        }
-      }
-    )
   ] });
 };
 const UserManagement = () => {
@@ -67606,7 +70474,7 @@ const UserManagement = () => {
         t("add_user")
       ] })
     ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6", children: isLoading ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "col-span-full p-12 text-center text-slate-400", children: "Loading Users..." }) : users.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsxs(Card, { className: "p-5 flex items-center gap-4", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6", children: isLoading ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "col-span-full p-12 text-center text-slate-400", children: t("loadingUsers") }) : users.map((user) => /* @__PURE__ */ jsxRuntimeExports.jsxs(Card, { className: "p-5 flex items-center gap-4", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-12 h-12 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-lg", children: user.name.charAt(0) }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 min-w-0", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "font-bold text-slate-800 truncate", children: user.name }),
@@ -67647,63 +70515,66 @@ const NewsletterManager = () => {
   };
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-6 max-w-7xl mx-auto p-6", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex justify-between items-center", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-2xl font-bold text-slate-800", children: "Newsletter Broadcast" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-500 text-sm", children: "Send updates to your community." })
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-2xl font-bold text-slate-800", children: t("newsletterBroadcast") }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-500 text-sm", children: t("sendUpdatesToYourCommunity") })
     ] }) }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-1 lg:grid-cols-3 gap-8", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs(Card, { className: "lg:col-span-2 p-6 space-y-4", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-sm font-bold text-slate-700 mb-1", children: "Subject Line" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-sm font-bold text-slate-700 mb-1", children: t("subjectLine") }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("input", { className: "w-full p-3 border rounded-xl", value: form.subject, onChange: (e) => setForm({ ...form, subject: e.target.value }), placeholder: "e.g. Weekly Updates: New Features!" })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-2 gap-4", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-sm font-bold text-slate-700 mb-1", children: "Template" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-sm font-bold text-slate-700 mb-1", children: t("template") }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("select", { className: "w-full p-3 border rounded-xl", value: form.template, onChange: (e) => setForm({ ...form, template: e.target.value }), children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "modern", children: "Modern (Clean & Bright)" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "corporate", children: "Corporate (Professional)" })
+              /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "modern", children: t("modernCleanBright") }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "corporate", children: t("corporateProfessional") })
             ] })
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-sm font-bold text-slate-700 mb-1", children: "Target Audience" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-sm font-bold text-slate-700 mb-1", children: t("targetAudience") }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("select", { className: "w-full p-3 border rounded-xl", value: form.targetRole, onChange: (e) => setForm({ ...form, targetRole: e.target.value }), children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "", children: "All Users" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "SCHOOL_ADMIN", children: "School Admins Only" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "TEACHER", children: "Teachers Only" })
+              /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "", children: t("allUsers") }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "SCHOOL_ADMIN", children: t("schoolAdminsOnly") }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "TEACHER", children: t("teachersOnly") })
             ] })
           ] })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-sm font-bold text-slate-700 mb-1", children: "Message Content (HTML Supported)" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-sm font-bold text-slate-700 mb-1", children: t("messageContentHtmlSupported") }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("textarea", { className: "w-full p-3 border rounded-xl font-mono text-sm", rows: 8, value: form.content, onChange: (e) => setForm({ ...form, content: e.target.value }), placeholder: "<p>Dear Teachers...</p>" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-400 mt-1", children: "Basic HTML tags allowed: p, b, i, ul, li, br." })
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-400 mt-1", children: t("basicHtmlTagsAllowedP") })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "pt-4 border-t border-slate-100 flex justify-end", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { onClick: handleSend, disabled: loading, children: [
           loading ? /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "w-4 h-4 animate-spin mr-2" }) : /* @__PURE__ */ jsxRuntimeExports.jsx(Mail, { className: "w-4 h-4 mr-2" }),
-          "Send Broadcast"
+          t("sendBroadcast")
         ] }) })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-6", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs(Card, { className: "p-6 bg-slate-50 border-slate-200", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "font-bold text-slate-800 mb-2", children: "Templating Tips" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "font-bold text-slate-800 mb-2", children: t("templatingTips") }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("ul", { className: "text-sm text-slate-600 space-y-2 list-disc pl-4", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs("li", { children: [
-              "Use ",
-              /* @__PURE__ */ jsxRuntimeExports.jsx("b", { children: "Target Audience" }),
-              " to avoid spamming the wrong users."
+              t("use"),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("b", { children: t("targetAudience") }),
+              " ",
+              t("toAvoidSpammingTheWrong")
             ] }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("li", { children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("b", { children: "Modern Template" }),
-              " is best for general announcements."
+              /* @__PURE__ */ jsxRuntimeExports.jsx("b", { children: t("modernTemplate") }),
+              " ",
+              t("isBestForGeneralAnnouncements")
             ] }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("li", { children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("b", { children: "Corporate Template" }),
-              " is best for official memos."
+              /* @__PURE__ */ jsxRuntimeExports.jsx("b", { children: t("corporateTemplate") }),
+              " ",
+              t("isBestForOfficialMemos")
             ] })
           ] })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs(Card, { className: "p-6", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "font-bold text-slate-800 mb-4", children: "Quick Actions" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "font-bold text-slate-800 mb-4", children: t("quickActions") }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-3", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("input", { className: "w-full p-2 border rounded text-xs", placeholder: "Button Text (e.g. Read More)", value: form.actionText, onChange: (e) => setForm({ ...form, actionText: e.target.value }) }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("input", { className: "w-full p-2 border rounded text-xs", placeholder: "Button Link (e.g. https://...)", value: form.actionLink, onChange: (e) => setForm({ ...form, actionLink: e.target.value }) })
@@ -67778,11 +70649,12 @@ const AddSchoolModal = ({ isOpen, onClose, onAdded }) => {
   return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-3xl shadow-2xl w-full max-w-2xl p-8 space-y-6 max-h-[90vh] overflow-y-auto", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-between items-center pb-4 border-b border-slate-100", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-2xl font-bold text-slate-900", children: "Add New School" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-2xl font-bold text-slate-900", children: t("addNewSchool") }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-sm text-slate-500", children: [
-          "Step ",
+          t("step"),
           step,
-          " of 2: ",
+          " ",
+          t("of2"),
           step === 1 ? "School Details" : "Assign Administrator"
         ] })
       ] }),
@@ -67795,13 +70667,13 @@ const AddSchoolModal = ({ isOpen, onClose, onAdded }) => {
           /* @__PURE__ */ jsxRuntimeExports.jsx("input", { type: "file", onChange: handleLogoChange, className: "absolute inset-0 opacity-0 cursor-pointer", accept: "image/*" })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 space-y-2", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "text-sm font-bold text-slate-700", children: "School Name" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "text-sm font-bold text-slate-700", children: t("schoolName") }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("input", { className: "w-full p-2 border rounded-lg", value: form.name, onChange: (e) => setForm({ ...form, name: e.target.value }), placeholder: "e.g. SK Taman Melati" }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-2", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("input", { className: "flex-1 p-2 border rounded-lg", value: form.code, onChange: (e) => setForm({ ...form, code: e.target.value }), placeholder: "School Code (e.g. ABC1234)" }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("select", { className: "p-2 border rounded-lg", value: form.type, onChange: (e) => setForm({ ...form, type: e.target.value }), children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "SR", children: "SR (Primary)" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "SMK", children: "SMK (Secondary)" })
+              /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "SR", children: t("srPrimary") }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("option", { value: "SMK", children: t("smkSecondary") })
             ] })
           ] })
         ] })
@@ -67816,9 +70688,10 @@ const AddSchoolModal = ({ isOpen, onClose, onAdded }) => {
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-blue-50 p-4 rounded-xl text-blue-800 text-sm", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { className: "font-bold flex items-center gap-2", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(ShieldCheck, { className: "w-4 h-4" }),
-          " School Administrator"
+          " ",
+          t("schoolAdministrator")
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-1", children: "Search for an existing user to assign as the School Admin. If they don't exist, we'll send them an invitation." })
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "mt-1", children: t("searchForAnExistingUser") })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-2", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -67837,7 +70710,7 @@ const AddSchoolModal = ({ isOpen, onClose, onAdded }) => {
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("h5", { className: "font-bold text-green-900", children: foundUser.name }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-xs text-green-700", children: [
-            "Current Role: ",
+            t("currentRole"),
             foundUser.role,
             " • ",
             foundUser.school_id || "No School"
@@ -67848,18 +70721,20 @@ const AddSchoolModal = ({ isOpen, onClose, onAdded }) => {
       adminStatus === "not_found" && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-4 border border-amber-200 bg-amber-50 rounded-xl animate-in slide-in-from-top-2", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("h5", { className: "font-bold text-amber-900 flex items-center gap-2", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(Mail, { className: "w-4 h-4" }),
-          " User Not Found"
+          " ",
+          t("userNotFound")
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-sm text-amber-800 mt-1", children: [
-          "We will send a ",
-          /* @__PURE__ */ jsxRuntimeExports.jsx("b", { children: "Registration Invitation" }),
-          " to this email with instructions on how to set up their School Admin account."
+          t("weWillSendA"),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("b", { children: t("registrationInvitation") }),
+          " ",
+          t("toThisEmailWithInstructions")
         ] })
       ] })
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-end gap-3 pt-4 border-t border-slate-100", children: [
-      step === 2 && /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "ghost", onClick: () => setStep(1), children: "Back" }),
-      step === 1 ? /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { onClick: () => setStep(2), disabled: !form.name || !form.code, children: "Next Step" }) : /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { onClick: handleSubmit, disabled: adminStatus === "idle", children: "Create School" })
+      step === 2 && /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "ghost", onClick: () => setStep(1), children: t("back") }),
+      step === 1 ? /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { onClick: () => setStep(2), disabled: !form.name || !form.code, children: t("nextStep") }) : /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { onClick: handleSubmit, disabled: adminStatus === "idle", children: t("createSchool") })
     ] })
   ] }) });
 };
@@ -67875,7 +70750,8 @@ const SchoolManager = () => {
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { onClick: () => setIsModalOpen(true), children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(Building, { className: "w-4 h-4 mr-2" }),
-        " Add School"
+        " ",
+        t("addSchool")
       ] })
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6", children: schools.map((school) => /* @__PURE__ */ jsxRuntimeExports.jsxs(Card, { className: "p-0 overflow-hidden hover:shadow-md transition-shadow", children: [
@@ -67903,7 +70779,7 @@ const SchoolManager = () => {
             /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "line-clamp-1", children: school.address })
           ] })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mt-4 pt-4 border-t border-slate-50 flex justify-end", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "ghost", size: "sm", className: "text-xs", children: "Manage Profile" }) })
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "mt-4 pt-4 border-t border-slate-50 flex justify-end", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "ghost", size: "sm", className: "text-xs", children: t("manageProfile") }) })
       ] })
     ] }, school.id)) }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -67948,7 +70824,7 @@ const Mailbox = () => {
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-2 bg-blue-50 rounded-xl text-blue-600", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Inbox, { className: "w-5 h-5" }) }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-xl font-black text-slate-800 tracking-tight", children: "Admin Mailbox" })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-xl font-black text-slate-800 tracking-tight", children: t("adminMailbox") })
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-1", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("button", { className: "p-2 hover:bg-slate-50 text-slate-400 rounded-xl transition-colors", children: /* @__PURE__ */ jsxRuntimeExports.jsx(RotateCcw, { className: "w-4 h-4" }) }),
@@ -67970,10 +70846,10 @@ const Mailbox = () => {
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex-1 overflow-y-auto custom-scrollbar", children: isLoading ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-12 text-center space-y-4", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs font-black text-slate-400 uppercase tracking-widest", children: "Hydrating Subsystem..." })
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs font-black text-slate-400 uppercase tracking-widest", children: t("hydratingSubsystem") })
       ] }) : filteredEmails.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-12 text-center", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(CircleAlert, { className: "w-12 h-12 text-slate-200 mx-auto mb-4" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-bold text-slate-400", children: "No messages found." })
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-bold text-slate-400", children: t("noMessagesFound") })
       ] }) : filteredEmails.map((email) => /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "button",
         {
@@ -67994,8 +70870,8 @@ const Mailbox = () => {
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(Card, { className: `flex-1 flex flex-col overflow-hidden rounded-[2rem] border-slate-200/60 shadow-xl shadow-slate-200/50 ${!selectedEmail ? "hidden lg:flex" : "flex"}`, children: !selectedEmail ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex-1 flex flex-col items-center justify-center text-center p-12", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-24 h-24 bg-slate-50 rounded-[2rem] flex items-center justify-center mb-6", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Mail, { className: "w-10 h-10 text-slate-200" }) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-xl font-black text-slate-800 mb-2", children: "Select a Conversation" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-bold text-slate-400 max-w-xs", children: "Pick a message from the sidebar to view details and reply to users." })
+      /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-xl font-black text-slate-800 mb-2", children: t("selectAConversation") }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-bold text-slate-400 max-w-xs", children: t("pickAMessageFromThe") })
     ] }) : /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-6 border-b border-slate-100 flex items-center justify-between shrink-0", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-4", children: [
@@ -68016,7 +70892,7 @@ const Mailbox = () => {
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-between items-center text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { children: [
-              "Subject: ",
+              t("subject_2"),
               selectedEmail.subject
             ] }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: new Date(selectedEmail.timestamp).toLocaleString() })
@@ -68027,7 +70903,7 @@ const Mailbox = () => {
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between mb-2", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 text-blue-600", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx(Reply, { className: "w-4 h-4" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs font-black uppercase tracking-widest", children: "Drafting Reply" })
+              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs font-black uppercase tracking-widest", children: t("draftingReply") })
             ] }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: () => setIsReplying(false), className: "text-slate-400 hover:text-slate-600", children: /* @__PURE__ */ jsxRuntimeExports.jsx(X, { className: "w-4 h-4" }) })
           ] }),
@@ -68042,17 +70918,18 @@ const Mailbox = () => {
             }
           ),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-end gap-3", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "ghost", onClick: () => setIsReplying(false), children: "Cancel" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { onClick: handleReply, className: "px-8 rounded-xl shadow-lg shadow-blue-500/10", children: "Send Message" })
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "ghost", onClick: () => setIsReplying(false), children: t("cancel") }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { onClick: handleReply, className: "px-8 rounded-xl shadow-lg shadow-blue-500/10", children: t("sendMessage") })
           ] })
         ] })
       ] }),
       !isReplying && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-6 border-t border-slate-100 flex gap-4 shrink-0", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { onClick: () => setIsReplying(true), className: "flex-1 rounded-2xl h-14 font-black shadow-xl shadow-blue-500/10", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(Reply, { className: "w-5 h-5 mr-2" }),
-          " Quick Reply"
+          " ",
+          t("quickReply")
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "secondary", className: "px-8 rounded-2xl h-14 font-black", children: "Forward" })
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "secondary", className: "px-8 rounded-2xl h-14 font-black", children: t("forward") })
       ] })
     ] }) })
   ] });
@@ -68128,6 +71005,108 @@ const scriptRel = 'modulepreload';const assetsURL = function(dep) { return "/"+d
   });
 };
 
+const ReleaseLog = ({ logs }) => {
+  const { t } = useTranslation();
+  const [openIndex, setOpenIndex] = reactExports.useState(0);
+  const toggle = (index) => {
+    setOpenIndex(openIndex === index ? -1 : index);
+  };
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4 max-w-4xl mx-auto", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3 mb-6", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-2 bg-indigo-100 text-indigo-700 rounded-lg", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Tag, { className: "w-5 h-5" }) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-xl font-black text-slate-800 tracking-tight", children: t("systemUpdates") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs font-bold text-slate-400 uppercase tracking-widest", children: t("releaseNotesChangelog") })
+      ] })
+    ] }),
+    logs.map((log, index) => {
+      const isOpen = openIndex === index;
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
+        "div",
+        {
+          className: `transition-all duration-300 border rounded-2xl overflow-hidden ${isOpen ? "shadow-lg border-indigo-100 bg-white" : "shadow-sm border-slate-100 bg-slate-50 hover:bg-white"}`,
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "div",
+              {
+                className: "p-5 flex items-center justify-between cursor-pointer",
+                onClick: () => toggle(index),
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-4", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: `text-lg font-black tracking-tight ${isOpen ? "text-indigo-700" : "text-slate-700"}`, children: [
+                      "v",
+                      log.version
+                    ] }),
+                    log.isLatest && /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "px-3 py-1 bg-emerald-100 text-emerald-700 text-[10px] font-black uppercase rounded-full shadow-sm", children: t("latest") }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs font-bold text-slate-400 border-l border-slate-200 pl-4", children: log.date })
+                  ] }),
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `p-2 rounded-full transition-colors ${isOpen ? "bg-indigo-50 text-indigo-600" : "bg-slate-100 text-slate-400"}`, children: isOpen ? /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronUp, { className: "w-4 h-4" }) : /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronDown, { className: "w-4 h-4" }) })
+                ]
+              }
+            ),
+            isOpen && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-6 pt-0 border-t border-indigo-50/50 space-y-6 animate-in slide-in-from-top-2 duration-200", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "h-4" }),
+              " ",
+              log.added && log.added.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-3", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { className: "flex items-center gap-2 text-xs font-black uppercase tracking-widest text-emerald-600", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-1 bg-emerald-100 rounded text-emerald-700", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Plus, { className: "w-3 h-3" }) }),
+                  t("newFeatures")
+                ] }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "space-y-2 ml-2", children: log.added.map((item, i) => /* @__PURE__ */ jsxRuntimeExports.jsxs("li", { className: "text-sm font-medium text-slate-600 flex items-start gap-3", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "w-1.5 h-1.5 rounded-full bg-emerald-400 mt-1.5 shrink-0" }),
+                  item
+                ] }, i)) })
+              ] }),
+              log.changed && log.changed.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-3", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { className: "flex items-center gap-2 text-xs font-black uppercase tracking-widest text-amber-600", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-1 bg-amber-100 rounded text-amber-700", children: /* @__PURE__ */ jsxRuntimeExports.jsx(RefreshCw, { className: "w-3 h-3" }) }),
+                  t("improvements")
+                ] }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "space-y-2 ml-2", children: log.changed.map((item, i) => /* @__PURE__ */ jsxRuntimeExports.jsxs("li", { className: "text-sm font-medium text-slate-600 flex items-start gap-3", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "w-1.5 h-1.5 rounded-full bg-amber-400 mt-1.5 shrink-0" }),
+                  item
+                ] }, i)) })
+              ] }),
+              log.fixed && log.fixed.length > 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-3", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs("h4", { className: "flex items-center gap-2 text-xs font-black uppercase tracking-widest text-blue-600", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-1 bg-blue-100 rounded text-blue-700", children: /* @__PURE__ */ jsxRuntimeExports.jsx(CircleCheckBig, { className: "w-3 h-3" }) }),
+                  t("bugFixes")
+                ] }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("ul", { className: "space-y-2 ml-2", children: log.fixed.map((item, i) => /* @__PURE__ */ jsxRuntimeExports.jsxs("li", { className: "text-sm font-medium text-slate-600 flex items-start gap-3", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "w-1.5 h-1.5 rounded-full bg-blue-400 mt-1.5 shrink-0" }),
+                  item
+                ] }, i)) })
+              ] })
+            ] })
+          ]
+        },
+        log.version
+      );
+    })
+  ] });
+};
+
+const RELEASE_LOGS = [
+  {
+    version: "1.1.0",
+    date: "2026-01-08",
+    isLatest: true,
+    added: [
+      'New 2-stage DSKP Sync: "Sync Raw" and "Process Mapping" buttons.',
+      "Strict Priority Keyword Parser for School Categories (SK/SJKC/SJKT/Pemulihan)."
+    ],
+    changed: [
+      "Refactored project structure into /src/app, /src/components, and /src/lib.",
+      "Replaced static DSKP pages with a single Dynamic Route template."
+    ],
+    fixed: [
+      "Resolved issue where SJKT subjects were incorrectly grouped under SJKC.",
+      'Fixed "Empty Table" error by implementing row validation during mapping.'
+    ]
+  }
+  // Add older logs here if needed
+];
+
 const SystemConfig = () => {
   const { t } = useLanguage();
   const { currentUser } = useGlobal();
@@ -68171,12 +71150,13 @@ const SystemConfig = () => {
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-8 max-w-6xl mx-auto p-6 animate-in fade-in duration-500", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-between items-center", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-2xl font-bold text-slate-800", children: "System Configuration" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-500 text-sm", children: "Control eRPH Pro's global infrastructure, marketing and monetization." })
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-2xl font-bold text-slate-800", children: t("systemConfiguration") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-500 text-sm", children: t("controlErphProsGlobalInfrastructure") })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { onClick: handleSave, isLoading: isSaving, className: "rounded-xl px-8 shadow-lg shadow-blue-500/20", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(Save, { className: "w-4 h-4 mr-2" }),
-        " Sync Master Config"
+        " ",
+        t("syncMasterConfig")
       ] })
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8", children: [
@@ -68187,7 +71167,7 @@ const SystemConfig = () => {
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1", children: "Editorial Author Name" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1", children: t("editorialAuthorName") }),
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               "input",
               {
@@ -68198,7 +71178,7 @@ const SystemConfig = () => {
             )
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between p-3 bg-slate-50 rounded-xl border border-slate-100", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs font-bold text-slate-700", children: "Auto-Crawl Trends" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs font-bold text-slate-700", children: t("autocrawlTrends") }),
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               "button",
               {
@@ -68210,22 +71190,22 @@ const SystemConfig = () => {
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-4 bg-indigo-50 border border-indigo-100 rounded-2xl flex gap-3", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(Zap, { className: "w-5 h-5 text-indigo-600 shrink-0 mt-0.5" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[10px] font-bold text-indigo-800 leading-normal uppercase", children: "The CMS uses Aiden's AI engine to crawl pedagogical trends and draft expert analysis automatically." })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[10px] font-bold text-indigo-800 leading-normal uppercase", children: t("theCmsUsesAidensAi") })
           ] })
         ] })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs(Card, { className: "p-8 rounded-3xl space-y-6", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3 mb-2", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-2 bg-blue-50 rounded-xl text-blue-600", children: /* @__PURE__ */ jsxRuntimeExports.jsx(ChartColumn, { className: "w-5 h-5" }) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-black text-slate-800 uppercase tracking-tight", children: "Marketing & Tracking" })
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-black text-slate-800 uppercase tracking-tight", children: t("marketingTracking") })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1", children: "Google Analytics ID" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1", children: t("googleAnalyticsId") }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("input", { className: "w-full border-2 border-slate-50 bg-slate-50/50 p-3 rounded-xl text-sm font-bold focus:border-blue-500 outline-none", value: config.googleAnalyticsId, onChange: (e) => setConfig({ ...config, googleAnalyticsId: e.target.value }) })
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1", children: "Search Console Token" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1", children: t("searchConsoleToken") }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("input", { className: "w-full border-2 border-slate-50 bg-slate-50/50 p-3 rounded-xl text-sm font-bold focus:border-blue-500 outline-none", value: config.googleSearchConsoleId, onChange: (e) => setConfig({ ...config, googleSearchConsoleId: e.target.value }) })
           ] })
         ] })
@@ -68233,26 +71213,26 @@ const SystemConfig = () => {
       /* @__PURE__ */ jsxRuntimeExports.jsxs(Card, { className: "p-8 rounded-3xl space-y-6", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3 mb-2", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-2 bg-amber-50 rounded-xl text-amber-600", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Globe, { className: "w-5 h-5" }) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-black text-slate-800 uppercase tracking-tight", children: "Monetization (AdSense)" })
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-black text-slate-800 uppercase tracking-tight", children: t("monetizationAdsense") })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1", children: "AdSense Publisher ID" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1", children: t("adsensePublisherId") }),
             /* @__PURE__ */ jsxRuntimeExports.jsx("input", { className: "w-full border-2 border-slate-50 bg-slate-50/50 p-3 rounded-xl text-sm font-bold focus:border-amber-500 outline-none", value: config.googleAdsenseId, onChange: (e) => setConfig({ ...config, googleAdsenseId: e.target.value }) })
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-4 bg-amber-50 border border-amber-100 rounded-2xl flex gap-3", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(Shield, { className: "w-5 h-5 text-amber-600 shrink-0 mt-0.5" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[10px] font-bold text-amber-800 leading-normal uppercase", children: "Ad units are strictly limited to the Article CMS platform to maintain professional portal aesthetics." })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[10px] font-bold text-amber-800 leading-normal uppercase", children: t("adUnitsAreStrictlyLimited") })
           ] })
         ] })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs(Card, { className: "p-8 rounded-3xl space-y-6", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3 mb-2", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-2 bg-rose-50 rounded-xl text-rose-600", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Database, { className: "w-5 h-5" }) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-black text-slate-800 uppercase tracking-tight", children: "Database & Demo Tools" })
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-black text-slate-800 uppercase tracking-tight", children: t("databaseDemoTools") })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[10px] font-bold text-slate-400 uppercase leading-relaxed", children: "Populate the system with fresh demo data for teachers and principals. This cleans old demo records first." }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[10px] font-bold text-slate-400 uppercase leading-relaxed", children: t("populateTheSystemWithFresh") }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs(
             Button,
             {
@@ -68267,13 +71247,14 @@ const SystemConfig = () => {
               },
               children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx(Zap, { className: "w-4 h-4 mr-2" }),
-                " Re-seed Demo Data"
+                " ",
+                t("reseedDemoData")
               ]
             }
           ),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-4 bg-rose-50 border border-rose-100 rounded-2xl flex gap-3", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(TriangleAlert, { className: "w-5 h-5 text-rose-600 shrink-0 mt-0.5" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[10px] font-bold text-rose-800 leading-normal uppercase", children: "Use with caution. Only affects demo accounts. Real user data is never touched." })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[10px] font-bold text-rose-800 leading-normal uppercase", children: t("useWithCautionOnlyAffects") })
           ] })
         ] })
       ] }),
@@ -68281,16 +71262,17 @@ const SystemConfig = () => {
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-between items-center mb-2", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-2 bg-emerald-50 rounded-xl text-emerald-600", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Server, { className: "w-5 h-5" }) }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-black text-slate-800 uppercase tracking-tight", children: "Mail Infrastructure (Enterprise)" })
+            /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-black text-slate-800 uppercase tracking-tight", children: t("mailInfrastructureEnterprise") })
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { onClick: handleSendTest, variant: "ghost", size: "sm", className: "text-emerald-600 hover:bg-emerald-50 rounded-xl font-black", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsx(Send, { className: "w-4 h-4 mr-2" }),
-            " Send Test Mail"
+            " ",
+            t("sendTestMail")
           ] })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-1 md:grid-cols-4 gap-6", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "md:col-span-2", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1", children: "Mail Server Host (Incoming/Outgoing)" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1", children: t("mailServerHostIncomingoutgoing") }),
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               "input",
               {
@@ -68301,7 +71283,7 @@ const SystemConfig = () => {
             )
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1", children: "SMTP Port (SSL)" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1", children: t("smtpPortSsl") }),
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               "input",
               {
@@ -68312,7 +71294,7 @@ const SystemConfig = () => {
             )
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1", children: "Username (Primary Admin)" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1", children: t("usernamePrimaryAdmin") }),
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               "input",
               {
@@ -68323,7 +71305,7 @@ const SystemConfig = () => {
             )
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1", children: "POP3 Port (995)" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1", children: t("pop3Port995") }),
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               "input",
               {
@@ -68334,7 +71316,7 @@ const SystemConfig = () => {
             )
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1", children: "IMAP Port (993)" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1", children: t("imapPort993") }),
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               "input",
               {
@@ -68345,7 +71327,7 @@ const SystemConfig = () => {
             )
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "md:col-span-2", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1", children: "Mailbox Password" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1", children: t("mailboxPassword") }),
             /* @__PURE__ */ jsxRuntimeExports.jsx(
               "input",
               {
@@ -68360,7 +71342,7 @@ const SystemConfig = () => {
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center justify-between mb-4", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx(RefreshCw, { className: "w-4 h-4 text-slate-400" }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs font-black text-slate-400 uppercase tracking-widest", children: "Auto-Reply Configuration" })
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs font-black text-slate-400 uppercase tracking-widest", children: t("autoreplyConfiguration") })
               ] }),
               /* @__PURE__ */ jsxRuntimeExports.jsx(
                 "button",
@@ -68383,7 +71365,8 @@ const SystemConfig = () => {
           ] })
         ] })
       ] })
-    ] })
+    ] }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "pt-8 border-t border-slate-200", children: /* @__PURE__ */ jsxRuntimeExports.jsx(ReleaseLog, { logs: RELEASE_LOGS }) })
   ] });
 };
 
@@ -68506,7 +71489,7 @@ const ArticleManager = () => {
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col md:flex-row justify-between items-start md:items-center gap-4", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-2xl font-bold text-slate-800", children: t("article_hub") }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-500 text-sm", children: "Manage educational editorial content for the public website." })
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-500 text-sm", children: t("manageEducationalEditorialContentFor") })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-3", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -68518,16 +71501,17 @@ const ArticleManager = () => {
             className: `rounded-xl transition-all ${isCrawling ? "bg-amber-50 border-amber-200" : ""}`,
             children: isCrawling ? /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "w-4 h-4 mr-2 animate-spin text-amber-500" }),
-              "Aiden is Crawling..."
+              t("aidenIsCrawling")
             ] }) : /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
               /* @__PURE__ */ jsxRuntimeExports.jsx(Zap, { className: "w-4 h-4 mr-2 text-amber-500" }),
-              "Trigger AI Crawl"
+              t("triggerAiCrawl")
             ] })
           }
         ),
         /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { onClick: () => handleOpenEditor(), className: "rounded-xl shadow-lg shadow-blue-200", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(Plus, { className: "w-4 h-4 mr-2" }),
-          " New Editorial"
+          " ",
+          t("newEditorial")
         ] })
       ] })
     ] }),
@@ -68546,12 +71530,12 @@ const ArticleManager = () => {
     /* @__PURE__ */ jsxRuntimeExports.jsx(Card, { className: "p-0 overflow-hidden rounded-3xl border-slate-100 shadow-xl shadow-slate-200/50", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("table", { className: "w-full text-sm text-left", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx("thead", { className: "bg-slate-50 text-slate-500 uppercase text-[10px] font-black tracking-widest border-b border-slate-100", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "p-5", children: t("subject") }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "p-5", children: "Category" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "p-5", children: "Author" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "p-5", children: "Stats" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "p-5 text-right", children: "Actions" })
+        /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "p-5", children: t("category") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "p-5", children: t("author") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "p-5", children: t("stats") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "p-5 text-right", children: t("actions") })
       ] }) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("tbody", { className: "divide-y divide-slate-50 bg-white", children: isLoading ? /* @__PURE__ */ jsxRuntimeExports.jsx("tr", { children: /* @__PURE__ */ jsxRuntimeExports.jsx("td", { colSpan: 5, className: "p-12 text-center text-slate-400", children: "Loading Articles..." }) }) : filtered.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("tr", { children: /* @__PURE__ */ jsxRuntimeExports.jsx("td", { colSpan: 5, className: "p-20 text-center text-slate-400 italic", children: "No editorials found." }) }) : filtered.map((article) => /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { className: "hover:bg-slate-50/50 group transition-colors", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("tbody", { className: "divide-y divide-slate-50 bg-white", children: isLoading ? /* @__PURE__ */ jsxRuntimeExports.jsx("tr", { children: /* @__PURE__ */ jsxRuntimeExports.jsx("td", { colSpan: 5, className: "p-12 text-center text-slate-400", children: t("loadingArticles") }) }) : filtered.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("tr", { children: /* @__PURE__ */ jsxRuntimeExports.jsx("td", { colSpan: 5, className: "p-20 text-center text-slate-400 italic", children: t("noEditorialsFound") }) }) : filtered.map((article) => /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { className: "hover:bg-slate-50/50 group transition-colors", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "p-5", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-bold text-slate-800 line-clamp-1", children: article.title }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] text-slate-400 font-bold uppercase mt-1", children: article.publishedAt })
@@ -68581,7 +71565,7 @@ const ArticleManager = () => {
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-6", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1", children: "Article Title" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1", children: t("articleTitle") }),
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx(Type, { className: "absolute left-3 top-3 w-4 h-4 text-slate-300" }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -68596,7 +71580,7 @@ const ArticleManager = () => {
               ] })
             ] }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1", children: "URL Slug (Optional)" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1", children: t("urlSlugOptional") }),
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx(Link, { className: "absolute left-3 top-3 w-4 h-4 text-slate-300" }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -68612,7 +71596,7 @@ const ArticleManager = () => {
             ] }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-2 gap-4", children: [
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1", children: "Category" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1", children: t("category") }),
                 /* @__PURE__ */ jsxRuntimeExports.jsxs(
                   "select",
                   {
@@ -68620,17 +71604,17 @@ const ArticleManager = () => {
                     value: editingArticle.category,
                     onChange: (e) => setEditingArticle({ ...editingArticle, category: e.target.value }),
                     children: [
-                      /* @__PURE__ */ jsxRuntimeExports.jsx("option", { children: "Pedagogy" }),
-                      /* @__PURE__ */ jsxRuntimeExports.jsx("option", { children: "Technology" }),
-                      /* @__PURE__ */ jsxRuntimeExports.jsx("option", { children: "Administration" }),
-                      /* @__PURE__ */ jsxRuntimeExports.jsx("option", { children: "Teacher Wellness" }),
-                      /* @__PURE__ */ jsxRuntimeExports.jsx("option", { children: "MoE Updates" })
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("option", { children: t("pedagogy") }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("option", { children: t("technology") }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("option", { children: t("administration") }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("option", { children: t("teacherWellness") }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("option", { children: t("moeUpdates") })
                     ]
                   }
                 )
               ] }),
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1", children: "Author" }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1", children: t("author") }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx(
                   "input",
                   {
@@ -68644,7 +71628,7 @@ const ArticleManager = () => {
           ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4", children: [
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1", children: "Short Excerpt (Meta Description)" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1", children: t("shortExcerptMetaDescription") }),
               /* @__PURE__ */ jsxRuntimeExports.jsx(
                 "textarea",
                 {
@@ -68656,7 +71640,7 @@ const ArticleManager = () => {
               )
             ] }),
             /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1", children: "Featured Image URL" }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1.5 ml-1", children: t("featuredImageUrl") }),
               /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative", children: [
                 /* @__PURE__ */ jsxRuntimeExports.jsx(Image$1, { className: "absolute left-3 top-3 w-4 h-4 text-slate-300" }),
                 /* @__PURE__ */ jsxRuntimeExports.jsx(
@@ -68673,7 +71657,7 @@ const ArticleManager = () => {
           ] })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "pt-4", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 ml-1", children: "Article Content (Markdown/HTML Support)" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-3 ml-1", children: t("articleContentMarkdownhtmlSupport") }),
           /* @__PURE__ */ jsxRuntimeExports.jsx(
             "textarea",
             {
@@ -68686,10 +71670,11 @@ const ArticleManager = () => {
         ] })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-6 border-t bg-slate-50 flex justify-end gap-3", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "secondary", onClick: () => setIsEditorOpen(false), disabled: isSaving, className: "rounded-xl px-6", children: "Discard" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "secondary", onClick: () => setIsEditorOpen(false), disabled: isSaving, className: "rounded-xl px-6", children: t("discard") }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { onClick: handleSaveArticle, isLoading: isSaving, className: "rounded-xl px-10 shadow-lg shadow-blue-500/20", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx(Save, { className: "w-4 h-4 mr-2" }),
-          " Publish Changes"
+          " ",
+          t("publishChanges")
         ] })
       ] })
     ] }) })
@@ -68698,6 +71683,7 @@ const ArticleManager = () => {
 
 const COOKIE_CONSENT_KEY = "erph_cookie_consent";
 const CookieConsent = () => {
+  const { t } = useTranslation();
   const [isVisible, setIsVisible] = reactExports.useState(false);
   reactExports.useEffect(() => {
     const consent = localStorage.getItem(COOKIE_CONSENT_KEY);
@@ -68714,19 +71700,19 @@ const CookieConsent = () => {
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex bg-slate-800/50 p-3 rounded-2xl items-start gap-4 flex-1", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(ShieldCheck, { className: "w-8 h-8 text-emerald-400 shrink-0" }),
       /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "font-bold text-sm", children: "We value your privacy" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "font-bold text-sm", children: t("weValueYourPrivacy") }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-xs text-slate-400 leading-relaxed", children: [
-          'We use cookies to enhance your experience and analyze our traffic. By clicking "Accept", you consent to our use of cookies and agree to our ',
-          /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: "/legal", className: "text-blue-400 hover:underline", children: "Privacy Policy" }),
+          t("weUseCookiesToEnhance"),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: "/legal", className: "text-blue-400 hover:underline", children: t("privacyPolicy") }),
           " & ",
-          /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: "/legal", className: "text-blue-400 hover:underline", children: "PDPA terms" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("a", { href: "/legal", className: "text-blue-400 hover:underline", children: t("pdpaTerms") }),
           "."
         ] })
       ] })
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-3 mt-4 md:mt-0", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "ghost", className: "text-slate-400 hover:text-white", onClick: handleAccept, children: "Close" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { onClick: handleAccept, className: "bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl px-8 shadow-lg shadow-emerald-500/20", children: "Accept All" })
+      /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "ghost", className: "text-slate-400 hover:text-white", onClick: handleAccept, children: t("close") }),
+      /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { onClick: handleAccept, className: "bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl px-8 shadow-lg shadow-emerald-500/20", children: t("acceptAll") })
     ] })
   ] }) });
 };
@@ -68740,6 +71726,7 @@ const ScrollToTop = () => {
 };
 
 const SecurityShell = () => {
+  const { t: t2 } = useTranslation();
   reactExports.useEffect(() => {
     if (window.location.hostname !== "localhost") {
       document.addEventListener("contextmenu", (e) => e.preventDefault());
@@ -68757,11 +71744,11 @@ const SplashScreen = () => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { class
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-center space-y-3", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsxs("h1", { className: "text-4xl font-black tracking-tight", children: [
-        "eRPH ",
-        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-blue-500", children: "Pro" })
+        t("erph"),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-blue-500", children: t("pro") })
       ] }),
       /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex flex-col items-center gap-2", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] ml-1", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: "Verifying Session" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { children: t("verifyingSession") }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "flex gap-1", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "w-1 h-1 bg-blue-500 rounded-full animate-ping" }),
           /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "w-1 h-1 bg-blue-500 rounded-full animate-ping [animation-delay:0.2s]" }),
@@ -68770,9 +71757,10 @@ const SplashScreen = () => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { class
       ] }) })
     ] })
   ] }),
-  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute bottom-12 left-0 right-0 text-center", children: /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[10px] font-bold text-slate-600 uppercase tracking-widest", children: "Protected by AIDEN Security Subsystem v0.0.33" }) })
+  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute bottom-12 left-0 right-0 text-center", children: /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[10px] font-bold text-slate-600 uppercase tracking-widest", children: t("protectedByAidenSecuritySubsystem") }) })
 ] });
 const PrivateRoute = ({ children }) => {
+  const { t: t2 } = useTranslation();
   const { currentUser, isLoading } = useGlobal();
   const location = useLocation();
   if (isLoading) return /* @__PURE__ */ jsxRuntimeExports.jsx(SplashScreen, {});
@@ -68780,11 +71768,13 @@ const PrivateRoute = ({ children }) => {
   return /* @__PURE__ */ jsxRuntimeExports.jsx(Layout, { children });
 };
 const SettingsPage = () => {
+  const { t: t2 } = useTranslation();
   const { currentUser } = useGlobal();
   if (currentUser?.role === UserRole.SUPER_ADMIN) return /* @__PURE__ */ jsxRuntimeExports.jsx(SystemConfig, {});
   return /* @__PURE__ */ jsxRuntimeExports.jsx(SchoolSettings, {});
 };
 const AppRoutes = () => {
+  const { t: t2 } = useTranslation();
   const { currentUser, isLoading } = useGlobal();
   if (isLoading) return /* @__PURE__ */ jsxRuntimeExports.jsx(SplashScreen, {});
   return /* @__PURE__ */ jsxRuntimeExports.jsxs(Routes, { children: [
@@ -68811,8 +71801,8 @@ const AppRoutes = () => {
     /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/portal/reviews", element: /* @__PURE__ */ jsxRuntimeExports.jsx(PrivateRoute, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(ReviewDashboard, {}) }) }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/portal/users", element: /* @__PURE__ */ jsxRuntimeExports.jsx(PrivateRoute, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(UserManagement, {}) }) }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/portal/schools", element: /* @__PURE__ */ jsxRuntimeExports.jsx(PrivateRoute, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(SchoolManager, {}) }) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/portal/dskp", element: /* @__PURE__ */ jsxRuntimeExports.jsx(PrivateRoute, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(DSKPManager, {}) }) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/portal/dskp", element: /* @__PURE__ */ jsxRuntimeExports.jsx(PrivateRoute, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(DSKPManager, {}) }) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/portal/dskp", element: /* @__PURE__ */ jsxRuntimeExports.jsx(PrivateRoute, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(DSKPContainer, {}) }) }),
+    /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/portal/dskp", element: /* @__PURE__ */ jsxRuntimeExports.jsx(PrivateRoute, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(DSKPContainer, {}) }) }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/portal/settings", element: /* @__PURE__ */ jsxRuntimeExports.jsx(PrivateRoute, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(SettingsPage, {}) }) }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/portal/mailbox", element: /* @__PURE__ */ jsxRuntimeExports.jsx(PrivateRoute, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(Mailbox, {}) }) }),
     /* @__PURE__ */ jsxRuntimeExports.jsx(Route, { path: "/portal/newsletter", element: /* @__PURE__ */ jsxRuntimeExports.jsx(PrivateRoute, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(NewsletterManager, {}) }) }),
@@ -68821,6 +71811,7 @@ const AppRoutes = () => {
   ] });
 };
 const App = () => {
+  const { t: t2 } = useTranslation();
   return /* @__PURE__ */ jsxRuntimeExports.jsx(HashRouter, { children: /* @__PURE__ */ jsxRuntimeExports.jsx(GlobalProvider, { children: /* @__PURE__ */ jsxRuntimeExports.jsxs(LanguageProvider, { children: [
     /* @__PURE__ */ jsxRuntimeExports.jsx(SecurityShell, {}),
     /* @__PURE__ */ jsxRuntimeExports.jsx(ScrollToTop, {}),
@@ -68828,6 +71819,3581 @@ const App = () => {
     /* @__PURE__ */ jsxRuntimeExports.jsx(AppRoutes, {})
   ] }) }) });
 };
+
+const {
+  slice,
+  forEach
+} = [];
+function defaults(obj) {
+  forEach.call(slice.call(arguments, 1), source => {
+    if (source) {
+      for (const prop in source) {
+        if (obj[prop] === undefined) obj[prop] = source[prop];
+      }
+    }
+  });
+  return obj;
+}
+function hasXSS(input) {
+  if (typeof input !== 'string') return false;
+
+  // Common XSS attack patterns
+  const xssPatterns = [/<\s*script.*?>/i, /<\s*\/\s*script\s*>/i, /<\s*img.*?on\w+\s*=/i, /<\s*\w+\s*on\w+\s*=.*?>/i, /javascript\s*:/i, /vbscript\s*:/i, /expression\s*\(/i, /eval\s*\(/i, /alert\s*\(/i, /document\.cookie/i, /document\.write\s*\(/i, /window\.location/i, /innerHTML/i];
+  return xssPatterns.some(pattern => pattern.test(input));
+}
+
+// eslint-disable-next-line no-control-regex
+const fieldContentRegExp = /^[\u0009\u0020-\u007e\u0080-\u00ff]+$/;
+const serializeCookie = function (name, val) {
+  let options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {
+    path: '/'
+  };
+  const opt = options;
+  const value = encodeURIComponent(val);
+  let str = `${name}=${value}`;
+  if (opt.maxAge > 0) {
+    const maxAge = opt.maxAge - 0;
+    if (Number.isNaN(maxAge)) throw new Error('maxAge should be a Number');
+    str += `; Max-Age=${Math.floor(maxAge)}`;
+  }
+  if (opt.domain) {
+    if (!fieldContentRegExp.test(opt.domain)) {
+      throw new TypeError('option domain is invalid');
+    }
+    str += `; Domain=${opt.domain}`;
+  }
+  if (opt.path) {
+    if (!fieldContentRegExp.test(opt.path)) {
+      throw new TypeError('option path is invalid');
+    }
+    str += `; Path=${opt.path}`;
+  }
+  if (opt.expires) {
+    if (typeof opt.expires.toUTCString !== 'function') {
+      throw new TypeError('option expires is invalid');
+    }
+    str += `; Expires=${opt.expires.toUTCString()}`;
+  }
+  if (opt.httpOnly) str += '; HttpOnly';
+  if (opt.secure) str += '; Secure';
+  if (opt.sameSite) {
+    const sameSite = typeof opt.sameSite === 'string' ? opt.sameSite.toLowerCase() : opt.sameSite;
+    switch (sameSite) {
+      case true:
+        str += '; SameSite=Strict';
+        break;
+      case 'lax':
+        str += '; SameSite=Lax';
+        break;
+      case 'strict':
+        str += '; SameSite=Strict';
+        break;
+      case 'none':
+        str += '; SameSite=None';
+        break;
+      default:
+        throw new TypeError('option sameSite is invalid');
+    }
+  }
+  if (opt.partitioned) str += '; Partitioned';
+  return str;
+};
+const cookie = {
+  create(name, value, minutes, domain) {
+    let cookieOptions = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : {
+      path: '/',
+      sameSite: 'strict'
+    };
+    if (minutes) {
+      cookieOptions.expires = new Date();
+      cookieOptions.expires.setTime(cookieOptions.expires.getTime() + minutes * 60 * 1000);
+    }
+    if (domain) cookieOptions.domain = domain;
+    document.cookie = serializeCookie(name, value, cookieOptions);
+  },
+  read(name) {
+    const nameEQ = `${name}=`;
+    const ca = document.cookie.split(';');
+    for (let i = 0; i < ca.length; i++) {
+      let c = ca[i];
+      while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+      if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+    }
+    return null;
+  },
+  remove(name, domain) {
+    this.create(name, '', -1, domain);
+  }
+};
+var cookie$1 = {
+  name: 'cookie',
+  // Deconstruct the options object and extract the lookupCookie property
+  lookup(_ref) {
+    let {
+      lookupCookie
+    } = _ref;
+    if (lookupCookie && typeof document !== 'undefined') {
+      return cookie.read(lookupCookie) || undefined;
+    }
+    return undefined;
+  },
+  // Deconstruct the options object and extract the lookupCookie, cookieMinutes, cookieDomain, and cookieOptions properties
+  cacheUserLanguage(lng, _ref2) {
+    let {
+      lookupCookie,
+      cookieMinutes,
+      cookieDomain,
+      cookieOptions
+    } = _ref2;
+    if (lookupCookie && typeof document !== 'undefined') {
+      cookie.create(lookupCookie, lng, cookieMinutes, cookieDomain, cookieOptions);
+    }
+  }
+};
+
+var querystring = {
+  name: 'querystring',
+  // Deconstruct the options object and extract the lookupQuerystring property
+  lookup(_ref) {
+    let {
+      lookupQuerystring
+    } = _ref;
+    let found;
+    if (typeof window !== 'undefined') {
+      let {
+        search
+      } = window.location;
+      if (!window.location.search && window.location.hash?.indexOf('?') > -1) {
+        search = window.location.hash.substring(window.location.hash.indexOf('?'));
+      }
+      const query = search.substring(1);
+      const params = query.split('&');
+      for (let i = 0; i < params.length; i++) {
+        const pos = params[i].indexOf('=');
+        if (pos > 0) {
+          const key = params[i].substring(0, pos);
+          if (key === lookupQuerystring) {
+            found = params[i].substring(pos + 1);
+          }
+        }
+      }
+    }
+    return found;
+  }
+};
+
+var hash = {
+  name: 'hash',
+  // Deconstruct the options object and extract the lookupHash property and the lookupFromHashIndex property
+  lookup(_ref) {
+    let {
+      lookupHash,
+      lookupFromHashIndex
+    } = _ref;
+    let found;
+    if (typeof window !== 'undefined') {
+      const {
+        hash
+      } = window.location;
+      if (hash && hash.length > 2) {
+        const query = hash.substring(1);
+        if (lookupHash) {
+          const params = query.split('&');
+          for (let i = 0; i < params.length; i++) {
+            const pos = params[i].indexOf('=');
+            if (pos > 0) {
+              const key = params[i].substring(0, pos);
+              if (key === lookupHash) {
+                found = params[i].substring(pos + 1);
+              }
+            }
+          }
+        }
+        if (found) return found;
+        if (!found && lookupFromHashIndex > -1) {
+          const language = hash.match(/\/([a-zA-Z-]*)/g);
+          if (!Array.isArray(language)) return undefined;
+          const index = typeof lookupFromHashIndex === 'number' ? lookupFromHashIndex : 0;
+          return language[index]?.replace('/', '');
+        }
+      }
+    }
+    return found;
+  }
+};
+
+let hasLocalStorageSupport = null;
+const localStorageAvailable = () => {
+  if (hasLocalStorageSupport !== null) return hasLocalStorageSupport;
+  try {
+    hasLocalStorageSupport = typeof window !== 'undefined' && window.localStorage !== null;
+    if (!hasLocalStorageSupport) {
+      return false;
+    }
+    const testKey = 'i18next.translate.boo';
+    window.localStorage.setItem(testKey, 'foo');
+    window.localStorage.removeItem(testKey);
+  } catch (e) {
+    hasLocalStorageSupport = false;
+  }
+  return hasLocalStorageSupport;
+};
+var localStorage$1 = {
+  name: 'localStorage',
+  // Deconstruct the options object and extract the lookupLocalStorage property
+  lookup(_ref) {
+    let {
+      lookupLocalStorage
+    } = _ref;
+    if (lookupLocalStorage && localStorageAvailable()) {
+      return window.localStorage.getItem(lookupLocalStorage) || undefined; // Undefined ensures type consistency with the previous version of this function
+    }
+    return undefined;
+  },
+  // Deconstruct the options object and extract the lookupLocalStorage property
+  cacheUserLanguage(lng, _ref2) {
+    let {
+      lookupLocalStorage
+    } = _ref2;
+    if (lookupLocalStorage && localStorageAvailable()) {
+      window.localStorage.setItem(lookupLocalStorage, lng);
+    }
+  }
+};
+
+let hasSessionStorageSupport = null;
+const sessionStorageAvailable = () => {
+  if (hasSessionStorageSupport !== null) return hasSessionStorageSupport;
+  try {
+    hasSessionStorageSupport = typeof window !== 'undefined' && window.sessionStorage !== null;
+    if (!hasSessionStorageSupport) {
+      return false;
+    }
+    const testKey = 'i18next.translate.boo';
+    window.sessionStorage.setItem(testKey, 'foo');
+    window.sessionStorage.removeItem(testKey);
+  } catch (e) {
+    hasSessionStorageSupport = false;
+  }
+  return hasSessionStorageSupport;
+};
+var sessionStorage = {
+  name: 'sessionStorage',
+  lookup(_ref) {
+    let {
+      lookupSessionStorage
+    } = _ref;
+    if (lookupSessionStorage && sessionStorageAvailable()) {
+      return window.sessionStorage.getItem(lookupSessionStorage) || undefined;
+    }
+    return undefined;
+  },
+  cacheUserLanguage(lng, _ref2) {
+    let {
+      lookupSessionStorage
+    } = _ref2;
+    if (lookupSessionStorage && sessionStorageAvailable()) {
+      window.sessionStorage.setItem(lookupSessionStorage, lng);
+    }
+  }
+};
+
+var navigator$1 = {
+  name: 'navigator',
+  lookup(options) {
+    const found = [];
+    if (typeof navigator !== 'undefined') {
+      const {
+        languages,
+        userLanguage,
+        language
+      } = navigator;
+      if (languages) {
+        // chrome only; not an array, so can't use .push.apply instead of iterating
+        for (let i = 0; i < languages.length; i++) {
+          found.push(languages[i]);
+        }
+      }
+      if (userLanguage) {
+        found.push(userLanguage);
+      }
+      if (language) {
+        found.push(language);
+      }
+    }
+    return found.length > 0 ? found : undefined;
+  }
+};
+
+var htmlTag = {
+  name: 'htmlTag',
+  // Deconstruct the options object and extract the htmlTag property
+  lookup(_ref) {
+    let {
+      htmlTag
+    } = _ref;
+    let found;
+    const internalHtmlTag = htmlTag || (typeof document !== 'undefined' ? document.documentElement : null);
+    if (internalHtmlTag && typeof internalHtmlTag.getAttribute === 'function') {
+      found = internalHtmlTag.getAttribute('lang');
+    }
+    return found;
+  }
+};
+
+var path = {
+  name: 'path',
+  // Deconstruct the options object and extract the lookupFromPathIndex property
+  lookup(_ref) {
+    let {
+      lookupFromPathIndex
+    } = _ref;
+    if (typeof window === 'undefined') return undefined;
+    const language = window.location.pathname.match(/\/([a-zA-Z-]*)/g);
+    if (!Array.isArray(language)) return undefined;
+    const index = typeof lookupFromPathIndex === 'number' ? lookupFromPathIndex : 0;
+    return language[index]?.replace('/', '');
+  }
+};
+
+var subdomain = {
+  name: 'subdomain',
+  lookup(_ref) {
+    let {
+      lookupFromSubdomainIndex
+    } = _ref;
+    // If given get the subdomain index else 1
+    const internalLookupFromSubdomainIndex = typeof lookupFromSubdomainIndex === 'number' ? lookupFromSubdomainIndex + 1 : 1;
+    // get all matches if window.location. is existing
+    // first item of match is the match itself and the second is the first group match which should be the first subdomain match
+    // is the hostname no public domain get the or option of localhost
+    const language = typeof window !== 'undefined' && window.location?.hostname?.match(/^(\w{2,5})\.(([a-z0-9-]{1,63}\.[a-z]{2,6})|localhost)/i);
+
+    // if there is no match (null) return undefined
+    if (!language) return undefined;
+    // return the given group match
+    return language[internalLookupFromSubdomainIndex];
+  }
+};
+
+// some environments, throws when accessing document.cookie
+let canCookies = false;
+try {
+  // eslint-disable-next-line no-unused-expressions
+  document.cookie;
+  canCookies = true;
+  // eslint-disable-next-line no-empty
+} catch (e) {}
+const order = ['querystring', 'cookie', 'localStorage', 'sessionStorage', 'navigator', 'htmlTag'];
+if (!canCookies) order.splice(1, 1);
+const getDefaults = () => ({
+  order,
+  lookupQuerystring: 'lng',
+  lookupCookie: 'i18next',
+  lookupLocalStorage: 'i18nextLng',
+  lookupSessionStorage: 'i18nextLng',
+  // cache user language
+  caches: ['localStorage'],
+  excludeCacheFor: ['cimode'],
+  // cookieMinutes: 10,
+  // cookieDomain: 'myDomain'
+
+  convertDetectedLanguage: l => l
+});
+class Browser {
+  constructor(services) {
+    let options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    this.type = 'languageDetector';
+    this.detectors = {};
+    this.init(services, options);
+  }
+  init() {
+    let services = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {
+      languageUtils: {}
+    };
+    let options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+    let i18nOptions = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+    this.services = services;
+    this.options = defaults(options, this.options || {}, getDefaults());
+    if (typeof this.options.convertDetectedLanguage === 'string' && this.options.convertDetectedLanguage.indexOf('15897') > -1) {
+      this.options.convertDetectedLanguage = l => l.replace('-', '_');
+    }
+
+    // backwards compatibility
+    if (this.options.lookupFromUrlIndex) this.options.lookupFromPathIndex = this.options.lookupFromUrlIndex;
+    this.i18nOptions = i18nOptions;
+    this.addDetector(cookie$1);
+    this.addDetector(querystring);
+    this.addDetector(localStorage$1);
+    this.addDetector(sessionStorage);
+    this.addDetector(navigator$1);
+    this.addDetector(htmlTag);
+    this.addDetector(path);
+    this.addDetector(subdomain);
+    this.addDetector(hash);
+  }
+  addDetector(detector) {
+    this.detectors[detector.name] = detector;
+    return this;
+  }
+  detect() {
+    let detectionOrder = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : this.options.order;
+    let detected = [];
+    detectionOrder.forEach(detectorName => {
+      if (this.detectors[detectorName]) {
+        let lookup = this.detectors[detectorName].lookup(this.options);
+        if (lookup && typeof lookup === 'string') lookup = [lookup];
+        if (lookup) detected = detected.concat(lookup);
+      }
+    });
+    detected = detected.filter(d => d !== undefined && d !== null && !hasXSS(d)).map(d => this.options.convertDetectedLanguage(d));
+    if (this.services && this.services.languageUtils && this.services.languageUtils.getBestMatchFromCodes) return detected; // new i18next v19.5.0
+    return detected.length > 0 ? detected[0] : null; // a little backward compatibility
+  }
+  cacheUserLanguage(lng) {
+    let caches = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : this.options.caches;
+    if (!caches) return;
+    if (this.options.excludeCacheFor && this.options.excludeCacheFor.indexOf(lng) > -1) return;
+    caches.forEach(cacheName => {
+      if (this.detectors[cacheName]) this.detectors[cacheName].cacheUserLanguage(lng, this.options);
+    });
+  }
+}
+Browser.type = 'languageDetector';
+
+const welcome$2 = "Welcome to eRPH PRO";
+const erph$2 = "eRPH";
+const pro$2 = "Pro";
+const verifyingSession$2 = "Verifying Session";
+const protectedByAidenSecuritySubsystem$2 = "Protected by AIDEN Security Subsystem v0.0.33";
+const aiLessonAssistant$2 = "AI Lesson Assistant";
+const generateHighqualityRphInSeconds$2 = "Generate high-quality RPH in seconds.";
+const subject$2 = "Subject";
+const grade$2 = "Grade";
+const lessonTopicFocus$2 = "Lesson Topic / Focus";
+const cancel$2 = "Cancel";
+const generateWithGemini$2 = "Generate with Gemini";
+const processing$2 = "Processing...";
+const fuelTheDeveloper$2 = "Fuel the Developer!";
+const erphProIs100Indie$2 = "eRPH Pro is 100% Indie Built";
+const hiIm$2 = "Hi! I'm";
+const aiden$2 = "Aiden";
+const iBuiltThisSystemAlone$2 = ".\n                                I built this system alone to help teachers like you manage RPH easier.";
+const ifErphProSavedYour$2 = "If eRPH Pro saved your time, consider treating me to a coffee";
+const rm10$2 = "(RM10)";
+const extraTipsForMyHard$2 = "(Extra tips for my hard work are deeply appreciated! ❤️)";
+const sureIllTreatYou$2 = "Sure, I'll treat you! ☕";
+const maybeNextTime$2 = "Maybe next time";
+const passTheCoffee$2 = "Pass the Coffee!";
+const scanWithTngEwallet$2 = "Scan with TnG eWallet";
+const rm1000$2 = "RM 10.00";
+const anyTipsYouLike$2 = "+ Any Tips You Like!";
+const doneRemindMeIn30$2 = "Done! (Remind me in 30 days)";
+const weValueYourPrivacy$2 = "We value your privacy";
+const weUseCookiesToEnhance$2 = "We use cookies to enhance your experience and analyze our traffic. By clicking \"Accept\", you consent to our use of cookies and agree to our";
+const privacyPolicy$2 = "Privacy Policy";
+const pdpaTerms$2 = "PDPA terms";
+const close$2 = "Close";
+const acceptAll$2 = "Accept All";
+const systemStatus$2 = "System Status";
+const online$2 = "Online";
+const error$2 = "Error";
+const connectedToFirebaseStorage$2 = "Connected to Firebase Storage";
+const configMissingCheckConsole$2 = "Config Missing. Check Console.";
+const aiAssist$2 = "AI Assist:";
+const poweredByGemini$2 = "Powered by Gemini";
+const consultingGeminiAi$2 = "Consulting Gemini AI...";
+const sustainableAiForTeachers$2 = "Sustainable AI for Teachers";
+const traditionalAiToolsOftenCharge$2 = "Traditional AI tools often charge high monthly fees. eRPH Pro stays";
+const lowcost$2 = "low-cost";
+const byLettingYouUseYour$2 = "by letting you use your own official Google Gemini quota.";
+const googleOffersAGenerousFree$2 = "Google offers a generous FREE tier for personal use.";
+const noMiddlemanMarkupsOnYour$2 = "No middle-man markups on your AI usage.";
+const completePrivacyYourDataStays$2 = "Complete privacy: Your data stays in your account.";
+const showMeHowToGet$2 = "Show me how to get a key";
+const gettingYourPrivateKey$2 = "Getting Your Private Key";
+const followThese3SimpleSubsteps$2 = "Follow these 3 simple sub-steps:";
+const clickThe$2 = "Click the";
+const blueButton$2 = "Blue Button";
+const belowToOpenGooglesAi$2 = "below to open Google's AI Studio (opens in a new tab).";
+const signInWithYourGoogle$2 = "Sign in with your Google Account and click";
+const getApiKey$2 = "\"Get API key\"";
+const inTheSidebar$2 = "in the sidebar.";
+const click$2 = "Click";
+const createApiKey$2 = "\"Create API key\"";
+const onceCreatedComeBackHere$2 = ". Once created, come back here and click Next.";
+const back$2 = "Back";
+const finalStepSecureLink$2 = "Final Step: Secure Link";
+const whenYouClickFinishA$2 = "When you click finish, a Google window will ask for your key. Simply paste the key you copied into that window.";
+const safetyPrivacy$2 = "Safety & Privacy";
+const yourKeyIsNeverStored$2 = "YOUR KEY IS NEVER STORED ON OUR SERVERS. IT STAYS INSIDE YOUR BROWSER SESSION ONLY.";
+const finishConnect$2 = "Finish & Connect";
+const goBackToInstructions$2 = "Go Back to Instructions";
+const havingTroubleMostTeachersUse$2 = "Having trouble? Most teachers use a personal @gmail.com account for the easiest setup.";
+const erphPro$2 = "eRPH Pro";
+const printPreview$2 = "Print Preview";
+const lessonPlansSelected$2 = "Lesson Plan(s) selected";
+const print$2 = "Print";
+const version$2 = "Version";
+const dskpBrowser$2 = "DSKP Browser";
+const selectStandardToAutofillLesson$2 = "Select standard to auto-fill lesson plan.";
+const allSubjects$2 = "All Subjects";
+const yearGrade$2 = "Year / Grade";
+const allLevels$2 = "All Levels";
+const loadingDskp$2 = "Loading DSKP...";
+const noStandardsFoundMatchingYour$2 = "No standards found matching your criteria.";
+const contentStandard$2 = "Content Standard";
+const selected$2 = "Selected";
+const standardsSelected$2 = "standards selected";
+const include$2 = "Include";
+const standards$2 = "Standards";
+const resourceNotFound$2 = "Resource Not Found";
+const thePageYouAreLooking$2 = "The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.";
+const goBack$2 = "Go Back";
+const dashboard$2 = "Dashboard";
+const erphProBullSecurityRegistry$2 = "eRPH Pro &bull; Security & Registry Subsystem";
+const logo$2 = "LOGO";
+const nilaiPendidikanSivik$2 = "NILAI PENDIDIKAN SIVIK";
+const namaGuru$2 = "NAMA GURU";
+const minggu$2 = "MINGGU";
+const tarikh$2 = "/ TARIKH";
+const hari$2 = "HARI";
+const disahkanOlehHantarErph$2 = "DISAHKAN OLEH / HANTAR eRPH";
+const rancanganPengajaranHarianTs25Cup$2 = "RANCANGAN PENGAJARAN HARIAN TS25 (CUP)";
+const time$2 = "TIME";
+const subject_1$2 = "SUBJECT";
+const themeTopic$2 = "THEME / TOPIC";
+const standard$2 = "STANDARD";
+const contentStandard_1$2 = "CONTENT STANDARD:";
+const learningStandard$2 = "LEARNING STANDARD:";
+const objectives$2 = "OBJECTIVES";
+const successCriteria$2 = "SUCCESS CRITERIA";
+const activities$2 = "ACTIVITIES";
+const bbmTeachingAids$2 = "BBM (Teaching Aids):";
+const pak21$2 = "PAK-21:";
+const kbatHots$2 = "KBAT (HOTS):";
+const assessment$2 = "Assessment:";
+const reflection$2 = "REFLECTION";
+const noReflectionRecorded$2 = "No reflection recorded.";
+const pro_1$2 = "PRO";
+const stable$2 = "(Stable)";
+const loadingSchoolProfile$2 = "Loading School Profile...";
+const skPreset$2 = "SK Preset";
+const smkPreset$2 = "SMK Preset";
+const academicCalendarGroup$2 = "Academic Calendar Group";
+const kumpulanA$2 = "Kumpulan A";
+const johorKedahKelantanTerengganu$2 = "Johor, Kedah, Kelantan & Terengganu";
+const kumpulanB$2 = "Kumpulan B";
+const melakaNegeriSembilanPahangPerak$2 = "Melaka, Negeri Sembilan, Pahang, Perak, Perlis, Pulau Pinang, Sabah, Sarawak, Selangor, WP";
+const operatingHours$2 = "Operating Hours";
+const subjects$2 = "Subjects";
+const classes$2 = "Classes";
+const loadingUsers$2 = "Loading Users...";
+const noRptGeneratedForThis$2 = "No RPT generated for this session yet.";
+const newsletterBroadcast$2 = "Newsletter Broadcast";
+const sendUpdatesToYourCommunity$2 = "Send updates to your community.";
+const subjectLine$2 = "Subject Line";
+const template$2 = "Template";
+const modernCleanBright$2 = "Modern (Clean & Bright)";
+const corporateProfessional$2 = "Corporate (Professional)";
+const targetAudience$2 = "Target Audience";
+const allUsers$2 = "All Users";
+const schoolAdminsOnly$2 = "School Admins Only";
+const teachersOnly$2 = "Teachers Only";
+const messageContentHtmlSupported$2 = "Message Content (HTML Supported)";
+const basicHtmlTagsAllowedP$2 = "Basic HTML tags allowed: p, b, i, ul, li, br.";
+const sendBroadcast$2 = "Send Broadcast";
+const templatingTips$2 = "Templating Tips";
+const use$2 = "Use";
+const toAvoidSpammingTheWrong$2 = "to avoid spamming the wrong users.";
+const modernTemplate$2 = "Modern Template";
+const isBestForGeneralAnnouncements$2 = "is best for general announcements.";
+const corporateTemplate$2 = "Corporate Template";
+const isBestForOfficialMemos$2 = "is best for official memos.";
+const quickActions$2 = "Quick Actions";
+const addNewSchool$2 = "Add New School";
+const step$2 = "Step";
+const of2$2 = "of 2:";
+const schoolName$2 = "School Name";
+const srPrimary$2 = "SR (Primary)";
+const smkSecondary$2 = "SMK (Secondary)";
+const schoolAdministrator$2 = "School Administrator";
+const searchForAnExistingUser$2 = "Search for an existing user to assign as the School Admin. If they don't exist, we'll send them an invitation.";
+const currentRole$2 = "Current Role:";
+const userNotFound$2 = "User Not Found";
+const weWillSendA$2 = "We will send a";
+const registrationInvitation$2 = "Registration Invitation";
+const toThisEmailWithInstructions$2 = "to this email with instructions on how to set up their School Admin account.";
+const nextStep$2 = "Next Step";
+const createSchool$2 = "Create School";
+const addSchool$2 = "Add School";
+const manageProfile$2 = "Manage Profile";
+const newRecord$2 = "New Record";
+const teacher$2 = "Teacher";
+const type$2 = "Type";
+const timeline$2 = "Timeline";
+const reasonEvidence$2 = "Reason / Evidence";
+const status$2 = "Status";
+const noLeaveRecordsFound$2 = "No leave records found.";
+const to$2 = "to";
+const viewEvidence$2 = "View Evidence";
+const recorded$2 = "Recorded";
+const newLeaveRecord$2 = "New Leave Record";
+const leaveType$2 = "Leave Type";
+const location$3 = "Location";
+const optional$2 = "(Optional)";
+const startDate$2 = "Start Date";
+const endDate$2 = "End Date";
+const reason$2 = "Reason";
+const evidenceUpload$2 = "Evidence Upload";
+const readyToUpload$2 = "Ready to upload";
+const clickToAttachFile$2 = "Click to attach file";
+const mcLetterOrPhotoMax$2 = "MC, Letter, or Photo (Max 5MB)";
+const saveRecord$2 = "Save Record";
+const mingguAkademik$2 = "Minggu Akademik";
+const today$2 = "Today";
+const loadingWeeklyRph$2 = "Loading Weekly RPH...";
+const lessonsScheduled$2 = "Lessons Scheduled";
+const verified$2 = "Verified";
+const batchVerify$2 = "Batch Verify";
+const rph$2 = "RPH";
+const generatedBy$2 = "Generated by";
+const more$2 = "more";
+const systemTrafficAnalytics$2 = "System Traffic & Analytics";
+const realtimeSessionDataGoogleAnalytics$2 = "Real-time Session Data (Google Analytics)";
+const activeUsers$2 = "Active Users";
+const pageHits$2 = "Page Hits";
+const malaysianEducator$2 = "• Malaysian Educator";
+const tahun$2 = "Tahun";
+const praSekolah$2 = "Pra Sekolah";
+const tingkatan$2 = "Tingkatan";
+const peralihan$2 = "Peralihan";
+const selectSubjectYearToLoad$2 = "Select Subject & Year to load standards...";
+const selectContentStandardFirst$2 = "Select Content Standard first...";
+const databaseOptimizing$2 = "Database Optimizing...";
+const weAreOrganizingYourLesson$2 = "We are organizing your lesson plans. The new engine handles this in the background.";
+const loadingMonth$2 = "Loading Month...";
+const noLessonPlans$2 = "No Lesson Plans";
+const youDontHaveAnyClasses$2 = "You don't have any classes scheduled for this day.";
+const createPlan$2 = "Create Plan";
+const viewDetails$2 = "View Details";
+const noLessonPlansFound$2 = "No lesson plans found.";
+const page$2 = "Page";
+const previous$2 = "Previous";
+const next$2 = "Next";
+const securityHandshakeInProgress$2 = "Security handshake in progress";
+const malaysiasProfessionalDigitalEcosystemFor$2 = "Malaysia's professional digital ecosystem for educator administrative excellence.";
+const backToWebsite$2 = "Back to Website";
+const emailAddress$2 = "Email Address";
+const password$2 = "Password";
+const forgotPassword$2 = "Forgot Password?";
+const iAgreeToThe$2 = "I agree to the";
+const terms$2 = "Terms";
+const andConsentToTheProcessing$2 = ", and consent to the processing of my personal data in accordance with the";
+const pdpa2010Malaysia$2 = "PDPA 2010 (Malaysia)";
+const socialGateway$2 = "Social Gateway";
+const continueWithGoogle$2 = "Continue with Google";
+const backToLogin$2 = "Back to Login";
+const buildV$2 = "Build v";
+const centralizedRepositoryForEducationalResources$2 = "Centralized repository for educational resources and school directives.";
+const syncingResourceDatabase$2 = "Syncing Resource Database...";
+const noItemsSharedHereYet$2 = "No items shared here yet. Use the share button to add Google Drive links or templates.";
+const sharedBy$2 = "Shared By";
+const open$2 = "Open";
+const verifyLinkAccessSettingsAre$2 = "Verify link access settings are public before sharing.";
+const general$2 = "General";
+const dskpSyllabus$2 = "DSKP / Syllabus";
+const rphTemplates$2 = "RPH Templates";
+const schoolCircular$2 = "School Circular";
+const mediaResources$2 = "Media Resources";
+const schoolRepositoryOnly$2 = "School Repository Only";
+const publicHubAllSchools$2 = "Public Hub (All Schools)";
+const noTemplates$2 = "No Templates";
+const activeSchedule$2 = "Active Schedule";
+const setAsActive$2 = "Set as Active";
+const modifySlot$2 = "Modify Slot";
+const subjectTitle$2 = "Subject Title";
+const targetClass$2 = "Target Class";
+const startsAt$2 = "Starts At";
+const endsAt$2 = "Ends At";
+const visualLabel$2 = "Visual Label";
+const remove$2 = "Remove";
+const updateSlot$2 = "Update Slot";
+const malaysia$2 = "Malaysia";
+const professionalBio$2 = "Professional Bio";
+const yourProfileIsVisibleTo$2 = "Your profile is visible to school administrators for validation and placement records.";
+const digitalSignature$2 = "Digital Signature";
+const registerSignature$2 = "Register Signature";
+const accountInfo$2 = "Account Info";
+const cloudBackup$2 = "Cloud Backup";
+const fullName$2 = "Full Name";
+const professionalGrade$2 = "Professional Grade";
+const phoneNumber$2 = "Phone Number";
+const experienceTimeline$2 = "Experience Timeline";
+const addRecord$2 = "Add Record";
+const noServiceHistoryRecordedYet$2 = "No service history recorded yet.";
+const positionRole$2 = "Position / Role";
+const cloudBackupSetup$2 = "Cloud Backup Setup";
+const protectYourWorkBySyncing$2 = "Protect your work by syncing daily lesson plan backups to your Google Drive.";
+const connectGoogleAccount$2 = "Connect Google Account";
+const authorizeErphProToCreate$2 = "Authorize eRPH Pro to create a secure \"eRPH Pro Backups\" folder in your Google Drive. We only access files we create.";
+const grantPermission$2 = "Grant Permission";
+const startBackupService$2 = "Start Backup Service";
+const yourAccountIsConnectedYou$2 = "Your account is connected! You can now trigger an immediate backup or configure automated daily schedules (coming soon).";
+const systemConnected$2 = "System Connected";
+const driveStatusActive$2 = "Drive Status: Active";
+const uploadingBackup$2 = "Uploading Backup...";
+const runBackupNow$2 = "Run Backup Now";
+const manageEducationalEditorialContentFor$2 = "Manage educational editorial content for the public website.";
+const aidenIsCrawling$2 = "Aiden is Crawling...";
+const triggerAiCrawl$2 = "Trigger AI Crawl";
+const newEditorial$2 = "New Editorial";
+const category$2 = "Category";
+const author$2 = "Author";
+const stats$2 = "Stats";
+const actions$2 = "Actions";
+const loadingArticles$2 = "Loading Articles...";
+const noEditorialsFound$2 = "No editorials found.";
+const articleTitle$2 = "Article Title";
+const urlSlugOptional$2 = "URL Slug (Optional)";
+const pedagogy$2 = "Pedagogy";
+const technology$2 = "Technology";
+const administration$2 = "Administration";
+const teacherWellness$2 = "Teacher Wellness";
+const moeUpdates$2 = "MoE Updates";
+const shortExcerptMetaDescription$2 = "Short Excerpt (Meta Description)";
+const featuredImageUrl$2 = "Featured Image URL";
+const articleContentMarkdownhtmlSupport$2 = "Article Content (Markdown/HTML Support)";
+const discard$2 = "Discard";
+const publishChanges$2 = "Publish Changes";
+const adminMailbox$2 = "Admin Mailbox";
+const hydratingSubsystem$2 = "Hydrating Subsystem...";
+const noMessagesFound$2 = "No messages found.";
+const selectAConversation$2 = "Select a Conversation";
+const pickAMessageFromThe$2 = "Pick a message from the sidebar to view details and reply to users.";
+const subject_2$2 = "Subject:";
+const draftingReply$2 = "Drafting Reply";
+const sendMessage$2 = "Send Message";
+const quickReply$2 = "Quick Reply";
+const forward$2 = "Forward";
+const systemConfiguration$2 = "System Configuration";
+const controlErphProsGlobalInfrastructure$2 = "Control eRPH Pro's global infrastructure, marketing and monetization.";
+const syncMasterConfig$2 = "Sync Master Config";
+const editorialAuthorName$2 = "Editorial Author Name";
+const autocrawlTrends$2 = "Auto-Crawl Trends";
+const theCmsUsesAidensAi$2 = "The CMS uses Aiden's AI engine to crawl pedagogical trends and draft expert analysis automatically.";
+const marketingTracking$2 = "Marketing & Tracking";
+const googleAnalyticsId$2 = "Google Analytics ID";
+const searchConsoleToken$2 = "Search Console Token";
+const monetizationAdsense$2 = "Monetization (AdSense)";
+const adsensePublisherId$2 = "AdSense Publisher ID";
+const adUnitsAreStrictlyLimited$2 = "Ad units are strictly limited to the Article CMS platform to maintain professional portal aesthetics.";
+const databaseDemoTools$2 = "Database & Demo Tools";
+const populateTheSystemWithFresh$2 = "Populate the system with fresh demo data for teachers and principals. This cleans old demo records first.";
+const reseedDemoData$2 = "Re-seed Demo Data";
+const useWithCautionOnlyAffects$2 = "Use with caution. Only affects demo accounts. Real user data is never touched.";
+const mailInfrastructureEnterprise$2 = "Mail Infrastructure (Enterprise)";
+const sendTestMail$2 = "Send Test Mail";
+const mailServerHostIncomingoutgoing$2 = "Mail Server Host (Incoming/Outgoing)";
+const smtpPortSsl$2 = "SMTP Port (SSL)";
+const usernamePrimaryAdmin$2 = "Username (Primary Admin)";
+const pop3Port995$2 = "POP3 Port (995)";
+const imapPort993$2 = "IMAP Port (993)";
+const mailboxPassword$2 = "Mailbox Password";
+const autoreplyConfiguration$2 = "Auto-Reply Configuration";
+const securityPrivacyCenter$2 = "Security & Privacy Center";
+const protectYourEducationalRegistryAnd$2 = "Protect your educational registry and personal data.";
+const applySecurityPolicy$2 = "Apply Security Policy";
+const advancedProtection$2 = "Advanced Protection";
+const twofactorAuthentication$2 = "Two-Factor Authentication";
+const addAnExtraLayerOf$2 = "Add an extra layer of security via mobile app or SMS.";
+const autolockInactivityMins$2 = "Auto-Lock Inactivity (Mins)";
+const accountRecoveryEmail$2 = "Account Recovery Email";
+const auditTrailRecentAccess$2 = "Audit Trail: Recent Access";
+const securityScore$2 = "Security Score";
+const strongPasswordActive$2 = "Strong Password Active";
+const loginAlertsEnabled$2 = "Login alerts enabled";
+const credentials$2 = "Credentials";
+const lastChanged$2 = "Last changed:";
+const updateMasterPassword$2 = "Update Master Password";
+const terminateAllSessions$2 = "Terminate All Sessions";
+const erphProImplementsAes256Encryption$2 = "eRPH Pro implements AES-256 encryption for all data at rest. Your digital signature is stored separately in an encrypted vault.";
+const articleNotFound$2 = "Article Not Found";
+const backToArticleHub$2 = "Back to Article Hub";
+const save$2 = "Save";
+const share$2 = "Share";
+const aiSummary$2 = "AI Summary •";
+const ac$2 = "AC";
+const chiefEditor$2 = "Chief Editor";
+const professionalInsight$2 = "Professional Insight";
+const frequentlyAskedQuestions$2 = "Frequently Asked Questions";
+const helpful12k$2 = "Helpful (1.2k)";
+const shareArticle$2 = "Share Article";
+const educationArchitecture$2 = "Education Architecture";
+const dskpApi$2 = "DSKP API";
+const aidenChan$2 = "Aiden Chan";
+const masterArchitect$2 = "Master Architect";
+const aidenLeadsTheErphPro$2 = "Aiden leads the eRPH Pro engineering team, focusing on the intersection of Large Language Models and Malaysian secondary education systems.";
+const followInsights$2 = "Follow Insights";
+const syncYourRphWithGemini$2 = "Sync your RPH with Gemini 1.5 Pro today.";
+const unlockTheWorldsMostAdvanced$2 = "Unlock the world's most advanced RPH engine and save 15+ hours per week.";
+const startFreeTrial$2 = "Start Free Trial";
+const recentPublications$2 = "Recent Publications";
+const april20254MinRead$2 = "April 2025 • 4 min read";
+const ultimateEducationResourceHub$2 = "Ultimate Education Resource Hub";
+const theDigitalLibrary$2 = "The Digital Library";
+const forModernEducators$2 = "for Modern Educators";
+const over100PrecisionengineeredArticlesCovering$2 = "Over 100+ precision-engineered articles covering Malaysian pedagogy, AI integration, and school leadership excellence.";
+const filter$2 = "Filter";
+const viewFullAnalysis$2 = "View Full Analysis";
+const noArticlesFoundMatchingYour$2 = "No articles found matching your criteria";
+const editorialMandate$2 = "Editorial Mandate";
+const everyArticleInOurHub$2 = "\"Every article in our hub is cross-referenced with the latest MoE circulars and DSKP mappings to ensure teacher accuracy.\"";
+const aidensEditorialTeam$2 = "Aiden's Editorial Team";
+const malaysiaHq$2 = "Malaysia HQ";
+const googleAdsense$2 = "Google AdSense";
+const highIntentEducationalTraffic$2 = "High Intent Educational Traffic";
+const knowledgeCenter$2 = "Knowledge Center";
+const howCanWe$2 = "How can we";
+const helpYou$2 = "help you?";
+const changelogReleaseNotes$2 = "Changelog & Release Notes";
+const live$2 = "Live";
+const welcomeToErphProHeres$2 = "Welcome to eRPH Pro! Here's how to get started:";
+const logIn$2 = "Log In";
+const usingYourProvidedCredentialsIc$2 = "using your provided credentials (IC Number).";
+const navigateTo$2 = "Navigate to";
+const settings$2 = "Settings";
+const toUpdateYourProfilePhoto$2 = "to update your profile photo and signature.";
+const ensureYour$2 = "Ensure your";
+const gradeSubject$2 = "Grade & Subject";
+const detailsAreCorrect$2 = "details are correct.";
+const creatingALessonPlanIs$2 = "Creating a lesson plan is easy:";
+const newPlan$2 = "New Plan";
+const selectYour$2 = "Select your";
+const dateTimeClassAndSubject$2 = "Date, Time, Class, and Subject";
+const chooseStandardsFromThe$2 = "Choose standards from the";
+const dskpSelector$2 = "DSKP Selector";
+const saveDraft$2 = "Save Draft";
+const or$2 = "or";
+const submit$2 = "Submit";
+const weveDigitizedTheEntireDskp$2 = "We've digitized the entire DSKP library for you:";
+const useThe$2 = "Use the";
+const dskpManager$2 = "DSKP Manager";
+const toFavoriteYourSubjects$2 = "to favorite your subjects.";
+const duringRphCreationSimply$2 = "During RPH creation, simply";
+const clickToSelect$2 = "click to select";
+const standards_1$2 = "standards.";
+const everythingIsAutofilled$2 = "Everything is auto-filled!";
+const onceYoureDoneSendIt$2 = "Once you're done, send it for review:";
+const goTo$2 = "Go to";
+const myPlans$2 = "My Plans";
+const selectThePlansYouWant$2 = "Select the plans you want to submit.";
+const submitForReview$2 = "Submit for Review";
+const buttonOnTop$2 = "button on top.";
+const yourPrincipalWillBeNotified$2 = "Your principal will be notified!";
+const readGuide$2 = "Read Guide";
+const closeGuide$2 = "Close Guide";
+const dskpVerified$2 = "DSKP Verified";
+const learnMore$2 = "Learn More";
+const readyToDeploy$2 = "Ready to Deploy";
+const legalCenter$2 = "Legal Center";
+const transparencyIsOurCoreValue$2 = "Transparency is our core value. Here is everything you need to know about how we manage usage, data, and security.";
+const lastUpdatedJan072026$2 = "Last Updated: Jan 07, 2026";
+const weCollectMinimalDataNecessary$2 = "We collect minimal data necessary for the functionality of eRPH Pro. This includes:";
+const teacherNamesAndEmailAddresses$2 = "Teacher names and email addresses (for identity).";
+const lessonPlanContentRphGenerated$2 = "Lesson plan content (RPH) generated or uploaded by you.";
+const schoolProfileInformation$2 = "School profile information.";
+const yourDataIsUsedStrictly$2 = "Your data is used strictly for:";
+const providingTheLessonPlanManagement$2 = "Providing the Lesson Plan management service.";
+const generatingOfficialPdfReportsFor$2 = "Generating official PDF reports for school administration.";
+const syncingWithTheNationalDskp$2 = "Syncing with the National DSKP repository.";
+const weDoNotSellYour$2 = "We do NOT sell your data to third parties.";
+const youHaveTheRightTo$2 = "You have the right to request a full export of your data or complete account deletion at any time by contacting support.";
+const termsOfService$2 = "Terms of Service";
+const effectiveDateJan012024$2 = "Effective Date: Jan 01, 2024";
+const byUsingErphProYou$2 = "By using eRPH Pro, you are granted a non-exclusive, limited license to access the platform for educational administration purposes.";
+const youAgreeNotTo$2 = "You agree not to:";
+const misuseTheReportingToolsTo$2 = "Misuse the reporting tools to falsify official school records.";
+const attemptToReverseEngineerThe$2 = "Attempt to reverse engineer the source code.";
+const shareYourAccountCredentialsWith$2 = "Share your account credentials with unauthorized users.";
+const erphProIsProvidedAs$2 = "eRPH Pro is provided \"as is\". While we strive for 99.9% uptime, we are not liable for any data unavailability during scheduled maintenance windows.";
+const securityInfrastructure$2 = "Security Infrastructure";
+const weTakeTheSecurityOf$2 = "We take the security of Malaysian educational data seriously. Our stack is built on enterprise-grade security principles.";
+const aidenSecuritySubsystem$2 = "AIDEN Security Subsystem";
+const ourProprietaryActiveDefenseSystem$2 = "Our proprietary active defense system monitors for suspicious login patterns and prevents unauthorized access attempts in real-time.";
+const supportDevelopment$2 = "Support Development";
+const fuelThe$2 = "Fuel the";
+const revolution$2 = "Revolution.";
+const erphProIsBuiltBy$2 = "eRPH Pro is built by a single passionate developer dedicated to improving Malaysian education. Your support keeps the servers running and the caffeine flowing.";
+const community$2 = "Community";
+const free$2 = "Free";
+const forever$2 = "/ forever";
+const forSchoolsJustGettingStarted$2 = "For schools just getting started with digitalization.";
+const currentPlan$2 = "Current Plan";
+const mostPopular$2 = "Most Popular";
+const supporter$2 = "Supporter";
+const rm10_1$2 = "RM 10";
+const coffee$2 = "/ coffee";
+const showYourAppreciationAndHelp$2 = "Show your appreciation and help speed up development!";
+const treatACoffee$2 = "Treat a Coffee";
+const buyAidenACoffee$2 = "Buy Aiden a Coffee";
+const thankYouForYourSupport$2 = "Thank you for your support!";
+const done$2 = "Done!";
+const systemUpdates$2 = "System Updates";
+const releaseNotesChangelog$2 = "Release Notes & Changelog";
+const latest$2 = "Latest";
+const newFeatures$2 = "New Features";
+const improvements$2 = "Improvements";
+const bugFixes$2 = "Bug Fixes";
+const standardKandunganSk$2 = "Standard Kandungan (SK)";
+const standardPembelajaranSp$2 = "Standard Pembelajaran (SP)";
+const temaBidang$2 = "Tema / Bidang";
+const tajuk$2 = "Tajuk";
+const action$2 = "Action";
+const noStandardsFoundMatchingYour_1$2 = "No standards found matching your filter.";
+const prev$2 = "Prev";
+const of$2 = "of";
+const loadingRegistry$2 = "Loading Registry...";
+const registryEmpty$2 = "Registry Empty";
+const syncDataToBuildThe$2 = "Sync data to build the hierarchy.";
+const loadingYears$2 = "Loading Years...";
+const loadingSubjects$2 = "Loading Subjects...";
+const sk$2 = "SK";
+const dskpMasterSync$2 = "DSKP Master Sync";
+const linkTheOfficialCurriculumGoogle$2 = "Link the official curriculum Google Sheet.";
+const fetchData$2 = "Fetch Data";
+const rowsFound$2 = "Rows Found";
+const columnsDetected$2 = "Columns Detected";
+const columnMapping$2 = "Column Mapping";
+const step1SyncRawData$2 = "Step 1: Sync Raw Data";
+const step2ProcessMapRegistry$2 = "Step 2: Process & Map Registry";
+const dskpManagement$2 = "DSKP Management";
+const hierarchicalRegistryExplorer$2 = "Hierarchical Registry Explorer";
+const syncRegistry$2 = "Sync Registry";
+const en = {
+  "100": "/ 100",
+  welcome: welcome$2,
+  erph: erph$2,
+  pro: pro$2,
+  verifyingSession: verifyingSession$2,
+  protectedByAidenSecuritySubsystem: protectedByAidenSecuritySubsystem$2,
+  aiLessonAssistant: aiLessonAssistant$2,
+  generateHighqualityRphInSeconds: generateHighqualityRphInSeconds$2,
+  subject: subject$2,
+  grade: grade$2,
+  lessonTopicFocus: lessonTopicFocus$2,
+  cancel: cancel$2,
+  generateWithGemini: generateWithGemini$2,
+  processing: processing$2,
+  fuelTheDeveloper: fuelTheDeveloper$2,
+  erphProIs100Indie: erphProIs100Indie$2,
+  hiIm: hiIm$2,
+  aiden: aiden$2,
+  iBuiltThisSystemAlone: iBuiltThisSystemAlone$2,
+  ifErphProSavedYour: ifErphProSavedYour$2,
+  rm10: rm10$2,
+  extraTipsForMyHard: extraTipsForMyHard$2,
+  sureIllTreatYou: sureIllTreatYou$2,
+  maybeNextTime: maybeNextTime$2,
+  passTheCoffee: passTheCoffee$2,
+  scanWithTngEwallet: scanWithTngEwallet$2,
+  rm1000: rm1000$2,
+  anyTipsYouLike: anyTipsYouLike$2,
+  doneRemindMeIn30: doneRemindMeIn30$2,
+  weValueYourPrivacy: weValueYourPrivacy$2,
+  weUseCookiesToEnhance: weUseCookiesToEnhance$2,
+  privacyPolicy: privacyPolicy$2,
+  pdpaTerms: pdpaTerms$2,
+  close: close$2,
+  acceptAll: acceptAll$2,
+  systemStatus: systemStatus$2,
+  online: online$2,
+  error: error$2,
+  connectedToFirebaseStorage: connectedToFirebaseStorage$2,
+  configMissingCheckConsole: configMissingCheckConsole$2,
+  aiAssist: aiAssist$2,
+  poweredByGemini: poweredByGemini$2,
+  consultingGeminiAi: consultingGeminiAi$2,
+  sustainableAiForTeachers: sustainableAiForTeachers$2,
+  traditionalAiToolsOftenCharge: traditionalAiToolsOftenCharge$2,
+  lowcost: lowcost$2,
+  byLettingYouUseYour: byLettingYouUseYour$2,
+  googleOffersAGenerousFree: googleOffersAGenerousFree$2,
+  noMiddlemanMarkupsOnYour: noMiddlemanMarkupsOnYour$2,
+  completePrivacyYourDataStays: completePrivacyYourDataStays$2,
+  showMeHowToGet: showMeHowToGet$2,
+  gettingYourPrivateKey: gettingYourPrivateKey$2,
+  followThese3SimpleSubsteps: followThese3SimpleSubsteps$2,
+  clickThe: clickThe$2,
+  blueButton: blueButton$2,
+  belowToOpenGooglesAi: belowToOpenGooglesAi$2,
+  signInWithYourGoogle: signInWithYourGoogle$2,
+  getApiKey: getApiKey$2,
+  inTheSidebar: inTheSidebar$2,
+  click: click$2,
+  createApiKey: createApiKey$2,
+  onceCreatedComeBackHere: onceCreatedComeBackHere$2,
+  "1GoToGoogleAi": "1. Go to Google AI Studio",
+  back: back$2,
+  "2IHaveMyKey": "2. I have my key",
+  finalStepSecureLink: finalStepSecureLink$2,
+  whenYouClickFinishA: whenYouClickFinishA$2,
+  safetyPrivacy: safetyPrivacy$2,
+  yourKeyIsNeverStored: yourKeyIsNeverStored$2,
+  finishConnect: finishConnect$2,
+  goBackToInstructions: goBackToInstructions$2,
+  havingTroubleMostTeachersUse: havingTroubleMostTeachersUse$2,
+  erphPro: erphPro$2,
+  printPreview: printPreview$2,
+  lessonPlansSelected: lessonPlansSelected$2,
+  print: print$2,
+  version: version$2,
+  dskpBrowser: dskpBrowser$2,
+  selectStandardToAutofillLesson: selectStandardToAutofillLesson$2,
+  allSubjects: allSubjects$2,
+  yearGrade: yearGrade$2,
+  allLevels: allLevels$2,
+  loadingDskp: loadingDskp$2,
+  noStandardsFoundMatchingYour: noStandardsFoundMatchingYour$2,
+  contentStandard: contentStandard$2,
+  selected: selected$2,
+  standardsSelected: standardsSelected$2,
+  include: include$2,
+  standards: standards$2,
+  resourceNotFound: resourceNotFound$2,
+  thePageYouAreLooking: thePageYouAreLooking$2,
+  goBack: goBack$2,
+  dashboard: dashboard$2,
+  erphProBullSecurityRegistry: erphProBullSecurityRegistry$2,
+  logo: logo$2,
+  nilaiPendidikanSivik: nilaiPendidikanSivik$2,
+  namaGuru: namaGuru$2,
+  minggu: minggu$2,
+  tarikh: tarikh$2,
+  hari: hari$2,
+  disahkanOlehHantarErph: disahkanOlehHantarErph$2,
+  rancanganPengajaranHarianTs25Cup: rancanganPengajaranHarianTs25Cup$2,
+  time: time$2,
+  "class": "CLASS",
+  subject_1: subject_1$2,
+  themeTopic: themeTopic$2,
+  standard: standard$2,
+  contentStandard_1: contentStandard_1$2,
+  learningStandard: learningStandard$2,
+  objectives: objectives$2,
+  successCriteria: successCriteria$2,
+  activities: activities$2,
+  bbmTeachingAids: bbmTeachingAids$2,
+  pak21: pak21$2,
+  kbatHots: kbatHots$2,
+  assessment: assessment$2,
+  reflection: reflection$2,
+  noReflectionRecorded: noReflectionRecorded$2,
+  pro_1: pro_1$2,
+  "2026ErphPro": "© 2026 eRPH Pro.",
+  stable: stable$2,
+  loadingSchoolProfile: loadingSchoolProfile$2,
+  skPreset: skPreset$2,
+  smkPreset: smkPreset$2,
+  academicCalendarGroup: academicCalendarGroup$2,
+  kumpulanA: kumpulanA$2,
+  johorKedahKelantanTerengganu: johorKedahKelantanTerengganu$2,
+  kumpulanB: kumpulanB$2,
+  melakaNegeriSembilanPahangPerak: melakaNegeriSembilanPahangPerak$2,
+  operatingHours: operatingHours$2,
+  subjects: subjects$2,
+  classes: classes$2,
+  loadingUsers: loadingUsers$2,
+  noRptGeneratedForThis: noRptGeneratedForThis$2,
+  newsletterBroadcast: newsletterBroadcast$2,
+  sendUpdatesToYourCommunity: sendUpdatesToYourCommunity$2,
+  subjectLine: subjectLine$2,
+  template: template$2,
+  modernCleanBright: modernCleanBright$2,
+  corporateProfessional: corporateProfessional$2,
+  targetAudience: targetAudience$2,
+  allUsers: allUsers$2,
+  schoolAdminsOnly: schoolAdminsOnly$2,
+  teachersOnly: teachersOnly$2,
+  messageContentHtmlSupported: messageContentHtmlSupported$2,
+  basicHtmlTagsAllowedP: basicHtmlTagsAllowedP$2,
+  sendBroadcast: sendBroadcast$2,
+  templatingTips: templatingTips$2,
+  use: use$2,
+  toAvoidSpammingTheWrong: toAvoidSpammingTheWrong$2,
+  modernTemplate: modernTemplate$2,
+  isBestForGeneralAnnouncements: isBestForGeneralAnnouncements$2,
+  corporateTemplate: corporateTemplate$2,
+  isBestForOfficialMemos: isBestForOfficialMemos$2,
+  quickActions: quickActions$2,
+  addNewSchool: addNewSchool$2,
+  step: step$2,
+  of2: of2$2,
+  schoolName: schoolName$2,
+  srPrimary: srPrimary$2,
+  smkSecondary: smkSecondary$2,
+  schoolAdministrator: schoolAdministrator$2,
+  searchForAnExistingUser: searchForAnExistingUser$2,
+  currentRole: currentRole$2,
+  userNotFound: userNotFound$2,
+  weWillSendA: weWillSendA$2,
+  registrationInvitation: registrationInvitation$2,
+  toThisEmailWithInstructions: toThisEmailWithInstructions$2,
+  nextStep: nextStep$2,
+  createSchool: createSchool$2,
+  addSchool: addSchool$2,
+  manageProfile: manageProfile$2,
+  newRecord: newRecord$2,
+  teacher: teacher$2,
+  type: type$2,
+  timeline: timeline$2,
+  reasonEvidence: reasonEvidence$2,
+  status: status$2,
+  noLeaveRecordsFound: noLeaveRecordsFound$2,
+  to: to$2,
+  viewEvidence: viewEvidence$2,
+  recorded: recorded$2,
+  newLeaveRecord: newLeaveRecord$2,
+  leaveType: leaveType$2,
+  location: location$3,
+  optional: optional$2,
+  startDate: startDate$2,
+  endDate: endDate$2,
+  reason: reason$2,
+  evidenceUpload: evidenceUpload$2,
+  "new": "New",
+  readyToUpload: readyToUpload$2,
+  clickToAttachFile: clickToAttachFile$2,
+  mcLetterOrPhotoMax: mcLetterOrPhotoMax$2,
+  saveRecord: saveRecord$2,
+  mingguAkademik: mingguAkademik$2,
+  today: today$2,
+  loadingWeeklyRph: loadingWeeklyRph$2,
+  lessonsScheduled: lessonsScheduled$2,
+  verified: verified$2,
+  batchVerify: batchVerify$2,
+  rph: rph$2,
+  generatedBy: generatedBy$2,
+  more: more$2,
+  systemTrafficAnalytics: systemTrafficAnalytics$2,
+  realtimeSessionDataGoogleAnalytics: realtimeSessionDataGoogleAnalytics$2,
+  activeUsers: activeUsers$2,
+  pageHits: pageHits$2,
+  malaysianEducator: malaysianEducator$2,
+  tahun: tahun$2,
+  praSekolah: praSekolah$2,
+  tingkatan: tingkatan$2,
+  peralihan: peralihan$2,
+  selectSubjectYearToLoad: selectSubjectYearToLoad$2,
+  selectContentStandardFirst: selectContentStandardFirst$2,
+  databaseOptimizing: databaseOptimizing$2,
+  weAreOrganizingYourLesson: weAreOrganizingYourLesson$2,
+  loadingMonth: loadingMonth$2,
+  noLessonPlans: noLessonPlans$2,
+  youDontHaveAnyClasses: youDontHaveAnyClasses$2,
+  createPlan: createPlan$2,
+  viewDetails: viewDetails$2,
+  noLessonPlansFound: noLessonPlansFound$2,
+  page: page$2,
+  previous: previous$2,
+  next: next$2,
+  securityHandshakeInProgress: securityHandshakeInProgress$2,
+  malaysiasProfessionalDigitalEcosystemFor: malaysiasProfessionalDigitalEcosystemFor$2,
+  backToWebsite: backToWebsite$2,
+  emailAddress: emailAddress$2,
+  password: password$2,
+  forgotPassword: forgotPassword$2,
+  iAgreeToThe: iAgreeToThe$2,
+  terms: terms$2,
+  andConsentToTheProcessing: andConsentToTheProcessing$2,
+  pdpa2010Malaysia: pdpa2010Malaysia$2,
+  socialGateway: socialGateway$2,
+  continueWithGoogle: continueWithGoogle$2,
+  backToLogin: backToLogin$2,
+  buildV: buildV$2,
+  centralizedRepositoryForEducationalResources: centralizedRepositoryForEducationalResources$2,
+  syncingResourceDatabase: syncingResourceDatabase$2,
+  noItemsSharedHereYet: noItemsSharedHereYet$2,
+  sharedBy: sharedBy$2,
+  open: open$2,
+  verifyLinkAccessSettingsAre: verifyLinkAccessSettingsAre$2,
+  general: general$2,
+  dskpSyllabus: dskpSyllabus$2,
+  rphTemplates: rphTemplates$2,
+  schoolCircular: schoolCircular$2,
+  mediaResources: mediaResources$2,
+  schoolRepositoryOnly: schoolRepositoryOnly$2,
+  publicHubAllSchools: publicHubAllSchools$2,
+  noTemplates: noTemplates$2,
+  activeSchedule: activeSchedule$2,
+  setAsActive: setAsActive$2,
+  modifySlot: modifySlot$2,
+  subjectTitle: subjectTitle$2,
+  targetClass: targetClass$2,
+  startsAt: startsAt$2,
+  endsAt: endsAt$2,
+  visualLabel: visualLabel$2,
+  remove: remove$2,
+  updateSlot: updateSlot$2,
+  malaysia: malaysia$2,
+  professionalBio: professionalBio$2,
+  yourProfileIsVisibleTo: yourProfileIsVisibleTo$2,
+  digitalSignature: digitalSignature$2,
+  registerSignature: registerSignature$2,
+  accountInfo: accountInfo$2,
+  cloudBackup: cloudBackup$2,
+  fullName: fullName$2,
+  professionalGrade: professionalGrade$2,
+  phoneNumber: phoneNumber$2,
+  experienceTimeline: experienceTimeline$2,
+  addRecord: addRecord$2,
+  noServiceHistoryRecordedYet: noServiceHistoryRecordedYet$2,
+  positionRole: positionRole$2,
+  cloudBackupSetup: cloudBackupSetup$2,
+  protectYourWorkBySyncing: protectYourWorkBySyncing$2,
+  connectGoogleAccount: connectGoogleAccount$2,
+  authorizeErphProToCreate: authorizeErphProToCreate$2,
+  grantPermission: grantPermission$2,
+  startBackupService: startBackupService$2,
+  yourAccountIsConnectedYou: yourAccountIsConnectedYou$2,
+  systemConnected: systemConnected$2,
+  driveStatusActive: driveStatusActive$2,
+  uploadingBackup: uploadingBackup$2,
+  runBackupNow: runBackupNow$2,
+  manageEducationalEditorialContentFor: manageEducationalEditorialContentFor$2,
+  aidenIsCrawling: aidenIsCrawling$2,
+  triggerAiCrawl: triggerAiCrawl$2,
+  newEditorial: newEditorial$2,
+  category: category$2,
+  author: author$2,
+  stats: stats$2,
+  actions: actions$2,
+  loadingArticles: loadingArticles$2,
+  noEditorialsFound: noEditorialsFound$2,
+  articleTitle: articleTitle$2,
+  urlSlugOptional: urlSlugOptional$2,
+  pedagogy: pedagogy$2,
+  technology: technology$2,
+  administration: administration$2,
+  teacherWellness: teacherWellness$2,
+  moeUpdates: moeUpdates$2,
+  shortExcerptMetaDescription: shortExcerptMetaDescription$2,
+  featuredImageUrl: featuredImageUrl$2,
+  articleContentMarkdownhtmlSupport: articleContentMarkdownhtmlSupport$2,
+  discard: discard$2,
+  publishChanges: publishChanges$2,
+  adminMailbox: adminMailbox$2,
+  hydratingSubsystem: hydratingSubsystem$2,
+  noMessagesFound: noMessagesFound$2,
+  selectAConversation: selectAConversation$2,
+  pickAMessageFromThe: pickAMessageFromThe$2,
+  subject_2: subject_2$2,
+  draftingReply: draftingReply$2,
+  sendMessage: sendMessage$2,
+  quickReply: quickReply$2,
+  forward: forward$2,
+  systemConfiguration: systemConfiguration$2,
+  controlErphProsGlobalInfrastructure: controlErphProsGlobalInfrastructure$2,
+  syncMasterConfig: syncMasterConfig$2,
+  editorialAuthorName: editorialAuthorName$2,
+  autocrawlTrends: autocrawlTrends$2,
+  theCmsUsesAidensAi: theCmsUsesAidensAi$2,
+  marketingTracking: marketingTracking$2,
+  googleAnalyticsId: googleAnalyticsId$2,
+  searchConsoleToken: searchConsoleToken$2,
+  monetizationAdsense: monetizationAdsense$2,
+  adsensePublisherId: adsensePublisherId$2,
+  adUnitsAreStrictlyLimited: adUnitsAreStrictlyLimited$2,
+  databaseDemoTools: databaseDemoTools$2,
+  populateTheSystemWithFresh: populateTheSystemWithFresh$2,
+  reseedDemoData: reseedDemoData$2,
+  useWithCautionOnlyAffects: useWithCautionOnlyAffects$2,
+  mailInfrastructureEnterprise: mailInfrastructureEnterprise$2,
+  sendTestMail: sendTestMail$2,
+  mailServerHostIncomingoutgoing: mailServerHostIncomingoutgoing$2,
+  smtpPortSsl: smtpPortSsl$2,
+  usernamePrimaryAdmin: usernamePrimaryAdmin$2,
+  pop3Port995: pop3Port995$2,
+  imapPort993: imapPort993$2,
+  mailboxPassword: mailboxPassword$2,
+  autoreplyConfiguration: autoreplyConfiguration$2,
+  securityPrivacyCenter: securityPrivacyCenter$2,
+  protectYourEducationalRegistryAnd: protectYourEducationalRegistryAnd$2,
+  applySecurityPolicy: applySecurityPolicy$2,
+  advancedProtection: advancedProtection$2,
+  twofactorAuthentication: twofactorAuthentication$2,
+  addAnExtraLayerOf: addAnExtraLayerOf$2,
+  autolockInactivityMins: autolockInactivityMins$2,
+  "5MinutesMaximumSecurity": "5 Minutes (Maximum Security)",
+  "15MinutesStandard": "15 Minutes (Standard)",
+  "30MinutesBalanced": "30 Minutes (Balanced)",
+  "60MinutesConvenience": "60 Minutes (Convenience)",
+  accountRecoveryEmail: accountRecoveryEmail$2,
+  auditTrailRecentAccess: auditTrailRecentAccess$2,
+  securityScore: securityScore$2,
+  strongPasswordActive: strongPasswordActive$2,
+  "2faIsCurrentlyDisabled": "2FA is currently disabled",
+  loginAlertsEnabled: loginAlertsEnabled$2,
+  credentials: credentials$2,
+  lastChanged: lastChanged$2,
+  updateMasterPassword: updateMasterPassword$2,
+  terminateAllSessions: terminateAllSessions$2,
+  erphProImplementsAes256Encryption: erphProImplementsAes256Encryption$2,
+  articleNotFound: articleNotFound$2,
+  backToArticleHub: backToArticleHub$2,
+  save: save$2,
+  share: share$2,
+  aiSummary: aiSummary$2,
+  ac: ac$2,
+  chiefEditor: chiefEditor$2,
+  professionalInsight: professionalInsight$2,
+  frequentlyAskedQuestions: frequentlyAskedQuestions$2,
+  helpful12k: helpful12k$2,
+  shareArticle: shareArticle$2,
+  educationArchitecture: educationArchitecture$2,
+  dskpApi: dskpApi$2,
+  aidenChan: aidenChan$2,
+  masterArchitect: masterArchitect$2,
+  aidenLeadsTheErphPro: aidenLeadsTheErphPro$2,
+  followInsights: followInsights$2,
+  syncYourRphWithGemini: syncYourRphWithGemini$2,
+  unlockTheWorldsMostAdvanced: unlockTheWorldsMostAdvanced$2,
+  startFreeTrial: startFreeTrial$2,
+  recentPublications: recentPublications$2,
+  april20254MinRead: april20254MinRead$2,
+  ultimateEducationResourceHub: ultimateEducationResourceHub$2,
+  theDigitalLibrary: theDigitalLibrary$2,
+  forModernEducators: forModernEducators$2,
+  over100PrecisionengineeredArticlesCovering: over100PrecisionengineeredArticlesCovering$2,
+  filter: filter$2,
+  viewFullAnalysis: viewFullAnalysis$2,
+  noArticlesFoundMatchingYour: noArticlesFoundMatchingYour$2,
+  editorialMandate: editorialMandate$2,
+  everyArticleInOurHub: everyArticleInOurHub$2,
+  aidensEditorialTeam: aidensEditorialTeam$2,
+  malaysiaHq: malaysiaHq$2,
+  googleAdsense: googleAdsense$2,
+  highIntentEducationalTraffic: highIntentEducationalTraffic$2,
+  knowledgeCenter: knowledgeCenter$2,
+  howCanWe: howCanWe$2,
+  helpYou: helpYou$2,
+  changelogReleaseNotes: changelogReleaseNotes$2,
+  live: live$2,
+  welcomeToErphProHeres: welcomeToErphProHeres$2,
+  logIn: logIn$2,
+  usingYourProvidedCredentialsIc: usingYourProvidedCredentialsIc$2,
+  navigateTo: navigateTo$2,
+  settings: settings$2,
+  toUpdateYourProfilePhoto: toUpdateYourProfilePhoto$2,
+  ensureYour: ensureYour$2,
+  gradeSubject: gradeSubject$2,
+  detailsAreCorrect: detailsAreCorrect$2,
+  creatingALessonPlanIs: creatingALessonPlanIs$2,
+  newPlan: newPlan$2,
+  selectYour: selectYour$2,
+  dateTimeClassAndSubject: dateTimeClassAndSubject$2,
+  chooseStandardsFromThe: chooseStandardsFromThe$2,
+  dskpSelector: dskpSelector$2,
+  saveDraft: saveDraft$2,
+  or: or$2,
+  submit: submit$2,
+  weveDigitizedTheEntireDskp: weveDigitizedTheEntireDskp$2,
+  useThe: useThe$2,
+  dskpManager: dskpManager$2,
+  toFavoriteYourSubjects: toFavoriteYourSubjects$2,
+  duringRphCreationSimply: duringRphCreationSimply$2,
+  clickToSelect: clickToSelect$2,
+  standards_1: standards_1$2,
+  everythingIsAutofilled: everythingIsAutofilled$2,
+  onceYoureDoneSendIt: onceYoureDoneSendIt$2,
+  goTo: goTo$2,
+  myPlans: myPlans$2,
+  selectThePlansYouWant: selectThePlansYouWant$2,
+  submitForReview: submitForReview$2,
+  buttonOnTop: buttonOnTop$2,
+  yourPrincipalWillBeNotified: yourPrincipalWillBeNotified$2,
+  readGuide: readGuide$2,
+  closeGuide: closeGuide$2,
+  dskpVerified: dskpVerified$2,
+  learnMore: learnMore$2,
+  readyToDeploy: readyToDeploy$2,
+  legalCenter: legalCenter$2,
+  transparencyIsOurCoreValue: transparencyIsOurCoreValue$2,
+  lastUpdatedJan072026: lastUpdatedJan072026$2,
+  "1DataCollection": "1. Data Collection",
+  weCollectMinimalDataNecessary: weCollectMinimalDataNecessary$2,
+  teacherNamesAndEmailAddresses: teacherNamesAndEmailAddresses$2,
+  lessonPlanContentRphGenerated: lessonPlanContentRphGenerated$2,
+  schoolProfileInformation: schoolProfileInformation$2,
+  "2DataUsage": "2. Data Usage",
+  yourDataIsUsedStrictly: yourDataIsUsedStrictly$2,
+  providingTheLessonPlanManagement: providingTheLessonPlanManagement$2,
+  generatingOfficialPdfReportsFor: generatingOfficialPdfReportsFor$2,
+  syncingWithTheNationalDskp: syncingWithTheNationalDskp$2,
+  weDoNotSellYour: weDoNotSellYour$2,
+  "3UserRights": "3. User Rights",
+  youHaveTheRightTo: youHaveTheRightTo$2,
+  termsOfService: termsOfService$2,
+  effectiveDateJan012024: effectiveDateJan012024$2,
+  "1UsageLicense": "1. Usage License",
+  byUsingErphProYou: byUsingErphProYou$2,
+  "2AcceptableUse": "2. Acceptable Use",
+  youAgreeNotTo: youAgreeNotTo$2,
+  misuseTheReportingToolsTo: misuseTheReportingToolsTo$2,
+  attemptToReverseEngineerThe: attemptToReverseEngineerThe$2,
+  shareYourAccountCredentialsWith: shareYourAccountCredentialsWith$2,
+  "3Disclaimer": "3. Disclaimer",
+  erphProIsProvidedAs: erphProIsProvidedAs$2,
+  securityInfrastructure: securityInfrastructure$2,
+  weTakeTheSecurityOf: weTakeTheSecurityOf$2,
+  aidenSecuritySubsystem: aidenSecuritySubsystem$2,
+  ourProprietaryActiveDefenseSystem: ourProprietaryActiveDefenseSystem$2,
+  supportDevelopment: supportDevelopment$2,
+  fuelThe: fuelThe$2,
+  revolution: revolution$2,
+  erphProIsBuiltBy: erphProIsBuiltBy$2,
+  community: community$2,
+  free: free$2,
+  forever: forever$2,
+  forSchoolsJustGettingStarted: forSchoolsJustGettingStarted$2,
+  currentPlan: currentPlan$2,
+  mostPopular: mostPopular$2,
+  supporter: supporter$2,
+  rm10_1: rm10_1$2,
+  coffee: coffee$2,
+  showYourAppreciationAndHelp: showYourAppreciationAndHelp$2,
+  treatACoffee: treatACoffee$2,
+  buyAidenACoffee: buyAidenACoffee$2,
+  thankYouForYourSupport: thankYouForYourSupport$2,
+  done: done$2,
+  systemUpdates: systemUpdates$2,
+  releaseNotesChangelog: releaseNotesChangelog$2,
+  latest: latest$2,
+  newFeatures: newFeatures$2,
+  improvements: improvements$2,
+  bugFixes: bugFixes$2,
+  standardKandunganSk: standardKandunganSk$2,
+  standardPembelajaranSp: standardPembelajaranSp$2,
+  temaBidang: temaBidang$2,
+  tajuk: tajuk$2,
+  action: action$2,
+  noStandardsFoundMatchingYour_1: noStandardsFoundMatchingYour_1$2,
+  prev: prev$2,
+  of: of$2,
+  loadingRegistry: loadingRegistry$2,
+  registryEmpty: registryEmpty$2,
+  syncDataToBuildThe: syncDataToBuildThe$2,
+  loadingYears: loadingYears$2,
+  loadingSubjects: loadingSubjects$2,
+  sk: sk$2,
+  dskpMasterSync: dskpMasterSync$2,
+  "2stageSyncProcess": "2-Stage Sync Process",
+  "1ConnectDataSource": "1. Connect Data Source",
+  linkTheOfficialCurriculumGoogle: linkTheOfficialCurriculumGoogle$2,
+  fetchData: fetchData$2,
+  rowsFound: rowsFound$2,
+  columnsDetected: columnsDetected$2,
+  columnMapping: columnMapping$2,
+  step1SyncRawData: step1SyncRawData$2,
+  step2ProcessMapRegistry: step2ProcessMapRegistry$2,
+  dskpManagement: dskpManagement$2,
+  hierarchicalRegistryExplorer: hierarchicalRegistryExplorer$2,
+  syncRegistry: syncRegistry$2,
+};
+
+const welcome$1 = "Selamat Datang ke eRPH PRO";
+const erph$1 = "eRPH";
+const pro$1 = "Pro";
+const verifyingSession$1 = "Mengesahkan Sesi";
+const protectedByAidenSecuritySubsystem$1 = "Dilindungi oleh Subsistem Keselamatan AIDEN v0.0.33";
+const aiLessonAssistant$1 = "Pembantu Pengajaran AI";
+const generateHighqualityRphInSeconds$1 = "Jana RPH berkualiti tinggi dalam beberapa saat.";
+const subject$1 = "Subjek";
+const grade$1 = "Darjah / Tingkatan";
+const lessonTopicFocus$1 = "Topik / Fokus Pembelajaran";
+const cancel$1 = "Batal";
+const generateWithGemini$1 = "Jana dengan Gemini";
+const processing$1 = "Sedang memproses...";
+const fuelTheDeveloper$1 = "Sokong Pembangun!";
+const erphProIs100Indie$1 = "eRPH Pro adalah 100% Binaan Indie";
+const hiIm$1 = "Hai! Saya";
+const aiden$1 = "Aiden";
+const iBuiltThisSystemAlone$1 = ".\n                                Saya membina sistem ini bersendirian untuk membantu guru seperti anda menguruskan RPH dengan lebih mudah.";
+const ifErphProSavedYour$1 = "Jika eRPH Pro menjimatkan masa anda, pertimbangkan untuk belanja saya kopi";
+const rm10$1 = "(RM10)";
+const extraTipsForMyHard$1 = "(Tips tambahan untuk usaha saya sangat dihargai! ❤️)";
+const sureIllTreatYou$1 = "Baik, saya belanja! ☕";
+const maybeNextTime$1 = "Mungkin lain kali";
+const passTheCoffee$1 = "Hulurkan Kopi!";
+const scanWithTngEwallet$1 = "Imbas dengan TnG eWallet";
+const rm1000$1 = "RM 10.00";
+const anyTipsYouLike$1 = "+ Sebarang Tips Yang Anda Suka!";
+const doneRemindMeIn30$1 = "Selesai! (Ingatkan saya dalam 30 hari)";
+const weValueYourPrivacy$1 = "Kami menghargai privasi anda";
+const weUseCookiesToEnhance$1 = "Kami menggunakan kuki untuk meningkatkan pengalaman anda dan menganalisis trafik kami. Dengan mengklik \"Terima\", anda bersetuju dengan penggunaan kuki kami dan";
+const privacyPolicy$1 = "Dasar Privasi";
+const pdpaTerms$1 = "Terma PDPA";
+const close$1 = "Tutup";
+const acceptAll$1 = "Terima Semua";
+const systemStatus$1 = "Status Sistem";
+const online$1 = "Dalam Talian";
+const error$1 = "Ralat";
+const connectedToFirebaseStorage$1 = "Disambungkan ke Storan Firebase";
+const configMissingCheckConsole$1 = "Konfigurasi Hilang. Semak Konsol.";
+const aiAssist$1 = "Bantuan AI:";
+const poweredByGemini$1 = "Dikuasakan oleh Gemini";
+const consultingGeminiAi$1 = "Merujuk Gemini AI...";
+const sustainableAiForTeachers$1 = "AI Mampan untuk Guru";
+const traditionalAiToolsOftenCharge$1 = "Alat AI tradisional sering mengenakan yuran bulanan yang tinggi. eRPH Pro kekal";
+const lowcost$1 = "kos rendah";
+const byLettingYouUseYour$1 = "dengan membenarkan anda menggunakan kuota Google Gemini rasmi anda sendiri.";
+const googleOffersAGenerousFree$1 = "Google menawarkan tahap PERCUMA yang murah hati untuk kegunaan peribadi.";
+const noMiddlemanMarkupsOnYour$1 = "Tiada caj orang tengah ke atas penggunaan AI anda.";
+const completePrivacyYourDataStays$1 = "Privasi lengkap: Data anda kekal dalam akaun anda.";
+const showMeHowToGet$1 = "Tunjukkan cara mendapatkan kunci";
+const gettingYourPrivateKey$1 = "Mendapatkan Kunci Peribadi Anda";
+const followThese3SimpleSubsteps$1 = "Ikuti 3 langkah mudah ini:";
+const clickThe$1 = "Klik";
+const blueButton$1 = "Butang Biru";
+const belowToOpenGooglesAi$1 = "di bawah untuk membuka Google AI Studio (dibuka dalam tab baharu).";
+const signInWithYourGoogle$1 = "Log masuk dengan Akaun Google anda dan klik";
+const getApiKey$1 = "\"Get API key\"";
+const inTheSidebar$1 = "di bar sisi.";
+const click$1 = "Klik";
+const createApiKey$1 = "\"Create API key\"";
+const onceCreatedComeBackHere$1 = ". Setelah dibuat, kembali ke sini dan klik Seterusnya.";
+const back$1 = "Kembali";
+const finalStepSecureLink$1 = "Langkah Terakhir: Pautan Selamat";
+const whenYouClickFinishA$1 = "Apabila anda mengklik selesai, tetingkap Google akan meminta kunci anda. Hanya tampal kunci yang anda salin ke dalam tetingkap itu.";
+const safetyPrivacy$1 = "Keselamatan & Privasi";
+const yourKeyIsNeverStored$1 = "KUNCI ANDA TIDAK PERNAH DISIMPAN DI PELAYAN KAMI. IA KEKAL DALAM SESI PELAYAR ANDA SAHAJA.";
+const finishConnect$1 = "Selesai & Sambung";
+const goBackToInstructions$1 = "Kembali ke Arahan";
+const havingTroubleMostTeachersUse$1 = "Ada masalah? Kebanyakan guru menggunakan akaun @gmail.com peribadi untuk tetapan paling mudah.";
+const erphPro$1 = "eRPH Pro";
+const printPreview$1 = "Pratonton Cetak";
+const lessonPlansSelected$1 = "Rancangan Pengajaran Dipilih";
+const print$1 = "Cetak";
+const version$1 = "Versi";
+const dskpBrowser$1 = "Pelayar DSKP";
+const selectStandardToAutofillLesson$1 = "Pilih standard untuk auto-isi rancangan pengajaran.";
+const allSubjects$1 = "Semua Subjek";
+const yearGrade$1 = "Tahun / Tingkatan";
+const allLevels$1 = "Semua Peringkat";
+const loadingDskp$1 = "Memuatkan DSKP...";
+const noStandardsFoundMatchingYour$1 = "Tiada standard ditemui sepadan dengan kriteria anda.";
+const contentStandard$1 = "Standard Kandungan";
+const selected$1 = "Dipilih";
+const standardsSelected$1 = "standard dipilih";
+const include$1 = "Sertakan";
+const standards$1 = "Standard";
+const resourceNotFound$1 = "Sumber Tidak Ditemui";
+const thePageYouAreLooking$1 = "Halaman yang anda cari mungkin telah dialih keluar, dinamakan semula, atau tidak tersedia buat sementara waktu.";
+const goBack$1 = "Kembali";
+const dashboard$1 = "Papan Pemuka";
+const erphProBullSecurityRegistry$1 = "eRPH Pro &bull; Subsistem Keselamatan & Pendaftaran";
+const logo$1 = "LOGO";
+const nilaiPendidikanSivik$1 = "NILAI PENDIDIKAN SIVIK";
+const namaGuru$1 = "NAMA GURU";
+const minggu$1 = "MINGGU";
+const tarikh$1 = "/ TARIKH";
+const hari$1 = "HARI";
+const disahkanOlehHantarErph$1 = "DISAHKAN OLEH / HANTAR eRPH";
+const rancanganPengajaranHarianTs25Cup$1 = "RANCANGAN PENGAJARAN HARIAN TS25 (CUP)";
+const time$1 = "MASA";
+const subject_1$1 = "SUBJEK";
+const themeTopic$1 = "TEMA / TAJUK";
+const standard$1 = "STANDARD";
+const contentStandard_1$1 = "STANDARD KANDUNGAN:";
+const learningStandard$1 = "STANDARD PEMBELAJARAN:";
+const objectives$1 = "OBJEKTIF";
+const successCriteria$1 = "KRITERIA KEJAYAAN";
+const activities$1 = "AKTIVITI";
+const bbmTeachingAids$1 = "BBM (Alat Bantu Mengajar):";
+const pak21$1 = "PAK-21:";
+const kbatHots$1 = "KBAT (HOTS):";
+const assessment$1 = "Pentaksiran:";
+const reflection$1 = "REFLEKSI";
+const noReflectionRecorded$1 = "Tiada refleksi direkodkan.";
+const pro_1$1 = "PRO";
+const stable$1 = "(Stabil)";
+const loadingSchoolProfile$1 = "Memuatkan Profil Sekolah...";
+const skPreset$1 = "Pratetap SK";
+const smkPreset$1 = "Pratetap SMK";
+const academicCalendarGroup$1 = "Kumpulan Kalendar Akademik";
+const kumpulanA$1 = "Kumpulan A";
+const johorKedahKelantanTerengganu$1 = "Johor, Kedah, Kelantan & Terengganu";
+const kumpulanB$1 = "Kumpulan B";
+const melakaNegeriSembilanPahangPerak$1 = "Melaka, Negeri Sembilan, Pahang, Perak, Perlis, Pulau Pinang, Sabah, Sarawak, Selangor, WP";
+const operatingHours$1 = "Waktu Operasi";
+const subjects$1 = "Subjek";
+const classes$1 = "Kelas";
+const loadingUsers$1 = "Memuatkan Pengguna...";
+const noRptGeneratedForThis$1 = "Tiada RPT dijana untuk sesi ini lagi.";
+const newsletterBroadcast$1 = "Siaran Buletin";
+const sendUpdatesToYourCommunity$1 = "Hantar kemas kini kepada komuniti anda.";
+const subjectLine$1 = "Baris Subjek";
+const template$1 = "Templat";
+const modernCleanBright$1 = "Moden (Bersih & Cerah)";
+const corporateProfessional$1 = "Korporat (Profesional)";
+const targetAudience$1 = "Sasaran Penonton";
+const allUsers$1 = "Semua Pengguna";
+const schoolAdminsOnly$1 = "Pentadbir Sekolah Sahaja";
+const teachersOnly$1 = "Guru Sahaja";
+const messageContentHtmlSupported$1 = "Kandungan Mesej (Menyokong HTML)";
+const basicHtmlTagsAllowedP$1 = "Tag HTML asas dibenarkan: p, b, i, ul, li, br.";
+const sendBroadcast$1 = "Hantar Siaran";
+const templatingTips$1 = "Tips Templat";
+const use$1 = "Gunakan";
+const toAvoidSpammingTheWrong$1 = "untuk mengelakkan menghantar spam kepada pengguna yang salah.";
+const modernTemplate$1 = "Templat Moden";
+const isBestForGeneralAnnouncements$1 = "adalah terbaik untuk pengumuman umum.";
+const corporateTemplate$1 = "Templat Korporat";
+const isBestForOfficialMemos$1 = "adalah terbaik untuk memo rasmi.";
+const quickActions$1 = "Tindakan Pantas";
+const addNewSchool$1 = "Tambah Sekolah Baharu";
+const step$1 = "Langkah";
+const of2$1 = "daripada 2:";
+const schoolName$1 = "Nama Sekolah";
+const srPrimary$1 = "SR (Rendah)";
+const smkSecondary$1 = "SMK (Menengah)";
+const schoolAdministrator$1 = "Pentadbir Sekolah";
+const searchForAnExistingUser$1 = "Cari pengguna sedia ada untuk dilantik sebagai Pentadbir Sekolah. Jika tiada, kami akan menghantar jemputan.";
+const currentRole$1 = "Peranan Semasa:";
+const userNotFound$1 = "Pengguna Tidak Ditemui";
+const weWillSendA$1 = "Kami akan menghantar";
+const registrationInvitation$1 = "Jemputan Pendaftaran";
+const toThisEmailWithInstructions$1 = "ke e-mel ini dengan arahan untuk menyediakan akaun Pentadbir Sekolah mereka.";
+const nextStep$1 = "Langkah Seterusnya";
+const createSchool$1 = "Cipta Sekolah";
+const addSchool$1 = "Tambah Sekolah";
+const manageProfile$1 = "Urus Profil";
+const newRecord$1 = "Rekod Baharu";
+const teacher$1 = "Guru";
+const type$1 = "Jenis";
+const timeline$1 = "Garis Masa";
+const reasonEvidence$1 = "Sebab / Bukti";
+const status$1 = "Status";
+const noLeaveRecordsFound$1 = "Tiada rekod cuti ditemui.";
+const to$1 = "hingga";
+const viewEvidence$1 = "Lihat Bukti";
+const recorded$1 = "Direkodkan";
+const newLeaveRecord$1 = "Rekod Cuti Baharu";
+const leaveType$1 = "Jenis Cuti";
+const location$2 = "Lokasi";
+const optional$1 = "(Pilihan)";
+const startDate$1 = "Tarikh Mula";
+const endDate$1 = "Tarikh Tamat";
+const reason$1 = "Sebab";
+const evidenceUpload$1 = "Muat Naik Bukti";
+const readyToUpload$1 = "Sedia untuk dimuat naik";
+const clickToAttachFile$1 = "Klik untuk lampirkan fail";
+const mcLetterOrPhotoMax$1 = "MC, Surat, atau Foto (Maks 5MB)";
+const saveRecord$1 = "Simpan Rekod";
+const mingguAkademik$1 = "Minggu Akademik";
+const today$1 = "Hari Ini";
+const loadingWeeklyRph$1 = "Memuatkan RPH Mingguan...";
+const lessonsScheduled$1 = "Pengajaran Dijadualkan";
+const verified$1 = "Disahkan";
+const batchVerify$1 = "Pengesahan Berkelompok";
+const rph$1 = "RPH";
+const generatedBy$1 = "Dijana oleh";
+const more$1 = "lagi";
+const systemTrafficAnalytics$1 = "Analitik Trafik Sistem";
+const realtimeSessionDataGoogleAnalytics$1 = "Data Sesi Masa Nyata (Google Analytics)";
+const activeUsers$1 = "Pengguna Aktif";
+const pageHits$1 = "Paparan Halaman";
+const malaysianEducator$1 = "• Pendidik Malaysia";
+const tahun$1 = "Tahun";
+const praSekolah$1 = "Pra Sekolah";
+const tingkatan$1 = "Tingkatan";
+const peralihan$1 = "Peralihan";
+const selectSubjectYearToLoad$1 = "Pilih Subjek & Tahun untuk memuatkan standard...";
+const selectContentStandardFirst$1 = "Pilih Standard Kandungan dahulu...";
+const databaseOptimizing$1 = "Mengoptimumkan Pangkalan Data...";
+const weAreOrganizingYourLesson$1 = "Kami sedang menyusun rancangan pengajaran anda. Enjin baharu menguruskannya di latar belakang.";
+const loadingMonth$1 = "Memuatkan Bulan...";
+const noLessonPlans$1 = "Tiada Rancangan Pengajaran";
+const youDontHaveAnyClasses$1 = "Anda tiada kelas dijadualkan untuk hari ini.";
+const createPlan$1 = "Cipta Rancangan";
+const viewDetails$1 = "Lihat Butiran";
+const noLessonPlansFound$1 = "Tiada rancangan pengajaran ditemui.";
+const page$1 = "Halaman";
+const previous$1 = "Sebelumnya";
+const next$1 = "Seterusnya";
+const securityHandshakeInProgress$1 = "Jabat tangan keselamatan sedang berjalan";
+const malaysiasProfessionalDigitalEcosystemFor$1 = "Ekosistem digital profesional Malaysia untuk kecemerlangan pentadbiran pendidik.";
+const backToWebsite$1 = "Kembali ke Laman Web";
+const emailAddress$1 = "Alamat E-mel";
+const password$1 = "Kata Laluan";
+const forgotPassword$1 = "Lupa Kata Laluan?";
+const iAgreeToThe$1 = "Saya bersetuju dengan";
+const terms$1 = "Terma";
+const andConsentToTheProcessing$1 = ", dan bersetuju dengan pemprosesan data peribadi saya mengikut";
+const pdpa2010Malaysia$1 = "PDPA 2010 (Malaysia)";
+const socialGateway$1 = "Gerbang Sosial";
+const continueWithGoogle$1 = "Teruskan dengan Google";
+const backToLogin$1 = "Kembali ke Log Masuk";
+const buildV$1 = "Binaan v";
+const centralizedRepositoryForEducationalResources$1 = "Repositori berpusat untuk sumber pendidikan dan pekeliling sekolah.";
+const syncingResourceDatabase$1 = "Menyegerakkan Pangkalan Data Sumber...";
+const noItemsSharedHereYet$1 = "Tiada item dikongsi di sini lagi. Gunakan butang kongsi untuk menambah pautan Google Drive atau templat.";
+const sharedBy$1 = "Dikongsi Oleh";
+const open$1 = "Buka";
+const verifyLinkAccessSettingsAre$1 = "Sahkan tetapan akses pautan adalah awam sebelum berkongsi.";
+const general$1 = "Umum";
+const dskpSyllabus$1 = "DSKP / Sukatan Pelajaran";
+const rphTemplates$1 = "Templat RPH";
+const schoolCircular$1 = "Pekeliling Sekolah";
+const mediaResources$1 = "Sumber Media";
+const schoolRepositoryOnly$1 = "Repositori Sekolah Sahaja";
+const publicHubAllSchools$1 = "Hab Awam (Semua Sekolah)";
+const noTemplates$1 = "Tiada Templat";
+const activeSchedule$1 = "Jadual Aktif";
+const setAsActive$1 = "Tetapkan sebagai Aktif";
+const modifySlot$1 = "Ubah Suai Slot";
+const subjectTitle$1 = "Tajuk Subjek";
+const targetClass$1 = "Kelas Sasaran";
+const startsAt$1 = "Bermula Pada";
+const endsAt$1 = "Berakhir Pada";
+const visualLabel$1 = "Label Visual";
+const remove$1 = "Buang";
+const updateSlot$1 = "Kemas Kini Slot";
+const malaysia$1 = "Malaysia";
+const professionalBio$1 = "Bio Profesional";
+const yourProfileIsVisibleTo$1 = "Profil anda kelihatan kepada pentadbir sekolah untuk pengesahan dan rekod penempatan.";
+const digitalSignature$1 = "Tandatangan Digital";
+const registerSignature$1 = "Daftar Tandatangan";
+const accountInfo$1 = "Maklumat Akaun";
+const cloudBackup$1 = "Sandaran Awan";
+const fullName$1 = "Nama Penuh";
+const professionalGrade$1 = "Gred Profesional";
+const phoneNumber$1 = "Nombor Telefon";
+const experienceTimeline$1 = "Garis Masa Pengalaman";
+const addRecord$1 = "Tambah Rekod";
+const noServiceHistoryRecordedYet$1 = "Tiada sejarah perkhidmatan direkodkan lagi.";
+const positionRole$1 = "Jawatan / Peranan";
+const cloudBackupSetup$1 = "Persiapan Sandaran Awan";
+const protectYourWorkBySyncing$1 = "Lindungi kerja anda dengan menyegerakkan sandaran rancangan pengajaran harian ke Google Drive anda.";
+const connectGoogleAccount$1 = "Sambung Akaun Google";
+const authorizeErphProToCreate$1 = "Beri kuasa kepada eRPH Pro untuk mencipta folder selamat \"eRPH Pro Backups\" di Google Drive anda. Kami hanya mengakses fail yang kami cipta.";
+const grantPermission$1 = "Beri Kebenaran";
+const startBackupService$1 = "Mulakan Perkhidmatan Sandaran";
+const yourAccountIsConnectedYou$1 = "Akaun anda telah disambungkan! Anda kini boleh mencetuskan sandaran segera atau mengkonfigurasi jadual automatik harian (akan datang).";
+const systemConnected$1 = "Sistem Disambungkan";
+const driveStatusActive$1 = "Status Drive: Aktif";
+const uploadingBackup$1 = "Memuat Naik Sandaran...";
+const runBackupNow$1 = "Jalankan Sandaran Sekarang";
+const manageEducationalEditorialContentFor$1 = "Urus kandungan editorial pendidikan untuk laman web awam.";
+const aidenIsCrawling$1 = "Aiden sedang merangkak...";
+const triggerAiCrawl$1 = "Cetuskan Rangkakan AI";
+const newEditorial$1 = "Editorial Baharu";
+const category$1 = "Kategori";
+const author$1 = "Penulis";
+const stats$1 = "Statistik";
+const actions$1 = "Tindakan";
+const loadingArticles$1 = "Memuatkan Artikel...";
+const noEditorialsFound$1 = "Tiada editorial ditemui.";
+const articleTitle$1 = "Tajuk Artikel";
+const urlSlugOptional$1 = "Slug URL (Pilihan)";
+const pedagogy$1 = "Pedagogi";
+const technology$1 = "Teknologi";
+const administration$1 = "Pentadbiran";
+const teacherWellness$1 = "Kesejahteraan Guru";
+const moeUpdates$1 = "Kemas Kini KPM";
+const shortExcerptMetaDescription$1 = "Petikan Pendek (Perihalan Meta)";
+const featuredImageUrl$1 = "URL Imej Pilihan";
+const articleContentMarkdownhtmlSupport$1 = "Kandungan Artikel (Sokongan Markdown/HTML)";
+const discard$1 = "Buang";
+const publishChanges$1 = "Terbitkan Perubahan";
+const adminMailbox$1 = "Peti Mel Pentadbir";
+const hydratingSubsystem$1 = "Menghidratkan Subsistem...";
+const noMessagesFound$1 = "Tiada mesej ditemui.";
+const selectAConversation$1 = "Pilih Perbualan";
+const pickAMessageFromThe$1 = "Pilih mesej dari bar sisi untuk melihat butiran dan membalas pengguna.";
+const subject_2$1 = "Subjek:";
+const draftingReply$1 = "Mendraf Jawapan";
+const sendMessage$1 = "Hantar Mesej";
+const quickReply$1 = "Balas Pantas";
+const forward$1 = "Majukan";
+const systemConfiguration$1 = "Konfigurasi Sistem";
+const controlErphProsGlobalInfrastructure$1 = "Kawal infrastruktur global, pemasaran, dan pengewangan eRPH Pro.";
+const syncMasterConfig$1 = "Segerakkan Konfigurasi Induk";
+const editorialAuthorName$1 = "Nama Penulis Editorial";
+const autocrawlTrends$1 = "Trend Rangkak Auto";
+const theCmsUsesAidensAi$1 = "CMS menggunakan enjin AI Aiden untuk merangkak trend pedagogi dan mendraf analisis pakar secara automatik.";
+const marketingTracking$1 = "Pemasaran & Penjejakan";
+const googleAnalyticsId$1 = "ID Google Analytics";
+const searchConsoleToken$1 = "Token Search Console";
+const monetizationAdsense$1 = "Pengewangan (AdSense)";
+const adsensePublisherId$1 = "ID Penerbit AdSense";
+const adUnitsAreStrictlyLimited$1 = "Unit iklan dihadkan dengan ketat kepada platform CMS Artikel untuk mengekalkan estetika portal profesional.";
+const databaseDemoTools$1 = "Alat Pangkalan Data & Demo";
+const populateTheSystemWithFresh$1 = "Isikan sistem dengan data demo baharu untuk guru dan pengetua. Ini membersihkan rekod demo lama dahulu.";
+const reseedDemoData$1 = "Semai Semula Data Demo";
+const useWithCautionOnlyAffects$1 = "Gunakan dengan berhati-hati. Hanya mempengaruhi akaun demo. Data pengguna sebenar tidak pernah disentuh.";
+const mailInfrastructureEnterprise$1 = "Infrastruktur Mel (Enterprise)";
+const sendTestMail$1 = "Hantar Mel Ujian";
+const mailServerHostIncomingoutgoing$1 = "Hos Pelayan Mel (Masuk/Keluar)";
+const smtpPortSsl$1 = "Port SMTP (SSL)";
+const usernamePrimaryAdmin$1 = "Nama Pengguna (Pentadbir Utama)";
+const pop3Port995$1 = "Port POP3 (995)";
+const imapPort993$1 = "Port IMAP (993)";
+const mailboxPassword$1 = "Kata Laluan Peti Mel";
+const autoreplyConfiguration$1 = "Konfigurasi Balasan Auto";
+const securityPrivacyCenter$1 = "Pusat Keselamatan & Privasi";
+const protectYourEducationalRegistryAnd$1 = "Lindungi pendaftaran pendidikan dan data peribadi anda.";
+const applySecurityPolicy$1 = "Terapkan Polisi Keselamatan";
+const advancedProtection$1 = "Perlindungan Lanjutan";
+const twofactorAuthentication$1 = "Pengesahan Dua Faktor";
+const addAnExtraLayerOf$1 = "Tambah lapisan keselamatan tambahan melalui aplikasi mudah alih atau SMS.";
+const autolockInactivityMins$1 = "Kunci Auto Ketidakaktifan (Minit)";
+const accountRecoveryEmail$1 = "E-mel Pemulihan Akaun";
+const auditTrailRecentAccess$1 = "Jejak Audit: Akses Terkini";
+const securityScore$1 = "Skor Keselamatan";
+const strongPasswordActive$1 = "Kata Laluan Kuat Aktif";
+const loginAlertsEnabled$1 = "Amaran log masuk diaktifkan";
+const credentials$1 = "Kredensial";
+const lastChanged$1 = "Terakhir diubah:";
+const updateMasterPassword$1 = "Kemas Kini Kata Laluan Induk";
+const terminateAllSessions$1 = "Tamatkan Semua Sesi";
+const erphProImplementsAes256Encryption$1 = "eRPH Pro melaksanakan penyulitan AES-256 untuk semua data semasa rehat. Tandatangan digital anda disimpan secara berasingan dalam bilik kebal yang disulitkan.";
+const articleNotFound$1 = "Artikel Tidak Ditemui";
+const backToArticleHub$1 = "Kembali ke Hab Artikel";
+const save$1 = "Simpan";
+const share$1 = "Kongsi";
+const aiSummary$1 = "Ringkasan AI •";
+const ac$1 = "AC";
+const chiefEditor$1 = "Ketua Editor";
+const professionalInsight$1 = "Wawasan Profesional";
+const frequentlyAskedQuestions$1 = "Soalan Lazim";
+const helpful12k$1 = "Membantu (1.2k)";
+const shareArticle$1 = "Kongsi Artikel";
+const educationArchitecture$1 = "Seni Bina Pendidikan";
+const dskpApi$1 = "API DSKP";
+const aidenChan$1 = "Aiden Chan";
+const masterArchitect$1 = "Arkitek Induk";
+const aidenLeadsTheErphPro$1 = "Aiden mengetuai pasukan kejuruteraan eRPH Pro, memfokuskanpada persimpangan Model Bahasa Besar dan sistem pendidikan menengah Malaysia.";
+const followInsights$1 = "Ikuti Wawasan";
+const syncYourRphWithGemini$1 = "Segerakkan RPH anda dengan Gemini 1.5 Pro hari ini.";
+const unlockTheWorldsMostAdvanced$1 = "Buka kunci enjin RPH paling canggih di dunia dan jimat 15+ jam seminggu.";
+const startFreeTrial$1 = "Mulakan Percubaan Percuma";
+const recentPublications$1 = "Penerbitan Terkini";
+const april20254MinRead$1 = "April 2025 • Bacaan 4 min";
+const ultimateEducationResourceHub$1 = "Hab Sumber Pendidikan Utama";
+const theDigitalLibrary$1 = "Perpustakaan Digital";
+const forModernEducators$1 = "untuk Pendidik Moden";
+const over100PrecisionengineeredArticlesCovering$1 = "Lebih 100+ artikel kejuruteraan persis meliputi pedagogi Malaysia, integrasi AI, dan kecemerlangan kepimpinan sekolah.";
+const filter$1 = "Tapis";
+const viewFullAnalysis$1 = "Lihat Analisis Penuh";
+const noArticlesFoundMatchingYour$1 = "Tiada artikel ditemui sepadan dengan kriteria anda";
+const editorialMandate$1 = "Mandat Editorial";
+const everyArticleInOurHub$1 = "\"Setiap artikel dalam hab kami dirujuk silang dengan pekeliling KPM terkini dan pemetaan DSKP untuk memastikan ketepatan guru.\"";
+const aidensEditorialTeam$1 = "Pasukan Editorial Aiden";
+const malaysiaHq$1 = "Ibu Pejabat Malaysia";
+const googleAdsense$1 = "Google AdSense";
+const highIntentEducationalTraffic$1 = "Trafik Pendidikan Berniat Tinggi";
+const knowledgeCenter$1 = "Pusat Pengetahuan";
+const howCanWe$1 = "Bagaimana kami boleh";
+const helpYou$1 = "bantu anda?";
+const changelogReleaseNotes$1 = "Log Perubahan & Nota Keluaran";
+const live$1 = "Langsung";
+const welcomeToErphProHeres$1 = "Selamat datang ke eRPH Pro! Berikut cara untuk bermula:";
+const logIn$1 = "Log Masuk";
+const usingYourProvidedCredentialsIc$1 = "menggunakan kredensial anda yang diberikan (No. KP).";
+const navigateTo$1 = "Navigasi ke";
+const settings$1 = "Tetapan";
+const toUpdateYourProfilePhoto$1 = "untuk mengemas kini foto profil dan tandatangan anda.";
+const ensureYour$1 = "Pastikan";
+const gradeSubject$1 = "Gred & Subjek";
+const detailsAreCorrect$1 = "anda adalah betul.";
+const creatingALessonPlanIs$1 = "Mencipta rancangan pengajaran adalah mudah:";
+const newPlan$1 = "Rancangan Baharu";
+const selectYour$1 = "Pilih";
+const dateTimeClassAndSubject$1 = "Tarikh, Masa, Kelas, dan Subjek anda";
+const chooseStandardsFromThe$1 = "Pilih standard daripada";
+const dskpSelector$1 = "Pemilih DSKP";
+const saveDraft$1 = "Simpan Draf";
+const or$1 = "atau";
+const submit$1 = "Hantar";
+const weveDigitizedTheEntireDskp$1 = "Kami telahmendigitalkan keseluruhan perpustakaan DSKP untuk anda:";
+const useThe$1 = "Gunakan";
+const dskpManager$1 = "Pengurus DSKP";
+const toFavoriteYourSubjects$1 = "untuk menggemari subjek anda.";
+const duringRphCreationSimply$1 = "Semasa penciptaan RPH, hanya";
+const clickToSelect$1 = "klik untuk pilih";
+const standards_1$1 = "standard.";
+const everythingIsAutofilled$1 = "Segalanya diisi secara automatik!";
+const onceYoureDoneSendIt$1 = "Setelah selesai, hantar untuk semakan:";
+const goTo$1 = "Pergi ke";
+const myPlans$1 = "Rancangan Saya";
+const selectThePlansYouWant$1 = "Pilih rancangan yang anda mahu hantar.";
+const submitForReview$1 = "Hantar untuk Semakan";
+const buttonOnTop$1 = "butang di atas.";
+const yourPrincipalWillBeNotified$1 = "Pengetua anda akan dimaklumkan!";
+const readGuide$1 = "Baca Panduan";
+const closeGuide$1 = "Tutup Panduan";
+const dskpVerified$1 = "Disahkan DSKP";
+const learnMore$1 = "Ketahui Lebih Lanjut";
+const readyToDeploy$1 = "Sedia untuk Dilancarkan";
+const legalCenter$1 = "Pusat Perundangan";
+const transparencyIsOurCoreValue$1 = "Ketelusan adalah nilai teras kami. Berikut adalah semua yang anda perlu tahu tentang cara kami mengurus penggunaan, data, dan keselamatan.";
+const lastUpdatedJan072026$1 = "Terakhir Dikemas Kini: 07 Jan 2026";
+const weCollectMinimalDataNecessary$1 = "Kami mengumpul data minimum yang diperlukan untuk kefungsian eRPH Pro. Ini termasuk:";
+const teacherNamesAndEmailAddresses$1 = "Nama guru dan alamat e-mel (untuk identiti).";
+const lessonPlanContentRphGenerated$1 = "Kandungan rancangan pengajaran (RPH) yang dijana atau dimuat naik oleh anda.";
+const schoolProfileInformation$1 = "Maklumat profil sekolah.";
+const yourDataIsUsedStrictly$1 = "Data anda digunakan secara ketat untuk:";
+const providingTheLessonPlanManagement$1 = "Menyediakan perkhidmatan pengurusan Rancangan Pengajaran.";
+const generatingOfficialPdfReportsFor$1 = "Menjana laporan PDF rasmi untuk pentadbiran sekolah.";
+const syncingWithTheNationalDskp$1 = "Menyegerakkan dengan repositori DSKP Kebangsaan.";
+const weDoNotSellYour$1 = "Kami TIDAK menjual data anda kepada pihak ketiga.";
+const youHaveTheRightTo$1 = "Anda berhak meminta eksport penuh data anda atau pemadaman akaun lengkap pada bila-bila masa dengan menghubungi sokongan.";
+const termsOfService$1 = "Terma Perkhidmatan";
+const effectiveDateJan012024$1 = "Tarikh Berkuatkuasa: 01 Jan 2024";
+const byUsingErphProYou$1 = "Dengan menggunakan eRPH Pro, anda diberikan lesen terhad bukan eksklusif untuk mengakses platform bagi tujuan pentadbiran pendidikan.";
+const youAgreeNotTo$1 = "Anda bersetuju untuk tidak:";
+const misuseTheReportingToolsTo$1 = "Menyalahgunakan alat pelaporan untuk memalsukan rekod sekolah rasmi.";
+const attemptToReverseEngineerThe$1 = "Cuba untuk menyongsang kod sumber.";
+const shareYourAccountCredentialsWith$1 = "Berkongsi kelayakan akaun anda dengan pengguna yang tidak dibenarkan.";
+const erphProIsProvidedAs$1 = "eRPH Pro disediakan \"seadanya\". Walaupun kami berusaha untuk operasi 99.9%, kami tidak bertanggungjawab atas sebarang ketidaktersediaan data semasa tetingkap penyelenggaraan berjadual.";
+const securityInfrastructure$1 = "Infrastruktur Keselamatan";
+const weTakeTheSecurityOf$1 = "Kami memandang serius keselamatan data pendidikan Malaysia. Timbunan kami dibina berdasarkan prinsip keselamatan gred enterpris.";
+const aidenSecuritySubsystem$1 = "Subsistem Keselamatan AIDEN";
+const ourProprietaryActiveDefenseSystem$1 = "Sistem pertahanan aktif proprietari kami memantau corak log masuk yang mencurigakan dan menghalang percubaan akses tanpa kebenaran dalam masa nyata.";
+const supportDevelopment$1 = "Sokong Pembangunan";
+const fuelThe$1 = "Sokong";
+const revolution$1 = "Revolusi.";
+const erphProIsBuiltBy$1 = "eRPH Pro dibina oleh pembangun tunggal yang bersemangat berdedikasi untuk meningkatkan pendidikan Malaysia. Sokongan anda memastikan pelayan berjalan dan kafein mengalir.";
+const community$1 = "Komuniti";
+const free$1 = "Percuma";
+const forever$1 = "/ selamanya";
+const forSchoolsJustGettingStarted$1 = "Untuk sekolah yang baru bermula dengan pendigitalan.";
+const currentPlan$1 = "Rancangan Semasa";
+const mostPopular$1 = "Paling Popular";
+const supporter$1 = "Penyokong";
+const rm10_1$1 = "RM 10";
+const coffee$1 = "/ kopi";
+const showYourAppreciationAndHelp$1 = "Tunjukkan penghargaan anda dan bantu percepatkan pembangunan!";
+const treatACoffee$1 = "Belanja Kopi";
+const buyAidenACoffee$1 = "Belanja Aiden Kopi";
+const thankYouForYourSupport$1 = "Terima kasih atas sokongan anda!";
+const done$1 = "Selesai!";
+const systemUpdates$1 = "Kemas Kini Sistem";
+const releaseNotesChangelog$1 = "Nota Keluaran & Log Perubahan";
+const latest$1 = "Terkini";
+const newFeatures$1 = "Ciri Baharu";
+const improvements$1 = "Penambahbaikan";
+const bugFixes$1 = "Pembaikan Bug";
+const standardKandunganSk$1 = "Standard Kandungan (SK)";
+const standardPembelajaranSp$1 = "Standard Pembelajaran (SP)";
+const temaBidang$1 = "Tema / Bidang";
+const tajuk$1 = "Tajuk";
+const action$1 = "Tindakan";
+const noStandardsFoundMatchingYour_1$1 = "Tiada standard ditemui sepadan dengan penapis anda.";
+const prev$1 = "Sebelumnya";
+const of$1 = "daripada";
+const loadingRegistry$1 = "Memuatkan Pendaftaran...";
+const registryEmpty$1 = "Pendaftaran Kosong";
+const syncDataToBuildThe$1 = "Segerakkan data untuk membina hierarki.";
+const loadingYears$1 = "Memuatkan Tahun...";
+const loadingSubjects$1 = "Memuatkan Subjek...";
+const sk$1 = "SK";
+const dskpMasterSync$1 = "Penyegerakan Induk DSKP";
+const linkTheOfficialCurriculumGoogle$1 = "Pautkan Helaian Google kurikulum rasmi.";
+const fetchData$1 = "Ambil Data";
+const rowsFound$1 = "Baris Ditemui";
+const columnsDetected$1 = "Lajur Dikesan";
+const columnMapping$1 = "Pemetaan Lajur";
+const step1SyncRawData$1 = "Langkah 1: Segerakkan Data Mentah";
+const step2ProcessMapRegistry$1 = "Langkah 2: Proses & Peta Pendaftaran";
+const dskpManagement$1 = "Pengurusan DSKP";
+const hierarchicalRegistryExplorer$1 = "Penjelajah Pendaftaran Hierarki";
+const syncRegistry$1 = "Segerakkan Pendaftaran";
+const ms = {
+  "100": "/ 100",
+  welcome: welcome$1,
+  erph: erph$1,
+  pro: pro$1,
+  verifyingSession: verifyingSession$1,
+  protectedByAidenSecuritySubsystem: protectedByAidenSecuritySubsystem$1,
+  aiLessonAssistant: aiLessonAssistant$1,
+  generateHighqualityRphInSeconds: generateHighqualityRphInSeconds$1,
+  subject: subject$1,
+  grade: grade$1,
+  lessonTopicFocus: lessonTopicFocus$1,
+  cancel: cancel$1,
+  generateWithGemini: generateWithGemini$1,
+  processing: processing$1,
+  fuelTheDeveloper: fuelTheDeveloper$1,
+  erphProIs100Indie: erphProIs100Indie$1,
+  hiIm: hiIm$1,
+  aiden: aiden$1,
+  iBuiltThisSystemAlone: iBuiltThisSystemAlone$1,
+  ifErphProSavedYour: ifErphProSavedYour$1,
+  rm10: rm10$1,
+  extraTipsForMyHard: extraTipsForMyHard$1,
+  sureIllTreatYou: sureIllTreatYou$1,
+  maybeNextTime: maybeNextTime$1,
+  passTheCoffee: passTheCoffee$1,
+  scanWithTngEwallet: scanWithTngEwallet$1,
+  rm1000: rm1000$1,
+  anyTipsYouLike: anyTipsYouLike$1,
+  doneRemindMeIn30: doneRemindMeIn30$1,
+  weValueYourPrivacy: weValueYourPrivacy$1,
+  weUseCookiesToEnhance: weUseCookiesToEnhance$1,
+  privacyPolicy: privacyPolicy$1,
+  pdpaTerms: pdpaTerms$1,
+  close: close$1,
+  acceptAll: acceptAll$1,
+  systemStatus: systemStatus$1,
+  online: online$1,
+  error: error$1,
+  connectedToFirebaseStorage: connectedToFirebaseStorage$1,
+  configMissingCheckConsole: configMissingCheckConsole$1,
+  aiAssist: aiAssist$1,
+  poweredByGemini: poweredByGemini$1,
+  consultingGeminiAi: consultingGeminiAi$1,
+  sustainableAiForTeachers: sustainableAiForTeachers$1,
+  traditionalAiToolsOftenCharge: traditionalAiToolsOftenCharge$1,
+  lowcost: lowcost$1,
+  byLettingYouUseYour: byLettingYouUseYour$1,
+  googleOffersAGenerousFree: googleOffersAGenerousFree$1,
+  noMiddlemanMarkupsOnYour: noMiddlemanMarkupsOnYour$1,
+  completePrivacyYourDataStays: completePrivacyYourDataStays$1,
+  showMeHowToGet: showMeHowToGet$1,
+  gettingYourPrivateKey: gettingYourPrivateKey$1,
+  followThese3SimpleSubsteps: followThese3SimpleSubsteps$1,
+  clickThe: clickThe$1,
+  blueButton: blueButton$1,
+  belowToOpenGooglesAi: belowToOpenGooglesAi$1,
+  signInWithYourGoogle: signInWithYourGoogle$1,
+  getApiKey: getApiKey$1,
+  inTheSidebar: inTheSidebar$1,
+  click: click$1,
+  createApiKey: createApiKey$1,
+  onceCreatedComeBackHere: onceCreatedComeBackHere$1,
+  "1GoToGoogleAi": "1. Pergi ke Google AI Studio",
+  back: back$1,
+  "2IHaveMyKey": "2. Saya ada kunci saya",
+  finalStepSecureLink: finalStepSecureLink$1,
+  whenYouClickFinishA: whenYouClickFinishA$1,
+  safetyPrivacy: safetyPrivacy$1,
+  yourKeyIsNeverStored: yourKeyIsNeverStored$1,
+  finishConnect: finishConnect$1,
+  goBackToInstructions: goBackToInstructions$1,
+  havingTroubleMostTeachersUse: havingTroubleMostTeachersUse$1,
+  erphPro: erphPro$1,
+  printPreview: printPreview$1,
+  lessonPlansSelected: lessonPlansSelected$1,
+  print: print$1,
+  version: version$1,
+  dskpBrowser: dskpBrowser$1,
+  selectStandardToAutofillLesson: selectStandardToAutofillLesson$1,
+  allSubjects: allSubjects$1,
+  yearGrade: yearGrade$1,
+  allLevels: allLevels$1,
+  loadingDskp: loadingDskp$1,
+  noStandardsFoundMatchingYour: noStandardsFoundMatchingYour$1,
+  contentStandard: contentStandard$1,
+  selected: selected$1,
+  standardsSelected: standardsSelected$1,
+  include: include$1,
+  standards: standards$1,
+  resourceNotFound: resourceNotFound$1,
+  thePageYouAreLooking: thePageYouAreLooking$1,
+  goBack: goBack$1,
+  dashboard: dashboard$1,
+  erphProBullSecurityRegistry: erphProBullSecurityRegistry$1,
+  logo: logo$1,
+  nilaiPendidikanSivik: nilaiPendidikanSivik$1,
+  namaGuru: namaGuru$1,
+  minggu: minggu$1,
+  tarikh: tarikh$1,
+  hari: hari$1,
+  disahkanOlehHantarErph: disahkanOlehHantarErph$1,
+  rancanganPengajaranHarianTs25Cup: rancanganPengajaranHarianTs25Cup$1,
+  time: time$1,
+  "class": "KELAS",
+  subject_1: subject_1$1,
+  themeTopic: themeTopic$1,
+  standard: standard$1,
+  contentStandard_1: contentStandard_1$1,
+  learningStandard: learningStandard$1,
+  objectives: objectives$1,
+  successCriteria: successCriteria$1,
+  activities: activities$1,
+  bbmTeachingAids: bbmTeachingAids$1,
+  pak21: pak21$1,
+  kbatHots: kbatHots$1,
+  assessment: assessment$1,
+  reflection: reflection$1,
+  noReflectionRecorded: noReflectionRecorded$1,
+  pro_1: pro_1$1,
+  "2026ErphPro": "© 2026 eRPH Pro.",
+  stable: stable$1,
+  loadingSchoolProfile: loadingSchoolProfile$1,
+  skPreset: skPreset$1,
+  smkPreset: smkPreset$1,
+  academicCalendarGroup: academicCalendarGroup$1,
+  kumpulanA: kumpulanA$1,
+  johorKedahKelantanTerengganu: johorKedahKelantanTerengganu$1,
+  kumpulanB: kumpulanB$1,
+  melakaNegeriSembilanPahangPerak: melakaNegeriSembilanPahangPerak$1,
+  operatingHours: operatingHours$1,
+  subjects: subjects$1,
+  classes: classes$1,
+  loadingUsers: loadingUsers$1,
+  noRptGeneratedForThis: noRptGeneratedForThis$1,
+  newsletterBroadcast: newsletterBroadcast$1,
+  sendUpdatesToYourCommunity: sendUpdatesToYourCommunity$1,
+  subjectLine: subjectLine$1,
+  template: template$1,
+  modernCleanBright: modernCleanBright$1,
+  corporateProfessional: corporateProfessional$1,
+  targetAudience: targetAudience$1,
+  allUsers: allUsers$1,
+  schoolAdminsOnly: schoolAdminsOnly$1,
+  teachersOnly: teachersOnly$1,
+  messageContentHtmlSupported: messageContentHtmlSupported$1,
+  basicHtmlTagsAllowedP: basicHtmlTagsAllowedP$1,
+  sendBroadcast: sendBroadcast$1,
+  templatingTips: templatingTips$1,
+  use: use$1,
+  toAvoidSpammingTheWrong: toAvoidSpammingTheWrong$1,
+  modernTemplate: modernTemplate$1,
+  isBestForGeneralAnnouncements: isBestForGeneralAnnouncements$1,
+  corporateTemplate: corporateTemplate$1,
+  isBestForOfficialMemos: isBestForOfficialMemos$1,
+  quickActions: quickActions$1,
+  addNewSchool: addNewSchool$1,
+  step: step$1,
+  of2: of2$1,
+  schoolName: schoolName$1,
+  srPrimary: srPrimary$1,
+  smkSecondary: smkSecondary$1,
+  schoolAdministrator: schoolAdministrator$1,
+  searchForAnExistingUser: searchForAnExistingUser$1,
+  currentRole: currentRole$1,
+  userNotFound: userNotFound$1,
+  weWillSendA: weWillSendA$1,
+  registrationInvitation: registrationInvitation$1,
+  toThisEmailWithInstructions: toThisEmailWithInstructions$1,
+  nextStep: nextStep$1,
+  createSchool: createSchool$1,
+  addSchool: addSchool$1,
+  manageProfile: manageProfile$1,
+  newRecord: newRecord$1,
+  teacher: teacher$1,
+  type: type$1,
+  timeline: timeline$1,
+  reasonEvidence: reasonEvidence$1,
+  status: status$1,
+  noLeaveRecordsFound: noLeaveRecordsFound$1,
+  to: to$1,
+  viewEvidence: viewEvidence$1,
+  recorded: recorded$1,
+  newLeaveRecord: newLeaveRecord$1,
+  leaveType: leaveType$1,
+  location: location$2,
+  optional: optional$1,
+  startDate: startDate$1,
+  endDate: endDate$1,
+  reason: reason$1,
+  evidenceUpload: evidenceUpload$1,
+  "new": "Baharu",
+  readyToUpload: readyToUpload$1,
+  clickToAttachFile: clickToAttachFile$1,
+  mcLetterOrPhotoMax: mcLetterOrPhotoMax$1,
+  saveRecord: saveRecord$1,
+  mingguAkademik: mingguAkademik$1,
+  today: today$1,
+  loadingWeeklyRph: loadingWeeklyRph$1,
+  lessonsScheduled: lessonsScheduled$1,
+  verified: verified$1,
+  batchVerify: batchVerify$1,
+  rph: rph$1,
+  generatedBy: generatedBy$1,
+  more: more$1,
+  systemTrafficAnalytics: systemTrafficAnalytics$1,
+  realtimeSessionDataGoogleAnalytics: realtimeSessionDataGoogleAnalytics$1,
+  activeUsers: activeUsers$1,
+  pageHits: pageHits$1,
+  malaysianEducator: malaysianEducator$1,
+  tahun: tahun$1,
+  praSekolah: praSekolah$1,
+  tingkatan: tingkatan$1,
+  peralihan: peralihan$1,
+  selectSubjectYearToLoad: selectSubjectYearToLoad$1,
+  selectContentStandardFirst: selectContentStandardFirst$1,
+  databaseOptimizing: databaseOptimizing$1,
+  weAreOrganizingYourLesson: weAreOrganizingYourLesson$1,
+  loadingMonth: loadingMonth$1,
+  noLessonPlans: noLessonPlans$1,
+  youDontHaveAnyClasses: youDontHaveAnyClasses$1,
+  createPlan: createPlan$1,
+  viewDetails: viewDetails$1,
+  noLessonPlansFound: noLessonPlansFound$1,
+  page: page$1,
+  previous: previous$1,
+  next: next$1,
+  securityHandshakeInProgress: securityHandshakeInProgress$1,
+  malaysiasProfessionalDigitalEcosystemFor: malaysiasProfessionalDigitalEcosystemFor$1,
+  backToWebsite: backToWebsite$1,
+  emailAddress: emailAddress$1,
+  password: password$1,
+  forgotPassword: forgotPassword$1,
+  iAgreeToThe: iAgreeToThe$1,
+  terms: terms$1,
+  andConsentToTheProcessing: andConsentToTheProcessing$1,
+  pdpa2010Malaysia: pdpa2010Malaysia$1,
+  socialGateway: socialGateway$1,
+  continueWithGoogle: continueWithGoogle$1,
+  backToLogin: backToLogin$1,
+  buildV: buildV$1,
+  centralizedRepositoryForEducationalResources: centralizedRepositoryForEducationalResources$1,
+  syncingResourceDatabase: syncingResourceDatabase$1,
+  noItemsSharedHereYet: noItemsSharedHereYet$1,
+  sharedBy: sharedBy$1,
+  open: open$1,
+  verifyLinkAccessSettingsAre: verifyLinkAccessSettingsAre$1,
+  general: general$1,
+  dskpSyllabus: dskpSyllabus$1,
+  rphTemplates: rphTemplates$1,
+  schoolCircular: schoolCircular$1,
+  mediaResources: mediaResources$1,
+  schoolRepositoryOnly: schoolRepositoryOnly$1,
+  publicHubAllSchools: publicHubAllSchools$1,
+  noTemplates: noTemplates$1,
+  activeSchedule: activeSchedule$1,
+  setAsActive: setAsActive$1,
+  modifySlot: modifySlot$1,
+  subjectTitle: subjectTitle$1,
+  targetClass: targetClass$1,
+  startsAt: startsAt$1,
+  endsAt: endsAt$1,
+  visualLabel: visualLabel$1,
+  remove: remove$1,
+  updateSlot: updateSlot$1,
+  malaysia: malaysia$1,
+  professionalBio: professionalBio$1,
+  yourProfileIsVisibleTo: yourProfileIsVisibleTo$1,
+  digitalSignature: digitalSignature$1,
+  registerSignature: registerSignature$1,
+  accountInfo: accountInfo$1,
+  cloudBackup: cloudBackup$1,
+  fullName: fullName$1,
+  professionalGrade: professionalGrade$1,
+  phoneNumber: phoneNumber$1,
+  experienceTimeline: experienceTimeline$1,
+  addRecord: addRecord$1,
+  noServiceHistoryRecordedYet: noServiceHistoryRecordedYet$1,
+  positionRole: positionRole$1,
+  cloudBackupSetup: cloudBackupSetup$1,
+  protectYourWorkBySyncing: protectYourWorkBySyncing$1,
+  connectGoogleAccount: connectGoogleAccount$1,
+  authorizeErphProToCreate: authorizeErphProToCreate$1,
+  grantPermission: grantPermission$1,
+  startBackupService: startBackupService$1,
+  yourAccountIsConnectedYou: yourAccountIsConnectedYou$1,
+  systemConnected: systemConnected$1,
+  driveStatusActive: driveStatusActive$1,
+  uploadingBackup: uploadingBackup$1,
+  runBackupNow: runBackupNow$1,
+  manageEducationalEditorialContentFor: manageEducationalEditorialContentFor$1,
+  aidenIsCrawling: aidenIsCrawling$1,
+  triggerAiCrawl: triggerAiCrawl$1,
+  newEditorial: newEditorial$1,
+  category: category$1,
+  author: author$1,
+  stats: stats$1,
+  actions: actions$1,
+  loadingArticles: loadingArticles$1,
+  noEditorialsFound: noEditorialsFound$1,
+  articleTitle: articleTitle$1,
+  urlSlugOptional: urlSlugOptional$1,
+  pedagogy: pedagogy$1,
+  technology: technology$1,
+  administration: administration$1,
+  teacherWellness: teacherWellness$1,
+  moeUpdates: moeUpdates$1,
+  shortExcerptMetaDescription: shortExcerptMetaDescription$1,
+  featuredImageUrl: featuredImageUrl$1,
+  articleContentMarkdownhtmlSupport: articleContentMarkdownhtmlSupport$1,
+  discard: discard$1,
+  publishChanges: publishChanges$1,
+  adminMailbox: adminMailbox$1,
+  hydratingSubsystem: hydratingSubsystem$1,
+  noMessagesFound: noMessagesFound$1,
+  selectAConversation: selectAConversation$1,
+  pickAMessageFromThe: pickAMessageFromThe$1,
+  subject_2: subject_2$1,
+  draftingReply: draftingReply$1,
+  sendMessage: sendMessage$1,
+  quickReply: quickReply$1,
+  forward: forward$1,
+  systemConfiguration: systemConfiguration$1,
+  controlErphProsGlobalInfrastructure: controlErphProsGlobalInfrastructure$1,
+  syncMasterConfig: syncMasterConfig$1,
+  editorialAuthorName: editorialAuthorName$1,
+  autocrawlTrends: autocrawlTrends$1,
+  theCmsUsesAidensAi: theCmsUsesAidensAi$1,
+  marketingTracking: marketingTracking$1,
+  googleAnalyticsId: googleAnalyticsId$1,
+  searchConsoleToken: searchConsoleToken$1,
+  monetizationAdsense: monetizationAdsense$1,
+  adsensePublisherId: adsensePublisherId$1,
+  adUnitsAreStrictlyLimited: adUnitsAreStrictlyLimited$1,
+  databaseDemoTools: databaseDemoTools$1,
+  populateTheSystemWithFresh: populateTheSystemWithFresh$1,
+  reseedDemoData: reseedDemoData$1,
+  useWithCautionOnlyAffects: useWithCautionOnlyAffects$1,
+  mailInfrastructureEnterprise: mailInfrastructureEnterprise$1,
+  sendTestMail: sendTestMail$1,
+  mailServerHostIncomingoutgoing: mailServerHostIncomingoutgoing$1,
+  smtpPortSsl: smtpPortSsl$1,
+  usernamePrimaryAdmin: usernamePrimaryAdmin$1,
+  pop3Port995: pop3Port995$1,
+  imapPort993: imapPort993$1,
+  mailboxPassword: mailboxPassword$1,
+  autoreplyConfiguration: autoreplyConfiguration$1,
+  securityPrivacyCenter: securityPrivacyCenter$1,
+  protectYourEducationalRegistryAnd: protectYourEducationalRegistryAnd$1,
+  applySecurityPolicy: applySecurityPolicy$1,
+  advancedProtection: advancedProtection$1,
+  twofactorAuthentication: twofactorAuthentication$1,
+  addAnExtraLayerOf: addAnExtraLayerOf$1,
+  autolockInactivityMins: autolockInactivityMins$1,
+  "5MinutesMaximumSecurity": "5 Minit (Keselamatan Maksimum)",
+  "15MinutesStandard": "15 Minit (Standard)",
+  "30MinutesBalanced": "30 Minit (Seimbang)",
+  "60MinutesConvenience": "60 Minit (Keselesaan)",
+  accountRecoveryEmail: accountRecoveryEmail$1,
+  auditTrailRecentAccess: auditTrailRecentAccess$1,
+  securityScore: securityScore$1,
+  strongPasswordActive: strongPasswordActive$1,
+  "2faIsCurrentlyDisabled": "2FA kini dilumpuhkan",
+  loginAlertsEnabled: loginAlertsEnabled$1,
+  credentials: credentials$1,
+  lastChanged: lastChanged$1,
+  updateMasterPassword: updateMasterPassword$1,
+  terminateAllSessions: terminateAllSessions$1,
+  erphProImplementsAes256Encryption: erphProImplementsAes256Encryption$1,
+  articleNotFound: articleNotFound$1,
+  backToArticleHub: backToArticleHub$1,
+  save: save$1,
+  share: share$1,
+  aiSummary: aiSummary$1,
+  ac: ac$1,
+  chiefEditor: chiefEditor$1,
+  professionalInsight: professionalInsight$1,
+  frequentlyAskedQuestions: frequentlyAskedQuestions$1,
+  helpful12k: helpful12k$1,
+  shareArticle: shareArticle$1,
+  educationArchitecture: educationArchitecture$1,
+  dskpApi: dskpApi$1,
+  aidenChan: aidenChan$1,
+  masterArchitect: masterArchitect$1,
+  aidenLeadsTheErphPro: aidenLeadsTheErphPro$1,
+  followInsights: followInsights$1,
+  syncYourRphWithGemini: syncYourRphWithGemini$1,
+  unlockTheWorldsMostAdvanced: unlockTheWorldsMostAdvanced$1,
+  startFreeTrial: startFreeTrial$1,
+  recentPublications: recentPublications$1,
+  april20254MinRead: april20254MinRead$1,
+  ultimateEducationResourceHub: ultimateEducationResourceHub$1,
+  theDigitalLibrary: theDigitalLibrary$1,
+  forModernEducators: forModernEducators$1,
+  over100PrecisionengineeredArticlesCovering: over100PrecisionengineeredArticlesCovering$1,
+  filter: filter$1,
+  viewFullAnalysis: viewFullAnalysis$1,
+  noArticlesFoundMatchingYour: noArticlesFoundMatchingYour$1,
+  editorialMandate: editorialMandate$1,
+  everyArticleInOurHub: everyArticleInOurHub$1,
+  aidensEditorialTeam: aidensEditorialTeam$1,
+  malaysiaHq: malaysiaHq$1,
+  googleAdsense: googleAdsense$1,
+  highIntentEducationalTraffic: highIntentEducationalTraffic$1,
+  knowledgeCenter: knowledgeCenter$1,
+  howCanWe: howCanWe$1,
+  helpYou: helpYou$1,
+  changelogReleaseNotes: changelogReleaseNotes$1,
+  live: live$1,
+  welcomeToErphProHeres: welcomeToErphProHeres$1,
+  logIn: logIn$1,
+  usingYourProvidedCredentialsIc: usingYourProvidedCredentialsIc$1,
+  navigateTo: navigateTo$1,
+  settings: settings$1,
+  toUpdateYourProfilePhoto: toUpdateYourProfilePhoto$1,
+  ensureYour: ensureYour$1,
+  gradeSubject: gradeSubject$1,
+  detailsAreCorrect: detailsAreCorrect$1,
+  creatingALessonPlanIs: creatingALessonPlanIs$1,
+  newPlan: newPlan$1,
+  selectYour: selectYour$1,
+  dateTimeClassAndSubject: dateTimeClassAndSubject$1,
+  chooseStandardsFromThe: chooseStandardsFromThe$1,
+  dskpSelector: dskpSelector$1,
+  saveDraft: saveDraft$1,
+  or: or$1,
+  submit: submit$1,
+  weveDigitizedTheEntireDskp: weveDigitizedTheEntireDskp$1,
+  useThe: useThe$1,
+  dskpManager: dskpManager$1,
+  toFavoriteYourSubjects: toFavoriteYourSubjects$1,
+  duringRphCreationSimply: duringRphCreationSimply$1,
+  clickToSelect: clickToSelect$1,
+  standards_1: standards_1$1,
+  everythingIsAutofilled: everythingIsAutofilled$1,
+  onceYoureDoneSendIt: onceYoureDoneSendIt$1,
+  goTo: goTo$1,
+  myPlans: myPlans$1,
+  selectThePlansYouWant: selectThePlansYouWant$1,
+  submitForReview: submitForReview$1,
+  buttonOnTop: buttonOnTop$1,
+  yourPrincipalWillBeNotified: yourPrincipalWillBeNotified$1,
+  readGuide: readGuide$1,
+  closeGuide: closeGuide$1,
+  dskpVerified: dskpVerified$1,
+  learnMore: learnMore$1,
+  readyToDeploy: readyToDeploy$1,
+  legalCenter: legalCenter$1,
+  transparencyIsOurCoreValue: transparencyIsOurCoreValue$1,
+  lastUpdatedJan072026: lastUpdatedJan072026$1,
+  "1DataCollection": "1. Pengumpulan Data",
+  weCollectMinimalDataNecessary: weCollectMinimalDataNecessary$1,
+  teacherNamesAndEmailAddresses: teacherNamesAndEmailAddresses$1,
+  lessonPlanContentRphGenerated: lessonPlanContentRphGenerated$1,
+  schoolProfileInformation: schoolProfileInformation$1,
+  "2DataUsage": "2. Penggunaan Data",
+  yourDataIsUsedStrictly: yourDataIsUsedStrictly$1,
+  providingTheLessonPlanManagement: providingTheLessonPlanManagement$1,
+  generatingOfficialPdfReportsFor: generatingOfficialPdfReportsFor$1,
+  syncingWithTheNationalDskp: syncingWithTheNationalDskp$1,
+  weDoNotSellYour: weDoNotSellYour$1,
+  "3UserRights": "3. Hak Pengguna",
+  youHaveTheRightTo: youHaveTheRightTo$1,
+  termsOfService: termsOfService$1,
+  effectiveDateJan012024: effectiveDateJan012024$1,
+  "1UsageLicense": "1. Lesen Penggunaan",
+  byUsingErphProYou: byUsingErphProYou$1,
+  "2AcceptableUse": "2. Penggunaan Yang Dibenarkan",
+  youAgreeNotTo: youAgreeNotTo$1,
+  misuseTheReportingToolsTo: misuseTheReportingToolsTo$1,
+  attemptToReverseEngineerThe: attemptToReverseEngineerThe$1,
+  shareYourAccountCredentialsWith: shareYourAccountCredentialsWith$1,
+  "3Disclaimer": "3. Penafian",
+  erphProIsProvidedAs: erphProIsProvidedAs$1,
+  securityInfrastructure: securityInfrastructure$1,
+  weTakeTheSecurityOf: weTakeTheSecurityOf$1,
+  aidenSecuritySubsystem: aidenSecuritySubsystem$1,
+  ourProprietaryActiveDefenseSystem: ourProprietaryActiveDefenseSystem$1,
+  supportDevelopment: supportDevelopment$1,
+  fuelThe: fuelThe$1,
+  revolution: revolution$1,
+  erphProIsBuiltBy: erphProIsBuiltBy$1,
+  community: community$1,
+  free: free$1,
+  forever: forever$1,
+  forSchoolsJustGettingStarted: forSchoolsJustGettingStarted$1,
+  currentPlan: currentPlan$1,
+  mostPopular: mostPopular$1,
+  supporter: supporter$1,
+  rm10_1: rm10_1$1,
+  coffee: coffee$1,
+  showYourAppreciationAndHelp: showYourAppreciationAndHelp$1,
+  treatACoffee: treatACoffee$1,
+  buyAidenACoffee: buyAidenACoffee$1,
+  thankYouForYourSupport: thankYouForYourSupport$1,
+  done: done$1,
+  systemUpdates: systemUpdates$1,
+  releaseNotesChangelog: releaseNotesChangelog$1,
+  latest: latest$1,
+  newFeatures: newFeatures$1,
+  improvements: improvements$1,
+  bugFixes: bugFixes$1,
+  standardKandunganSk: standardKandunganSk$1,
+  standardPembelajaranSp: standardPembelajaranSp$1,
+  temaBidang: temaBidang$1,
+  tajuk: tajuk$1,
+  action: action$1,
+  noStandardsFoundMatchingYour_1: noStandardsFoundMatchingYour_1$1,
+  prev: prev$1,
+  of: of$1,
+  loadingRegistry: loadingRegistry$1,
+  registryEmpty: registryEmpty$1,
+  syncDataToBuildThe: syncDataToBuildThe$1,
+  loadingYears: loadingYears$1,
+  loadingSubjects: loadingSubjects$1,
+  sk: sk$1,
+  dskpMasterSync: dskpMasterSync$1,
+  "2stageSyncProcess": "Proses Penyegerakan 2 Peringkat",
+  "1ConnectDataSource": "1. Sambung Sumber Data",
+  linkTheOfficialCurriculumGoogle: linkTheOfficialCurriculumGoogle$1,
+  fetchData: fetchData$1,
+  rowsFound: rowsFound$1,
+  columnsDetected: columnsDetected$1,
+  columnMapping: columnMapping$1,
+  step1SyncRawData: step1SyncRawData$1,
+  step2ProcessMapRegistry: step2ProcessMapRegistry$1,
+  dskpManagement: dskpManagement$1,
+  hierarchicalRegistryExplorer: hierarchicalRegistryExplorer$1,
+  syncRegistry: syncRegistry$1,
+};
+
+const welcome = "欢迎来到 eRPH PRO";
+const erph = "eRPH";
+const pro = "Pro";
+const verifyingSession = "正在验证会话";
+const protectedByAidenSecuritySubsystem = "由 AIDEN 安全子系统 v0.0.33 保护";
+const aiLessonAssistant = "AI 教学助手";
+const generateHighqualityRphInSeconds = "几秒钟内生成高质量 RPH。";
+const subject = "科目";
+const grade = "年级 / 班级";
+const lessonTopicFocus = "课程主题 / 重点";
+const cancel = "取消";
+const generateWithGemini = "使用 Gemini 生成";
+const processing = "处理中...";
+const fuelTheDeveloper = "支持开发者！";
+const erphProIs100Indie = "eRPH Pro 是 100% 独立开发";
+const hiIm = "嗨！我是";
+const aiden = "Aiden";
+const iBuiltThisSystemAlone = "。\n                                我独自构建了这个系统，以帮助像您这样的老师更轻松地管理 RPH。";
+const ifErphProSavedYour = "如果 eRPH Pro 节省了您的时间，请考虑请我喝杯咖啡";
+const rm10 = "(RM10)";
+const extraTipsForMyHard = "(非常感谢您对我辛勤工作的额外打赏！❤️)";
+const sureIllTreatYou = "好的，我请客！☕";
+const maybeNextTime = "下次吧";
+const passTheCoffee = "递上咖啡！";
+const scanWithTngEwallet = "使用 TnG 电子钱包扫描";
+const rm1000 = "RM 10.00";
+const anyTipsYouLike = "+ 随您心意！";
+const doneRemindMeIn30 = "完成！(30 天后提醒我)";
+const weValueYourPrivacy = "我们重视您的隐私";
+const weUseCookiesToEnhance = "我们使用 Cookie 来增强您的体验并分析我们的流量。点击“接受”，即表示您同意我们使用 Cookie 并同意我们的";
+const privacyPolicy = "隐私政策";
+const pdpaTerms = "PDPA 条款";
+const close = "关闭";
+const acceptAll = "全部接受";
+const systemStatus = "系统状态";
+const online = "在线";
+const error = "错误";
+const connectedToFirebaseStorage = "已连接到 Firebase 存储";
+const configMissingCheckConsole = "配置丢失。检查控制台。";
+const aiAssist = "AI 辅助：";
+const poweredByGemini = "由 Gemini 提供支持";
+const consultingGeminiAi = "正在咨询 Gemini AI...";
+const sustainableAiForTeachers = "教师的可持续 AI";
+const traditionalAiToolsOftenCharge = "传统的 AI 工具通常收取高昂的月费。eRPH Pro 保持";
+const lowcost = "低成本";
+const byLettingYouUseYour = "通过允许您使用自己的官方 Google Gemini 配额。";
+const googleOffersAGenerousFree = "Google 为个人使用提供了慷慨的免费层级。";
+const noMiddlemanMarkupsOnYour = "您的 AI 使用没有中间商加价。";
+const completePrivacyYourDataStays = "完全隐私：您的数据保留在您的帐户中。";
+const showMeHowToGet = "向我展示如何获取密钥";
+const gettingYourPrivateKey = "获取您的私钥";
+const followThese3SimpleSubsteps = "遵循这 3 个简单的子步骤：";
+const clickThe = "点击";
+const blueButton = "蓝色按钮";
+const belowToOpenGooglesAi = "下方打开 Google AI Studio (在新标签页中打开)。";
+const signInWithYourGoogle = "使用您的 Google 帐户登录并点击";
+const getApiKey = "“Get API key”";
+const inTheSidebar = "在侧边栏中。";
+const click = "点击";
+const createApiKey = "“Create API key”";
+const onceCreatedComeBackHere = "。创建后，回到这里并点击下一步。";
+const back = "返回";
+const finalStepSecureLink = "最后一步：安全链接";
+const whenYouClickFinishA = "当您点击完成时，Google 窗口将询问您的密钥。只需将您复制的密钥粘贴到该窗口中。";
+const safetyPrivacy = "安全与隐私";
+const yourKeyIsNeverStored = "您的密钥从未存储在我们的服务器上。它仅保留在您的浏览器会话中。";
+const finishConnect = "完成并连接";
+const goBackToInstructions = "返回说明";
+const havingTroubleMostTeachersUse = "遇到问题？大多数老师使用个人 @gmail.com 帐户进行最简单的设置。";
+const erphPro = "eRPH Pro";
+const printPreview = "打印预览";
+const lessonPlansSelected = "选定的教案";
+const print = "打印";
+const version = "版本";
+const dskpBrowser = "DSKP 浏览器";
+const selectStandardToAutofillLesson = "选择标准以自动填写教案。";
+const allSubjects = "所有科目";
+const yearGrade = "年份 / 年级";
+const allLevels = "所有级别";
+const loadingDskp = "正在加载 DSKP...";
+const noStandardsFoundMatchingYour = "未找到符合您条件的标准。";
+const contentStandard = "学习标准";
+const selected = "已选择";
+const standardsSelected = "个标准已选";
+const include = "包括";
+const standards = "标准";
+const resourceNotFound = "资源未找到";
+const thePageYouAreLooking = "您正在寻找的页面可能已被删除、更名或暂时不可用。";
+const goBack = "返回";
+const dashboard = "仪表板";
+const erphProBullSecurityRegistry = "eRPH Pro &bull; 安全与注册子系统";
+const logo = "LOGO";
+const nilaiPendidikanSivik = "NILAI PENDIDIKAN SIVIK";
+const namaGuru = "NAMA GURU (教师姓名)";
+const minggu = "MINGGU (周次)";
+const tarikh = "/ TARIKH (日期)";
+const hari = "HARI (星期)";
+const disahkanOlehHantarErph = "DISAHKAN OLEH / HANTAR eRPH (核准/提交)";
+const rancanganPengajaranHarianTs25Cup = "rancangan PENGAJARAN HARIAN TS25 (CUP)";
+const time = "时间";
+const subject_1 = "科目";
+const themeTopic = "主题 / 题目";
+const standard = "标准";
+const contentStandard_1 = "学习标准:";
+const learningStandard = "教学标准:";
+const objectives = "目标";
+const successCriteria = "成功标准";
+const activities = "活动";
+const bbmTeachingAids = "BBM (教具):";
+const pak21 = "PAK-21:";
+const kbatHots = "KBAT (思维技能):";
+const assessment = "评估:";
+const reflection = "反思";
+const noReflectionRecorded = "未记录反思。";
+const pro_1 = "PRO";
+const stable = "(稳定版)";
+const loadingSchoolProfile = "正在加载学校资料...";
+const skPreset = "SK 预设";
+const smkPreset = "SMK 预设";
+const academicCalendarGroup = "校历组别";
+const kumpulanA = "A 组";
+const johorKedahKelantanTerengganu = "柔佛、吉打、吉兰丹和登嘉楼";
+const kumpulanB = "B 组";
+const melakaNegeriSembilanPahangPerak = "马六甲、森美兰、彭亨、霹雳、玻璃市、槟城、沙巴、砂拉越、雪兰莪、吉隆坡";
+const operatingHours = "办公时间";
+const subjects = "科目";
+const classes = "班级";
+const loadingUsers = "正在加载用户...";
+const noRptGeneratedForThis = "尚未为此会话生成 RPT。";
+const newsletterBroadcast = "通讯广播";
+const sendUpdatesToYourCommunity = "向您的社区发送更新。";
+const subjectLine = "主题行";
+const template = "模板";
+const modernCleanBright = "现代 (简洁明亮)";
+const corporateProfessional = "企业 (专业)";
+const targetAudience = "目标受众";
+const allUsers = "所有用户";
+const schoolAdminsOnly = "仅限学校管理员";
+const teachersOnly = "仅限教师";
+const messageContentHtmlSupported = "消息内容 (支持 HTML)";
+const basicHtmlTagsAllowedP = "允许的基本 HTML 标签：p, b, i, ul, li, br。";
+const sendBroadcast = "发送广播";
+const templatingTips = "模板技巧";
+const use = "使用";
+const toAvoidSpammingTheWrong = "以避免向错误的用户发送垃圾邮件。";
+const modernTemplate = "现代模板";
+const isBestForGeneralAnnouncements = "最适合一般公告。";
+const corporateTemplate = "企业模板";
+const isBestForOfficialMemos = "最适合官方备忘录。";
+const quickActions = "快速操作";
+const addNewSchool = "添加新学校";
+const step = "步骤";
+const of2 = "/ 2:";
+const schoolName = "学校名称";
+const srPrimary = "SR (小学)";
+const smkSecondary = "SMK (中学)";
+const schoolAdministrator = "学校管理员";
+const searchForAnExistingUser = "搜索现有用户以指定为学校管理员。如果不存在，我们将向他们发送邀请。";
+const currentRole = "当前角色：";
+const userNotFound = "用户未找到";
+const weWillSendA = "我们将发送一封";
+const registrationInvitation = "注册邀请";
+const toThisEmailWithInstructions = "到此电子邮件，其中包含有关如何设置其学校管理员帐户的说明。";
+const nextStep = "下一步";
+const createSchool = "创建学校";
+const addSchool = "添加学校";
+const manageProfile = "管理个人资料";
+const newRecord = "新记录";
+const teacher = "教师";
+const type = "类型";
+const timeline = "时间轴";
+const reasonEvidence = "原因 / 证据";
+const status = "状态";
+const noLeaveRecordsFound = "未找到休假记录。";
+const to = "至";
+const viewEvidence = "查看证据";
+const recorded = "已记录";
+const newLeaveRecord = "新休假记录";
+const leaveType = "休假类型";
+const location$1 = "地点";
+const optional = "(可选)";
+const startDate = "开始日期";
+const endDate = "结束日期";
+const reason = "原因";
+const evidenceUpload = "证据上传";
+const readyToUpload = "准备上传";
+const clickToAttachFile = "点击附件文件";
+const mcLetterOrPhotoMax = "MC、信函或照片 (最大 5MB)";
+const saveRecord = "保存记录";
+const mingguAkademik = "学术周";
+const today = "今天";
+const loadingWeeklyRph = "正在加载每周 RPH...";
+const lessonsScheduled = "已安排的课程";
+const verified = "已验证";
+const batchVerify = "批量验证";
+const rph = "RPH";
+const generatedBy = "生成者";
+const more = "更多";
+const systemTrafficAnalytics = "系统流量分析";
+const realtimeSessionDataGoogleAnalytics = "实时会话数据 (Google Analytics)";
+const activeUsers = "活跃用户";
+const pageHits = "页面浏览量";
+const malaysianEducator = "• 马来西亚教育工作者";
+const tahun = "年";
+const praSekolah = "学前班";
+const tingkatan = "中";
+const peralihan = "预备班";
+const selectSubjectYearToLoad = "选择科目和年份以加载标准...";
+const selectContentStandardFirst = "首先选择学习标准...";
+const databaseOptimizing = "数据库优化中...";
+const weAreOrganizingYourLesson = "我们正在整理您的教案。新引擎正在后台处理此操作。";
+const loadingMonth = "正在加载月份...";
+const noLessonPlans = "没有教案";
+const youDontHaveAnyClasses = "您今天没有安排任何课程。";
+const createPlan = "创建计划";
+const viewDetails = "查看详情";
+const noLessonPlansFound = "未找到教案。";
+const page = "页";
+const previous = "上一页";
+const next = "下一页";
+const securityHandshakeInProgress = "安全握手进行中";
+const malaysiasProfessionalDigitalEcosystemFor = "马来西亚教育工作者行政卓越的专业数字生态系统。";
+const backToWebsite = "返回网站";
+const emailAddress = "电子邮件地址";
+const password = "密码";
+const forgotPassword = "忘记密码？";
+const iAgreeToThe = "我同意";
+const terms = "条款";
+const andConsentToTheProcessing = "，并同意根据";
+const pdpa2010Malaysia = "PDPA 2010 (马来西亚)";
+const socialGateway = "社交网关";
+const continueWithGoogle = "继续使用 Google";
+const backToLogin = "返回登录";
+const buildV = "构建 v";
+const centralizedRepositoryForEducationalResources = "教育资源和学校通告的集中存储库。";
+const syncingResourceDatabase = "正在同步资源数据库...";
+const noItemsSharedHereYet = "此处尚未共享任何项目。使用共享按钮添加 Google Drive 链接或模板。";
+const sharedBy = "共享者";
+const open = "打开";
+const verifyLinkAccessSettingsAre = "在共享之前验证链接访问设置是否公开。";
+const general = "常规";
+const dskpSyllabus = "DSKP / 教学大纲";
+const rphTemplates = "RPH 模板";
+const schoolCircular = "学校通告";
+const mediaResources = "媒体资源";
+const schoolRepositoryOnly = "仅限学校存储库";
+const publicHubAllSchools = "公共中心 (所有学校)";
+const noTemplates = "没有模板";
+const activeSchedule = "活动时间表";
+const setAsActive = "设为活动";
+const modifySlot = "修改时段";
+const subjectTitle = "科目名称";
+const targetClass = "目标班级";
+const startsAt = "开始于";
+const endsAt = "结束于";
+const visualLabel = "视觉标签";
+const remove = "移除";
+const updateSlot = "更新时段";
+const malaysia = "马来西亚";
+const professionalBio = "专业简介";
+const yourProfileIsVisibleTo = "学校管理员可以看到您的个人资料，以进行验证和记录。";
+const digitalSignature = "数字签名";
+const registerSignature = "注册签名";
+const accountInfo = "帐户信息";
+const cloudBackup = "云备份";
+const fullName = "全名";
+const professionalGrade = "专业等级";
+const phoneNumber = "电话号码";
+const experienceTimeline = "经验时间轴";
+const addRecord = "添加记录";
+const noServiceHistoryRecordedYet = "尚未记录服务历史。";
+const positionRole = "职位 / 角色";
+const cloudBackupSetup = "云备份设置";
+const protectYourWorkBySyncing = "通过将每日教案备份同步到您的 Google Drive 来保护您的工作。";
+const connectGoogleAccount = "连接 Google 帐户";
+const authorizeErphProToCreate = "授权 eRPH Pro 在您的 Google Drive 中创建一个安全的“eRPH Pro Backups”文件夹。我们只访问我们创建的文件。";
+const grantPermission = "授予权限";
+const startBackupService = "启动备份服务";
+const yourAccountIsConnectedYou = "您的帐户已连接！您现在可以触发立即备份或配置自动每日计划 (即将推出)。";
+const systemConnected = "系统已连接";
+const driveStatusActive = "Drive 状态：活动";
+const uploadingBackup = "正在上传备份...";
+const runBackupNow = "立即运行备份";
+const manageEducationalEditorialContentFor = "管理公共网站的教育编辑内容。";
+const aidenIsCrawling = "Aiden 正在爬取...";
+const triggerAiCrawl = "触发 AI 爬取";
+const newEditorial = "新社论";
+const category = "类别";
+const author = "作者";
+const stats = "统计";
+const actions = "操作";
+const loadingArticles = "正在加载文章...";
+const noEditorialsFound = "未找到社论。";
+const articleTitle = "文章标题";
+const urlSlugOptional = "URL Slug (可选)";
+const pedagogy = "教学法";
+const technology = "技术";
+const administration = "行政";
+const teacherWellness = "教师健康";
+const moeUpdates = "教育部更新";
+const shortExcerptMetaDescription = "简短摘要 (Meta 描述)";
+const featuredImageUrl = "特色图片 URL";
+const articleContentMarkdownhtmlSupport = "文章内容 (Markdown/HTML 支持)";
+const discard = "放弃";
+const publishChanges = "发布更改";
+const adminMailbox = "管理员邮箱";
+const hydratingSubsystem = "正在激活子系统...";
+const noMessagesFound = "未找到消息。";
+const selectAConversation = "选择对话";
+const pickAMessageFromThe = "从侧边栏中选择一条消息以查看详情并回复用户。";
+const subject_2 = "主题：";
+const draftingReply = "起草回复";
+const sendMessage = "发送消息";
+const quickReply = "快速回复";
+const forward = "转发";
+const systemConfiguration = "系统配置";
+const controlErphProsGlobalInfrastructure = "控制 eRPH Pro 的全球基础设施、营销和货币化。";
+const syncMasterConfig = "同步主配置";
+const editorialAuthorName = "社论作者姓名";
+const autocrawlTrends = "自动爬取趋势";
+const theCmsUsesAidensAi = "CMS 使用 Aiden 的 AI 引擎爬取教学趋势并自动起草专家分析。";
+const marketingTracking = "营销与跟踪";
+const googleAnalyticsId = "Google Analytics ID";
+const searchConsoleToken = "Search Console Token";
+const monetizationAdsense = "货币化 (AdSense)";
+const adsensePublisherId = "AdSense 发布商 ID";
+const adUnitsAreStrictlyLimited = "为了保持专业门户的美观，广告单元严格限于文章 CMS 平台。";
+const databaseDemoTools = "数据库和演示工具";
+const populateTheSystemWithFresh = "为教师和校长填充新的演示数据。这会先清除旧的演示记录。";
+const reseedDemoData = "重新生成演示数据";
+const useWithCautionOnlyAffects = "请谨慎使用。仅影响演示帐户。真正的用户数据永远不会被触及。";
+const mailInfrastructureEnterprise = "邮件基础设施 (企业版)";
+const sendTestMail = "发送测试邮件";
+const mailServerHostIncomingoutgoing = "邮件服务器主机 (传入/传出)";
+const smtpPortSsl = "SMTP 端口 (SSL)";
+const usernamePrimaryAdmin = "用户名 (主管理员)";
+const pop3Port995 = "POP3 端口 (995)";
+const imapPort993 = "IMAP 端口 (993)";
+const mailboxPassword = "邮箱密码";
+const autoreplyConfiguration = "自动回复配置";
+const securityPrivacyCenter = "安全与隐私中心";
+const protectYourEducationalRegistryAnd = "保护您的教育注册和个人数据。";
+const applySecurityPolicy = "应用安全策略";
+const advancedProtection = "高级保护";
+const twofactorAuthentication = "双因素认证";
+const addAnExtraLayerOf = "通过移动应用程序或短信添加额外的安全层。";
+const autolockInactivityMins = "自动锁定非活动时间 (分钟)";
+const accountRecoveryEmail = "帐户恢复电子邮件";
+const auditTrailRecentAccess = "审计跟踪：最近访问";
+const securityScore = "安全评分";
+const strongPasswordActive = "强密码有效";
+const loginAlertsEnabled = "登录警报已启用";
+const credentials = "凭证";
+const lastChanged = "上次更改：";
+const updateMasterPassword = "更新主密码";
+const terminateAllSessions = "终止所有会话";
+const erphProImplementsAes256Encryption = "eRPH Pro 对所有静态数据采用 AES-256 加密。您的数字签名单独存储在加密保管库中。";
+const articleNotFound = "文章未找到";
+const backToArticleHub = "返回文章中心";
+const save = "保存";
+const share = "分享";
+const aiSummary = "AI 摘要 •";
+const ac = "AC";
+const chiefEditor = "主编";
+const professionalInsight = "专业见解";
+const frequentlyAskedQuestions = "常见问题";
+const helpful12k = "有帮助 (1.2k)";
+const shareArticle = "分享文章";
+const educationArchitecture = "教育架构";
+const dskpApi = "DSKP API";
+const aidenChan = "Aiden Chan";
+const masterArchitect = "首席架构师";
+const aidenLeadsTheErphPro = "Aiden 领导 eRPH Pro 工程团队，专注于大型语言模型与马来西亚中学教育系统的交叉领域。";
+const followInsights = "关注见解";
+const syncYourRphWithGemini = "立即使用 Gemini 1.5 Pro 同步您的 RPH。";
+const unlockTheWorldsMostAdvanced = "解锁世界上最先进的 RPH 引擎，每周节省 15+ 小时。";
+const startFreeTrial = "开始免费试用";
+const recentPublications = "最新发布";
+const april20254MinRead = "2025 年 4 月 • 4 分钟阅读";
+const ultimateEducationResourceHub = "终极教育资源中心";
+const theDigitalLibrary = "数字图书馆";
+const forModernEducators = "为您这样的现代教育工作者";
+const over100PrecisionengineeredArticlesCovering = "超过 100+ 篇精心策划的文章，涵盖马来西亚教学法、AI 集成和学校领导力卓越。";
+const filter = "筛选";
+const viewFullAnalysis = "查看完整分析";
+const noArticlesFoundMatchingYour = "未找到符合您条件的文章";
+const editorialMandate = "编辑任务";
+const everyArticleInOurHub = "“我们中心的所有文章都与最新的教育部通告和 DSKP 映射交叉引用，以确保教师准确性。”";
+const aidensEditorialTeam = "Aiden 的编辑团队";
+const malaysiaHq = "马来西亚总部";
+const googleAdsense = "Google AdSense";
+const highIntentEducationalTraffic = "高意向教育流量";
+const knowledgeCenter = "知识中心";
+const howCanWe = "我们如何";
+const helpYou = "帮助您？";
+const changelogReleaseNotes = "更新日志和发布说明";
+const live = "实时";
+const welcomeToErphProHeres = "欢迎来到 eRPH Pro！这是开始的方法：";
+const logIn = "登录";
+const usingYourProvidedCredentialsIc = "使用您提供的凭据 (IC 号码)。";
+const navigateTo = "导航至";
+const settings = "设置";
+const toUpdateYourProfilePhoto = "以更新您的个人资料照片和签名。";
+const ensureYour = "确保您的";
+const gradeSubject = "年级和科目";
+const detailsAreCorrect = "详情正确。";
+const creatingALessonPlanIs = "创建教案很简单：";
+const newPlan = "新计划";
+const selectYour = "选择您的";
+const dateTimeClassAndSubject = "日期、时间、班级和科目";
+const chooseStandardsFromThe = "从选择标准";
+const dskpSelector = "DSKP 选择器";
+const saveDraft = "保存草稿";
+const or = "或";
+const submit = "提交";
+const weveDigitizedTheEntireDskp = "我们为您数字化了整个 DSKP 库：";
+const useThe = "使用";
+const dskpManager = "DSKP 管理器";
+const toFavoriteYourSubjects = "收藏您的科目。";
+const duringRphCreationSimply = "在创建 RPH 期间，只需";
+const clickToSelect = "点击选择";
+const standards_1 = "标准。";
+const everythingIsAutofilled = "一切自动填充！";
+const onceYoureDoneSendIt = "完成后，发送进行审核：";
+const goTo = "前往";
+const myPlans = "我的计划";
+const selectThePlansYouWant = "选择您要提交的计划。";
+const submitForReview = "提交审核";
+const buttonOnTop = "顶部按钮。";
+const yourPrincipalWillBeNotified = "您的校长将收到通知！";
+const readGuide = "阅读指南";
+const closeGuide = "关闭指南";
+const dskpVerified = "DSKP 已验证";
+const learnMore = "了解更多";
+const readyToDeploy = "准备部署";
+const legalCenter = "法律中心";
+const transparencyIsOurCoreValue = "透明是我们的核心价值观。以下是您需要了解的有关我们如何管理使用、数据和安全性的所有信息。";
+const lastUpdatedJan072026 = "最后更新：2026 年 1 月 7 日";
+const weCollectMinimalDataNecessary = "我们收集 eRPH Pro 功能所需的最少数据。这包括：";
+const teacherNamesAndEmailAddresses = "教师姓名和电子邮件地址(用于身份识别)。";
+const lessonPlanContentRphGenerated = "您生成或上传的教案内容 (RPH)。";
+const schoolProfileInformation = "学校资料信息。";
+const yourDataIsUsedStrictly = "您的数据严格用于：";
+const providingTheLessonPlanManagement = "提供教案管理服务。";
+const generatingOfficialPdfReportsFor = "为学校行政部门生成官方 PDF 报告。";
+const syncingWithTheNationalDskp = "与国家 DSKP 存储库同步。";
+const weDoNotSellYour = "我们绝不会将您的数据出售给第三方。";
+const youHaveTheRightTo = "您有权随时联系支持人员请求完整导出您的数据或完全删除帐户。";
+const termsOfService = "服务条款";
+const effectiveDateJan012024 = "生效日期：2024 年 1 月 1 日";
+const byUsingErphProYou = "使用 eRPH Pro，即表示您被授予非独占、有限的许可，可以出于教育管理目的访问该平台。";
+const youAgreeNotTo = "您同意不：";
+const misuseTheReportingToolsTo = "滥用报告工具伪造官方学校记录。";
+const attemptToReverseEngineerThe = "尝试对源代码进行逆向工程。";
+const shareYourAccountCredentialsWith = "与未经授权的用户共享您的帐户凭据。";
+const erphProIsProvidedAs = "eRPH Pro 是“按原样”提供的。虽然我们努力实现 99.9% 的正常运行时间，但我们不对计划维护窗口期间的任何数据不可用负责。";
+const securityInfrastructure = "安全基础设施";
+const weTakeTheSecurityOf = "我们认真对待马来西亚教育数据的安全性。我们的堆栈建立在企业级安全原则之上。";
+const aidenSecuritySubsystem = "AIDEN 安全子系统";
+const ourProprietaryActiveDefenseSystem = "我们要有专有的主动防御系统实时监控可疑的登录模式并防止未经授权的访问尝试。";
+const supportDevelopment = "支持开发";
+const fuelThe = "支持";
+const revolution = "革命。";
+const erphProIsBuiltBy = "eRPH Pro 由一位致力于改善马来西亚教育的热情开发者构建。您的支持让服务器保持运行，让咖啡不断流淌。";
+const community = "社区";
+const free = "免费";
+const forever = "/ 永久";
+const forSchoolsJustGettingStarted = "适用于刚刚开始数字化的学校。";
+const currentPlan = "当前计划";
+const mostPopular = "最受欢迎";
+const supporter = "支持者";
+const rm10_1 = "RM 10";
+const coffee = "/ 咖啡";
+const showYourAppreciationAndHelp = "表达您的感激之情并帮助加快开发速度！";
+const treatACoffee = "请喝咖啡";
+const buyAidenACoffee = "请 Aiden 喝咖啡";
+const thankYouForYourSupport = "感谢您的支持！";
+const done = "完成！";
+const systemUpdates = "系统更新";
+const releaseNotesChangelog = "发布说明和更新日志";
+const latest = "最新";
+const newFeatures = "新功能";
+const improvements = "改进";
+const bugFixes = "错误修复";
+const standardKandunganSk = "学习标准 (SK)";
+const standardPembelajaranSp = "教学标准 (SP)";
+const temaBidang = "主题 / 领域";
+const tajuk = "题目";
+const action = "操作";
+const noStandardsFoundMatchingYour_1 = "未找到符合您过滤条件的标准。";
+const prev = "上一页";
+const of = "/";
+const loadingRegistry = "正在加载注册表...";
+const registryEmpty = "注册表为空";
+const syncDataToBuildThe = "同步数据以建立层次结构。";
+const loadingYears = "正在加载年份...";
+const loadingSubjects = "正在加载科目...";
+const sk = "SK";
+const dskpMasterSync = "DSKP 主同步";
+const linkTheOfficialCurriculumGoogle = "链接官方课程 Google 表格。";
+const fetchData = "获取数据";
+const rowsFound = "行数";
+const columnsDetected = "列数";
+const columnMapping = "列映射";
+const step1SyncRawData = "步骤 1：同步原始数据";
+const step2ProcessMapRegistry = "步骤 2：处理并映射注册表";
+const dskpManagement = "DSKP 管理";
+const hierarchicalRegistryExplorer = "分层注册表资源管理器";
+const syncRegistry = "同步注册表";
+const zh = {
+  "100": "/ 100",
+  welcome,
+  erph,
+  pro,
+  verifyingSession,
+  protectedByAidenSecuritySubsystem,
+  aiLessonAssistant,
+  generateHighqualityRphInSeconds,
+  subject,
+  grade,
+  lessonTopicFocus,
+  cancel,
+  generateWithGemini,
+  processing,
+  fuelTheDeveloper,
+  erphProIs100Indie,
+  hiIm,
+  aiden,
+  iBuiltThisSystemAlone,
+  ifErphProSavedYour,
+  rm10,
+  extraTipsForMyHard,
+  sureIllTreatYou,
+  maybeNextTime,
+  passTheCoffee,
+  scanWithTngEwallet,
+  rm1000,
+  anyTipsYouLike,
+  doneRemindMeIn30,
+  weValueYourPrivacy,
+  weUseCookiesToEnhance,
+  privacyPolicy,
+  pdpaTerms,
+  close,
+  acceptAll,
+  systemStatus,
+  online,
+  error,
+  connectedToFirebaseStorage,
+  configMissingCheckConsole,
+  aiAssist,
+  poweredByGemini,
+  consultingGeminiAi,
+  sustainableAiForTeachers,
+  traditionalAiToolsOftenCharge,
+  lowcost,
+  byLettingYouUseYour,
+  googleOffersAGenerousFree,
+  noMiddlemanMarkupsOnYour,
+  completePrivacyYourDataStays,
+  showMeHowToGet,
+  gettingYourPrivateKey,
+  followThese3SimpleSubsteps,
+  clickThe,
+  blueButton,
+  belowToOpenGooglesAi,
+  signInWithYourGoogle,
+  getApiKey,
+  inTheSidebar,
+  click,
+  createApiKey,
+  onceCreatedComeBackHere,
+  "1GoToGoogleAi": "1.前往 Google AI Studio",
+  back,
+  "2IHaveMyKey": "2. 我有我的密钥",
+  finalStepSecureLink,
+  whenYouClickFinishA,
+  safetyPrivacy,
+  yourKeyIsNeverStored,
+  finishConnect,
+  goBackToInstructions,
+  havingTroubleMostTeachersUse,
+  erphPro,
+  printPreview,
+  lessonPlansSelected,
+  print,
+  version,
+  dskpBrowser,
+  selectStandardToAutofillLesson,
+  allSubjects,
+  yearGrade,
+  allLevels,
+  loadingDskp,
+  noStandardsFoundMatchingYour,
+  contentStandard,
+  selected,
+  standardsSelected,
+  include,
+  standards,
+  resourceNotFound,
+  thePageYouAreLooking,
+  goBack,
+  dashboard,
+  erphProBullSecurityRegistry,
+  logo,
+  nilaiPendidikanSivik,
+  namaGuru,
+  minggu,
+  tarikh,
+  hari,
+  disahkanOlehHantarErph,
+  rancanganPengajaranHarianTs25Cup,
+  time,
+  "class": "班级",
+  subject_1,
+  themeTopic,
+  standard,
+  contentStandard_1,
+  learningStandard,
+  objectives,
+  successCriteria,
+  activities,
+  bbmTeachingAids,
+  pak21,
+  kbatHots,
+  assessment,
+  reflection,
+  noReflectionRecorded,
+  pro_1,
+  "2026ErphPro": "© 2026 eRPH Pro.",
+  stable,
+  loadingSchoolProfile,
+  skPreset,
+  smkPreset,
+  academicCalendarGroup,
+  kumpulanA,
+  johorKedahKelantanTerengganu,
+  kumpulanB,
+  melakaNegeriSembilanPahangPerak,
+  operatingHours,
+  subjects,
+  classes,
+  loadingUsers,
+  noRptGeneratedForThis,
+  newsletterBroadcast,
+  sendUpdatesToYourCommunity,
+  subjectLine,
+  template,
+  modernCleanBright,
+  corporateProfessional,
+  targetAudience,
+  allUsers,
+  schoolAdminsOnly,
+  teachersOnly,
+  messageContentHtmlSupported,
+  basicHtmlTagsAllowedP,
+  sendBroadcast,
+  templatingTips,
+  use,
+  toAvoidSpammingTheWrong,
+  modernTemplate,
+  isBestForGeneralAnnouncements,
+  corporateTemplate,
+  isBestForOfficialMemos,
+  quickActions,
+  addNewSchool,
+  step,
+  of2,
+  schoolName,
+  srPrimary,
+  smkSecondary,
+  schoolAdministrator,
+  searchForAnExistingUser,
+  currentRole,
+  userNotFound,
+  weWillSendA,
+  registrationInvitation,
+  toThisEmailWithInstructions,
+  nextStep,
+  createSchool,
+  addSchool,
+  manageProfile,
+  newRecord,
+  teacher,
+  type,
+  timeline,
+  reasonEvidence,
+  status,
+  noLeaveRecordsFound,
+  to,
+  viewEvidence,
+  recorded,
+  newLeaveRecord,
+  leaveType,
+  location: location$1,
+  optional,
+  startDate,
+  endDate,
+  reason,
+  evidenceUpload,
+  "new": "新",
+  readyToUpload,
+  clickToAttachFile,
+  mcLetterOrPhotoMax,
+  saveRecord,
+  mingguAkademik,
+  today,
+  loadingWeeklyRph,
+  lessonsScheduled,
+  verified,
+  batchVerify,
+  rph,
+  generatedBy,
+  more,
+  systemTrafficAnalytics,
+  realtimeSessionDataGoogleAnalytics,
+  activeUsers,
+  pageHits,
+  malaysianEducator,
+  tahun,
+  praSekolah,
+  tingkatan,
+  peralihan,
+  selectSubjectYearToLoad,
+  selectContentStandardFirst,
+  databaseOptimizing,
+  weAreOrganizingYourLesson,
+  loadingMonth,
+  noLessonPlans,
+  youDontHaveAnyClasses,
+  createPlan,
+  viewDetails,
+  noLessonPlansFound,
+  page,
+  previous,
+  next,
+  securityHandshakeInProgress,
+  malaysiasProfessionalDigitalEcosystemFor,
+  backToWebsite,
+  emailAddress,
+  password,
+  forgotPassword,
+  iAgreeToThe,
+  terms,
+  andConsentToTheProcessing,
+  pdpa2010Malaysia,
+  socialGateway,
+  continueWithGoogle,
+  backToLogin,
+  buildV,
+  centralizedRepositoryForEducationalResources,
+  syncingResourceDatabase,
+  noItemsSharedHereYet,
+  sharedBy,
+  open,
+  verifyLinkAccessSettingsAre,
+  general,
+  dskpSyllabus,
+  rphTemplates,
+  schoolCircular,
+  mediaResources,
+  schoolRepositoryOnly,
+  publicHubAllSchools,
+  noTemplates,
+  activeSchedule,
+  setAsActive,
+  modifySlot,
+  subjectTitle,
+  targetClass,
+  startsAt,
+  endsAt,
+  visualLabel,
+  remove,
+  updateSlot,
+  malaysia,
+  professionalBio,
+  yourProfileIsVisibleTo,
+  digitalSignature,
+  registerSignature,
+  accountInfo,
+  cloudBackup,
+  fullName,
+  professionalGrade,
+  phoneNumber,
+  experienceTimeline,
+  addRecord,
+  noServiceHistoryRecordedYet,
+  positionRole,
+  cloudBackupSetup,
+  protectYourWorkBySyncing,
+  connectGoogleAccount,
+  authorizeErphProToCreate,
+  grantPermission,
+  startBackupService,
+  yourAccountIsConnectedYou,
+  systemConnected,
+  driveStatusActive,
+  uploadingBackup,
+  runBackupNow,
+  manageEducationalEditorialContentFor,
+  aidenIsCrawling,
+  triggerAiCrawl,
+  newEditorial,
+  category,
+  author,
+  stats,
+  actions,
+  loadingArticles,
+  noEditorialsFound,
+  articleTitle,
+  urlSlugOptional,
+  pedagogy,
+  technology,
+  administration,
+  teacherWellness,
+  moeUpdates,
+  shortExcerptMetaDescription,
+  featuredImageUrl,
+  articleContentMarkdownhtmlSupport,
+  discard,
+  publishChanges,
+  adminMailbox,
+  hydratingSubsystem,
+  noMessagesFound,
+  selectAConversation,
+  pickAMessageFromThe,
+  subject_2,
+  draftingReply,
+  sendMessage,
+  quickReply,
+  forward,
+  systemConfiguration,
+  controlErphProsGlobalInfrastructure,
+  syncMasterConfig,
+  editorialAuthorName,
+  autocrawlTrends,
+  theCmsUsesAidensAi,
+  marketingTracking,
+  googleAnalyticsId,
+  searchConsoleToken,
+  monetizationAdsense,
+  adsensePublisherId,
+  adUnitsAreStrictlyLimited,
+  databaseDemoTools,
+  populateTheSystemWithFresh,
+  reseedDemoData,
+  useWithCautionOnlyAffects,
+  mailInfrastructureEnterprise,
+  sendTestMail,
+  mailServerHostIncomingoutgoing,
+  smtpPortSsl,
+  usernamePrimaryAdmin,
+  pop3Port995,
+  imapPort993,
+  mailboxPassword,
+  autoreplyConfiguration,
+  securityPrivacyCenter,
+  protectYourEducationalRegistryAnd,
+  applySecurityPolicy,
+  advancedProtection,
+  twofactorAuthentication,
+  addAnExtraLayerOf,
+  autolockInactivityMins,
+  "5MinutesMaximumSecurity": "5 分钟 (最高安全性)",
+  "15MinutesStandard": "15 分钟 (标准)",
+  "30MinutesBalanced": "30 分钟 (平衡)",
+  "60MinutesConvenience": "60 分钟 (方便)",
+  accountRecoveryEmail,
+  auditTrailRecentAccess,
+  securityScore,
+  strongPasswordActive,
+  "2faIsCurrentlyDisabled": "2FA 当前已禁用",
+  loginAlertsEnabled,
+  credentials,
+  lastChanged,
+  updateMasterPassword,
+  terminateAllSessions,
+  erphProImplementsAes256Encryption,
+  articleNotFound,
+  backToArticleHub,
+  save,
+  share,
+  aiSummary,
+  ac,
+  chiefEditor,
+  professionalInsight,
+  frequentlyAskedQuestions,
+  helpful12k,
+  shareArticle,
+  educationArchitecture,
+  dskpApi,
+  aidenChan,
+  masterArchitect,
+  aidenLeadsTheErphPro,
+  followInsights,
+  syncYourRphWithGemini,
+  unlockTheWorldsMostAdvanced,
+  startFreeTrial,
+  recentPublications,
+  april20254MinRead,
+  ultimateEducationResourceHub,
+  theDigitalLibrary,
+  forModernEducators,
+  over100PrecisionengineeredArticlesCovering,
+  filter,
+  viewFullAnalysis,
+  noArticlesFoundMatchingYour,
+  editorialMandate,
+  everyArticleInOurHub,
+  aidensEditorialTeam,
+  malaysiaHq,
+  googleAdsense,
+  highIntentEducationalTraffic,
+  knowledgeCenter,
+  howCanWe,
+  helpYou,
+  changelogReleaseNotes,
+  live,
+  welcomeToErphProHeres,
+  logIn,
+  usingYourProvidedCredentialsIc,
+  navigateTo,
+  settings,
+  toUpdateYourProfilePhoto,
+  ensureYour,
+  gradeSubject,
+  detailsAreCorrect,
+  creatingALessonPlanIs,
+  newPlan,
+  selectYour,
+  dateTimeClassAndSubject,
+  chooseStandardsFromThe,
+  dskpSelector,
+  saveDraft,
+  or,
+  submit,
+  weveDigitizedTheEntireDskp,
+  useThe,
+  dskpManager,
+  toFavoriteYourSubjects,
+  duringRphCreationSimply,
+  clickToSelect,
+  standards_1,
+  everythingIsAutofilled,
+  onceYoureDoneSendIt,
+  goTo,
+  myPlans,
+  selectThePlansYouWant,
+  submitForReview,
+  buttonOnTop,
+  yourPrincipalWillBeNotified,
+  readGuide,
+  closeGuide,
+  dskpVerified,
+  learnMore,
+  readyToDeploy,
+  legalCenter,
+  transparencyIsOurCoreValue,
+  lastUpdatedJan072026,
+  "1DataCollection": "1. 数据收集",
+  weCollectMinimalDataNecessary,
+  teacherNamesAndEmailAddresses,
+  lessonPlanContentRphGenerated,
+  schoolProfileInformation,
+  "2DataUsage": "2. 数据使用",
+  yourDataIsUsedStrictly,
+  providingTheLessonPlanManagement,
+  generatingOfficialPdfReportsFor,
+  syncingWithTheNationalDskp,
+  weDoNotSellYour,
+  "3UserRights": "3. 用户权利",
+  youHaveTheRightTo,
+  termsOfService,
+  effectiveDateJan012024,
+  "1UsageLicense": "1. 使用许可",
+  byUsingErphProYou,
+  "2AcceptableUse": "2. 可接受的使用",
+  youAgreeNotTo,
+  misuseTheReportingToolsTo,
+  attemptToReverseEngineerThe,
+  shareYourAccountCredentialsWith,
+  "3Disclaimer": "3. 免责声明",
+  erphProIsProvidedAs,
+  securityInfrastructure,
+  weTakeTheSecurityOf,
+  aidenSecuritySubsystem,
+  ourProprietaryActiveDefenseSystem,
+  supportDevelopment,
+  fuelThe,
+  revolution,
+  erphProIsBuiltBy,
+  community,
+  free,
+  forever,
+  forSchoolsJustGettingStarted,
+  currentPlan,
+  mostPopular,
+  supporter,
+  rm10_1,
+  coffee,
+  showYourAppreciationAndHelp,
+  treatACoffee,
+  buyAidenACoffee,
+  thankYouForYourSupport,
+  done,
+  systemUpdates,
+  releaseNotesChangelog,
+  latest,
+  newFeatures,
+  improvements,
+  bugFixes,
+  standardKandunganSk,
+  standardPembelajaranSp,
+  temaBidang,
+  tajuk,
+  action,
+  noStandardsFoundMatchingYour_1,
+  prev,
+  of,
+  loadingRegistry,
+  registryEmpty,
+  syncDataToBuildThe,
+  loadingYears,
+  loadingSubjects,
+  sk,
+  dskpMasterSync,
+  "2stageSyncProcess": "2 阶段同步过程",
+  "1ConnectDataSource": "1. 连接数据源",
+  linkTheOfficialCurriculumGoogle,
+  fetchData,
+  rowsFound,
+  columnsDetected,
+  columnMapping,
+  step1SyncRawData,
+  step2ProcessMapRegistry,
+  dskpManagement,
+  hierarchicalRegistryExplorer,
+  syncRegistry,
+};
+
+instance.use(Browser).use(initReactI18next).init({
+  resources: {
+    en: { translation: en },
+    ms: { translation: ms },
+    zh: { translation: zh }
+  },
+  fallbackLng: "en",
+  debug: false,
+  interpolation: {
+    escapeValue: false
+    // React already safes from xss
+  }
+});
 
 const rootElement = document.getElementById("root");
 if (!rootElement) {

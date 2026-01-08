@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import Button from './Button';
 import { ShieldCheck, X } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const COOKIE_CONSENT_KEY = 'erph_cookie_consent';
 
 export const CookieConsent = () => {
+    const { t } = useTranslation();
     const [isVisible, setIsVisible] = useState(false);
 
     useEffect(() => {
@@ -28,19 +30,17 @@ export const CookieConsent = () => {
                 <div className="flex bg-slate-800/50 p-3 rounded-2xl items-start gap-4 flex-1">
                     <ShieldCheck className="w-8 h-8 text-emerald-400 shrink-0" />
                     <div className="space-y-1">
-                        <h4 className="font-bold text-sm">We value your privacy</h4>
+                        <h4 className="font-bold text-sm">{t('weValueYourPrivacy')}</h4>
                         <p className="text-xs text-slate-400 leading-relaxed">
-                            We use cookies to enhance your experience and analyze our traffic. By clicking "Accept", you consent to our use of cookies and agree to our <a href="/legal" className="text-blue-400 hover:underline">Privacy Policy</a> & <a href="/legal" className="text-blue-400 hover:underline">PDPA terms</a>.
+                            {t('weUseCookiesToEnhance')}<a href="/legal" className="text-blue-400 hover:underline">{t('privacyPolicy')}</a> & <a href="/legal" className="text-blue-400 hover:underline">{t('pdpaTerms')}</a>.
                         </p>
                     </div>
                 </div>
                 <div className="flex gap-3 mt-4 md:mt-0">
                     <Button variant="ghost" className="text-slate-400 hover:text-white" onClick={handleAccept}>
-                        Close
-                    </Button>
+                        {t('close')}</Button>
                     <Button onClick={handleAccept} className="bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl px-8 shadow-lg shadow-emerald-500/20">
-                        Accept All
-                    </Button>
+                        {t('acceptAll')}</Button>
                 </div>
             </div>
         </div>

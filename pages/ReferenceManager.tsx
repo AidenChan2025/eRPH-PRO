@@ -12,9 +12,10 @@ import {
     FileText, Info, HardDrive, RefreshCw, UserCheck, ShieldAlert, Database
 } from 'lucide-react';
 import { syncDskpFromSheet } from '../services/dskpSync';
+import { useTranslation } from 'react-i18next';
 
 const ReferenceManager = () => {
-    const { t } = useLanguage();
+        const { t } = useLanguage();
     const { currentUser } = useGlobal();
     const [references, setReferences] = useState<ReferenceItem[]>([]);
     const [isLoading, setIsLoading] = useState(true);
@@ -153,7 +154,7 @@ const ReferenceManager = () => {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
                     <h2 className="text-2xl font-bold text-slate-800">{t('references')}</h2>
-                    <p className="text-slate-500 text-sm">Centralized repository for educational resources and school directives.</p>
+                    <p className="text-slate-500 text-sm">{t('centralizedRepositoryForEducationalResources')}</p>
                 </div>
                 <div className="flex gap-2">
                     <Button variant="secondary" onClick={fetchReferences}>
@@ -214,13 +215,13 @@ const ReferenceManager = () => {
             {isLoading ? (
                 <div className="p-20 text-center text-slate-400">
                     <Loader2 className="w-10 h-10 animate-spin mx-auto mb-4 opacity-20" />
-                    <p className="font-medium">Syncing Resource Database...</p>
+                    <p className="font-medium">{t('syncingResourceDatabase')}</p>
                 </div>
             ) : filteredRefs.length === 0 ? (
                 <div className="p-24 text-center bg-white rounded-3xl border border-dashed border-slate-200 shadow-inner">
                     <HardDrive className="w-16 h-16 mx-auto mb-4 opacity-10 text-slate-900" />
                     <h3 className="text-xl font-bold text-slate-800">{t('ref_no_data')}</h3>
-                    <p className="text-slate-400 text-sm max-w-sm mx-auto mt-2">No items shared here yet. Use the share button to add Google Drive links or templates.</p>
+                    <p className="text-slate-400 text-sm max-w-sm mx-auto mt-2">{t('noItemsSharedHereYet')}</p>
                 </div>
             ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -264,7 +265,7 @@ const ReferenceManager = () => {
                                             {ref.uploaderName.charAt(0)}
                                         </div>
                                         <div className="flex flex-col">
-                                            <span className="text-[10px] font-black text-slate-400 uppercase leading-none">Shared By</span>
+                                            <span className="text-[10px] font-black text-slate-400 uppercase leading-none">{t('sharedBy')}</span>
                                             <span className="text-[11px] font-bold text-slate-600 truncate max-w-[120px]">{ref.uploaderName}</span>
                                         </div>
                                     </div>
@@ -274,7 +275,7 @@ const ReferenceManager = () => {
                                         rel="noopener noreferrer"
                                         className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-black uppercase tracking-tight transition-all ${ref.source === ReferenceSource.PUBLIC ? 'bg-blue-600 text-white hover:bg-blue-700 shadow-blue-100' : 'bg-indigo-600 text-white hover:bg-indigo-700 shadow-indigo-100'} shadow-lg`}
                                     >
-                                        Open <ExternalLink className="w-3.5 h-3.5" />
+                                        {t('open')}<ExternalLink className="w-3.5 h-3.5" />
                                     </a>
                                 </div>
                             </Card>
@@ -317,7 +318,7 @@ const ReferenceManager = () => {
                                         onChange={e => setForm({ ...formData, link: e.target.value })}
                                     />
                                 </div>
-                                <p className="text-[10px] text-amber-600 mt-2 ml-1 italic flex items-center gap-1 font-bold"><ShieldAlert className="w-3 h-3" /> Verify link access settings are public before sharing.</p>
+                                <p className="text-[10px] text-amber-600 mt-2 ml-1 italic flex items-center gap-1 font-bold"><ShieldAlert className="w-3 h-3" /> {t('verifyLinkAccessSettingsAre')}</p>
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">
@@ -328,11 +329,11 @@ const ReferenceManager = () => {
                                         value={formData.category}
                                         onChange={e => setForm({ ...formData, category: e.target.value })}
                                     >
-                                        <option>General</option>
-                                        <option>DSKP / Syllabus</option>
-                                        <option>RPH Templates</option>
-                                        <option>School Circular</option>
-                                        <option>Media Resources</option>
+                                        <option>{t('general')}</option>
+                                        <option>{t('dskpSyllabus')}</option>
+                                        <option>{t('rphTemplates')}</option>
+                                        <option>{t('schoolCircular')}</option>
+                                        <option>{t('mediaResources')}</option>
                                     </select>
                                 </div>
                                 <div>
@@ -342,8 +343,8 @@ const ReferenceManager = () => {
                                         value={formData.source}
                                         onChange={e => setForm({ ...formData, source: e.target.value as ReferenceSource })}
                                     >
-                                        <option value={ReferenceSource.SCHOOL}>School Repository Only</option>
-                                        <option value={ReferenceSource.PUBLIC}>Public Hub (All Schools)</option>
+                                        <option value={ReferenceSource.SCHOOL}>{t('schoolRepositoryOnly')}</option>
+                                        <option value={ReferenceSource.PUBLIC}>{t('publicHubAllSchools')}</option>
                                     </select>
                                 </div>
                             </div>

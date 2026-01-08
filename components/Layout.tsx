@@ -14,6 +14,7 @@ import Button from './Button';
 import { CoffeeModal } from './CoffeeModal';
 import { DbModeIndicator } from './DbModeIndicator';
 import { APP_VERSION } from '../src/config/version';
+import { useTranslation } from 'react-i18next';
 
 interface SidebarProps {
     user: User;
@@ -82,7 +83,7 @@ const SidebarContent = ({ user, onLogout, t, onClose }: SidebarProps) => {
                         <Sparkles className="w-5 h-5 text-white" />
                     </div>
                     <div>
-                        <h1 className="text-lg font-bold text-white tracking-tight leading-none">eRPH Pro</h1>
+                        <h1 className="text-lg font-bold text-white tracking-tight leading-none">{t('erphPro')}</h1>
                         <p className="text-[10px] font-medium text-slate-500 mt-1 uppercase tracking-wider">{getRoleLabel(user.role)}</p>
                     </div>
                 </div>

@@ -6,6 +6,7 @@ import { Sparkles, X, Check, Loader2, Key, ShieldCheck, ExternalLink, Wand2, Cpu
 import { suggestFieldContent } from '../services/geminiService';
 import { LessonPlan } from '../types';
 import GeminiWizard from './GeminiWizard';
+import { useTranslation } from 'react-i18next';
 
 declare const window: any;
 
@@ -18,6 +19,7 @@ interface FieldSuggestionModalProps {
 }
 
 const FieldSuggestionModal: React.FC<FieldSuggestionModalProps> = ({ isOpen, onClose, onSelect, field, context }) => {
+    const { t } = useTranslation();
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [hasKey, setHasKey] = useState<boolean>(false);
@@ -65,8 +67,8 @@ const FieldSuggestionModal: React.FC<FieldSuggestionModalProps> = ({ isOpen, onC
               <Sparkles className="w-5 h-5 text-amber-500" />
             </div>
             <div>
-              <h3 className="font-black text-slate-800 tracking-tight uppercase text-sm">AI Assist: {field}</h3>
-              <p className="text-[10px] font-bold text-slate-400 tracking-widest uppercase">Powered by Gemini</p>
+              <h3 className="font-black text-slate-800 tracking-tight uppercase text-sm">{t('aiAssist')}{field}</h3>
+              <p className="text-[10px] font-bold text-slate-400 tracking-widest uppercase">{t('poweredByGemini')}</p>
             </div>
           </div>
           <button onClick={onClose} className="p-2 hover:bg-slate-100 rounded-full transition-colors">
@@ -83,7 +85,7 @@ const FieldSuggestionModal: React.FC<FieldSuggestionModalProps> = ({ isOpen, onC
                 <div className="w-12 h-12 border-4 border-blue-100 border-t-blue-600 rounded-full animate-spin"></div>
                 <Sparkles className="w-4 h-4 text-amber-500 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" />
               </div>
-              <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Consulting Gemini AI...</p>
+              <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">{t('consultingGeminiAi')}</p>
             </div>
           ) : suggestions.length === 0 ? (
             <div className="text-center py-12 text-slate-400 italic text-sm px-6">
@@ -108,7 +110,7 @@ const FieldSuggestionModal: React.FC<FieldSuggestionModalProps> = ({ isOpen, onC
         </div>
 
         <div className="p-4 border-t bg-white flex justify-end">
-          <Button variant="ghost" size="sm" onClick={onClose} className="font-bold uppercase tracking-widest text-[10px]">Close</Button>
+          <Button variant="ghost" size="sm" onClick={onClose} className="font-bold uppercase tracking-widest text-[10px]">{t('close')}</Button>
         </div>
       </Card>
     </div>
