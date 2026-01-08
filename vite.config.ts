@@ -21,16 +21,13 @@ export default defineConfig(({ mode }) => {
     },
     build: {
       outDir: 'build',
+      target: 'esnext',
+      minify: false,
       emptyOutDir: true,
       sourcemap: false,
-      minify: false, // Disabled to prevent memory hangs on low-resource machines
       rollupOptions: {
         output: {
-          manualChunks: {
-            'vendor-react': ['react', 'react-dom', 'react-router-dom'],
-            'vendor-charts': ['recharts'],
-            'vendor-icons': ['lucide-react']
-          }
+          // Simplified output
         }
       }
     }

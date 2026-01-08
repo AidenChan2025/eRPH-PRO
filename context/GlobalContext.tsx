@@ -140,8 +140,7 @@ interface GlobalContextType {
     refreshGlobalData: () => Promise<void>;
     viewMode: 'admin' | 'teacher';
     setViewMode: React.Dispatch<React.SetStateAction<'admin' | 'teacher'>>;
-    isLocked: boolean;
-    unlock: (password: string) => boolean;
+
 }
 
 const GlobalContext = createContext<GlobalContextType | undefined>(undefined);
@@ -158,27 +157,9 @@ export const GlobalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const [viewMode, setViewMode] = useState<'admin' | 'teacher'>('teacher');
     const [isLoading, setIsLoading] = useState(true);
     const [isSeeding, setIsSeeding] = useState(false);
-    const [isLocked, setIsLocked] = useState(false);
     const hasAttemptedSeed = useRef(false);
-    const activityTimeout = useRef<any>(null);
 
-    // Activity Monitor for Security Lock
-    const resetActivityTimer = () => {
-        if (activityTimeout.current) clearTimeout(activityTimeout.current);
-        if (!currentUser || isLocked) return;
 
-        const timeoutMinutes = currentUser.securityConfig?.sessionTimeoutMinutes || 15;
-        activityTimeout.current = setTimeout(() => {
-            if (currentUser) setIsLocked(true);
-        }, timeoutMinutes * 60 * 1000);
-    };
-
-    useEffect(() => {
-        const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'];
-        events.forEach(e => document.addEventListener(e, resetActivityTimer));
-        resetActivityTimer();
-        return () => events.forEach(e => document.removeEventListener(e, resetActivityTimer));
-    }, [currentUser, isLocked]);
 
     useEffect(() => {
         const unsubAuth = onAuthStateChanged(auth, async (authUser: any) => {
@@ -193,7 +174,7 @@ export const GlobalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
                         const userRef = doc(db, 'users', authUser.uid);
                         const userSnap = await getDoc(userRef);
                         if (userSnap.exists()) {
-                            setCurrentUser({ id: userSnap.id, ...userSnap.data() } as User);
+                            setCurrentUser({ id: userSnap.id, ...(userSnap.data() || {}) } as User);
                         } else {
                             const demoByEmail = MOCK_USERS.find(u => u.email === authUser.email);
                             if (demoByEmail) setCurrentUser(demoByEmail);
@@ -231,7 +212,7 @@ export const GlobalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             const schoolRef = doc(db, 'schools', 's-1');
             const schoolSnap = await getDoc(schoolRef);
 
-            if (!schoolSnap.exists() || force || schoolSnap.data().settings?.termStartDate !== '2026-03-09') {
+            if (!schoolSnap.exists() || force || (schoolSnap.data() as any).settings?.termStartDate !== '2026-03-09') {
                 await seed2026Data();
                 // Refresh local state after seeding
                 await refreshGlobalData();
@@ -253,29 +234,20 @@ export const GlobalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const sendEmailNotification = async (recipientId: string, subject: string, body: string) => {
         try {
             const userSnap = await getDoc(doc(db, 'users', recipientId));
-            const email = userSnap.exists() ? userSnap.data().email : MOCK_USERS.find(u => u.id === recipientId)?.email;
+            const email = userSnap.exists() ? (userSnap.data() as any).email : MOCK_USERS.find(u => u.id === recipientId)?.email;
             if (!email) return false;
             return await sendEmail({ to: email, subject: `[Secure Portal] ${subject}`, text: body });
         } catch (e) { return false; }
     };
 
-    const logout = async () => { await signOut(auth); setCurrentUser(null); setIsLocked(false); };
+    const logout = async () => { await signOut(auth); setCurrentUser(null); };
     const getAcademicWeek = (date: Date) => 20;
-
-    const unlock = (password: string) => {
-        if (password === '123456' || password === 'demo123') {
-            setIsLocked(false);
-            resetActivityTimer();
-            return true;
-        }
-        return false;
-    };
 
     return (
         <GlobalContext.Provider value={{
             currentUser, setCurrentUser, schools, setSchools,
             sendNotification, sendEmailNotification, getAcademicWeek, refreshGlobalData,
-            isLoading, isSeeding, seedDatabase, logout, viewMode, setViewMode, isLocked, unlock
+            isLoading, isSeeding, seedDatabase, logout, viewMode, setViewMode
         }}>
             {children}
         </GlobalContext.Provider>

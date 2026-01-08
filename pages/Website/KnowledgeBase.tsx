@@ -8,6 +8,8 @@ import {
 } from 'lucide-react';
 import Button from '../../components/Button';
 
+import { CHANGELOG } from '../../src/config/changelog';
+
 const KnowledgeBase = () => {
     const { t } = useLanguage();
     const [searchQuery, setSearchQuery] = useState('');
@@ -15,77 +17,7 @@ const KnowledgeBase = () => {
 
     const [expandedLog, setExpandedLog] = useState<string | null>(null);
 
-    const updateLogs = [
-        {
-            version: "v0.0.46",
-            date: "Jan 07, 2026",
-            title: "Major Performance Upgrade (Firebase Engine)",
-            items: [
-                "🚀 Migrated database engine to Google Firebase for 10x faster performance.",
-                "⚡ Instant load times for Lesson Plans and Dashboard.",
-                "📅 Added 2026 Academic Year data (Jan-April) for testing.",
-                "🔄 Real-time data syncing between devices.",
-                "🛠️ Fixed 'CRITICAL' startup errors on some devices."
-            ]
-        },
-        {
-            version: "v0.0.45",
-            date: "Jan 07, 2026",
-            title: "DSKP Browser & Build Optimization",
-            items: [
-                "New Inline DSKP Selector with cascading dropdowns (Theme -> Topic -> Standards).",
-                "Optimized build process for faster deployment and reduced memory usage.",
-                "Frontend automatically fetches real Subject list from database to prevent mismatches.",
-                "Auto-Language switching for DSKP content based on selected subject."
-            ]
-        },
-        {
-            version: "v0.0.36",
-            date: "Jan 07, 2026",
-            title: "MySQL Backend Transition & Versioning",
-            items: [
-                "Refactored Lesson Plan Editor and Approval flows to use scalable MySQL backend.",
-                "Implemented unified versioning system with auto-increment on build.",
-                "Fixed 'Cross-Origin-Opener-Policy' security headers.",
-                "Enhanced footer and dashboard version display readability."
-            ]
-        },
-        {
-            version: "v0.0.35",
-            date: "Jan 07, 2026",
-            title: "Performance & Reliability Update",
-            items: [
-                "Implemented Smart Lazy Loading for DSKP Management to handle 46,000+ records instantly.",
-                "Fixed DSKP Sync timeout issues with chunked data processing.",
-                "Added granular progress tracking for large data syncs.",
-                "Enhanced footer and public pages navigation structure."
-            ]
-        },
-        {
-            version: "v0.0.31",
-            date: "Jan 06, 2026",
-            title: t('faq_log_v31_title'),
-            items: [t('faq_log_v31_item1'), t('faq_log_v31_item2'), t('faq_log_v31_item3'), t('faq_log_v31_item4')]
-        },
-        {
-            version: "v0.0.30",
-            date: "Jan 06, 2026",
-            title: "Content & SEO Overhaul",
-            items: ["Premium CTA transformation", "Trilingual Public Language Switcher", "Feature Logs integration", "Article Hub SEO infrastructure"]
-        },
-        {
-            version: "v0.0.29",
-            date: "Jan 05, 2026",
-            title: "Security & Personalization",
-            items: ["AIDEN Security Subsystem v1.1", "Dynamic Role Switcher UI", "Personalized Header Greetings", "Direct School Branding integration"]
-        },
-        {
-            version: "v0.0.28",
-            date: "Jan 01, 2026",
-            title: "Initial Portal Genesis",
-            items: ["Core RPH Engine deployment", "DSKP Live Sync module", "Multi-tenancy school support", "Real-time Approval workflows"]
-        }
-    ];
+    const updateLogs = CHANGELOG;
 
     const faqs = [
         {

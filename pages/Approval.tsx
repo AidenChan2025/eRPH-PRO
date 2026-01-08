@@ -7,11 +7,12 @@ import Button from '../components/Button';
 import { LeaveStatus, LessonStatus, LessonPlan, LeaveRecord, LeaveType, UserRole, User } from '../types';
 import { api } from '../services/api';
 import PrintableRPH from '../components/PrintableRPH';
+import { db, collection, query, where, getDocs, updateDoc, doc, orderBy, deleteDoc } from '../services/firebase';
 import {
     Check, X, Calendar, User as UserIcon, ChevronRight,
     ChevronLeft, BookOpen, Clock, Filter, Search,
     RefreshCw, ShieldCheck, Info, MapPin, Briefcase, Plus,
-    TrendingUp, Users, Stethoscope, GraduationCap, AlertTriangle, FileText, Printer, Lock
+    TrendingUp, Users, Stethoscope, GraduationCap, AlertTriangle, FileText, Printer, Lock, CheckCircle2
 } from 'lucide-react';
 
 export const LeaveManagement = () => {
@@ -99,7 +100,7 @@ export const LeaveManagement = () => {
     const handleDelete = async (id: string) => {
         if (!confirm("Are you sure you want to delete this record?")) return;
         try {
-            await api.leave.delete(id);
+            await deleteDoc(doc(db, 'leaveRecords', id));
             fetchRecords();
         } catch (e) {
             console.error(e);
@@ -262,6 +263,148 @@ export const LeaveManagement = () => {
     );
 };
 
+const WeeklyReviewView = ({ teachers, schoolId }: { teachers: User[], schoolId: string }) => {
+    const { t } = useLanguage();
+    const { getAcademicWeek } = useGlobal();
+    const [selectedDate, setSelectedDate] = useState(new Date());
+    const [weeklyPlans, setWeeklyPlans] = useState<any[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [isApproving, setIsApproving] = useState<string | null>(null);
+
+    const startOfWeek = useMemo(() => {
+        const d = new Date(selectedDate);
+        const day = d.getDay();
+        const diff = d.getDate() - day + (day === 0 ? -6 : 1); // Adjust for Monday
+        return new Date(d.setDate(diff));
+    }, [selectedDate]);
+
+    const endOfWeek = useMemo(() => {
+        const d = new Date(startOfWeek);
+        return new Date(d.setDate(d.getDate() + 4)); // Friday
+    }, [startOfWeek]);
+
+    const fetchPlans = async () => {
+        setIsLoading(true);
+        const startStr = startOfWeek.toISOString().split('T')[0];
+        const endStr = endOfWeek.toISOString().split('T')[0];
+
+        try {
+            const q = query(
+                collection(db, 'lessonPlans'),
+                where('schoolId', '==', schoolId),
+                where('date', '>=', startStr),
+                where('date', '<=', endStr),
+                orderBy('date', 'asc')
+            );
+            const snap = await getDocs(q);
+            const allPlans = snap.docs.map(d => ({ id: d.id, ...d.data() } as LessonPlan));
+
+            const grouped = teachers.map(teacher => {
+                const teacherPlans = allPlans.filter(p => p.teacherId === teacher.id);
+                const status = teacherPlans.length === 0 ? 'empty' :
+                    teacherPlans.every(p => p.status === LessonStatus.APPROVED) ? 'approved' :
+                        teacherPlans.some(p => p.status === LessonStatus.SUBMITTED) ? 'pending' : 'draft';
+                return { teacher, plans: teacherPlans, status };
+            });
+
+            setWeeklyPlans(grouped);
+        } catch (e) {
+            console.error(e);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    useEffect(() => { fetchPlans(); }, [startOfWeek, schoolId, teachers]);
+
+    const handleBatchApprove = async (teacherId: string, plans: LessonPlan[]) => {
+        setIsApproving(teacherId);
+        try {
+            const pendingPlans = plans.filter(p => p.status === LessonStatus.SUBMITTED);
+            await Promise.all(pendingPlans.map(p =>
+                updateDoc(doc(db, 'lessonPlans', p.id), {
+                    status: LessonStatus.APPROVED,
+                    updatedAt: new Date().toISOString()
+                })
+            ));
+            await fetchPlans();
+        } catch (e) {
+            console.error(e);
+        } finally {
+            setIsApproving(null);
+        }
+    };
+
+    return (
+        <div className="space-y-6">
+            <div className="flex justify-between items-center bg-white p-4 rounded-3xl border border-slate-100 shadow-sm">
+                <div className="flex items-center gap-4">
+                    <Button variant="ghost" size="sm" onClick={() => setSelectedDate(new Date(selectedDate.setDate(selectedDate.getDate() - 7)))}>
+                        <ChevronLeft className="w-5 h-5" />
+                    </Button>
+                    <div className="text-center">
+                        <p className="text-[10px] font-black text-blue-600 uppercase tracking-widest">Minggu Akademik {getAcademicWeek(startOfWeek)}</p>
+                        <h4 className="font-bold text-slate-800 text-sm">
+                            {startOfWeek.toLocaleDateString('ms-MY', { day: 'numeric', month: 'short' })} - {endOfWeek.toLocaleDateString('ms-MY', { day: 'numeric', month: 'short', year: 'numeric' })}
+                        </h4>
+                    </div>
+                    <Button variant="ghost" size="sm" onClick={() => setSelectedDate(new Date(selectedDate.setDate(selectedDate.getDate() + 7)))}>
+                        <ChevronRight className="w-5 h-5" />
+                    </Button>
+                </div>
+                <Button variant="secondary" size="sm" className="rounded-xl" onClick={() => setSelectedDate(new Date())}>Today</Button>
+            </div>
+
+            {isLoading ? (
+                <div className="p-20 text-center text-slate-400">
+                    <RefreshCw className="w-8 h-8 animate-spin mx-auto mb-4 opacity-20" />
+                    <p className="text-sm font-bold uppercase tracking-widest">Loading Weekly RPH...</p>
+                </div>
+            ) : (
+                <div className="grid gap-4">
+                    {weeklyPlans.map(({ teacher, plans, status }) => (
+                        <Card key={teacher.id} className="p-6 rounded-[2rem] border-slate-100 hover:shadow-lg transition-all group">
+                            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                                <div className="flex items-center gap-4">
+                                    <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-black text-lg shadow-sm ${status === 'approved' ? 'bg-emerald-50 text-emerald-600' : 'bg-slate-50 text-slate-400'}`}>
+                                        {teacher.name.charAt(0)}
+                                    </div>
+                                    <div>
+                                        <h4 className="font-bold text-slate-800 tracking-tight">{teacher.name}</h4>
+                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{teacher.grade} • {plans.length} Lessons Scheduled</p>
+                                    </div>
+                                </div>
+
+                                <div className="flex items-center gap-3 w-full md:w-auto">
+                                    {status === 'approved' ? (
+                                        <div className="flex items-center gap-2 px-4 py-2 bg-emerald-50 text-emerald-600 rounded-xl border border-emerald-100">
+                                            <CheckCircle2 className="w-4 h-4" />
+                                            <span className="text-xs font-black uppercase">Verified</span>
+                                        </div>
+                                    ) : status === 'pending' ? (
+                                        <Button
+                                            size="sm"
+                                            className="w-full md:w-auto rounded-xl shadow-lg shadow-blue-200"
+                                            isLoading={isApproving === teacher.id}
+                                            onClick={() => handleBatchApprove(teacher.id, plans)}
+                                        >
+                                            <CheckCircle2 className="w-4 h-4 mr-2" /> Batch Verify
+                                        </Button>
+                                    ) : (
+                                        <div className="px-4 py-2 bg-slate-50 text-slate-400 rounded-xl border border-slate-100 text-xs font-bold uppercase">
+                                            {status === 'empty' ? 'No Submission' : 'In Progress'}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </Card>
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+};
+
 const MonthlyReportView = ({ teachers, schoolId }: { teachers: User[], schoolId: string }) => {
     const { t } = useLanguage();
     const { currentUser } = useGlobal();
@@ -275,11 +418,15 @@ const MonthlyReportView = ({ teachers, schoolId }: { teachers: User[], schoolId:
         const end = new Date(selectedYear, selectedMonth + 1, 0).toISOString().split('T')[0];
 
         try {
-            const res = await api.lessonPlans.list({ schoolId, startDate: start, endDate: end });
-            if (res.success && res.data) {
-                const plans = res.data as LessonPlan[];
-                setReportData(teachers.map(t => ({ id: t.id, name: t.name, grade: t.grade || '-', plans: plans.filter(p => p.teacherId === t.id) })));
-            }
+            const q = query(
+                collection(db, 'lessonPlans'),
+                where('schoolId', '==', schoolId),
+                where('date', '>=', start),
+                where('date', '<=', end)
+            );
+            const snap = await getDocs(q);
+            const plans = snap.docs.map(d => d.data() as LessonPlan);
+            setReportData(teachers.map(t => ({ id: t.id, name: t.name, grade: t.grade || '-', plans: plans.filter(p => p.teacherId === t.id) })));
         } catch (e) {
             console.error(e);
         }
@@ -335,7 +482,11 @@ export const ReviewDashboard = () => {
                 <button onClick={() => setViewMode('weekly')} className={`px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${viewMode === 'weekly' ? 'bg-white text-blue-600 shadow-md' : 'text-slate-500'}`}>{t('weekly_review')}</button>
                 <button onClick={() => setViewMode('monthly')} className={`px-6 py-2.5 rounded-lg text-sm font-bold transition-all ${viewMode === 'monthly' ? 'bg-white text-blue-600 shadow-md' : 'text-slate-500'}`}>{t('monthly_report')}</button>
             </div>
-            {viewMode === 'monthly' ? <MonthlyReportView teachers={allTeachers} schoolId={currentUser?.schoolId || ''} /> : <div className="p-12 text-center text-slate-400 border rounded-xl bg-white">{t('weekly_review')} {t('no_data')}</div>}
+            {viewMode === 'monthly' ? (
+                <MonthlyReportView teachers={allTeachers} schoolId={currentUser?.schoolId || ''} />
+            ) : (
+                <WeeklyReviewView teachers={allTeachers} schoolId={currentUser?.schoolId || ''} />
+            )}
         </div>
     );
 };

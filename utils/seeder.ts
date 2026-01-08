@@ -8,37 +8,15 @@ export const seed2026Data = async () => {
     let operationCounter = 0;
 
     const commitBatch = async () => {
-        await batch.commit();
-        batch = writeBatch(db);
-        operationCounter = 0;
-        console.log("Batch committed.");
+        if (operationCounter > 0) {
+            await batch.commit();
+            batch = writeBatch(db);
+            operationCounter = 0;
+            console.log("Batch committed.");
+        }
     };
 
-    // 1. Seed Users
-    const users: User[] = [
-        {
-            id: 'u-cch', name: 'Chan Cheng Hoong', email: 'cchoong2020@gmail.com', role: UserRole.SUPER_ADMIN,
-            phone: '012-3456789', grade: 'JUSA C', schoolId: 's-1', serviceHistory: [],
-            securityConfig: { twoFactorEnabled: true, sessionTimeoutMinutes: 30, lastPasswordChange: '2025-01-01', loginAlerts: true }
-        },
-        {
-            id: 'u-principal', name: 'Tan Mei Ling', email: 'principal@school.com', role: UserRole.PRINCIPAL,
-            phone: '012-3334444', grade: 'DG52', schoolId: 's-1', serviceHistory: [],
-            securityConfig: { twoFactorEnabled: true, sessionTimeoutMinutes: 15, lastPasswordChange: '2025-01-01', loginAlerts: true }
-        },
-        {
-            id: 'u-teacher', name: 'Wong Siew Min', email: 'teacher@school.com', role: UserRole.TEACHER,
-            phone: '012-5556666', grade: 'DG44', schoolId: 's-1', serviceHistory: [],
-            securityConfig: { twoFactorEnabled: false, sessionTimeoutMinutes: 60, lastPasswordChange: '2025-01-01', loginAlerts: false }
-        }
-    ];
-
-    for (const u of users) {
-        batch.set(doc(db, 'users', u.id), u);
-        operationCounter++;
-    }
-
-    // 2. Seed School
+    // 1. Seed School
     const school: School = {
         id: 's-1', name: 'SJK(C) Mentakab 1', code: 'CBC7071', district: 'Temerloh', type: SchoolType.SJKC,
         settings: { termStartDate: '2026-03-09', customTimeSlots: ["07:45 - 08:45"], customClasses: ["4 诚实"], customSubjects: ["华文"] }
@@ -46,40 +24,69 @@ export const seed2026Data = async () => {
     batch.set(doc(db, 'schools', school.id), school);
     operationCounter++;
 
-    // 3. Generate Lesson Plans (Jan - April 2026)
-    // Academic Year 2026 usually starts March 2026, but user asked for "Year 2026". 
-    // We will generate Jan-April 2026.
-    const plans: LessonPlan[] = [];
-    const subjects = ['Bahasa Melayu', 'English', 'Matematik', 'Sains', 'Sejarah', 'Reka Bentuk dan Teknologi'];
-    const classes = ['4 Cerdas', '5 Pintar', '6 Gemilang'];
-    const timeSlots = ['07:45 - 08:45', '09:15 - 10:15', '11:45 - 12:45'];
+    // 2. Cleanup existing demo data to ensure a fresh start
+    console.log("Cleaning up old demo data...");
+    const demoUIDs = ['u-teacher', 'u-principal', 'u-admin'];
+    for (const uid of demoUIDs) {
+        const q = query(collection(db, 'lessonPlans'), where('teacherId', '==', uid));
+        const snap = await getDocs(q);
+        snap.docs.forEach(d => {
+            batch.delete(doc(db, 'lessonPlans', d.id));
+            operationCounter++;
+        });
+        await commitBatch();
 
-    // Config: Seed for multiple demo users
-    const teachers = [
-        { id: 'u-teacher', name: 'Wong Siew Min' },
-        { id: 'u-principal', name: 'Tan Mei Ling' },
-        { id: 'u-admin', name: 'Lee Wei Kang' }
+        const qLeave = query(collection(db, 'leaveRecords'), where('teacherId', '==', uid));
+        const snapLeave = await getDocs(qLeave);
+        snapLeave.docs.forEach(d => {
+            batch.delete(doc(db, 'leaveRecords', d.id));
+            operationCounter++;
+        });
+        await commitBatch();
+    }
+
+    // 3. Generate Lesson Plans (Jan - April 2026)
+    const demoTeachers = [
+        {
+            id: 'u-teacher',
+            name: 'Wong Siew Min',
+            subjects: ['Bahasa Melayu', 'Matematik', 'Sejarah'],
+            classes: ['4 Cerdas', '5 Pintar']
+        },
+        {
+            id: 'u-principal',
+            name: 'Tan Mei Ling',
+            subjects: ['English', 'Sains'],
+            classes: ['6 Gemilang']
+        },
+        {
+            id: 'u-admin',
+            name: 'Lee Wei Kang',
+            subjects: ['Reka Bentuk dan Teknologi', 'Pendidikan Moral'],
+            classes: ['4 Amanah', '5 Bestari']
+        }
     ];
 
+    const timeSlots = ['07:45 - 08:45', '09:15 - 10:15', '11:45 - 12:45'];
     let startDate = new Date('2026-01-01');
     let endDate = new Date('2026-04-30');
 
-    for (const teacher of teachers) {
+    for (const teacher of demoTeachers) {
         for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
             if (d.getDay() === 0 || d.getDay() === 6) continue; // Skip weekends
 
-            // Generate 2-3 plans per day
-            const dailyCount = Math.floor(Math.random() * 2) + 2;
+            // Each teacher has 1-2 plans per day
+            const dailyCount = Math.floor(Math.random() * 1) + 1;
 
             for (let i = 0; i < dailyCount; i++) {
-                const subject = subjects[(d.getDate() + i) % subjects.length];
-                const cls = classes[i % classes.length];
+                const subject = teacher.subjects[i % teacher.subjects.length];
+                const cls = teacher.classes[i % teacher.classes.length];
                 const id = `lp-2026-${teacher.id}-${d.getMonth()}-${d.getDate()}-${i}`;
 
                 // Random Status logic
                 let status = LessonStatus.APPROVED;
                 if (d.getMonth() === 3) status = LessonStatus.SUBMITTED; // April
-                if (d > new Date('2026-04-20')) status = LessonStatus.DRAFT; // Late April
+                if (d > new Date('2026-04-20')) status = LessonStatus.DRAFT;
 
                 const plan: LessonPlan = {
                     id,
@@ -90,16 +97,16 @@ export const seed2026Data = async () => {
                     grade: cls.includes('4') ? 'Tahun 4' : (cls.includes('5') ? 'Tahun 5' : 'Tahun 6'),
                     className: cls,
                     time: timeSlots[i],
-                    topic: `Unit ${d.getDate()}: ${subject} - Topik Pembelajaran`,
+                    topic: `Demo Unit ${d.getDate()}: ${subject}`,
                     date: d.toISOString().split('T')[0],
                     contentStandard: `${i + 1}.0 Standard Kandungan`,
                     learningStandard: `${i + 1}.${d.getDate()}.1 Standard Pembelajaran`,
-                    objectives: [`Murid dapat menguasai ${subject} dengan baik.`],
-                    successCriteria: ['Murid berjaya menjawab 3 soalan.'],
-                    activities: ['Set Induksi', 'Aktiviti Utama', 'Penutup'],
-                    teachingAids: ['Buku Teks', 'Papan Putih'],
+                    objectives: [`Demo objective for ${subject}.`],
+                    successCriteria: ['Successfully complete demo tasks.'],
+                    activities: ['Introduction', 'Class Activity', 'Closing'],
+                    teachingAids: ['Textbook', 'Interactive Board'],
                     pak21: ['Think-Pair-Share'],
-                    assessment: ['Pemerhatian'],
+                    assessment: ['Observation'],
                     status,
                     version: 1,
                     updatedAt: new Date().toISOString()
@@ -115,19 +122,16 @@ export const seed2026Data = async () => {
         startDate = new Date('2026-01-01');
     }
 
-    // 4. Generate Leave Records (Mock Data)
+    // 3. Generate Leave Records for Demo Users
     const leaveTypes = Object.values(LeaveType);
-    const leaveRecords: LeaveRecord[] = [];
 
-    // Generate 3-5 leave records per teacher
-    for (const teacher of teachers) {
-        const leaveCount = Math.floor(Math.random() * 3) + 3;
+    for (const teacher of demoTeachers) {
+        const leaveCount = Math.floor(Math.random() * 2) + 1;
         for (let i = 0; i < leaveCount; i++) {
-            // Random date in Jan-April 2026
             const month = Math.floor(Math.random() * 4);
             const day = Math.floor(Math.random() * 20) + 1;
-            const startDate = new Date(2026, month, day);
-            const endDate = new Date(2026, month, day + Math.floor(Math.random() * 2));
+            const sDate = new Date(2026, month, day);
+            const eDate = new Date(2026, month, day + Math.floor(Math.random() * 1));
 
             const record: LeaveRecord = {
                 id: `lr-${teacher.id}-${i}`,
@@ -135,9 +139,9 @@ export const seed2026Data = async () => {
                 teacherId: teacher.id,
                 teacherName: teacher.name,
                 type: leaveTypes[Math.floor(Math.random() * leaveTypes.length)],
-                startDate: startDate.toISOString().split('T')[0],
-                endDate: endDate.toISOString().split('T')[0],
-                reason: 'Personal affairs / Medical appointment',
+                startDate: sDate.toISOString().split('T')[0],
+                endDate: eDate.toISOString().split('T')[0],
+                reason: 'Demo leave record',
                 status: LeaveStatus.APPROVED,
                 createdAt: new Date().toISOString()
             };

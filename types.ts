@@ -19,9 +19,14 @@ export enum Language {
 }
 
 export enum SchoolType {
-  PRIMARY = 'SR',
+  PRIMARY = 'SR', // Legacy
+  SK = 'SK',
   SECONDARY = 'SMK',
   SJKC = 'SJKC',
+  SJKT = 'SJKT',
+  PRASEKOLAH = 'PRASEKOLAH',
+  PEMULIHAN = 'PEMULIHAN',
+  KELAS_BERCANTUM = 'KELAS BERCANTUM',
   ALL = 'ALL'
 }
 
@@ -261,7 +266,7 @@ export interface DSKPStandard {
   tajuk?: string;
 }
 
-export type DSKPStructure = Record<string, Record<string, string[]>>;
+export type DSKPStructure = Record<string, string[]>; // Grade -> Subjects[]
 
 export type DayOfWeek = 'Sun' | 'Mon' | 'Tue' | 'Wed' | 'Thu' | 'Fri' | 'Sat';
 

@@ -2231,8 +2231,13 @@ var Language = /* @__PURE__ */ ((Language2) => {
 })(Language || {});
 var SchoolType = /* @__PURE__ */ ((SchoolType2) => {
   SchoolType2["PRIMARY"] = "SR";
+  SchoolType2["SK"] = "SK";
   SchoolType2["SECONDARY"] = "SMK";
   SchoolType2["SJKC"] = "SJKC";
+  SchoolType2["SJKT"] = "SJKT";
+  SchoolType2["PRASEKOLAH"] = "PRASEKOLAH";
+  SchoolType2["PEMULIHAN"] = "PEMULIHAN";
+  SchoolType2["KELAS_BERCANTUM"] = "KELAS BERCANTUM";
   SchoolType2["ALL"] = "ALL";
   return SchoolType2;
 })(SchoolType || {});
@@ -27454,7 +27459,8 @@ const getDocs = async (queryOrRef) => {
     empty: snapshot.empty,
     docs: snapshot.docs.map((d) => ({
       id: d.id,
-      data: () => d.data()
+      data: () => d.data(),
+      ref: d.ref
     }))
   };
 };
@@ -27803,23 +27809,7 @@ const GlobalProvider = ({ children }) => {
   const [viewMode, setViewMode] = reactExports.useState("teacher");
   const [isLoading, setIsLoading] = reactExports.useState(true);
   const [isSeeding, setIsSeeding] = reactExports.useState(false);
-  const [isLocked, setIsLocked] = reactExports.useState(false);
   const hasAttemptedSeed = reactExports.useRef(false);
-  const activityTimeout = reactExports.useRef(null);
-  const resetActivityTimer = () => {
-    if (activityTimeout.current) clearTimeout(activityTimeout.current);
-    if (!currentUser || isLocked) return;
-    const timeoutMinutes = currentUser.securityConfig?.sessionTimeoutMinutes || 15;
-    activityTimeout.current = setTimeout(() => {
-      if (currentUser) setIsLocked(true);
-    }, timeoutMinutes * 60 * 1e3);
-  };
-  reactExports.useEffect(() => {
-    const events = ["mousedown", "mousemove", "keypress", "scroll", "touchstart"];
-    events.forEach((e) => document.addEventListener(e, resetActivityTimer));
-    resetActivityTimer();
-    return () => events.forEach((e) => document.removeEventListener(e, resetActivityTimer));
-  }, [currentUser, isLocked]);
   reactExports.useEffect(() => {
     const unsubAuth = onAuthStateChanged(auth, async (authUser) => {
       if (!authUser) {
@@ -27833,7 +27823,7 @@ const GlobalProvider = ({ children }) => {
             const userRef = doc(db, "users", authUser.uid);
             const userSnap = await getDoc(userRef);
             if (userSnap.exists()) {
-              setCurrentUser({ id: userSnap.id, ...userSnap.data() });
+              setCurrentUser({ id: userSnap.id, ...userSnap.data() || {} });
             } else {
               const demoByEmail = MOCK_USERS.find((u) => u.email === authUser.email);
               if (demoByEmail) setCurrentUser(demoByEmail);
@@ -27900,17 +27890,8 @@ const GlobalProvider = ({ children }) => {
   const logout = async () => {
     await signOut();
     setCurrentUser(null);
-    setIsLocked(false);
   };
   const getAcademicWeek = (date) => 20;
-  const unlock = (password) => {
-    if (password === "123456" || password === "demo123") {
-      setIsLocked(false);
-      resetActivityTimer();
-      return true;
-    }
-    return false;
-  };
   return /* @__PURE__ */ jsxRuntimeExports.jsx(GlobalContext.Provider, { value: {
     currentUser,
     setCurrentUser,
@@ -27925,9 +27906,7 @@ const GlobalProvider = ({ children }) => {
     seedDatabase,
     logout,
     viewMode,
-    setViewMode,
-    isLocked,
-    unlock
+    setViewMode
   }, children });
 };
 
@@ -29431,6 +29410,25 @@ const Building = createLucideIcon("Building", [
  */
 
 
+const CalendarRange = createLucideIcon("CalendarRange", [
+  ["rect", { width: "18", height: "18", x: "3", y: "4", rx: "2", key: "1hopcy" }],
+  ["path", { d: "M16 2v4", key: "4m81vk" }],
+  ["path", { d: "M3 10h18", key: "8toen8" }],
+  ["path", { d: "M8 2v4", key: "1cmpym" }],
+  ["path", { d: "M17 14h-6", key: "bkmgh3" }],
+  ["path", { d: "M13 18H7", key: "bb0bb7" }],
+  ["path", { d: "M7 14h.01", key: "1qa3f1" }],
+  ["path", { d: "M17 18h.01", key: "1bdyru" }]
+]);
+
+/**
+ * @license lucide-react v0.468.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+
+
 const Calendar = createLucideIcon("Calendar", [
   ["path", { d: "M8 2v4", key: "1cmpym" }],
   ["path", { d: "M16 2v4", key: "4m81vk" }],
@@ -29599,6 +29597,29 @@ const CircleHelp = createLucideIcon("CircleHelp", [
   ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
   ["path", { d: "M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3", key: "1u773s" }],
   ["path", { d: "M12 17h.01", key: "p32p05" }]
+]);
+
+/**
+ * @license lucide-react v0.468.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+
+
+const ClipboardList$1 = createLucideIcon("ClipboardList", [
+  ["rect", { width: "8", height: "4", x: "8", y: "2", rx: "1", ry: "1", key: "tgr4d6" }],
+  [
+    "path",
+    {
+      d: "M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2",
+      key: "116196"
+    }
+  ],
+  ["path", { d: "M12 11h4", key: "1jrz19" }],
+  ["path", { d: "M12 16h4", key: "n85exb" }],
+  ["path", { d: "M8 11h.01", key: "1dfujw" }],
+  ["path", { d: "M8 16h.01", key: "18s6g9" }]
 ]);
 
 /**
@@ -30047,6 +30068,41 @@ const Layers = createLucideIcon("Layers", [
  */
 
 
+const LayoutDashboard = createLucideIcon("LayoutDashboard", [
+  ["rect", { width: "7", height: "9", x: "3", y: "3", rx: "1", key: "10lvy0" }],
+  ["rect", { width: "7", height: "5", x: "14", y: "3", rx: "1", key: "16une8" }],
+  ["rect", { width: "7", height: "9", x: "14", y: "12", rx: "1", key: "1hutg5" }],
+  ["rect", { width: "7", height: "5", x: "3", y: "16", rx: "1", key: "ldoo1y" }]
+]);
+
+/**
+ * @license lucide-react v0.468.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+
+
+const LibraryBig = createLucideIcon("LibraryBig", [
+  ["rect", { width: "8", height: "18", x: "3", y: "3", rx: "1", key: "oynpb5" }],
+  ["path", { d: "M7 3v18", key: "bbkbws" }],
+  [
+    "path",
+    {
+      d: "M20.4 18.9c.2.5-.1 1.1-.6 1.3l-1.9.7c-.5.2-1.1-.1-1.3-.6L11.1 5.1c-.2-.5.1-1.1.6-1.3l1.9-.7c.5-.2 1.1.1 1.3.6Z",
+      key: "1qboyk"
+    }
+  ]
+]);
+
+/**
+ * @license lucide-react v0.468.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+
+
 const Link = createLucideIcon("Link", [
   ["path", { d: "M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71", key: "1cjeqo" }],
   ["path", { d: "M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71", key: "19qd67" }]
@@ -30161,6 +30217,27 @@ const MessageSquareText = createLucideIcon("MessageSquareText", [
 
 const MessageSquare = createLucideIcon("MessageSquare", [
   ["path", { d: "M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z", key: "1lielz" }]
+]);
+
+/**
+ * @license lucide-react v0.468.0 - ISC
+ *
+ * This source code is licensed under the ISC license.
+ * See the LICENSE file in the root directory of this source tree.
+ */
+
+
+const Newspaper = createLucideIcon("Newspaper", [
+  [
+    "path",
+    {
+      d: "M4 22h16a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2H8a2 2 0 0 0-2 2v16a2 2 0 0 1-2 2Zm0 0a2 2 0 0 1-2-2v-9c0-1.1.9-2 2-2h2",
+      key: "7pis2x"
+    }
+  ],
+  ["path", { d: "M18 14h-8", key: "sponae" }],
+  ["path", { d: "M15 18h-5", key: "95g1m2" }],
+  ["path", { d: "M10 6h8v4h-8V6Z", key: "smlsk5" }]
 ]);
 
 /**
@@ -30651,25 +30728,6 @@ const TableProperties = createLucideIcon("TableProperties", [
  */
 
 
-const Tag = createLucideIcon("Tag", [
-  [
-    "path",
-    {
-      d: "M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z",
-      key: "vktsd0"
-    }
-  ],
-  ["circle", { cx: "7.5", cy: "7.5", r: ".5", fill: "currentColor", key: "kqv944" }]
-]);
-
-/**
- * @license lucide-react v0.468.0 - ISC
- *
- * This source code is licensed under the ISC license.
- * See the LICENSE file in the root directory of this source tree.
- */
-
-
 const Target = createLucideIcon("Target", [
   ["circle", { cx: "12", cy: "12", r: "10", key: "1mglay" }],
   ["circle", { cx: "12", cy: "12", r: "6", key: "1vlfrh" }],
@@ -30896,46 +30954,6 @@ const Zap = createLucideIcon("Zap", [
   ]
 ]);
 
-const Button = ({
-  children,
-  variant = "primary",
-  size = "md",
-  isLoading,
-  className = "",
-  disabled,
-  as: Component = "button",
-  ...props
-}) => {
-  const baseStyles = "inline-flex items-center justify-center rounded-lg font-semibold transition-all duration-200 active:scale-95 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed";
-  const variants = {
-    primary: "bg-blue-600 text-white hover:bg-blue-700 shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 focus:ring-blue-500",
-    secondary: "bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 shadow-sm hover:shadow-md focus:ring-slate-500",
-    danger: "bg-rose-600 text-white hover:bg-rose-700 shadow-lg shadow-rose-500/25 focus:ring-rose-500",
-    ghost: "bg-transparent text-slate-600 hover:bg-slate-50 hover:text-slate-900 focus:ring-slate-500"
-  };
-  const sizes = {
-    sm: "px-3 py-1.5 text-sm",
-    md: "px-4 py-2 text-base",
-    lg: "px-6 py-3 text-lg"
-  };
-  const isDisabled = disabled || isLoading;
-  return /* @__PURE__ */ jsxRuntimeExports.jsx(
-    Component,
-    {
-      className: `${baseStyles} ${variants[variant]} ${sizes[size]} ${className}`,
-      disabled: Component === "button" ? isDisabled : void 0,
-      ...props,
-      children: isLoading ? /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "flex items-center", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("svg", { className: "animate-spin -ml-1 mr-2 h-4 w-4 text-current", xmlns: "http://www.w3.org/2000/svg", fill: "none", viewBox: "0 0 24 24", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("circle", { className: "opacity-25", cx: "12", cy: "12", r: "10", stroke: "currentColor", strokeWidth: "4" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("path", { className: "opacity-75", fill: "currentColor", d: "M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" })
-        ] }),
-        "Processing..."
-      ] }) : children
-    }
-  );
-};
-
 const DbModeIndicator = () => {
   const [connected, setConnected] = reactExports.useState(false);
   reactExports.useEffect(() => {
@@ -30959,33 +30977,33 @@ const DbModeIndicator = () => {
   ] });
 };
 
-const APP_VERSION = "0.0.78";
+const APP_VERSION = "0.0.113";
 
 const SidebarContent = ({ user, onLogout, t, onClose }) => {
   const location = useLocation();
   const { viewMode, setViewMode } = useGlobal();
   const canSwitchMode = [UserRole.SCHOOL_ADMIN, UserRole.PRINCIPAL, UserRole.GPK, UserRole.GPK_1, UserRole.GPK_HEM, UserRole.GPK_KOKO, UserRole.SUPER_ADMIN].includes(user.role);
   const links = [
-    { path: "/", label: t("dashboard"), modes: ["admin", "teacher"] },
-    { path: "/plans", label: t("my_lesson_plans"), modes: ["teacher"] },
-    { path: "/tasks", label: t("tasks"), modes: ["teacher"] },
-    { path: "/timetable", label: t("timetable"), modes: ["teacher"] },
-    { path: "/records", label: t("leave_management"), modes: ["teacher"] },
-    { path: "/references", label: t("references"), modes: ["teacher"] },
-    // DSKP is now accessible to all in both modes (Permissions handled inside component)
-    { path: "/dskp", label: t("dskp_management"), modes: ["admin", "teacher"] },
-    { path: "/schools", label: t("school_list"), modes: ["admin"], onlyRoles: [UserRole.SUPER_ADMIN] },
-    { path: "/admin/articles", label: t("article_hub"), modes: ["admin"], onlyRoles: [UserRole.SUPER_ADMIN] },
-    { path: "/reviews", label: t("erph_approval"), modes: ["admin"], excludeRoles: [UserRole.SUPER_ADMIN] },
-    { path: "/records", label: t("leave_approvals"), modes: ["admin"], excludeRoles: [UserRole.SUPER_ADMIN] },
-    { path: "/users", label: t("manage_users"), modes: ["admin"] },
-    { path: "/security", label: t("security_center"), modes: ["admin"], onlyRoles: [UserRole.SUPER_ADMIN] },
-    { path: "/mailbox", label: t("admin_mailbox"), modes: ["admin"], onlyRoles: [UserRole.SUPER_ADMIN] },
-    { path: "/newsletter", label: t("broadcast"), modes: ["admin"], onlyRoles: [UserRole.SUPER_ADMIN] },
+    { path: "/", label: t("dashboard"), modes: ["admin", "teacher"], icon: LayoutDashboard },
+    { path: "/plans", label: t("my_lesson_plans"), modes: ["teacher"], icon: BookOpen },
+    { path: "/tasks", label: t("tasks"), modes: ["teacher"], icon: ClipboardList$1 },
+    { path: "/timetable", label: t("timetable"), modes: ["teacher"], icon: Calendar },
+    { path: "/records", label: t("leave_management"), modes: ["teacher"], icon: Clock },
+    { path: "/references", label: t("references"), modes: ["teacher"], icon: LibraryBig },
+    { path: "/dskp", label: t("dskp_management"), modes: ["admin", "teacher"], icon: DatabaseZap },
+    { path: "/schools", label: t("school_list"), modes: ["admin"], onlyRoles: [UserRole.SUPER_ADMIN], icon: School },
+    { path: "/admin/articles", label: t("article_hub"), modes: ["admin"], onlyRoles: [UserRole.SUPER_ADMIN], icon: Newspaper },
+    { path: "/reviews", label: t("erph_approval"), modes: ["admin"], excludeRoles: [UserRole.SUPER_ADMIN], icon: SquareCheckBig },
+    { path: "/records", label: t("leave_approvals"), modes: ["admin"], excludeRoles: [UserRole.SUPER_ADMIN], icon: CalendarRange },
+    { path: "/users", label: t("manage_users"), modes: ["admin"], icon: Users },
+    { path: "/security", label: t("security_center"), modes: ["admin"], onlyRoles: [UserRole.SUPER_ADMIN], icon: ShieldCheck },
+    { path: "/mailbox", label: t("admin_mailbox"), modes: ["admin"], onlyRoles: [UserRole.SUPER_ADMIN], icon: Mail },
+    { path: "/newsletter", label: t("broadcast"), modes: ["admin"], onlyRoles: [UserRole.SUPER_ADMIN], icon: Zap },
     {
       path: "/settings",
       label: user.role === UserRole.SUPER_ADMIN ? t("system_settings") : t("school_settings"),
-      modes: ["admin"]
+      modes: ["admin"],
+      icon: Settings
     }
   ];
   const displayLinks = links.filter((l) => {
@@ -31015,144 +31033,92 @@ const SidebarContent = ({ user, onLogout, t, onClose }) => {
         return t("role_teacher");
     }
   };
-  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "h-full flex flex-col bg-[#0f172a]", children: [
+  return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "h-full flex flex-col bg-[#0f172a] text-slate-300 font-sans", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-6 flex justify-between items-center border-b border-slate-800/50", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-1.5 bg-blue-600 rounded-lg shadow-lg shadow-blue-900/20", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Sparkles, { className: "w-5 h-5 text-white" }) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "text-xl font-bold text-white tracking-tight", children: "eRPH Pro" })
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-2 bg-blue-600 rounded-xl shadow-lg shadow-blue-500/20", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Sparkles, { className: "w-5 h-5 text-white" }) }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h1", { className: "text-lg font-bold text-white tracking-tight leading-none", children: "eRPH Pro" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[10px] font-medium text-slate-500 mt-1 uppercase tracking-wider", children: getRoleLabel(user.role) })
+        ] })
       ] }),
       onClose && /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: onClose, className: "p-2 -mr-2 text-slate-400 hover:text-white transition-colors", children: /* @__PURE__ */ jsxRuntimeExports.jsx(X, { className: "w-5 h-5" }) })
     ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "px-6 py-5", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center font-bold text-white shadow-lg border border-white/10", children: user.name.charAt(0) }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col overflow-hidden", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "px-5 py-6", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3 p-3 rounded-2xl bg-slate-800/30 border border-slate-700/50", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center font-bold text-white shadow-lg", children: user.name.charAt(0) }),
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col min-w-0", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-sm font-bold text-white truncate", children: user.name }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-1.5 mt-0.5", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "px-2 py-0.5 rounded-full bg-slate-800 border border-slate-700 flex items-center gap-1", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(Tag, { className: "w-2.5 h-2.5 text-blue-400" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-black uppercase text-slate-300 tracking-tighter", children: getRoleLabel(user.role) })
-        ] }) })
+        /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] text-slate-400 truncate", children: user.email })
       ] })
     ] }) }),
-    canSwitchMode && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "px-6 mb-6", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-slate-900/50 p-1.5 rounded-2xl flex gap-1.5 border border-slate-800/50", children: [
+    canSwitchMode && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "px-5 mb-4", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-slate-900 rounded-xl p-1 flex border border-slate-800", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         "button",
         {
           onClick: () => setViewMode("admin"),
-          className: `flex-1 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all duration-300 ${viewMode === "admin" ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20" : "text-slate-500 hover:text-slate-300 hover:bg-slate-800/50"}`,
-          children: getRoleLabel(user.role)
+          className: `flex-1 py-2 px-2 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all truncate
+                                ${viewMode === "admin" ? "bg-blue-600 text-white shadow-md" : "text-slate-500 hover:text-slate-300 hover:bg-slate-800"}`,
+          children: t("admin_mode")
         }
       ),
       /* @__PURE__ */ jsxRuntimeExports.jsx(
         "button",
         {
           onClick: () => setViewMode("teacher"),
-          className: `flex-1 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all duration-300 ${viewMode === "teacher" ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20" : "text-slate-500 hover:text-slate-300 hover:bg-slate-800/50"}`,
-          children: t("role_teacher")
+          className: `flex-1 py-2 px-2 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all truncate
+                                ${viewMode === "teacher" ? "bg-emerald-600 text-white shadow-md" : "text-slate-500 hover:text-slate-300 hover:bg-slate-800"}`,
+          children: t("teacher_mode")
         }
       )
     ] }) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("nav", { className: "flex-1 px-4 space-y-2 overflow-y-auto custom-scrollbar", children: displayLinks.map((link, idx) => {
+    /* @__PURE__ */ jsxRuntimeExports.jsx("nav", { className: "flex-1 px-3 space-y-1.5 overflow-y-auto custom-scrollbar", children: displayLinks.map((link, idx) => {
       const isActive = location.pathname === (link.path === "/" ? "/portal" : `/portal${link.path}`);
-      return /* @__PURE__ */ jsxRuntimeExports.jsx(
+      const Icon = link.icon;
+      return /* @__PURE__ */ jsxRuntimeExports.jsxs(
         Link$1,
         {
           to: `/portal${link.path === "/" ? "" : link.path}`,
           onClick: onClose,
-          className: `flex items-center px-6 py-4 md:py-3.5 rounded-xl transition-all duration-200 group ${isActive ? "bg-blue-600/10 text-blue-500" : "text-slate-400 hover:text-white"}`,
-          children: /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: `text-sm md:text-[13px] font-black uppercase tracking-widest ${isActive ? "translate-x-1" : "group-hover:translate-x-1"} transition-transform duration-300`, children: link.label })
+          className: `
+                                group flex items-center gap-3.5 px-4 py-3 rounded-xl transition-all duration-200
+                                ${isActive ? "bg-blue-600/10 text-blue-400 font-bold shadow-sm border border-blue-600/20" : "text-slate-400 hover:text-slate-100 hover:bg-slate-800/50 hover:border-slate-700/50 border border-transparent"}
+                            `,
+          children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(Icon, { className: `w-5 h-5 transition-transform duration-300 ${isActive ? "scale-110" : "group-hover:scale-110"}` }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[13px] tracking-tight", children: link.label })
+          ]
         },
         `${link.path}-${idx}`
       );
     }) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-4 border-t border-slate-800/50 space-y-4", children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-auto p-4 mx-4 mb-4 border-t border-slate-800 space-y-2", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(DbModeIndicator, {}),
       /* @__PURE__ */ jsxRuntimeExports.jsxs(
         "button",
         {
           onClick: onLogout,
-          className: "flex items-center gap-3 text-slate-500 hover:text-white transition-colors w-full px-4 py-4 md:py-3 rounded-xl hover:bg-red-500/10 hover:text-red-400",
+          className: "flex items-center gap-3 w-full px-4 py-3 rounded-xl text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-all group",
           children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(LogOut, { className: "w-5 h-5" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-bold text-sm", children: t("sign_out") })
+            /* @__PURE__ */ jsxRuntimeExports.jsx(LogOut, { className: "w-5 h-5 group-hover:-translate-x-1 transition-transform" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-sm font-bold", children: t("sign_out") })
           ]
         }
       ),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "mt-4 pt-4 border-t border-slate-800/50 text-center space-y-1", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-[10px] text-slate-500 font-bold uppercase tracking-widest", children: [
-          t("powered_by"),
-          " Aiden Chan"
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-[9px] text-slate-400 font-black uppercase tracking-[0.2em]", children: [
-          t("system_version"),
-          APP_VERSION
-        ] })
-      ] })
+      /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "pt-2 text-center", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-[9px] text-slate-600 font-bold uppercase tracking-widest", children: [
+        "v",
+        APP_VERSION
+      ] }) })
     ] })
   ] });
 };
 const Layout = ({ children }) => {
-  const { currentUser, setCurrentUser, schools, isLocked, unlock } = useGlobal();
+  const { currentUser, setCurrentUser, schools } = useGlobal();
   const { t, language, setLanguage } = useLanguage();
   const [showLangMenu, setShowLangMenu] = reactExports.useState(false);
   const [showNotifications, setShowNotifications] = reactExports.useState(false);
   const [notifications, setNotifications] = reactExports.useState([]);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = reactExports.useState(false);
-  const [lockInput, setLockInput] = reactExports.useState("");
-  const [lockError, setLockError] = reactExports.useState(false);
-  reactExports.useEffect(() => {
-    if (!currentUser) return;
-    const fetchNotifications = async () => {
-      const q = query(collection(db, "notifications"), where("recipientId", "==", currentUser.id));
-      const snap = await getDocs(q);
-      setNotifications(snap.docs.map((d) => ({ id: d.id, ...d.data() })).sort((a, b) => b.timestamp.localeCompare(a.timestamp)));
-    };
-    fetchNotifications();
-    const interval = setInterval(fetchNotifications, 6e4);
-    return () => clearInterval(interval);
-  }, [currentUser]);
-  const handleUnlock = (e) => {
-    e.preventDefault();
-    if (unlock(lockInput)) {
-      setLockInput("");
-      setLockError(false);
-    } else {
-      setLockError(true);
-      setLockInput("");
-    }
-  };
   if (!currentUser) return null;
-  if (isLocked) {
-    return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "fixed inset-0 z-[200] bg-slate-900 flex flex-col items-center justify-center p-6 text-white text-center", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "max-w-md w-full space-y-8", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative inline-block", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-24 h-24 bg-blue-600 rounded-3xl flex items-center justify-center mx-auto shadow-2xl animate-pulse", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Lock, { className: "w-10 h-10 text-white" }) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "absolute -top-2 -right-2 w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center border-4 border-slate-900", children: /* @__PURE__ */ jsxRuntimeExports.jsx(ShieldCheck, { className: "w-4 h-4" }) })
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-2xl font-black tracking-tight", children: t("portal_locked") }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-400 mt-2 text-sm", children: t("locked_desc") })
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("form", { onSubmit: handleUnlock, className: "space-y-4", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "input",
-          {
-            type: "password",
-            className: `w-full bg-white/5 border-2 ${lockError ? "border-red-500" : "border-white/10"} rounded-2xl p-4 text-center text-2xl font-mono focus:border-blue-500 outline-none transition-all`,
-            placeholder: "••••••",
-            value: lockInput,
-            onChange: (e) => setLockInput(e.target.value),
-            autoFocus: true
-          }
-        ),
-        lockError && /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-red-500 text-xs font-bold uppercase tracking-widest", children: t("invalid_credentials") }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { className: "w-full h-14 rounded-2xl font-black text-lg shadow-xl shadow-blue-500/20", type: "submit", children: t("unlock_workspace") })
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("button", { onClick: () => setCurrentUser(null), className: "text-slate-500 hover:text-white transition-colors text-xs font-bold uppercase tracking-widest flex items-center gap-2 mx-auto pt-4", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(LogOut, { className: "w-4 h-4" }),
-        " ",
-        t("switch_account")
-      ] })
-    ] }) });
-  }
   const currentSchool = schools.find((s) => s.id === currentUser.schoolId);
   const unreadCount = notifications.filter((n) => !n.isRead).length;
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex min-h-screen bg-slate-50 text-slate-900", dir: language === Language.JV ? "rtl" : "ltr", children: [
@@ -31264,6 +31230,46 @@ const Layout = ({ children }) => {
       ] })
     ] })
   ] });
+};
+
+const Button = ({
+  children,
+  variant = "primary",
+  size = "md",
+  isLoading,
+  className = "",
+  disabled,
+  as: Component = "button",
+  ...props
+}) => {
+  const baseStyles = "inline-flex items-center justify-center rounded-lg font-semibold transition-all duration-200 active:scale-95 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed";
+  const variants = {
+    primary: "bg-blue-600 text-white hover:bg-blue-700 shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 focus:ring-blue-500",
+    secondary: "bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 shadow-sm hover:shadow-md focus:ring-slate-500",
+    danger: "bg-rose-600 text-white hover:bg-rose-700 shadow-lg shadow-rose-500/25 focus:ring-rose-500",
+    ghost: "bg-transparent text-slate-600 hover:bg-slate-50 hover:text-slate-900 focus:ring-slate-500"
+  };
+  const sizes = {
+    sm: "px-3 py-1.5 text-sm",
+    md: "px-4 py-2 text-base",
+    lg: "px-6 py-3 text-lg"
+  };
+  const isDisabled = disabled || isLoading;
+  return /* @__PURE__ */ jsxRuntimeExports.jsx(
+    Component,
+    {
+      className: `${baseStyles} ${variants[variant]} ${sizes[size]} ${className}`,
+      disabled: Component === "button" ? isDisabled : void 0,
+      ...props,
+      children: isLoading ? /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "flex items-center", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("svg", { className: "animate-spin -ml-1 mr-2 h-4 w-4 text-current", xmlns: "http://www.w3.org/2000/svg", fill: "none", viewBox: "0 0 24 24", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("circle", { className: "opacity-25", cx: "12", cy: "12", r: "10", stroke: "currentColor", strokeWidth: "4" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("path", { className: "opacity-75", fill: "currentColor", d: "M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" })
+        ] }),
+        "Processing..."
+      ] }) : children
+    }
+  );
 };
 
 const NotFoundPage = () => {
@@ -31655,6 +31661,356 @@ const FeaturePage = () => {
 };
 
 const CHANGELOG = [
+  {
+    version: "v0.0.113",
+    date: "Jan 08, 2026",
+    title: "Platform Enhancement",
+    items: [
+      "🚀 General performance optimizations and bug fixes.",
+      "🛡️ Security and stability improvements.",
+      "🔧 Minor UI refinements and infrastructure updates."
+    ]
+  },
+  {
+    version: "v0.0.112",
+    date: "Jan 08, 2026",
+    title: "Platform Enhancement",
+    items: [
+      "🚀 General performance optimizations and bug fixes.",
+      "🛡️ Security and stability improvements.",
+      "🔧 Minor UI refinements and infrastructure updates."
+    ]
+  },
+  {
+    version: "v0.0.111",
+    date: "Jan 08, 2026",
+    title: "Platform Enhancement",
+    items: [
+      "🚀 General performance optimizations and bug fixes.",
+      "🛡️ Security and stability improvements.",
+      "🔧 Minor UI refinements and infrastructure updates."
+    ]
+  },
+  {
+    version: "v0.0.110",
+    date: "Jan 08, 2026",
+    title: "Platform Enhancement",
+    items: [
+      "🚀 General performance optimizations and bug fixes.",
+      "🛡️ Security and stability improvements.",
+      "🔧 Minor UI refinements and infrastructure updates."
+    ]
+  },
+  {
+    version: "v0.0.109",
+    date: "Jan 08, 2026",
+    title: "Platform Enhancement",
+    items: [
+      "🚀 General performance optimizations and bug fixes.",
+      "🛡️ Security and stability improvements.",
+      "🔧 Minor UI refinements and infrastructure updates."
+    ]
+  },
+  {
+    version: "v0.0.108",
+    date: "Jan 08, 2026",
+    title: "Platform Enhancement",
+    items: [
+      "🚀 General performance optimizations and bug fixes.",
+      "🛡️ Security and stability improvements.",
+      "🔧 Minor UI refinements and infrastructure updates."
+    ]
+  },
+  {
+    version: "v0.0.107",
+    date: "Jan 08, 2026",
+    title: "Platform Enhancement",
+    items: [
+      "🚀 General performance optimizations and bug fixes.",
+      "🛡️ Security and stability improvements.",
+      "🔧 Minor UI refinements and infrastructure updates."
+    ]
+  },
+  {
+    version: "v0.0.106",
+    date: "Jan 08, 2026",
+    title: "Platform Enhancement",
+    items: [
+      "🚀 General performance optimizations and bug fixes.",
+      "🛡️ Security and stability improvements.",
+      "🔧 Minor UI refinements and infrastructure updates."
+    ]
+  },
+  {
+    version: "v0.0.105",
+    date: "Jan 08, 2026",
+    title: "Platform Enhancement",
+    items: [
+      "🚀 General performance optimizations and bug fixes.",
+      "🛡️ Security and stability improvements.",
+      "🔧 Minor UI refinements and infrastructure updates."
+    ]
+  },
+  {
+    version: "v0.0.104",
+    date: "Jan 08, 2026",
+    title: "Platform Enhancement",
+    items: [
+      "🚀 General performance optimizations and bug fixes.",
+      "🛡️ Security and stability improvements.",
+      "🔧 Minor UI refinements and infrastructure updates."
+    ]
+  },
+  {
+    version: "v0.0.103",
+    date: "Jan 08, 2026",
+    title: "Platform Enhancement",
+    items: [
+      "🚀 General performance optimizations and bug fixes.",
+      "🛡️ Security and stability improvements.",
+      "🔧 Minor UI refinements and infrastructure updates."
+    ]
+  },
+  {
+    version: "v0.0.102",
+    date: "Jan 08, 2026",
+    title: "Platform Enhancement",
+    items: [
+      "🚀 General performance optimizations and bug fixes.",
+      "🛡️ Security and stability improvements.",
+      "🔧 Minor UI refinements and infrastructure updates."
+    ]
+  },
+  {
+    version: "v0.0.101",
+    date: "Jan 08, 2026",
+    title: "Platform Enhancement",
+    items: [
+      "🚀 General performance optimizations and bug fixes.",
+      "🛡️ Security and stability improvements.",
+      "🔧 Minor UI refinements and infrastructure updates."
+    ]
+  },
+  {
+    version: "v0.0.100",
+    date: "Jan 08, 2026",
+    title: "Platform Enhancement",
+    items: [
+      "🚀 General performance optimizations and bug fixes.",
+      "🛡️ Security and stability improvements.",
+      "🔧 Minor UI refinements and infrastructure updates."
+    ]
+  },
+  {
+    version: "v0.0.99",
+    date: "Jan 07, 2026",
+    title: "Platform Enhancement",
+    items: [
+      "🚀 General performance optimizations and bug fixes.",
+      "🛡️ Security and stability improvements.",
+      "🔧 Minor UI refinements and infrastructure updates."
+    ]
+  },
+  {
+    version: "v0.0.98",
+    date: "Jan 07, 2026",
+    title: "Platform Enhancement",
+    items: [
+      "🚀 General performance optimizations and bug fixes.",
+      "🛡️ Security and stability improvements.",
+      "🔧 Minor UI refinements and infrastructure updates."
+    ]
+  },
+  {
+    version: "v0.0.97",
+    date: "Jan 07, 2026",
+    title: "Platform Enhancement",
+    items: [
+      "🚀 General performance optimizations and bug fixes.",
+      "🛡️ Security and stability improvements.",
+      "🔧 Minor UI refinements and infrastructure updates."
+    ]
+  },
+  {
+    version: "v0.0.96",
+    date: "Jan 07, 2026",
+    title: "Platform Enhancement",
+    items: [
+      "🚀 General performance optimizations and bug fixes.",
+      "🛡️ Security and stability improvements.",
+      "🔧 Minor UI refinements and infrastructure updates."
+    ]
+  },
+  {
+    version: "v0.0.95",
+    date: "Jan 07, 2026",
+    title: "Platform Enhancement",
+    items: [
+      "🚀 General performance optimizations and bug fixes.",
+      "🛡️ Security and stability improvements.",
+      "🔧 Minor UI refinements and infrastructure updates."
+    ]
+  },
+  {
+    version: "v0.0.94",
+    date: "Jan 07, 2026",
+    title: "Platform Enhancement",
+    items: [
+      "🚀 General performance optimizations and bug fixes.",
+      "🛡️ Security and stability improvements.",
+      "🔧 Minor UI refinements and infrastructure updates."
+    ]
+  },
+  {
+    version: "v0.0.93",
+    date: "Jan 07, 2026",
+    title: "Platform Enhancement",
+    items: [
+      "🚀 General performance optimizations and bug fixes.",
+      "🛡️ Security and stability improvements.",
+      "🔧 Minor UI refinements and infrastructure updates."
+    ]
+  },
+  {
+    version: "v0.0.92",
+    date: "Jan 07, 2026",
+    title: "Platform Enhancement",
+    items: [
+      "🚀 General performance optimizations and bug fixes.",
+      "🛡️ Security and stability improvements.",
+      "🔧 Minor UI refinements and infrastructure updates."
+    ]
+  },
+  {
+    version: "v0.0.91",
+    date: "Jan 07, 2026",
+    title: "Platform Enhancement",
+    items: [
+      "🚀 General performance optimizations and bug fixes.",
+      "🛡️ Security and stability improvements.",
+      "🔧 Minor UI refinements and infrastructure updates."
+    ]
+  },
+  {
+    version: "v0.0.90",
+    date: "Jan 07, 2026",
+    title: "Platform Enhancement",
+    items: [
+      "🚀 General performance optimizations and bug fixes.",
+      "🛡️ Security and stability improvements.",
+      "🔧 Minor UI refinements and infrastructure updates."
+    ]
+  },
+  {
+    version: "v0.0.89",
+    date: "Jan 07, 2026",
+    title: "Platform Enhancement",
+    items: [
+      "🚀 General performance optimizations and bug fixes.",
+      "🛡️ Security and stability improvements.",
+      "🔧 Minor UI refinements and infrastructure updates."
+    ]
+  },
+  {
+    version: "v0.0.88",
+    date: "Jan 07, 2026",
+    title: "Platform Enhancement",
+    items: [
+      "🚀 General performance optimizations and bug fixes.",
+      "🛡️ Security and stability improvements.",
+      "🔧 Minor UI refinements and infrastructure updates."
+    ]
+  },
+  {
+    version: "v0.0.87",
+    date: "Jan 07, 2026",
+    title: "Platform Enhancement",
+    items: [
+      "🚀 General performance optimizations and bug fixes.",
+      "🛡️ Security and stability improvements.",
+      "🔧 Minor UI refinements and infrastructure updates."
+    ]
+  },
+  {
+    version: "v0.0.86",
+    date: "Jan 07, 2026",
+    title: "Platform Enhancement",
+    items: [
+      "🚀 General performance optimizations and bug fixes.",
+      "🛡️ Security and stability improvements.",
+      "🔧 Minor UI refinements and infrastructure updates."
+    ]
+  },
+  {
+    version: "v0.0.85",
+    date: "Jan 07, 2026",
+    title: "Platform Enhancement",
+    items: [
+      "🚀 General performance optimizations and bug fixes.",
+      "🛡️ Security and stability improvements.",
+      "🔧 Minor UI refinements and infrastructure updates."
+    ]
+  },
+  {
+    version: "v0.0.84",
+    date: "Jan 07, 2026",
+    title: "Platform Enhancement",
+    items: [
+      "🚀 General performance optimizations and bug fixes.",
+      "🛡️ Security and stability improvements.",
+      "🔧 Minor UI refinements and infrastructure updates."
+    ]
+  },
+  {
+    version: "v0.0.83",
+    date: "Jan 07, 2026",
+    title: "Platform Enhancement",
+    items: [
+      "🚀 General performance optimizations and bug fixes.",
+      "🛡️ Security and stability improvements.",
+      "🔧 Minor UI refinements and infrastructure updates."
+    ]
+  },
+  {
+    version: "v0.0.82",
+    date: "Jan 07, 2026",
+    title: "Platform Enhancement",
+    items: [
+      "🚀 General performance optimizations and bug fixes.",
+      "🛡️ Security and stability improvements.",
+      "🔧 Minor UI refinements and infrastructure updates."
+    ]
+  },
+  {
+    version: "v0.0.81",
+    date: "Jan 07, 2026",
+    title: "Platform Enhancement",
+    items: [
+      "🚀 General performance optimizations and bug fixes.",
+      "🛡️ Security and stability improvements.",
+      "🔧 Minor UI refinements and infrastructure updates."
+    ]
+  },
+  {
+    version: "v0.0.80",
+    date: "Jan 07, 2026",
+    title: "Platform Enhancement",
+    items: [
+      "🚀 General performance optimizations and bug fixes.",
+      "🛡️ Security and stability improvements.",
+      "🔧 Minor UI refinements and infrastructure updates."
+    ]
+  },
+  {
+    version: "v0.0.79",
+    date: "Jan 07, 2026",
+    title: "Platform Enhancement",
+    items: [
+      "🚀 General performance optimizations and bug fixes.",
+      "🛡️ Security and stability improvements.",
+      "🔧 Minor UI refinements and infrastructure updates."
+    ]
+  },
   {
     version: "v0.0.78",
     date: "Jan 07, 2026",
@@ -63250,8 +63606,201 @@ const lessonService = {
 const COLLECTION = "dskp_standards";
 const METADATA_COLLECTION = "metadata";
 const STRUCTURE_DOC = "dskp_structure";
+const STAGING_COLLECTION = "dskp_raw";
+const REGISTRY_COLLECTION = "dskp_final";
+const ROOT_COLLECTION = REGISTRY_COLLECTION;
+const sanitizeId = (id) => id.replace(/\//g, "_").trim();
 const dskpService = {
-  // List standards with filters
+  // --- STAGE 1: SYNC RAW DATA TO STAGING ---
+  // --- STAGE 1: SYNC RAW DATA TO STAGING ---
+  syncRawToStaging: async (rawRows) => {
+    try {
+      console.log("Stage 1: Syncing Raw Data to Staging...", rawRows.length);
+      console.log("Clearing existing raw data in", STAGING_COLLECTION);
+      const rawCol = collection(db, STAGING_COLLECTION);
+      const rawSnap = await getDocs(rawCol);
+      let deleteBatch = writeBatch(db);
+      let deleteCount = 0;
+      for (const doc2 of rawSnap.docs) {
+        deleteBatch.delete(doc2.ref);
+        deleteCount++;
+        if (deleteCount >= 200) {
+          await deleteBatch.commit();
+          deleteBatch = writeBatch(db);
+          deleteCount = 0;
+        }
+      }
+      if (deleteCount > 0) await deleteBatch.commit();
+      console.log("Cleared existing raw data.");
+      let batch = writeBatch(db);
+      let operationCount = 0;
+      let totalProcessed = 0;
+      for (let i = 0; i < rawRows.length; i++) {
+        const row = rawRows[i];
+        const ref = doc(db, STAGING_COLLECTION, `row_${i.toString().padStart(5, "0")}`);
+        batch.set(ref, {
+          rowIndex: i,
+          data: row,
+          // Save the array or object as is
+          timestamp: Date.now()
+        });
+        operationCount++;
+        totalProcessed++;
+        if (operationCount >= 100) {
+          await batch.commit();
+          batch = writeBatch(db);
+          operationCount = 0;
+          console.log(`Uploaded ${totalProcessed} rows to staging...`);
+          await new Promise((r) => setTimeout(r, 2e3));
+        }
+      }
+      if (operationCount > 0) await batch.commit();
+      console.log("Stage 1 Complete.");
+      return { success: true, count: totalProcessed };
+    } catch (err) {
+      console.error("Stage 1 Failed", err);
+      return { success: false, message: err.message };
+    }
+  },
+  // --- STAGE 2: PROCESS & MAP REGISTRY ---
+  processStagingToRegistry: async (mapping) => {
+    try {
+      console.log("Stage 2: Processing Staging to Registry...");
+      const q = query(collection(db, STAGING_COLLECTION), orderBy("rowIndex"));
+      const snap = await getDocs(q);
+      const stagingDocs = snap.docs.map((d) => d.data());
+      let batch = writeBatch(db);
+      let operationCount = 0;
+      let processedCount = 0;
+      let lastSubject = "";
+      let lastGrade = "";
+      let lastSK = "";
+      let lastTema = "";
+      let lastTajuk = "";
+      let lastSchoolType = SchoolType.SK;
+      const hierarchy = {};
+      for (const docData of stagingDocs) {
+        const row = docData.data;
+        const subject = String(row[mapping.subject] || "").trim();
+        const year = String(row[mapping.grade] || "").trim();
+        const sk = String(row[mapping.contentStandard] || "").trim();
+        const sp = String(row[mapping.learningStandard] || "").trim();
+        if (!subject || !sk || !sp) continue;
+        let category = SchoolType.SK;
+        const upperSub = subject.toUpperCase();
+        if (upperSub.includes("PEMULIHAN")) {
+          category = SchoolType.PEMULIHAN;
+        } else if (upperSub.includes("PRASEKOLAH") || upperSub.includes("PRA SEKOLAH")) {
+          category = SchoolType.PRASEKOLAH;
+        } else if (upperSub.includes("SJKT") || upperSub.includes("TAMIL")) {
+          category = SchoolType.SJKT;
+        } else if (upperSub.includes("SJKC")) {
+          category = SchoolType.SJKC;
+        } else if (upperSub.includes("BERCANTUM") || year.includes("&")) {
+          category = SchoolType.KELAS_BERCANTUM;
+        }
+        if (!hierarchy[category]) hierarchy[category] = {};
+        if (!hierarchy[category][year]) hierarchy[category][year] = {};
+        if (!hierarchy[category][year][subject]) hierarchy[category][year][subject] = [];
+        const standard = {
+          id: `dskp-${Date.now()}-${docData.rowIndex}`,
+          schoolType: category,
+          grade: year,
+          subject,
+          contentStandard: sk,
+          learningStandard: sp,
+          temaBidang: String(row[mapping.temaBidang] || ""),
+          tema: String(row[mapping.temaBidang] || ""),
+          tajukKemahiran: String(row[mapping.tajukKemahiran] || ""),
+          tajuk: String(row[mapping.tajukKemahiran] || "")
+        };
+        hierarchy[category][year][subject].push(standard);
+        processedCount++;
+      }
+      for (const type of Object.keys(hierarchy)) {
+        const typeRef = doc(db, `${REGISTRY_COLLECTION}/${type}`);
+        batch.set(typeRef, { lastUpdated: (/* @__PURE__ */ new Date()).toISOString() }, { merge: true });
+        operationCount++;
+        for (const year of Object.keys(hierarchy[type])) {
+          const safeYear = sanitizeId(year);
+          const yearRef = doc(db, `${REGISTRY_COLLECTION}/${type}/years/${safeYear}`);
+          batch.set(yearRef, { lastUpdated: (/* @__PURE__ */ new Date()).toISOString() }, { merge: true });
+          operationCount++;
+          for (const subject of Object.keys(hierarchy[type][year])) {
+            const safeSubject = sanitizeId(subject);
+            const subjectRef = doc(db, `${REGISTRY_COLLECTION}/${type}/years/${safeYear}/subjects/${safeSubject}`);
+            const standards = hierarchy[type][year][subject];
+            batch.set(subjectRef, {
+              title: subject,
+              standards,
+              count: standards.length,
+              lastUpdated: (/* @__PURE__ */ new Date()).toISOString()
+            });
+            operationCount++;
+            if (operationCount >= 100) {
+              await batch.commit();
+              batch = writeBatch(db);
+              operationCount = 0;
+              await new Promise((r) => setTimeout(r, 2e3));
+            }
+          }
+        }
+      }
+      if (operationCount > 0) await batch.commit();
+      console.log("Stage 2 Complete. Processed:", processedCount);
+      return { success: true, count: processedCount };
+    } catch (err) {
+      console.error("Stage 2 Failed", err);
+      return { success: false, message: err.message };
+    }
+  },
+  // ... (Lazy Fetch Methods remain the same) ...
+  // Level 1: Get School Types
+  getSchoolTypes: async () => {
+    try {
+      const snap = await getDocs(collection(db, ROOT_COLLECTION));
+      return { success: true, data: snap.docs.map((d) => d.id) };
+    } catch (err) {
+      return { success: false, error: err.message };
+    }
+  },
+  // Level 2: Get Years for a Type
+  getYears: async (type) => {
+    try {
+      const snap = await getDocs(collection(db, `${ROOT_COLLECTION}/${type}/years`));
+      return { success: true, data: snap.docs.map((d) => d.id).sort() };
+    } catch (err) {
+      return { success: false, error: err.message };
+    }
+  },
+  // Level 3: Get Subjects for a Year
+  getSubjects: async (type, year) => {
+    try {
+      const safeYear = sanitizeId(year);
+      const snap = await getDocs(collection(db, `${ROOT_COLLECTION}/${type}/years/${safeYear}/subjects`));
+      return { success: true, data: snap.docs.map((d) => ({ id: d.id, ...d.data() })) };
+    } catch (err) {
+      return { success: false, error: err.message };
+    }
+  },
+  // Level 4: Get Standards (Already in Subject Doc, but helper for clarity)
+  getStandards: async (type, year, subject) => {
+    try {
+      const safeYear = sanitizeId(year);
+      const safeSubject = sanitizeId(subject);
+      const docRef = doc(db, `${ROOT_COLLECTION}/${type}/years/${safeYear}/subjects/${safeSubject}`);
+      const snap = await getDoc(docRef);
+      if (snap.exists()) {
+        const data = snap.data();
+        return { success: true, data: data.standards || [] };
+      }
+      return { success: false, message: "Subject not found" };
+    } catch (err) {
+      return { success: false, error: err.message };
+    }
+  },
+  // --- LEGACY/COMPATIBILITY METHODS ---
+  // List standards with filters (Legacy)
   list: async (filters) => {
     let constraints = [];
     if (filters.schoolType) constraints.push(where("schoolType", "==", filters.schoolType));
@@ -63276,7 +63825,7 @@ const dskpService = {
     }
     return { success: true, data };
   },
-  // Get Hierarchy Structure
+  // Get Hierarchy Structure (Legacy)
   listStructure: async () => {
     try {
       const structureRef = doc(db, METADATA_COLLECTION, STRUCTURE_DOC);
@@ -63290,56 +63839,21 @@ const dskpService = {
       return { success: false, message: err.message };
     }
   },
-  // Sync Data (called from Admin UI)
-  sync: async ({ mode, data, user }) => {
+  // Get Options (Used by LessonPlanEditor)
+  getOptions: async () => {
     try {
       const structureRef = doc(db, METADATA_COLLECTION, STRUCTURE_DOC);
       const docSnap = await getDoc(structureRef);
-      let currentStructure = docSnap.exists() ? docSnap.data() : {};
-      if (mode === "replace") {
-        currentStructure = {};
-      }
-      const CHUNK_SIZE = 400;
-      for (let i = 0; i < data.length; i += CHUNK_SIZE) {
-        const chunk = data.slice(i, i + CHUNK_SIZE);
-        const batch = writeBatch(db);
-        chunk.forEach((item) => {
-          const id = item.id || `dskp_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-          const itemRef = doc(db, COLLECTION, String(id));
-          batch.set(itemRef, { ...item, id });
-          const { schoolType, grade, subject } = item;
-          if (schoolType && grade && subject) {
-            if (!currentStructure[schoolType]) currentStructure[schoolType] = {};
-            if (!currentStructure[schoolType][grade]) currentStructure[schoolType][grade] = [];
-            if (!currentStructure[schoolType][grade].includes(subject)) {
-              currentStructure[schoolType][grade].push(subject);
-            }
-          }
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        let subjects = /* @__PURE__ */ new Set();
+        Object.values(data).forEach((list) => {
+          if (Array.isArray(list)) list.forEach((s) => subjects.add(s));
         });
-        await batch.commit();
-        console.log(`Synced chunk ${Math.floor(i / CHUNK_SIZE) + 1} of ${Math.ceil(data.length / CHUNK_SIZE)}`);
+        return { success: true, subjects: Array.from(subjects).sort() };
       }
-      await setDoc(structureRef, currentStructure);
-      try {
-        const logRef = doc(db, "dskp_sync_logs", `log_${Date.now()}`);
-        await setDoc(logRef, {
-          timestamp: Date.now(),
-          date: (/* @__PURE__ */ new Date()).toISOString(),
-          mode,
-          recordCount: data.length,
-          userId: user?.id || "system",
-          userName: user?.name || "System Auto-Sync",
-          status: "SUCCESS"
-        });
-      } catch (logErr) {
-        console.error("Failed to write sync log", logErr);
-      }
-      return { success: true, count: data.length };
+      return { success: true, subjects: [] };
     } catch (err) {
-      console.error("Sync failed:", err);
-      if (err.message?.includes("quota") || err.message?.includes("Storage")) {
-        return { success: false, message: "QUOTA_EXCEEDED: Cannot sync large data in 'Mock Mode'. Please switch to 'Firebase Mode' in System Config." };
-      }
       return { success: false, message: err.message };
     }
   },
@@ -63371,6 +63885,31 @@ const dskpService = {
     try {
       await deleteDoc(doc(db, COLLECTION, String(id)));
       return { success: true };
+    } catch (err) {
+      return { success: false, message: err.message };
+    }
+  },
+  // Legacy Rebuild Index (Might still be useful for the options dropdown?)
+  rebuildIndex: async () => {
+    try {
+      console.log("Rebuilding DSKP Index (Legacy)...");
+      const q = query(collection(db, COLLECTION));
+      const snap = await getDocs(q);
+      const newStructure = {};
+      let count = 0;
+      snap.docs.forEach((d) => {
+        const data = d.data();
+        const { grade, subject } = data;
+        if (grade && subject) {
+          if (!newStructure[grade]) newStructure[grade] = [];
+          if (!newStructure[grade].includes(subject)) {
+            newStructure[grade].push(subject);
+          }
+        }
+        count++;
+      });
+      await setDoc(doc(db, METADATA_COLLECTION, STRUCTURE_DOC), newStructure);
+      return { success: true, count };
     } catch (err) {
       return { success: false, message: err.message };
     }
@@ -66344,7 +66883,6 @@ const ReviewDashboard = () => {
 };
 
 const GoogleSheetSyncModal = ({ isOpen, onClose, onSynced }) => {
-  const { t } = useLanguage();
   const REQUESTED_SHEET_URL = "https://docs.google.com/spreadsheets/d/1mW401zSgjPLjtahPCaeiLFpv3Zpk3AL-2Dgc6s5sDAA/edit?usp=sharing";
   const [sheetUrl, setSheetUrl] = reactExports.useState(REQUESTED_SHEET_URL);
   const [step, setStep] = reactExports.useState(1);
@@ -66356,14 +66894,20 @@ const GoogleSheetSyncModal = ({ isOpen, onClose, onSynced }) => {
     schoolType: 0,
     subject: 1,
     grade: 2,
+    // TAHUN (Index 2)
     contentStandard: 3,
+    // SK (Col D - Index 3)
     learningStandard: 4,
-    temaBidang: 5,
+    // SP (Col E - Index 4)
+    temaBidang: 6,
+    // TEMA / BIDANG (Col G - Index 6)
     tema: 6,
-    tajukKemahiran: 7,
+    tajukKemahiran: 8,
+    // TAJUK (Col I - Index 8)
     tajuk: 8
   });
-  const [progress, setProgress] = reactExports.useState(0);
+  const [isStage1Complete, setIsStage1Complete] = reactExports.useState(false);
+  const [syncStatus, setSyncStatus] = reactExports.useState("");
   const [error, setError] = reactExports.useState("");
   const parseCsv = (csvText) => {
     const lines = csvText.split(/\r?\n/);
@@ -66398,76 +66942,59 @@ const GoogleSheetSyncModal = ({ isOpen, onClose, onSynced }) => {
       setIsFetching(false);
     }
   };
-  const mappedData = reactExports.useMemo(() => {
-    return rawRows.map((row, idx) => ({
-      id: `dskp-mapped-${Date.now()}-${idx}`,
-      schoolType: row[mapping.schoolType] || "",
-      subject: row[mapping.subject] || "",
-      grade: row[mapping.grade] || "",
-      contentStandard: row[mapping.contentStandard] || "",
-      learningStandard: row[mapping.learningStandard] || "",
-      temaBidang: row[mapping.temaBidang] || "",
-      tema: row[mapping.tema] || "",
-      tajukKemahiran: row[mapping.tajukKemahiran] || "",
-      tajuk: row[mapping.tajuk] || ""
-    }));
-  }, [rawRows, mapping]);
   const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-  const syncBatch = async (batch, mode, retryCount = 0) => {
-    try {
-      const res = await dskpService.sync({ mode, data: batch });
-      if (!res.success) throw new Error(res.message);
-    } catch (err) {
-      if (retryCount < 3) {
-        console.warn(`Batch sync failed (attempt ${retryCount + 1}), retrying in 1s...`, err);
-        await sleep(1e3 * (retryCount + 1));
-        return syncBatch(batch, mode, retryCount + 1);
-      }
-      throw err;
-    }
-  };
-  const handleSync = async () => {
+  const handleSyncRaw = async () => {
     setIsSaving(true);
-    setProgress(0);
+    setSyncStatus("Stage 1: Uploading Raw Data to Staging...");
     setError("");
     try {
-      const BATCH_SIZE = 2e3;
-      const total = mappedData.length;
-      const startTime = Date.now();
-      const firstBatch = mappedData.slice(0, BATCH_SIZE);
-      await syncBatch(firstBatch, "replace");
-      let processed = firstBatch.length;
-      setProgress(Math.round(processed / total * 100));
-      await sleep(100);
-      for (let i = BATCH_SIZE; i < total; i += BATCH_SIZE) {
-        const batch = mappedData.slice(i, i + BATCH_SIZE);
-        await syncBatch(batch, "append");
-        processed += batch.length;
-        setProgress(Math.round(processed / total * 100));
-        await sleep(100);
+      const res = await dskpService.syncRawToStaging(rawRows);
+      if (res.success) {
+        setSyncStatus(`✅ Stage 1 Complete! Uploaded ${res.count} rows.`);
+        setIsStage1Complete(true);
+      } else {
+        throw new Error(res.message);
       }
-      setProgress(100);
-      const duration = ((Date.now() - startTime) / 1e3).toFixed(1);
-      onSynced();
-      onClose();
-      alert(`✅ Sync Successful!
-
-• Records: ${total}
-• Time: ${duration}s
-• Status: All batches verified.`);
     } catch (e) {
       console.error(e);
-      const errorDetails = {
-        message: e.message,
-        stack: e.stack,
-        progress_at_failure: progress,
-        timestamp: (/* @__PURE__ */ new Date()).toISOString()
-      };
-      setError(JSON.stringify(errorDetails, null, 2));
+      setError(`Stage 1 Failed: ${e.message}`);
     } finally {
       setIsSaving(false);
     }
   };
+  const handleProcessRegistry = async () => {
+    setIsSaving(true);
+    setSyncStatus("Stage 2: Processing & Mapping Registry (This may take a while)...");
+    setError("");
+    try {
+      const res = await dskpService.processStagingToRegistry(mapping);
+      if (res.success) {
+        setSyncStatus(`✅ Stage 2 Complete! Processed ${res.count} standards.`);
+        await sleep(1500);
+        onSynced();
+        onClose();
+        alert(`Sync Complete!
+
+${res.count} standards have been processed and mapped to the registry.`);
+      } else {
+        throw new Error(res.message);
+      }
+    } catch (e) {
+      console.error(e);
+      setError(`Stage 2 Failed: ${e.message}`);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+  reactExports.useMemo(() => {
+    return rawRows.slice(0, 5).map((row, idx) => ({
+      id: idx,
+      subject: row[mapping.subject] || "",
+      grade: row[mapping.grade] || "",
+      sk: row[mapping.contentStandard] || "",
+      sp: row[mapping.learningStandard] || ""
+    }));
+  }, [rawRows, mapping]);
   if (!isOpen) return null;
   return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-md animate-in fade-in duration-300", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Card, { className: "w-full max-w-5xl shadow-2xl overflow-hidden border-0 rounded-[2.5rem] max-h-[90vh] flex flex-col bg-white", children: [
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-8 border-b flex justify-between items-center bg-slate-50/50", children: [
@@ -66475,19 +67002,20 @@ const GoogleSheetSyncModal = ({ isOpen, onClose, onSynced }) => {
         /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-3 bg-blue-600 rounded-2xl shadow-xl shadow-blue-200", children: /* @__PURE__ */ jsxRuntimeExports.jsx(DatabaseZap, { className: "w-6 h-6 text-white" }) }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-black text-xl text-slate-800 tracking-tight", children: "DSKP Master Sync" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs font-bold text-slate-400 uppercase tracking-widest", children: "Super Admin Data Integrator" })
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs font-bold text-slate-400 uppercase tracking-widest", children: "2-Stage Sync Process" })
         ] })
       ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
-        [1, 2, 3].map((s) => /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `w-8 h-2 rounded-full transition-all ${step === s ? "bg-blue-600 w-12" : step > s ? "bg-emerald-500" : "bg-slate-200"}` }, s)),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: onClose, className: "ml-4 p-2 hover:bg-slate-200 rounded-full transition-colors", children: /* @__PURE__ */ jsxRuntimeExports.jsx(X, { className: "w-5 h-5 text-slate-500" }) })
-      ] })
+      /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: onClose, className: "p-2 hover:bg-slate-200 rounded-full transition-colors", children: /* @__PURE__ */ jsxRuntimeExports.jsx(X, { className: "w-5 h-5 text-slate-500" }) })
     ] }),
     /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-8 overflow-y-auto custom-scrollbar flex-1 space-y-8", children: [
+      error && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-4 bg-red-50 text-red-600 rounded-2xl text-sm font-bold flex items-center gap-3", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(CircleAlert, { className: "w-5 h-5 shrink-0" }),
+        error
+      ] }),
       step === 1 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "max-w-2xl mx-auto py-10 space-y-8 animate-in slide-in-from-bottom-4 duration-500", children: [
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-center space-y-2", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "text-lg font-black text-slate-800", children: "1. Connect Data Source" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-slate-500 font-medium", children: "Link the official curriculum Google Sheet for indexing." })
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-slate-500 font-medium", children: "Link the official curriculum Google Sheet." })
         ] }),
         /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4", children: [
           /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative", children: [
@@ -66502,162 +67030,84 @@ const GoogleSheetSyncModal = ({ isOpen, onClose, onSynced }) => {
               }
             )
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-5 bg-amber-50 rounded-3xl border border-amber-100 flex gap-4", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Info, { className: "w-6 h-6 text-amber-600 shrink-0" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-[11px] font-bold text-amber-800 leading-relaxed uppercase tracking-tight", children: 'Verification Required: Ensure the Google Sheet "Share" settings are set to "Anyone with the link can view" for the system to access the content.' })
-          ] }),
-          error && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-4 bg-red-50 text-red-600 rounded-2xl text-xs font-bold flex items-center gap-2", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx(CircleAlert, { className: "w-4 h-4" }),
-            " ",
-            error
-          ] }),
           /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { className: "w-full h-14 rounded-2xl font-black text-lg shadow-xl shadow-blue-200", onClick: handleFetch, isLoading: isFetching, disabled: !sheetUrl, children: [
-            "Validate & Continue ",
+            "Fetch Data ",
             /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronRight, { className: "ml-2 w-5 h-5" })
           ] })
         ] })
       ] }),
-      step === 2 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "animate-in slide-in-from-right-4 duration-500 space-y-8", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-between items-end", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "text-lg font-black text-slate-800", children: "2. Configure Data Mapping" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm text-slate-500 font-medium", children: "Match spreadsheet columns to the internal DSKP fields." })
+      step === 2 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-8 animate-in slide-in-from-right-4 duration-500", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-2 gap-4", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-5 bg-slate-50 rounded-3xl border border-slate-100", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[10px] font-black uppercase text-slate-400 tracking-widest", children: "Rows Found" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-2xl font-black text-slate-800", children: rawRows.length })
           ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "secondary", onClick: () => setStep(1), className: "rounded-xl h-10 px-4 text-xs font-bold", children: "Change Source" })
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-8", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(Card, { className: "p-8 rounded-[2rem] border-slate-100 shadow-sm bg-slate-50/30 space-y-6", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 mb-2", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(TableProperties, { className: "w-5 h-5 text-blue-600" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-black uppercase text-slate-400 tracking-widest", children: "Field Association" })
-            ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "space-y-4 max-h-[55vh] overflow-y-auto custom-scrollbar pr-2", children: [
-              { label: "School Type", key: "schoolType" },
-              { label: "Subject / Mata Pelajaran", key: "subject" },
-              { label: "Grade / Tahun", key: "grade" },
-              { label: "Content Standard (SK)", key: "contentStandard" },
-              { label: "Learning Standard (SP)", key: "learningStandard" },
-              { label: "Tema / Bidang / Teras", key: "temaBidang" },
-              { label: "Tema", key: "tema" },
-              { label: "Tajuk / Kemahiran / Nilai Teras", key: "tajukKemahiran" },
-              { label: "Tajuk", key: "tajuk" }
-            ].map((field) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1.5", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1", children: field.label }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx(
-                "select",
-                {
-                  className: "w-full border-2 border-slate-100 p-3 rounded-xl text-sm font-bold bg-white outline-none focus:border-blue-500",
-                  value: mapping[field.key],
-                  onChange: (e) => setMapping({ ...mapping, [field.key]: parseInt(e.target.value) }),
-                  children: headers.map((h, i) => /* @__PURE__ */ jsxRuntimeExports.jsxs("option", { value: i, children: [
-                    "Column ",
-                    i + 1,
-                    ": ",
-                    h || "(Empty Header)"
-                  ] }, i))
-                }
-              )
-            ] }, field.key)) })
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 mb-2 px-1", children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsx(Eye, { className: "w-5 h-5 text-slate-400" }),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-black uppercase text-slate-400 tracking-widest", children: "Live Mapping Preview" })
-            ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-3", children: [
-              mappedData.slice(0, 3).map((item, i) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-5 bg-white border border-slate-100 rounded-3xl shadow-sm space-y-2 relative overflow-hidden", children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "absolute top-0 right-0 p-3 bg-blue-50 text-blue-600 text-[8px] font-black uppercase rounded-bl-xl", children: [
-                  "Sample ",
-                  i + 1
-                ] }),
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-2 mb-1", children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "px-2 py-0.5 bg-slate-100 text-slate-600 rounded text-[9px] font-black uppercase tracking-tighter", children: item.schoolType }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[10px] font-bold text-blue-600", children: [
-                    item.subject,
-                    " • ",
-                    item.grade
-                  ] })
-                ] }),
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-xs font-bold text-slate-800 line-clamp-1", children: [
-                  "SK: ",
-                  item.contentStandard
-                ] }),
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[10px] text-slate-500 line-clamp-2 leading-relaxed", children: [
-                  "SP: ",
-                  item.learningStandard
-                ] })
-              ] }, i)),
-              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-4 text-center border-2 border-dashed border-slate-100 rounded-3xl", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-[10px] font-bold text-slate-400 uppercase", children: [
-                "+",
-                mappedData.length - 3,
-                " more records detected"
-              ] }) })
-            ] }),
-            /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { className: "w-full h-14 rounded-2xl font-black text-lg shadow-xl shadow-blue-200", onClick: () => setStep(3), children: [
-              "Verify Mapping ",
-              /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronRight, { className: "ml-2 w-5 h-5" })
-            ] })
-          ] })
-        ] })
-      ] }),
-      step === 3 && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "max-w-2xl mx-auto py-10 space-y-8 animate-in zoom-in-95 duration-500 text-center", children: isSaving ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-6 text-center", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "relative w-24 h-24 mx-auto", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("svg", { className: "w-full h-full transform -rotate-90", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("circle", { cx: "48", cy: "48", r: "40", fill: "transparent", stroke: "#e2e8f0", strokeWidth: "8", strokeLinecap: "round" }),
-            /* @__PURE__ */ jsxRuntimeExports.jsx("circle", { cx: "48", cy: "48", r: "40", fill: "transparent", stroke: "#3b82f6", strokeWidth: "8", strokeLinecap: "round", strokeDasharray: `${2 * Math.PI * 40}`, strokeDashoffset: `${2 * Math.PI * 40 * (1 - progress / 100)}`, className: "transition-all duration-300 ease-out" })
-          ] }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "absolute inset-0 flex items-center justify-center font-black text-xl text-blue-600", children: [
-            progress,
-            "%"
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-5 bg-slate-50 rounded-3xl border border-slate-100", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[10px] font-black uppercase text-slate-400 tracking-widest", children: "Columns Detected" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-2xl font-black text-slate-800", children: headers.length })
           ] })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "text-xl font-black text-slate-800 animate-pulse", children: "Synchronizing DSKP..." }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-sm font-bold text-slate-400 mt-2", children: [
-            "Uploading 2000 records at a time",
-            /* @__PURE__ */ jsxRuntimeExports.jsx("br", {}),
-            "Please do not close this window."
-          ] })
-        ] })
-      ] }) : error ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-6 text-center", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-6 bg-red-50 rounded-3xl border border-red-100 mb-6", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-16 h-16 bg-red-100 text-red-600 rounded-2xl flex items-center justify-center mx-auto mb-4", children: /* @__PURE__ */ jsxRuntimeExports.jsx(CircleAlert, { className: "w-8 h-8" }) }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "text-xl font-black text-red-600 mb-2", children: "Sync Process Failed" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-bold text-red-400 mb-4", children: "The process was interrupted. Please check your internet connection or try again later." }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-left", children: [
-            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "text-[10px] uppercase font-black text-red-400 tracking-widest pl-2 mb-1 block", children: "Error Log (Copy for Support)" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(Card, { className: "p-8 rounded-[2rem] border-slate-100 shadow-sm bg-slate-50/30 space-y-6", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2 mb-2", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx(TableProperties, { className: "w-5 h-5 text-blue-600" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-[10px] font-black uppercase text-slate-400 tracking-widest", children: "Column Mapping" })
+          ] }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-4", children: Object.entries(mapping).map(([key, colIndex]) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "block text-[10px] font-black text-slate-400 uppercase tracking-widest ml-1", children: key }),
             /* @__PURE__ */ jsxRuntimeExports.jsx(
-              "textarea",
+              "select",
               {
-                readOnly: true,
-                className: "w-full h-48 p-4 rounded-xl bg-white border-2 border-red-100 text-xs font-mono text-slate-600 focus:outline-none resize-none shadow-inner",
-                value: error
+                className: "w-full border-2 border-slate-100 p-2 rounded-xl text-xs font-bold bg-white outline-none focus:border-blue-500",
+                value: colIndex,
+                onChange: (e) => setMapping({ ...mapping, [key]: parseInt(e.target.value) }),
+                children: headers.map((h, i) => /* @__PURE__ */ jsxRuntimeExports.jsxs("option", { value: i, children: [
+                  i,
+                  ": ",
+                  h.substring(0, 30)
+                ] }, i))
               }
             )
-          ] })
+          ] }, key)) })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-4", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "secondary", className: "flex-1 h-14 rounded-2xl font-bold", onClick: onClose, children: "Cancel Sync" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { className: "flex-1 h-14 rounded-2xl font-black shadow-xl shadow-blue-200", onClick: handleSync, children: "Retry Sync" })
-        ] })
-      ] }) : /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "w-20 h-20 bg-emerald-100 text-emerald-600 rounded-[2rem] flex items-center justify-center mx-auto shadow-xl shadow-emerald-500/10 mb-6", children: /* @__PURE__ */ jsxRuntimeExports.jsx(CircleCheckBig, { className: "w-10 h-10" }) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-2", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-2xl font-black text-slate-800", children: "Final Verification" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-slate-500 font-medium", children: [
-            "You are about to overwrite the Master DSKP registry with ",
-            /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-blue-600 font-black", children: mappedData.length }),
-            " new records. This action will update content for all teachers in the system."
-          ] })
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: `p-6 rounded-3xl border-2 transition-all text-center
+                                ${isStage1Complete ? syncStatus.includes("Stage 2 Complete") ? "bg-emerald-50 border-emerald-100" : "bg-indigo-50 border-indigo-100" : "bg-slate-50 border-slate-100"}`, children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("h4", { className: "font-black text-lg text-slate-800 mb-1", children: isSaving ? "Processing..." : isStage1Complete ? "Ready for Stage 2" : "Ready for Stage 1" }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-sm font-medium text-slate-500 animate-pulse", children: syncStatus || "Waiting to start..." })
         ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-4", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "secondary", onClick: () => setStep(2), disabled: isSaving, className: "flex-1 h-14 rounded-2xl font-bold", children: "Go Back" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { onClick: handleSync, isLoading: isSaving, disabled: isSaving, className: "flex-1 h-14 rounded-2xl font-black text-lg shadow-xl shadow-emerald-500/20 bg-emerald-600 hover:bg-emerald-700", children: [
-            "Sync Now ",
-            /* @__PURE__ */ jsxRuntimeExports.jsx(Zap, { className: "ml-2 w-5 h-5" })
-          ] })
+        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-4 pt-4 border-t border-slate-100", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            Button,
+            {
+              onClick: handleSyncRaw,
+              disabled: isSaving || isStage1Complete,
+              className: `flex-1 h-16 rounded-2xl font-black text-lg transition-all shadow-xl
+                                        ${isStage1Complete ? "bg-emerald-100 text-emerald-600 shadow-none border-2 border-emerald-200 cursor-default hover:bg-emerald-100" : "bg-white text-slate-700 border-2 border-slate-200 hover:border-blue-500 hover:text-blue-600"}
+                                    `,
+              children: isStage1Complete ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(CircleCheckBig, { className: "w-6 h-6" }),
+                " Raw Sync Done"
+              ] }) : /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex items-center gap-2", children: isSaving ? /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "w-5 h-5 animate-spin" }) : "1. Sync Raw Data" })
+            }
+          ),
+          /* @__PURE__ */ jsxRuntimeExports.jsx(
+            Button,
+            {
+              onClick: handleProcessRegistry,
+              disabled: !isStage1Complete || isSaving,
+              className: `flex-1 h-16 rounded-2xl font-black text-lg shadow-xl
+                                        ${!isStage1Complete ? "bg-slate-100 text-slate-300 shadow-none cursor-not-allowed" : "bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-500/20"}
+                                    `,
+              children: isSaving && isStage1Complete ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "w-6 h-6 animate-spin" }),
+                " Processing..."
+              ] }) : /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-2", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx(Zap, { className: "w-6 h-6" }),
+                " 2. Process & Map"
+              ] })
+            }
+          )
         ] })
-      ] }) })
+      ] })
     ] })
   ] }) });
 };
@@ -66833,456 +67283,306 @@ const SchoolSettings = () => {
 const DSKPManager = () => {
   const { t } = useLanguage();
   const { currentUser } = useGlobal();
-  const [structure, setStructure] = reactExports.useState(() => {
-    try {
-      const cached = localStorage.getItem("dskp_structure");
-      return cached ? JSON.parse(cached) : {};
-    } catch {
-      return {};
-    }
-  });
-  const [expandedTypes, setExpandedTypes] = reactExports.useState([]);
-  const [expandedGrades, setExpandedGrades] = reactExports.useState([]);
-  const [expandedSubjects, setExpandedSubjects] = reactExports.useState([]);
-  const [loadedData, setLoadedData] = reactExports.useState({});
-  const [loadingNode, setLoadingNode] = reactExports.useState(null);
-  const [isLoadingStructure, setIsLoadingStructure] = reactExports.useState(false);
-  const [searchQuery, setSearchQuery] = reactExports.useState("");
-  const [isSearching, setIsSearching] = reactExports.useState(false);
-  const [searchResults, setSearchResults] = reactExports.useState([]);
-  const [editingNode, setEditingNode] = reactExports.useState(null);
-  const [isSyncModalOpen, setIsSyncModalOpen] = reactExports.useState(false);
   const isSuperAdmin = currentUser?.role === UserRole.SUPER_ADMIN;
-  const fetchStructure = async (forceRefresh = false) => {
-    if (!forceRefresh) {
-      const cached = localStorage.getItem("dskp_structure");
-      if (cached) {
-        try {
-          setStructure(JSON.parse(cached));
-          return;
-        } catch (e) {
-          localStorage.removeItem("dskp_structure");
-        }
-      }
-    }
-    try {
-      setIsLoadingStructure(true);
-      const res = await dskpService.listStructure();
-      if (res.success) {
-        setStructure(res.data);
-        localStorage.setItem("dskp_structure", JSON.stringify(res.data));
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setIsLoadingStructure(false);
-    }
-  };
-  const [lastSync, setLastSync] = reactExports.useState(null);
-  const sortKeys = (keys, type) => {
-    return keys.sort((a, b) => {
-      if (type === "schoolType") {
-        const priority = ["SR", "SK", "SJKC", "SJKT", "SMK", "SMA", "SBP", "KV"];
-        const idxA = priority.indexOf(a);
-        const idxB = priority.indexOf(b);
-        if (idxA !== -1 && idxB !== -1) return idxA - idxB;
-        if (idxA !== -1) return -1;
-        if (idxB !== -1) return 1;
+  const [schoolTypes, setSchoolTypes] = reactExports.useState([]);
+  const [isLoadingTypes, setIsLoadingTypes] = reactExports.useState(false);
+  const [expandedType, setExpandedType] = reactExports.useState(null);
+  const [yearsCache, setYearsCache] = reactExports.useState({});
+  const [loadingYears, setLoadingYears] = reactExports.useState(null);
+  const [expandedYear, setExpandedYear] = reactExports.useState(null);
+  const [subjectsCache, setSubjectsCache] = reactExports.useState({});
+  const [loadingSubjects, setLoadingSubjects] = reactExports.useState(null);
+  const [expandedSubject, setExpandedSubject] = reactExports.useState(null);
+  const [standardsCache, setStandardsCache] = reactExports.useState({});
+  const [loadingStandards, setLoadingStandards] = reactExports.useState(null);
+  const [currentPage, setCurrentPage] = reactExports.useState(1);
+  const ITEMS_PER_PAGE = 50;
+  const [isSyncModalOpen, setIsSyncModalOpen] = reactExports.useState(false);
+  const [searchQuery, setSearchQuery] = reactExports.useState("");
+  const [searchResults, setSearchResults] = reactExports.useState([]);
+  const [isSearching, setIsSearching] = reactExports.useState(false);
+  const fetchSchoolTypes = async () => {
+    setIsLoadingTypes(true);
+    const res = await dskpService.getSchoolTypes();
+    if (res.success && res.data) {
+      const sorted = res.data.sort((a, b) => {
+        if (a === "SK") return -1;
+        if (b === "SK") return 1;
         return a.localeCompare(b);
-      }
-      if (type === "grade") {
-        const getNum = (str) => {
-          const match = str.match(/\d+/);
-          return match ? parseInt(match[0]) : 999;
-        };
-        const numA = getNum(a);
-        const numB = getNum(b);
-        if (numA !== numB) return numA - numB;
-        return a.localeCompare(b);
-      }
-      return a.localeCompare(b);
-    });
-  };
-  const sortedTypes = reactExports.useMemo(() => sortKeys(Object.keys(structure), "schoolType"), [structure]);
-  const fetchSyncHistory = async () => {
-    const res = await dskpService.getSyncHistory();
-    if (res.success && res.data && res.data.length > 0) {
-      const latest = res.data[0];
-      setLastSync({
-        date: latest.timestamp,
-        count: latest.recordCount,
-        user: latest.userName
       });
+      setSchoolTypes(sorted);
     }
+    setIsLoadingTypes(false);
   };
   reactExports.useEffect(() => {
-    fetchStructure();
-    fetchSyncHistory();
+    fetchSchoolTypes();
   }, []);
   const handleSynced = () => {
-    localStorage.removeItem("dskp_structure");
-    fetchStructure(true);
-    fetchSyncHistory();
+    setYearsCache({});
+    setSubjectsCache({});
+    setStandardsCache({});
+    setExpandedType(null);
+    setExpandedYear(null);
+    setExpandedSubject(null);
+    fetchSchoolTypes();
   };
+  const toggleType = async (type) => {
+    if (expandedType === type) {
+      setExpandedType(null);
+      return;
+    }
+    setExpandedType(type);
+    setExpandedYear(null);
+    setExpandedSubject(null);
+    if (!yearsCache[type]) {
+      setLoadingYears(type);
+      const res = await dskpService.getYears(type);
+      if (res.success && res.data) {
+        const sorted = res.data.sort((a, b) => {
+          const numA = parseInt(a.replace(/\D/g, "")) || 99;
+          const numB = parseInt(b.replace(/\D/g, "")) || 99;
+          return numA - numB;
+        });
+        setYearsCache((prev) => ({ ...prev, [type]: sorted }));
+      }
+      setLoadingYears(null);
+    }
+  };
+  const toggleYear = async (year) => {
+    const type = expandedType;
+    if (!type) return;
+    const key = `${type}_${year}`;
+    if (expandedYear === year) {
+      setExpandedYear(null);
+      return;
+    }
+    setExpandedYear(year);
+    setExpandedSubject(null);
+    if (!subjectsCache[key]) {
+      setLoadingSubjects(key);
+      const res = await dskpService.getSubjects(type, year);
+      if (res.success && res.data) {
+        const sorted = res.data.sort((a, b) => a.title.localeCompare(b.title));
+        setSubjectsCache((prev) => ({ ...prev, [key]: sorted }));
+      }
+      setLoadingSubjects(null);
+    }
+  };
+  const toggleSubject = async (subject) => {
+    const type = expandedType;
+    const year = expandedYear;
+    if (!type || !year) return;
+    const key = `${type}_${year}_${subject}`;
+    if (expandedSubject === subject) {
+      setExpandedSubject(null);
+      return;
+    }
+    setExpandedSubject(subject);
+    setCurrentPage(1);
+    if (!standardsCache[key]) {
+      setLoadingStandards(key);
+      const res = await dskpService.getStandards(type, year, subject);
+      if (res.success && res.data) {
+        const sorted = res.data.sort(
+          (a, b) => a.contentStandard.localeCompare(b.contentStandard) || a.learningStandard.localeCompare(b.learningStandard)
+        );
+        setStandardsCache((prev) => ({ ...prev, [key]: sorted }));
+      }
+      setLoadingStandards(null);
+    }
+  };
+  const activeStandards = expandedType && expandedYear && expandedSubject ? standardsCache[`${expandedType}_${expandedYear}_${expandedSubject}`] || [] : [];
+  const totalPages = Math.ceil(activeStandards.length / ITEMS_PER_PAGE);
+  const paginatedStandards = activeStandards.slice((currentPage - 1) * ITEMS_PER_PAGE, currentPage * ITEMS_PER_PAGE);
   const handleSearch = async (e) => {
     e.preventDefault();
     if (!searchQuery.trim()) return;
     setIsSearching(true);
-    try {
-      const res = await dskpService.list({ search: searchQuery });
-      if (res.success && res.data) {
-        setSearchResults(res.data);
-      }
-    } catch (err) {
-      console.error("Search failed", err);
-    } finally {
-      setIsSearching(false);
-    }
+    const res = await dskpService.list({ search: searchQuery });
+    if (res.success && res.data) setSearchResults(res.data);
+    setIsSearching(false);
   };
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this standard? This action cannot be undone.")) return;
-    try {
-      const res = await dskpService.delete(id);
-      if (res.success) {
-        if (searchQuery) {
-          setSearchResults((prev) => prev.filter((item) => item.id !== id));
-        }
-        handleSynced();
-      } else {
-        alert("Failed to delete: " + res.message);
-      }
-    } catch (err) {
-      console.error("Delete failed", err);
+    if (!confirm("Delete this standard?")) return;
+    await dskpService.delete(id);
+    setSearchResults((prev) => prev.filter((i) => i.id !== id));
+    if (expandedType && expandedYear && expandedSubject) {
+      const key = `${expandedType}_${expandedYear}_${expandedSubject}`;
+      const newCache = { ...standardsCache };
+      delete newCache[key];
+      setStandardsCache(newCache);
+      toggleSubject(expandedSubject);
+      const res = await dskpService.getStandards(expandedType, expandedYear, expandedSubject);
+      if (res.success) setStandardsCache((prev) => ({ ...prev, [key]: res.data }));
     }
   };
-  const handleUpdate = async (updatedData) => {
-    if (!editingNode) return;
-    try {
-      const res = await dskpService.updateNode(editingNode.id, updatedData);
-      if (res.success) {
-        if (searchQuery) {
-          setSearchResults((prev) => prev.map(
-            (item) => item.id === editingNode.id ? { ...item, ...updatedData } : item
-          ));
-        }
-        handleSynced();
-        setEditingNode(null);
-      } else {
-        alert("Failed to update: " + res.message);
-      }
-    } catch (err) {
-      console.error("Update failed", err);
-    }
-  };
-  const toggleType = (type) => {
-    setExpandedTypes((prev) => prev.includes(type) ? prev.filter((t2) => t2 !== type) : [...prev, type]);
-  };
-  const toggleGrade = (type, grade) => {
-    const key = `${type}-${grade}`;
-    setExpandedGrades((prev) => prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]);
-  };
-  const toggleSubject = async (type, grade, subject) => {
-    const key = `${type}-${grade}-${subject}`;
-    const isExpanding = !expandedSubjects.includes(key);
-    setExpandedSubjects((prev) => isExpanding ? [...prev, key] : prev.filter((k) => k !== key));
-    if (isExpanding && !loadedData[key]) {
-      setLoadingNode(key);
-      try {
-        const res = await dskpService.list({ schoolType: type, grade, subject });
-        if (res.success) {
-          setLoadedData((prev) => ({ ...prev, [key]: res.data }));
-        }
-      } catch (e) {
-        console.error("Failed to load subject data", e);
-      } finally {
-        setLoadingNode(null);
-      }
-    }
-  };
-  const renderTable = (data) => /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "overflow-x-auto", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("table", { className: "w-full text-sm text-left", children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsx("thead", { className: "bg-slate-50 text-slate-500 uppercase text-[9px] font-black tracking-widest border-b border-slate-100", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "p-3 w-1/3", children: "Content Standard" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "p-3 w-1/3", children: "Learning Standard" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "p-3 w-1/3", children: "Metadata" }),
-      isSuperAdmin && /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "p-3 w-10", children: "Actions" })
-    ] }) }),
-    /* @__PURE__ */ jsxRuntimeExports.jsx("tbody", { className: "divide-y divide-slate-50", children: data.map((std, i) => /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { className: "hover:bg-slate-50 transition-colors", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "p-3 align-top font-bold text-slate-700 text-xs", children: std.contentStandard }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "p-3 align-top text-slate-600 text-xs", children: std.learningStandard }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "p-3 align-top text-xs", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1", children: [
-        std.tema && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-slate-500", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-bold text-blue-600", children: "Tema:" }),
-          " ",
-          std.tema
-        ] }),
-        std.tajuk && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-slate-500", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-bold text-emerald-600", children: "Tajuk:" }),
-          " ",
-          std.tajuk
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "text-[10px] text-slate-400 mt-1", children: [
-          std.grade,
-          " • ",
-          std.subject
-        ] })
-      ] }) }),
-      isSuperAdmin && /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "p-3 align-top", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex gap-2", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: () => setEditingNode(std), className: "p-1.5 hover:bg-blue-100 text-blue-600 rounded-lg transition-colors", title: "Edit", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Pen, { className: "w-3 h-3" }) }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: () => handleDelete(std.id), className: "p-1.5 hover:bg-red-100 text-red-600 rounded-lg transition-colors", title: "Delete", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Trash2, { className: "w-3 h-3" }) })
-      ] }) })
-    ] }, std.id || i)) })
-  ] }) });
   return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-6 max-w-7xl mx-auto p-4 md:p-8 animate-in fade-in duration-500", children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col gap-4", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col md:flex-row justify-between items-start md:items-center gap-4", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-3xl font-black text-slate-800 tracking-tight", children: t("dskp_management") }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-500 text-sm font-medium", children: "Full Registry Hierarchy" })
-        ] }),
-        isSuperAdmin && /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { onClick: () => setIsSyncModalOpen(true), className: "rounded-xl shadow-lg shadow-blue-500/20 px-8", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx(Upload, { className: "w-4 h-4 mr-2" }),
-          " Map & Sync Registry"
-        ] })
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex flex-col md:flex-row justify-between items-center gap-4", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h2", { className: "text-3xl font-black text-slate-800 tracking-tight", children: t("dskp_management") }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-slate-500 text-sm font-medium", children: "Hierarchical Registry Explorer" })
       ] }),
-      isSuperAdmin && /* @__PURE__ */ jsxRuntimeExports.jsxs("form", { onSubmit: handleSearch, className: "relative w-full max-w-2xl", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "input",
-          {
-            type: "text",
-            placeholder: "Search content, learning standards or subjects...",
-            value: searchQuery,
-            onChange: (e) => {
-              setSearchQuery(e.target.value);
-              if (!e.target.value) setSearchResults([]);
-            },
-            className: "w-full pl-10 pr-4 py-3 rounded-2xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all font-medium text-slate-600 placeholder:text-slate-400"
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Search, { className: "w-5 h-5 text-slate-400 absolute left-3 top-3.5" }),
-        searchQuery && /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "button",
-          {
-            type: "button",
-            onClick: () => {
-              setSearchQuery("");
-              setSearchResults([]);
-            },
-            className: "absolute right-3 top-3.5 text-slate-400 hover:text-slate-600",
-            children: /* @__PURE__ */ jsxRuntimeExports.jsx(X, { className: "w-5 h-5" })
-          }
-        ),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("button", { type: "submit", className: "hidden", children: "Search" })
-      ] })
+      isSuperAdmin && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex gap-2", children: /* @__PURE__ */ jsxRuntimeExports.jsxs(Button, { onClick: () => setIsSyncModalOpen(true), className: "rounded-xl shadow-lg shadow-blue-500/20 px-6", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(Upload, { className: "w-4 h-4 mr-2" }),
+        " Sync Registry"
+      ] }) })
     ] }),
-    searchQuery ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4 animate-in fade-in duration-300", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "font-bold text-slate-800 text-lg", children: "Search Results" }),
-      isSearching ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-20 text-center", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "w-8 h-8 animate-spin mx-auto text-blue-500 mb-4" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs font-bold text-slate-400", children: "Searching..." })
-      ] }) : searchResults.length > 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx(Card, { className: "overflow-hidden border-slate-100 rounded-3xl shadow-sm bg-white", children: renderTable(searchResults) }) : /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-12 text-center text-slate-400 font-bold border-2 border-dashed border-slate-200 rounded-3xl", children: [
-        'No results for "',
-        searchQuery,
-        '"'
-      ] })
-    ] }) : /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4", children: [
-      lastSync && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex justify-end animate-in fade-in slide-in-from-top-2", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-slate-100 px-4 py-1.5 rounded-full flex items-center gap-2 border border-slate-200 shadow-sm", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Clock, { className: "w-3.5 h-3.5 text-slate-400" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[10px] font-bold text-slate-500 uppercase tracking-wide", children: [
-          "Last Synced: ",
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-blue-600", children: new Date(lastSync.date).toLocaleString() }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-slate-300 mx-2", children: "|" }),
-          lastSync.user,
-          " (",
-          lastSync.count,
-          " records)"
-        ] })
-      ] }) }),
-      isLoadingStructure ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-20 text-center", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "w-8 h-8 animate-spin mx-auto text-blue-500 mb-4" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs font-bold text-slate-400 animate-pulse", children: "Building Hierarchy..." })
-      ] }) : Object.keys(structure).length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-20 text-center border-2 border-dashed border-slate-100 rounded-[2.5rem] bg-slate-50/50", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx(Database, { className: "w-12 h-12 text-slate-200 mx-auto mb-4" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-xl font-black text-slate-400 uppercase tracking-tight", children: "Registry Empty" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-sm font-medium text-slate-400 mt-2", children: [
-          "No DSKP standards found in the system.",
-          /* @__PURE__ */ jsxRuntimeExports.jsx("br", {}),
-          isSuperAdmin && "Click 'Map & Sync Registry' to import data."
-        ] })
-      ] }) : sortedTypes.map((type) => {
-        const grades = structure[type];
-        const sortedGrades = sortKeys(Object.keys(grades), "grade");
-        return /* @__PURE__ */ jsxRuntimeExports.jsxs(Card, { className: "overflow-hidden border-slate-100 rounded-3xl shadow-sm", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsxs(
-            "div",
-            {
-              onClick: () => toggleType(type),
-              className: "p-6 bg-slate-50 flex justify-between items-center cursor-pointer hover:bg-slate-100 transition-colors select-none",
-              children: [
-                /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-4", children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `p-3 rounded-2xl transition-colors ${expandedTypes.includes(type) ? "bg-blue-600 text-white" : "bg-white text-slate-400"}`, children: /* @__PURE__ */ jsxRuntimeExports.jsx(School, { className: "w-6 h-6" }) }),
-                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { className: "text-2xl font-black text-slate-800", children: [
-                      type,
-                      " DSKP"
-                    ] }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-xs font-bold text-slate-400 uppercase tracking-widest", children: [
-                      Object.keys(grades).length,
-                      " Grades Available"
-                    ] })
-                  ] })
-                ] }),
-                /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronDown, { className: `w-6 h-6 text-slate-400 transition-transform duration-300 ${expandedTypes.includes(type) ? "rotate-180" : ""}` })
-              ]
-            }
-          ),
-          expandedTypes.includes(type) && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-white border-t border-slate-100 divide-y divide-slate-100", children: sortedGrades.map((grade) => {
-            const subjects = grades[grade];
-            sortKeys([...subjects], "subject");
-            const gradeKey = `${type}-${grade}`;
-            const isGradeExpanded = expandedGrades.includes(gradeKey);
-            return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-              /* @__PURE__ */ jsxRuntimeExports.jsxs(
-                "div",
-                {
-                  onClick: () => toggleGrade(type, grade),
-                  className: "p-4 pl-10 flex justify-between items-center cursor-pointer hover:bg-slate-50 transition-colors select-none",
-                  children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3", children: [
-                      /* @__PURE__ */ jsxRuntimeExports.jsx(GraduationCap, { className: `w-5 h-5 ${isGradeExpanded ? "text-blue-500" : "text-slate-300"}` }),
-                      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: `text-sm font-bold ${isGradeExpanded ? "text-blue-600" : "text-slate-600"}`, children: grade }),
-                      /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "bg-slate-100 text-slate-500 text-[10px] font-black px-2 py-0.5 rounded-md", children: [
-                        subjects.length,
-                        " Subjects"
-                      ] })
-                    ] }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronDown, { className: `w-4 h-4 text-slate-300 transition-transform duration-300 ${isGradeExpanded ? "rotate-180" : ""}` })
-                  ]
-                }
-              ),
-              isGradeExpanded && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-slate-50/50 pl-16 pr-4 py-2 space-y-2 border-t border-slate-100", children: subjects.map((subject) => {
-                const subjectKey = `${type}-${grade}-${subject}`;
-                const isSubjectExpanded = expandedSubjects.includes(subjectKey);
-                const data = loadedData[subjectKey] || [];
-                const isLoading = loadingNode === subjectKey;
-                return /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-2xl border border-slate-100 overflow-hidden shadow-sm", children: [
-                  /* @__PURE__ */ jsxRuntimeExports.jsxs(
-                    "div",
-                    {
-                      onClick: () => toggleSubject(type, grade, subject),
-                      className: "p-3 pl-4 flex justify-between items-center cursor-pointer hover:bg-blue-50/30 transition-colors select-none",
-                      children: [
-                        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3", children: [
-                          /* @__PURE__ */ jsxRuntimeExports.jsx(Book, { className: `w-4 h-4 ${isSubjectExpanded ? "text-blue-500" : "text-slate-300"}` }),
-                          /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: `text-sm font-bold ${isSubjectExpanded ? "text-slate-800" : "text-slate-600"}`, children: subject })
-                        ] }),
-                        isLoading ? /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "w-4 h-4 animate-spin text-blue-500" }) : /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronDown, { className: `w-4 h-4 text-slate-300 transition-transform duration-300 ${isSubjectExpanded ? "rotate-180" : ""}` })
-                      ]
-                    }
-                  ),
-                  isSubjectExpanded && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "border-t border-slate-100 animate-in slide-in-from-top-2 duration-300", children: isLoading ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-10 text-center", children: [
-                    /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "w-6 h-6 animate-spin mx-auto text-blue-500 mb-2" }),
-                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "text-xs font-bold text-slate-400", children: "Loading Standards..." })
-                  ] }) : data.length === 0 ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-8 text-center text-xs text-slate-400 italic", children: "No standards found." }) : renderTable(data) })
-                ] }, subjectKey);
-              }) })
-            ] }, gradeKey);
-          }) })
-        ] }, type);
-      })
-    ] }),
-    isSuperAdmin && /* @__PURE__ */ jsxRuntimeExports.jsxs(jsxRuntimeExports.Fragment, { children: [
+    /* @__PURE__ */ jsxRuntimeExports.jsxs("form", { onSubmit: handleSearch, className: "relative w-full max-w-xl", children: [
       /* @__PURE__ */ jsxRuntimeExports.jsx(
-        GoogleSheetSyncModal,
+        "input",
         {
-          isOpen: isSyncModalOpen,
-          onClose: () => setIsSyncModalOpen(false),
-          onSynced: handleSynced
+          className: "w-full pl-10 pr-4 py-3 rounded-2xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 font-medium text-slate-600",
+          placeholder: "Search standards...",
+          value: searchQuery,
+          onChange: (e) => {
+            setSearchQuery(e.target.value);
+            if (!e.target.value) setSearchResults([]);
+          }
         }
       ),
-      editingNode && /* @__PURE__ */ jsxRuntimeExports.jsx(
-        EditDSKPModal,
-        {
-          node: editingNode,
-          onClose: () => setEditingNode(null),
-          onUpdate: handleUpdate
-        }
-      )
-    ] })
-  ] });
-};
-const EditDSKPModal = ({ node, onClose, onUpdate }) => {
-  const [form, setForm] = reactExports.useState({
-    contentStandard: node.contentStandard || "",
-    learningStandard: node.learningStandard || "",
-    tema: node.tema || "",
-    tajuk: node.tajuk || ""
-  });
-  return /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-white rounded-3xl shadow-2xl w-full max-w-lg p-6 space-y-6", children: [
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-between items-center pb-4 border-b border-slate-100", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-xl font-bold text-slate-900", children: "Edit Standard" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("p", { className: "text-xs text-slate-400 font-mono", children: [
-          "ID: ",
-          node.id
-        ] })
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: onClose, className: "p-2 hover:bg-slate-100 rounded-full transition-colors", children: /* @__PURE__ */ jsxRuntimeExports.jsx(X, { className: "w-5 h-5 text-slate-400" }) })
+      /* @__PURE__ */ jsxRuntimeExports.jsx(Search, { className: "absolute left-3 top-3.5 w-5 h-5 text-slate-400" })
     ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "text-xs font-bold text-slate-500 uppercase", children: "Content Standard" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "textarea",
-          {
-            className: "w-full p-3 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-blue-500/20 outline-none",
-            rows: 3,
-            value: form.contentStandard,
-            onChange: (e) => setForm({ ...form, contentStandard: e.target.value })
-          }
-        )
+    searchQuery ? /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4", children: [
+      /* @__PURE__ */ jsxRuntimeExports.jsxs("h3", { className: "font-bold text-slate-800", children: [
+        "Search Results (",
+        searchResults.length,
+        ")"
       ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "text-xs font-bold text-slate-500 uppercase", children: "Learning Standard" }),
-        /* @__PURE__ */ jsxRuntimeExports.jsx(
-          "textarea",
-          {
-            className: "w-full p-3 rounded-xl border border-slate-200 text-sm focus:ring-2 focus:ring-blue-500/20 outline-none",
-            rows: 3,
-            value: form.learningStandard,
-            onChange: (e) => setForm({ ...form, learningStandard: e.target.value })
-          }
-        )
-      ] }),
-      /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "grid grid-cols-2 gap-4", children: [
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "text-xs font-bold text-slate-500 uppercase", children: "Tema" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "input",
-            {
-              className: "w-full p-3 rounded-xl border border-slate-200 text-sm outline-none",
-              value: form.tema,
-              onChange: (e) => setForm({ ...form, tema: e.target.value })
-            }
-          )
-        ] }),
-        /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-1", children: [
-          /* @__PURE__ */ jsxRuntimeExports.jsx("label", { className: "text-xs font-bold text-slate-500 uppercase", children: "Tajuk" }),
-          /* @__PURE__ */ jsxRuntimeExports.jsx(
-            "input",
-            {
-              className: "w-full p-3 rounded-xl border border-slate-200 text-sm outline-none",
-              value: form.tajuk,
-              onChange: (e) => setForm({ ...form, tajuk: e.target.value })
-            }
-          )
-        ] })
+      /* @__PURE__ */ jsxRuntimeExports.jsxs(Card, { className: "overflow-hidden rounded-3xl border-slate-100 shadow-sm bg-white p-4", children: [
+        searchResults.length === 0 && !isSearching ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-center text-slate-400 p-8", children: "No results found." }) : null,
+        /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "overflow-x-auto", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("table", { className: "w-full text-sm text-left", children: [
+          /* @__PURE__ */ jsxRuntimeExports.jsx("thead", { className: "bg-slate-50 text-slate-500 uppercase text-[9px] font-black tracking-widest", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "p-3", children: "Standard" }),
+            /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "p-3", children: "Details" })
+          ] }) }),
+          /* @__PURE__ */ jsxRuntimeExports.jsx("tbody", { className: "divide-y divide-slate-100", children: searchResults.map((s) => /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("td", { className: "p-3 align-top", children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "font-bold text-slate-700", children: s.contentStandard }),
+              /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-slate-500 text-xs", children: s.learningStandard })
+            ] }),
+            /* @__PURE__ */ jsxRuntimeExports.jsxs("td", { className: "p-3 align-top text-xs text-slate-400", children: [
+              s.subject,
+              " • ",
+              s.grade
+            ] })
+          ] }, s.id)) })
+        ] }) })
       ] })
+    ] }) : /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-4", children: [
+      isLoadingTypes && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-8 text-center text-slate-400", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "w-6 h-6 animate-spin mx-auto" }),
+        " Loading Registry..."
+      ] }),
+      !isLoadingTypes && schoolTypes.length === 0 && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "p-12 text-center border-2 border-dashed border-slate-200 rounded-[2.5rem] bg-slate-50", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsx(DatabaseZap, { className: "w-12 h-12 text-slate-300 mx-auto mb-4" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("h3", { className: "text-lg font-black text-slate-400", children: "Registry Empty" }),
+        /* @__PURE__ */ jsxRuntimeExports.jsx("p", { className: "text-xs text-slate-400 mb-4", children: "Sync data to build the hierarchy." })
+      ] }),
+      schoolTypes.map((type) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "border border-slate-100 rounded-3xl overflow-hidden bg-white shadow-sm transition-all", children: [
+        /* @__PURE__ */ jsxRuntimeExports.jsxs(
+          "div",
+          {
+            onClick: () => toggleType(type),
+            className: `p-5 flex items-center justify-between cursor-pointer hover:bg-slate-50 transition-colors ${expandedType === type ? "bg-slate-50" : ""}`,
+            children: [
+              /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-4", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `p-2.5 rounded-xl ${expandedType === type ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-500"}`, children: /* @__PURE__ */ jsxRuntimeExports.jsx(School, { className: "w-5 h-5" }) }),
+                /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-black text-slate-700 text-lg tracking-tight", children: type })
+              ] }),
+              expandedType === type ? /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronDown, { className: "w-5 h-5 text-slate-400" }) : /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronRight, { className: "w-5 h-5 text-slate-300" })
+            ]
+          }
+        ),
+        expandedType === type && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-slate-50/50 border-t border-slate-100 p-4 space-y-2 animate-in slide-in-from-top-2 duration-200", children: [
+          loadingYears === type && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-xs text-center text-slate-400 p-2", children: "Loading Years..." }),
+          yearsCache[type]?.map((year) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "border border-slate-100 rounded-2xl bg-white overflow-hidden", children: [
+            /* @__PURE__ */ jsxRuntimeExports.jsxs(
+              "div",
+              {
+                onClick: (e) => {
+                  e.stopPropagation();
+                  toggleYear(year);
+                },
+                className: `p-4 flex items-center justify-between cursor-pointer hover:bg-slate-50 ${expandedYear === year ? "bg-blue-50/30" : ""}`,
+                children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex items-center gap-3", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: `w-1.5 h-1.5 rounded-full ${expandedYear === year ? "bg-blue-500" : "bg-slate-300"}` }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-bold text-slate-700 text-sm", children: year })
+                  ] }),
+                  expandedYear === year ? /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronDown, { className: "w-4 h-4 text-slate-400" }) : /* @__PURE__ */ jsxRuntimeExports.jsx(ChevronRight, { className: "w-4 h-4 text-slate-300" })
+                ]
+              }
+            ),
+            expandedYear === year && /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "bg-slate-50 p-3 space-y-2 border-t border-slate-100 animate-in slide-in-from-top-1", children: [
+              loadingSubjects === `${type}_${year}` && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "text-[10px] text-center text-slate-400", children: "Loading Subjects..." }),
+              subjectsCache[`${type}_${year}`]?.map((sub) => /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "border border-slate-100 rounded-xl bg-white overflow-hidden", children: [
+                /* @__PURE__ */ jsxRuntimeExports.jsxs(
+                  "div",
+                  {
+                    onClick: (e) => {
+                      e.stopPropagation();
+                      toggleSubject(sub.title);
+                    },
+                    className: `p-3 flex items-center justify-between cursor-pointer hover:bg-slate-50 ${expandedSubject === sub.title ? "bg-indigo-50/30" : ""}`,
+                    children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("span", { className: "font-bold text-slate-600 text-xs ml-2", children: sub.title }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsxs("span", { className: "text-[10px] bg-slate-100 text-slate-500 px-2 py-0.5 rounded-full font-bold", children: [
+                        sub.count || "?",
+                        " SK"
+                      ] })
+                    ]
+                  }
+                ),
+                expandedSubject === sub.title && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "bg-white border-t border-slate-100 p-2 animate-in fade-in", children: loadingStandards === `${type}_${year}_${sub.title}` ? /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "p-8 text-center", children: /* @__PURE__ */ jsxRuntimeExports.jsx(LoaderCircle, { className: "w-5 h-5 animate-spin mx-auto text-indigo-500" }) }) : /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "space-y-3", children: [
+                  /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "overflow-x-auto rounded-lg border border-slate-100", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("table", { className: "w-full text-left text-xs", children: [
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("thead", { className: "bg-slate-50 text-slate-400 font-bold uppercase text-[9px]", children: /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "p-3 w-1/4", children: "Standard Kandungan (SK)" }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "p-3 w-1/4", children: "Standard Pembelajaran (SP)" }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "p-3 w-1/4", children: "Tema / Bidang" }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "p-3 w-1/4", children: "Tajuk" }),
+                      isSuperAdmin && /* @__PURE__ */ jsxRuntimeExports.jsx("th", { className: "p-3", children: "Act" })
+                    ] }) }),
+                    /* @__PURE__ */ jsxRuntimeExports.jsx("tbody", { className: "divide-y divide-slate-50", children: paginatedStandards.map((std, i) => /* @__PURE__ */ jsxRuntimeExports.jsxs("tr", { className: "hover:bg-slate-50", children: [
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "p-3 font-bold text-slate-600 align-top", children: std.contentStandard }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "p-3 text-slate-500 align-top", children: std.learningStandard }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "p-3 text-slate-500 align-top", children: std.tema || std.temaBidang || "-" }),
+                      /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "p-3 text-slate-500 align-top", children: std.tajuk || std.tajukKemahiran || "-" }),
+                      isSuperAdmin && /* @__PURE__ */ jsxRuntimeExports.jsx("td", { className: "p-3 align-top", children: /* @__PURE__ */ jsxRuntimeExports.jsx("button", { onClick: () => handleDelete(std.id), className: "text-red-400 hover:text-red-600", children: /* @__PURE__ */ jsxRuntimeExports.jsx(Trash2, { className: "w-3 h-3" }) }) })
+                    ] }, i)) })
+                  ] }) }),
+                  totalPages > 1 && /* @__PURE__ */ jsxRuntimeExports.jsx("div", { className: "flex justify-center gap-2 pt-2", children: Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                    let p = i + 1;
+                    if (currentPage > 3 && totalPages > 5) p = currentPage - 2 + i;
+                    if (p > totalPages) return null;
+                    return /* @__PURE__ */ jsxRuntimeExports.jsx(
+                      "button",
+                      {
+                        onClick: () => setCurrentPage(p),
+                        className: `w-8 h-8 rounded-lg text-xs font-bold ${currentPage === p ? "bg-indigo-600 text-white" : "bg-slate-100 text-slate-500 hover:bg-slate-200"}`,
+                        children: p
+                      },
+                      p
+                    );
+                  }) })
+                ] }) })
+              ] }, sub.id))
+            ] })
+          ] }, year))
+        ] })
+      ] }, type))
     ] }),
-    /* @__PURE__ */ jsxRuntimeExports.jsxs("div", { className: "flex justify-end gap-3 pt-4 border-t border-slate-100", children: [
-      /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { variant: "ghost", onClick: onClose, children: "Cancel" }),
-      /* @__PURE__ */ jsxRuntimeExports.jsx(Button, { onClick: () => onUpdate(form), children: "Save Changes" })
-    ] })
-  ] }) });
+    /* @__PURE__ */ jsxRuntimeExports.jsx(
+      GoogleSheetSyncModal,
+      {
+        isOpen: isSyncModalOpen,
+        onClose: () => setIsSyncModalOpen(false),
+        onSynced: () => {
+          handleSynced();
+          setIsSyncModalOpen(false);
+        }
+      }
+    )
+  ] });
 };
 const UserManagement = () => {
   const { t } = useLanguage();

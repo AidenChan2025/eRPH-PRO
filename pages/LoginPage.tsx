@@ -5,8 +5,7 @@ import { useGlobal, MOCK_USERS } from '../context/GlobalContext';
 import { useLanguage } from '../context/LanguageContext';
 import { UserRole, Language } from '../types';
 import {
-    auth, signInWithEmailAndPassword, signInWithGoogle, createUserWithEmailAndPassword, sendEmailVerification,
-    clearMockDb, setDbMode, getDbMode
+    auth, signInWithEmailAndPassword, signInWithGoogle, createUserWithEmailAndPassword, sendEmailVerification
 } from '../services/firebase';
 import {
     Trash2, Globe, ChevronDown, ArrowRight, Loader2,
@@ -155,13 +154,7 @@ const LoginPage = () => {
     const handleDemoLogin = async (userId: string) => {
         setIsLoggingIn(true);
         setError('');
-        setLoginStage('Configuring Sandbox Instance...');
-
-        if (getDbMode() !== 'mock') {
-            setLoginStage('Switching System Mode...');
-            setDbMode('mock');
-            return;
-        }
+        setLoginStage('Configuring Session...');
 
         const user = MOCK_USERS.find(u => u.id === userId);
         if (!user) {
@@ -171,6 +164,7 @@ const LoginPage = () => {
 
         try {
             setLoginStage(`Logging in as ${user.name}...`);
+            // Note: These demo accounts must exist in Firebase Auth
             await signInWithEmailAndPassword(auth, user.email, 'demo123');
             setLoginStage('Session Verified. Entering Workspace...');
             setCurrentUser(user);
@@ -178,14 +172,8 @@ const LoginPage = () => {
                 navigate('/portal');
             }, 1200);
         } catch (e) {
-            setError("Demo login failed. Cache might be corrupted.");
+            setError("Demo login failed. Account may not exist in live system.");
             setIsLoggingIn(false);
-        }
-    };
-
-    const handleFactoryReset = async () => {
-        if (window.confirm("This will clear local data and reset the system. Continue?")) {
-            await clearMockDb();
         }
     };
 
@@ -477,11 +465,8 @@ const LoginPage = () => {
 
                     </div>
 
-                    <div className="pt-8 border-t border-slate-100 flex justify-between items-center px-2">
+                    <div className="pt-8 border-t border-slate-100 flex justify-center items-center px-2">
                         <span className="text-[10px] text-slate-400 font-mono tracking-tight font-bold uppercase">Build v{APP_VERSION}</span>
-                        <button onClick={handleFactoryReset} disabled={isLoggingIn} className="text-[10px] text-slate-300 hover:text-red-500 flex items-center gap-1 font-black uppercase tracking-tighter disabled:opacity-50">
-                            <Trash2 className="w-3.5 h-3.5" /> Wipe Cache
-                        </button>
                     </div>
                 </div>
             </div>

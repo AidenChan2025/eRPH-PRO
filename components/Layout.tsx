@@ -6,12 +6,13 @@ import {
     LayoutDashboard, BookOpen, Calendar, Clock, FolderOpen,
     LogOut, Sparkles, Menu, Globe, Bell, ChevronDown,
     Building, User as UserIcon, CheckCircle, Users, ArrowRightLeft, Shield, Settings, CalendarRange, CheckSquare, X, PenTool, School, MapPin, ClipboardList, LibraryBig, Tag,
-    Lock, ShieldCheck, Zap, Newspaper, Mail
+    Lock, ShieldCheck, Zap, Newspaper, Mail, DatabaseZap
 } from 'lucide-react';
 import { UserRole, Language, Notification, User } from '../types';
 import { collection, query, where, getDocs, db, writeBatch, doc } from '../services/firebase';
 import Button from './Button';
 import { CoffeeModal } from './CoffeeModal';
+import { DbModeIndicator } from './DbModeIndicator';
 import { APP_VERSION } from '../src/config/version';
 
 interface SidebarProps {
@@ -28,26 +29,26 @@ const SidebarContent = ({ user, onLogout, t, onClose }: SidebarProps) => {
     const canSwitchMode = [UserRole.SCHOOL_ADMIN, UserRole.PRINCIPAL, UserRole.GPK, UserRole.GPK_1, UserRole.GPK_HEM, UserRole.GPK_KOKO, UserRole.SUPER_ADMIN].includes(user.role);
 
     const links = [
-        { path: '/', label: t('dashboard'), modes: ['admin', 'teacher'] },
-        { path: '/plans', label: t('my_lesson_plans'), modes: ['teacher'] },
-        { path: '/tasks', label: t('tasks'), modes: ['teacher'] },
-        { path: '/timetable', label: t('timetable'), modes: ['teacher'] },
-        { path: '/records', label: t('leave_management'), modes: ['teacher'] },
-        { path: '/references', label: t('references'), modes: ['teacher'] },
-        // DSKP is now accessible to all in both modes (Permissions handled inside component)
-        { path: '/dskp', label: t('dskp_management'), modes: ['admin', 'teacher'] },
-        { path: '/schools', label: t('school_list'), modes: ['admin'], onlyRoles: [UserRole.SUPER_ADMIN] },
-        { path: '/admin/articles', label: t('article_hub'), modes: ['admin'], onlyRoles: [UserRole.SUPER_ADMIN] },
-        { path: '/reviews', label: t('erph_approval'), modes: ['admin'], excludeRoles: [UserRole.SUPER_ADMIN] },
-        { path: '/records', label: t('leave_approvals'), modes: ['admin'], excludeRoles: [UserRole.SUPER_ADMIN] },
-        { path: '/users', label: t('manage_users'), modes: ['admin'] },
-        { path: '/security', label: t('security_center'), modes: ['admin'], onlyRoles: [UserRole.SUPER_ADMIN] },
-        { path: '/mailbox', label: t('admin_mailbox'), modes: ['admin'], onlyRoles: [UserRole.SUPER_ADMIN] },
-        { path: '/newsletter', label: t('broadcast'), modes: ['admin'], onlyRoles: [UserRole.SUPER_ADMIN] },
+        { path: '/', label: t('dashboard'), modes: ['admin', 'teacher'], icon: LayoutDashboard },
+        { path: '/plans', label: t('my_lesson_plans'), modes: ['teacher'], icon: BookOpen },
+        { path: '/tasks', label: t('tasks'), modes: ['teacher'], icon: ClipboardList },
+        { path: '/timetable', label: t('timetable'), modes: ['teacher'], icon: Calendar },
+        { path: '/records', label: t('leave_management'), modes: ['teacher'], icon: Clock },
+        { path: '/references', label: t('references'), modes: ['teacher'], icon: LibraryBig },
+        { path: '/dskp', label: t('dskp_management'), modes: ['admin', 'teacher'], icon: DatabaseZap },
+        { path: '/schools', label: t('school_list'), modes: ['admin'], onlyRoles: [UserRole.SUPER_ADMIN], icon: School },
+        { path: '/admin/articles', label: t('article_hub'), modes: ['admin'], onlyRoles: [UserRole.SUPER_ADMIN], icon: Newspaper },
+        { path: '/reviews', label: t('erph_approval'), modes: ['admin'], excludeRoles: [UserRole.SUPER_ADMIN], icon: CheckSquare },
+        { path: '/records', label: t('leave_approvals'), modes: ['admin'], excludeRoles: [UserRole.SUPER_ADMIN], icon: CalendarRange },
+        { path: '/users', label: t('manage_users'), modes: ['admin'], icon: Users },
+        { path: '/security', label: t('security_center'), modes: ['admin'], onlyRoles: [UserRole.SUPER_ADMIN], icon: ShieldCheck },
+        { path: '/mailbox', label: t('admin_mailbox'), modes: ['admin'], onlyRoles: [UserRole.SUPER_ADMIN], icon: Mail },
+        { path: '/newsletter', label: t('broadcast'), modes: ['admin'], onlyRoles: [UserRole.SUPER_ADMIN], icon: Zap },
         {
             path: '/settings',
             label: user.role === UserRole.SUPER_ADMIN ? t('system_settings') : t('school_settings'),
-            modes: ['admin']
+            modes: ['admin'],
+            icon: Settings
         },
     ];
 
@@ -73,13 +74,17 @@ const SidebarContent = ({ user, onLogout, t, onClose }: SidebarProps) => {
     };
 
     return (
-        <div className="h-full flex flex-col bg-[#0f172a]">
+        <div className="h-full flex flex-col bg-[#0f172a] text-slate-300 font-sans">
+            {/* Header */}
             <div className="p-6 flex justify-between items-center border-b border-slate-800/50">
-                <div className="flex items-center gap-2">
-                    <div className="p-1.5 bg-blue-600 rounded-lg shadow-lg shadow-blue-900/20">
+                <div className="flex items-center gap-3">
+                    <div className="p-2 bg-blue-600 rounded-xl shadow-lg shadow-blue-500/20">
                         <Sparkles className="w-5 h-5 text-white" />
                     </div>
-                    <h1 className="text-xl font-bold text-white tracking-tight">eRPH Pro</h1>
+                    <div>
+                        <h1 className="text-lg font-bold text-white tracking-tight leading-none">eRPH Pro</h1>
+                        <p className="text-[10px] font-medium text-slate-500 mt-1 uppercase tracking-wider">{getRoleLabel(user.role)}</p>
+                    </div>
                 </div>
                 {onClose && (
                     <button onClick={onClose} className="p-2 -mr-2 text-slate-400 hover:text-white transition-colors">
@@ -88,73 +93,81 @@ const SidebarContent = ({ user, onLogout, t, onClose }: SidebarProps) => {
                 )}
             </div>
 
-            <div className="px-6 py-5">
-                <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center font-bold text-white shadow-lg border border-white/10">
+            {/* User Profile Summary */}
+            <div className="px-5 py-6">
+                <div className="flex items-center gap-3 p-3 rounded-2xl bg-slate-800/30 border border-slate-700/50">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center font-bold text-white shadow-lg">
                         {user.name.charAt(0)}
                     </div>
-                    <div className="flex flex-col overflow-hidden">
+                    <div className="flex flex-col min-w-0">
                         <span className="text-sm font-bold text-white truncate">{user.name}</span>
-                        <div className="flex items-center gap-1.5 mt-0.5">
-                            <div className="px-2 py-0.5 rounded-full bg-slate-800 border border-slate-700 flex items-center gap-1">
-                                <Tag className="w-2.5 h-2.5 text-blue-400" />
-                                <span className="text-[10px] font-black uppercase text-slate-300 tracking-tighter">
-                                    {getRoleLabel(user.role)}
-                                </span>
-                            </div>
-                        </div>
+                        <span className="text-[10px] text-slate-400 truncate">{user.email}</span>
                     </div>
                 </div>
             </div>
 
+            {/* Role Switcher */}
             {canSwitchMode && (
-                <div className="px-6 mb-6">
-                    <div className="bg-slate-900/50 p-1.5 rounded-2xl flex gap-1.5 border border-slate-800/50">
+                <div className="px-5 mb-4">
+                    <div className="bg-slate-900 rounded-xl p-1 flex border border-slate-800">
                         <button
                             onClick={() => setViewMode('admin')}
-                            className={`flex-1 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all duration-300 ${viewMode === 'admin' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'text-slate-500 hover:text-slate-300 hover:bg-slate-800/50'}`}
+                            className={`flex-1 py-2 px-2 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all truncate
+                                ${viewMode === 'admin'
+                                    ? 'bg-blue-600 text-white shadow-md'
+                                    : 'text-slate-500 hover:text-slate-300 hover:bg-slate-800'}`}
                         >
-                            {getRoleLabel(user.role)}
+                            {t('admin_mode')}
                         </button>
                         <button
                             onClick={() => setViewMode('teacher')}
-                            className={`flex-1 py-2.5 rounded-xl text-[11px] font-black uppercase tracking-widest transition-all duration-300 ${viewMode === 'teacher' ? 'bg-blue-600 text-white shadow-lg shadow-blue-500/20' : 'text-slate-500 hover:text-slate-300 hover:bg-slate-800/50'}`}
+                            className={`flex-1 py-2 px-2 rounded-lg text-[10px] font-bold uppercase tracking-wider transition-all truncate
+                                ${viewMode === 'teacher'
+                                    ? 'bg-emerald-600 text-white shadow-md'
+                                    : 'text-slate-500 hover:text-slate-300 hover:bg-slate-800'}`}
                         >
-                            {t('role_teacher')}
+                            {t('teacher_mode')}
                         </button>
                     </div>
                 </div>
             )}
 
-            <nav className="flex-1 px-4 space-y-2 overflow-y-auto custom-scrollbar">
+            {/* Navigation */}
+            <nav className="flex-1 px-3 space-y-1.5 overflow-y-auto custom-scrollbar">
                 {displayLinks.map((link, idx) => {
                     const isActive = location.pathname === (link.path === '/' ? '/portal' : `/portal${link.path}`);
+                    const Icon = link.icon;
                     return (
                         <Link
                             key={`${link.path}-${idx}`}
                             to={`/portal${link.path === '/' ? '' : link.path}`}
                             onClick={onClose}
-                            className={`flex items-center px-6 py-4 md:py-3.5 rounded-xl transition-all duration-200 group ${isActive ? 'bg-blue-600/10 text-blue-500' : 'text-slate-400 hover:text-white'}`}
+                            className={`
+                                group flex items-center gap-3.5 px-4 py-3 rounded-xl transition-all duration-200
+                                ${isActive
+                                    ? 'bg-blue-600/10 text-blue-400 font-bold shadow-sm border border-blue-600/20'
+                                    : 'text-slate-400 hover:text-slate-100 hover:bg-slate-800/50 hover:border-slate-700/50 border border-transparent'}
+                            `}
                         >
-                            <span className={`text-sm md:text-[13px] font-black uppercase tracking-widest ${isActive ? 'translate-x-1' : 'group-hover:translate-x-1'} transition-transform duration-300`}>
-                                {link.label}
-                            </span>
+                            <Icon className={`w-5 h-5 transition-transform duration-300 ${isActive ? 'scale-110' : 'group-hover:scale-110'}`} />
+                            <span className="text-[13px] tracking-tight">{link.label}</span>
                         </Link>
                     );
                 })}
             </nav>
 
-            <div className="p-4 border-t border-slate-800/50">
+            {/* Footer */}
+            <div className="mt-auto p-4 mx-4 mb-4 border-t border-slate-800 space-y-2">
+                <DbModeIndicator />
                 <button
                     onClick={onLogout}
-                    className="flex items-center gap-3 text-slate-500 hover:text-white transition-colors w-full px-4 py-4 md:py-3 rounded-xl hover:bg-red-500/10 hover:text-red-400"
+                    className="flex items-center gap-3 w-full px-4 py-3 rounded-xl text-slate-400 hover:text-red-400 hover:bg-red-500/10 transition-all group"
                 >
-                    <LogOut className="w-5 h-5" />
-                    <span className="font-bold text-sm">{t('sign_out')}</span>
+                    <LogOut className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
+                    <span className="text-sm font-bold">{t('sign_out')}</span>
                 </button>
-                <div className="mt-4 pt-4 border-t border-slate-800/50 text-center space-y-1">
-                    <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">{t('powered_by')} Aiden Chan</p>
-                    <p className="text-[9px] text-slate-400 font-black uppercase tracking-[0.2em]">{t('system_version')}{APP_VERSION}</p>
+                <div className="pt-2 text-center">
+                    <p className="text-[9px] text-slate-600 font-bold uppercase tracking-widest">v{APP_VERSION}</p>
                 </div>
             </div>
         </div>
@@ -162,75 +175,17 @@ const SidebarContent = ({ user, onLogout, t, onClose }: SidebarProps) => {
 };
 
 export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const { currentUser, setCurrentUser, schools, isLocked, unlock } = useGlobal();
+    const { currentUser, setCurrentUser, schools } = useGlobal();
     const { t, language, setLanguage } = useLanguage();
     const [showLangMenu, setShowLangMenu] = useState(false);
     const [showNotifications, setShowNotifications] = useState(false);
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-    const [lockInput, setLockInput] = useState('');
-    const [lockError, setLockError] = useState(false);
 
-    useEffect(() => {
-        if (!currentUser) return;
-        const fetchNotifications = async () => {
-            const q = query(collection(db, 'notifications'), where('recipientId', '==', currentUser.id));
-            const snap = await getDocs(q);
-            setNotifications(snap.docs.map((d: any) => ({ id: d.id, ...d.data() } as Notification)).sort((a, b) => b.timestamp.localeCompare(a.timestamp)));
-        };
-        fetchNotifications();
-        const interval = setInterval(fetchNotifications, 60000);
-        return () => clearInterval(interval);
-    }, [currentUser]);
-
-    const handleUnlock = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (unlock(lockInput)) {
-            setLockInput('');
-            setLockError(false);
-        } else {
-            setLockError(true);
-            setLockInput('');
-        }
-    };
 
     if (!currentUser) return null;
 
-    if (isLocked) {
-        return (
-            <div className="fixed inset-0 z-[200] bg-slate-900 flex flex-col items-center justify-center p-6 text-white text-center">
-                <div className="max-w-md w-full space-y-8">
-                    <div className="relative inline-block">
-                        <div className="w-24 h-24 bg-blue-600 rounded-3xl flex items-center justify-center mx-auto shadow-2xl animate-pulse">
-                            <Lock className="w-10 h-10 text-white" />
-                        </div>
-                        <div className="absolute -top-2 -right-2 w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center border-4 border-slate-900">
-                            <ShieldCheck className="w-4 h-4" />
-                        </div>
-                    </div>
-                    <div>
-                        <h2 className="text-2xl font-black tracking-tight">{t('portal_locked')}</h2>
-                        <p className="text-slate-400 mt-2 text-sm">{t('locked_desc')}</p>
-                    </div>
-                    <form onSubmit={handleUnlock} className="space-y-4">
-                        <input
-                            type="password"
-                            className={`w-full bg-white/5 border-2 ${lockError ? 'border-red-500' : 'border-white/10'} rounded-2xl p-4 text-center text-2xl font-mono focus:border-blue-500 outline-none transition-all`}
-                            placeholder="••••••"
-                            value={lockInput}
-                            onChange={e => setLockInput(e.target.value)}
-                            autoFocus
-                        />
-                        {lockError && <p className="text-red-500 text-xs font-bold uppercase tracking-widest">{t('invalid_credentials')}</p>}
-                        <Button className="w-full h-14 rounded-2xl font-black text-lg shadow-xl shadow-blue-500/20" type="submit">{t('unlock_workspace')}</Button>
-                    </form>
-                    <button onClick={() => setCurrentUser(null)} className="text-slate-500 hover:text-white transition-colors text-xs font-bold uppercase tracking-widest flex items-center gap-2 mx-auto pt-4">
-                        <LogOut className="w-4 h-4" /> {t('switch_account')}
-                    </button>
-                </div>
-            </div>
-        );
-    }
+
 
     const currentSchool = schools.find(s => s.id === currentUser.schoolId);
     const unreadCount = notifications.filter(n => !n.isRead).length;

@@ -4,8 +4,10 @@ import { useGlobal } from '../../context/GlobalContext';
 import { useLanguage } from '../../context/LanguageContext';
 import Card from '../../components/Card';
 import Button from '../../components/Button';
-import { Shield, Globe, Mail, BarChart3, Database, Save, Server, Info, Search, BookOpen, Settings, Zap, RefreshCw, Send } from 'lucide-react';
+import { Shield, Globe, Mail, BarChart3, Database, Save, Server, Info, Search, BookOpen, Settings, Zap, RefreshCw, Send, AlertTriangle } from 'lucide-react';
 import { sendTestEmail } from '../../services/emailService';
+import { ReleaseLog } from '../../src/components/ReleaseLog';
+import { RELEASE_LOGS } from '../../src/lib/release_logs';
 
 export const SystemConfig = () => {
     const { t } = useLanguage();
@@ -132,6 +134,34 @@ export const SystemConfig = () => {
                     </div>
                 </Card>
 
+                {/* Database Tools */}
+                <Card className="p-8 rounded-3xl space-y-6">
+                    <div className="flex items-center gap-3 mb-2">
+                        <div className="p-2 bg-rose-50 rounded-xl text-rose-600"><Database className="w-5 h-5" /></div>
+                        <h3 className="font-black text-slate-800 uppercase tracking-tight">Database & Demo Tools</h3>
+                    </div>
+                    <div className="space-y-4">
+                        <p className="text-[10px] font-bold text-slate-400 uppercase leading-relaxed">Populate the system with fresh demo data for teachers and principals. This cleans old demo records first.</p>
+                        <Button
+                            variant="secondary"
+                            className="w-full border-rose-100 text-rose-600 hover:bg-rose-50 h-12 rounded-xl"
+                            onClick={async () => {
+                                if (confirm("This will overwrite existing demo records for u-teacher, u-principal, and u-admin. Continue?")) {
+                                    const { seed2026Data } = await import('../../utils/seeder');
+                                    await seed2026Data();
+                                    alert("Demo data re-seeded successfully!");
+                                }
+                            }}
+                        >
+                            <Zap className="w-4 h-4 mr-2" /> Re-seed Demo Data
+                        </Button>
+                        <div className="p-4 bg-rose-50 border border-rose-100 rounded-2xl flex gap-3">
+                            <AlertTriangle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
+                            <p className="text-[10px] font-bold text-rose-800 leading-normal uppercase">Use with caution. Only affects demo accounts. Real user data is never touched.</p>
+                        </div>
+                    </div>
+                </Card>
+
                 {/* SMTP / Email */}
                 <Card className="p-8 rounded-3xl space-y-6 lg:col-span-3">
                     <div className="flex justify-between items-center mb-2">
@@ -218,6 +248,11 @@ export const SystemConfig = () => {
                         </div>
                     </div>
                 </Card>
+            </div>
+
+            {/* RELEASE LOGS */}
+            <div className="pt-8 border-t border-slate-200">
+                <ReleaseLog logs={RELEASE_LOGS} />
             </div>
         </div>
     );
