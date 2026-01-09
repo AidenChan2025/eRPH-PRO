@@ -1,0 +1,65 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Helper: Check if user is authenticated
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // Helper: Get user data
+    function getUserData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
+    // Helper: Check for specific roles
+    function hasRole(role) {
+      return isSignedIn() && getUserData().role == role;
+    }
+
+    // 1. Users Collection: Users can read/write their own profile
+    match /users/{userId} {
+      allow read: if isSignedIn();
+      allow write: if request.auth.uid == userId;
+    }
+
+    // 2. Timetable Config: Teachers manage their own; Admins can view
+    match /users/{userId}/timetable_config/{slotId} {
+      allow read: if request.auth.uid == userId || hasRole('admin');
+      allow write: if request.auth.uid == userId;
+    }
+
+    // 3. DSKP Data: Global Read-Only
+    match /curriculum_dskp/{docId} {
+      allow read: if isSignedIn();
+      allow write: if false; // Only manageable via Firebase Console or Script
+    }
+
+    // 4. Lesson Records: The core logic
+    match /lesson_records/{recordId} {
+      // Record ID format: {teacherId}_{year}_{week}_{day}_{time}
+      // Only the teacher who owns the record or an Admin can read
+      allow read: if isSignedIn() && (recordId.startsWith(request.auth.uid) || hasRole('admin'));
+      
+      // Only the teacher can write their own lessons
+      allow create, update: if isSignedIn() && recordId.startsWith(request.auth.uid);
+      
+      // Prevent deletion of 'Approved' records (Integrity)
+      allow delete: if isSignedIn() && recordId.startsWith(request.auth.uid) && resource.data.status != 'Approved';
+    }
+
+    // 5. Weekly Submissions & Feedback
+    match /weekly_submissions/{submissionId} {
+      allow read: if isSignedIn() && (submissionId.startsWith(request.auth.uid) || hasRole('admin'));
+      
+      // Teachers can create/update their submissions
+      allow create: if isSignedIn() && submissionId.startsWith(request.auth.uid);
+      allow update: if isSignedIn() && (
+        // Teacher can update if not approved
+        (submissionId.startsWith(request.auth.uid) && resource.data.status != 'Approved') ||
+        // Admin can update ONLY the status and feedback fields
+        (hasRole('admin') && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'admin_feedback', 'approvedAt']))
+      );
+    }
+  }
+}

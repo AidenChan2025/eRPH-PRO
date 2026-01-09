@@ -28,6 +28,7 @@ import TaskManager from './pages/TaskManager';
 import UserProfile from './pages/UserProfile';
 import SecurityCenter from './pages/Portal/SecurityCenter';
 import TimetableManager from './pages/TimetableManager';
+import WeeklyPlanner from './pages/WeeklyPlanner';
 import ReferenceManager from './pages/ReferenceManager';
 import CalendarView from './pages/CalendarView';
 import { LeaveManagement } from './pages/Approval';
@@ -35,6 +36,9 @@ import { SchoolSettings, DSKPManager, UserManagement, SchoolManager, NewsletterM
 import { Mailbox } from './pages/Admin/Mailbox';
 import { SystemConfig } from './pages/Admin/SystemConfig';
 import ArticleManager from './pages/Admin/ArticleManager';
+import ReviewDashboard from './pages/Admin/ReviewDashboard';
+import SubmissionReview from './pages/Admin/SubmissionReview';
+import MonthlyReport from './pages/Admin/MonthlyReport';
 
 // Security Shell
 const SecurityShell: React.FC = () => {
@@ -130,6 +134,7 @@ const AppRoutes = () => {
 
             <Route path="/portal/tasks" element={<PrivateRoute><TaskManager /></PrivateRoute>} />
             <Route path="/portal/timetable" element={<PrivateRoute><TimetableManager /></PrivateRoute>} />
+            <Route path="/portal/weekly" element={<PrivateRoute><WeeklyPlanner /></PrivateRoute>} />
             <Route path="/portal/records" element={<PrivateRoute><LeaveManagement /></PrivateRoute>} />
             <Route path="/portal/references" element={<PrivateRoute><ReferenceManager /></PrivateRoute>} />
             <Route path="/portal/profile" element={<PrivateRoute><UserProfile /></PrivateRoute>} />
@@ -138,14 +143,19 @@ const AppRoutes = () => {
 
 
             {/* Unified Admin/SA Routes */}
+            {/* Unified Admin/SA Routes */}
             <Route path="/portal/users" element={<PrivateRoute><UserManagement /></PrivateRoute>} />
             <Route path="/portal/schools" element={<PrivateRoute><SchoolManager /></PrivateRoute>} />
-            <Route path="/portal/dskp" element={<PrivateRoute><DSKPManager /></PrivateRoute>} />
             <Route path="/portal/dskp" element={<PrivateRoute><DSKPManager /></PrivateRoute>} />
             <Route path="/portal/settings" element={<PrivateRoute><SettingsPage /></PrivateRoute>} />
             <Route path="/portal/mailbox" element={<PrivateRoute><Mailbox /></PrivateRoute>} />
             <Route path="/portal/newsletter" element={<PrivateRoute><NewsletterManager /></PrivateRoute>} />
             <Route path="/portal/admin/articles" element={<PrivateRoute><ArticleManager /></PrivateRoute>} />
+
+            {/* New Admin Reporting Routes */}
+            <Route path="/portal/admin/review" element={<PrivateRoute><ReviewDashboard /></PrivateRoute>} />
+            <Route path="/portal/admin/review/:teacherId/:year/:week" element={<PrivateRoute><SubmissionReview /></PrivateRoute>} />
+            <Route path="/portal/admin/reports" element={<PrivateRoute><MonthlyReport /></PrivateRoute>} />
 
             <Route path="*" element={<NotFoundPage />} />
         </Routes>

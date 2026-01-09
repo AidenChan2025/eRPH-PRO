@@ -34,6 +34,7 @@ const SidebarContent = ({ user, onLogout, t, onClose }: SidebarProps) => {
         { path: '/', label: t('dashboard'), modes: ['admin', 'teacher'], icon: LayoutDashboard },
 
         { path: '/tasks', label: t('tasks'), modes: ['teacher'], icon: ClipboardList },
+        { path: '/weekly', label: t('my_lesson_plans') || 'My Lesson Plans', modes: ['teacher'], icon: BookOpen },
         { path: '/timetable', label: t('timetable'), modes: ['teacher'], icon: Calendar },
         { path: '/records', label: t('leave_management'), modes: ['teacher'], icon: Clock },
         { path: '/references', label: t('references'), modes: ['teacher'], icon: LibraryBig },

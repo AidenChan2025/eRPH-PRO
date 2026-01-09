@@ -344,21 +344,53 @@ export interface DSKPRecord {
 }
 
 // Composite ID: {teacherId}_{year}_{week}_{day}
+// Composite ID: {teacherId}_{year}_{week}_{day}
 export interface LessonRecord {
   id: string;
   teacherId: string;
+  schoolId: string;
   classId: string;
   subjectId: string;
   date: string; // YYYY-MM-DD
+  startTime: string;
+  endTime: string;
   year: number;
   week: number;
   day: number; // 0-6
-  topic: string;
-  standardId: string; // Link to DSKP
-  objectives: string[];
-  activities: string[];
+
+  // DSKP References
+  theme?: string;
+  topic?: string;
+  contentStandard?: string; // SK
+  learningStandard?: string; // SP
+
+  objectives: string; // Changed to string for RichText
+  activities: string; // Changed to string for RichText
   reflection?: string;
+  abm?: string; // Alat Bantu Mengajar
+
   status: 'Draft' | 'Submitted' | 'Verified';
   createdAt: string;
   updatedAt: string;
+}
+
+export interface WeeklySubmission {
+  id: string; // Format: {teacherId}_{year}_{week}
+  teacherId: string;
+  schoolId: string;
+  year: number;
+  week: number;
+  startDate: string;
+  endDate: string;
+  status: 'Draft' | 'Pending' | 'Approved' | 'Rejected';
+  submittedAt?: string;
+  reviewedAt?: string;
+  reviewerId?: string;
+  comments?: string;
+
+  // Integrity & Audit
+  signatureUrl?: string;
+  signedAt?: string;
+  ipAddress?: string;
+  userAgent?: string;
 }
