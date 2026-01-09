@@ -7,6 +7,46 @@ export interface ChangeLogEntry {
 
 export const CHANGELOG: ChangeLogEntry[] = [
     {
+        version: "v1.1.6",
+        date: "Jan 09, 2026",
+        title: "Platform Enhancement",
+        items: [
+            "🚀 General performance optimizations and bug fixes.",
+            "🛡️ Security and stability improvements.",
+            "🔧 Minor UI refinements and infrastructure updates."
+        ]
+    },
+    {
+        version: "v1.1.5",
+        date: "Jan 09, 2026",
+        title: "Platform Enhancement",
+        items: [
+            "🚀 General performance optimizations and bug fixes.",
+            "🛡️ Security and stability improvements.",
+            "🔧 Minor UI refinements and infrastructure updates."
+        ]
+    },
+    {
+        version: "v1.1.4",
+        date: "Jan 09, 2026",
+        title: "Platform Enhancement",
+        items: [
+            "🚀 General performance optimizations and bug fixes.",
+            "🛡️ Security and stability improvements.",
+            "🔧 Minor UI refinements and infrastructure updates."
+        ]
+    },
+    {
+        version: "v1.1.3",
+        date: "Jan 09, 2026",
+        title: "Platform Enhancement",
+        items: [
+            "🚀 General performance optimizations and bug fixes.",
+            "🛡️ Security and stability improvements.",
+            "🔧 Minor UI refinements and infrastructure updates."
+        ]
+    },
+    {
         version: "v1.1.2",
         date: "Jan 09, 2026",
         title: "Platform Enhancement",

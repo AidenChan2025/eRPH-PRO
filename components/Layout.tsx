@@ -15,6 +15,7 @@ import { CoffeeModal } from './CoffeeModal';
 import { DbModeIndicator } from './DbModeIndicator';
 import { APP_VERSION } from '../src/config/version';
 import { useTranslation } from 'react-i18next';
+import { InternalEmailModal } from './modals/InternalEmailModal';
 
 interface SidebarProps {
     user: User;
@@ -176,7 +177,7 @@ const SidebarContent = ({ user, onLogout, t, onClose }: SidebarProps) => {
 };
 
 export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const { currentUser, setCurrentUser, schools } = useGlobal();
+    const { currentUser, setCurrentUser, schools, setIsEmailModalOpen } = useGlobal();
     const { t, language, setLanguage } = useLanguage();
     const [showLangMenu, setShowLangMenu] = useState(false);
     const [showNotifications, setShowNotifications] = useState(false);
@@ -320,16 +321,17 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
 
                     {/* Support Button (Floating) - Exclude Super Admin */}
                     {currentUser.role !== UserRole.SUPER_ADMIN && (
-                        <a
-                            href="mailto:support@erphpro.com?subject=Support Request"
+                        <button
+                            onClick={() => setIsEmailModalOpen(true)}
                             className="fixed bottom-8 right-8 z-50 p-4 bg-slate-900 text-white rounded-full shadow-2xl hover:scale-110 transition-transform flex items-center gap-2 group border-4 border-white"
                             title={t('contact_support')}
                         >
                             <Mail className="w-6 h-6" />
                             <span className="max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-300 font-bold whitespace-nowrap px-0 group-hover:px-2">{t('contact_support')}</span>
-                        </a>
+                        </button>
                     )}
                 </main>
+                <InternalEmailModal />
             </div>
         </div>
     );

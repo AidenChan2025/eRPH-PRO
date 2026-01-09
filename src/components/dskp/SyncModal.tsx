@@ -126,7 +126,7 @@ export const SyncModal = ({ isOpen, onClose, onSynced }: { isOpen: boolean; onCl
 
     return (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/70 backdrop-blur-md animate-in fade-in duration-300">
-            <Card className="w-full max-w-5xl shadow-2xl overflow-hidden border-0 rounded-[2.5rem] max-h-[90vh] flex flex-col bg-white">
+            <div className="w-full max-w-5xl shadow-2xl overflow-hidden border-0 rounded-[2.5rem] max-h-[90vh] flex flex-col bg-white">
                 {/* Header */}
                 <div className="p-8 border-b flex justify-between items-center bg-slate-50/50">
                     <div className="flex items-center gap-4">
@@ -241,7 +241,7 @@ export const SyncModal = ({ isOpen, onClose, onSynced }: { isOpen: boolean; onCl
                         </div>
                     )}
                 </div>
-            </Card>
+            </div>
         </div>
     );
 };

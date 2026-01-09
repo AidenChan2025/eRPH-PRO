@@ -140,7 +140,8 @@ interface GlobalContextType {
     refreshGlobalData: () => Promise<void>;
     viewMode: 'admin' | 'teacher';
     setViewMode: React.Dispatch<React.SetStateAction<'admin' | 'teacher'>>;
-
+    isEmailModalOpen: boolean;
+    setIsEmailModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const GlobalContext = createContext<GlobalContextType | undefined>(undefined);
@@ -155,6 +156,7 @@ export const GlobalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const [currentUser, setCurrentUser] = useState<User | null>(null);
     const [schools, setSchools] = useState<School[]>([]);
     const [viewMode, setViewMode] = useState<'admin' | 'teacher'>('teacher');
+    const [isEmailModalOpen, setIsEmailModalOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [isSeeding, setIsSeeding] = useState(false);
     const hasAttemptedSeed = useRef(false);
@@ -247,7 +249,8 @@ export const GlobalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
         <GlobalContext.Provider value={{
             currentUser, setCurrentUser, schools, setSchools,
             sendNotification, sendEmailNotification, getAcademicWeek, refreshGlobalData,
-            isLoading, isSeeding, seedDatabase, logout, viewMode, setViewMode
+            isLoading, isSeeding, seedDatabase, logout, viewMode, setViewMode,
+            isEmailModalOpen, setIsEmailModalOpen
         }}>
             {children}
         </GlobalContext.Provider>

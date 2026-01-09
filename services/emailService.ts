@@ -1,11 +1,23 @@
 
-import { db, setDoc, doc } from './firebase';
+import { db, setDoc, doc, collection } from './firebase';
+import { addDoc } from 'firebase/firestore';
 
 export interface EmailData {
     to: string | string[];
     subject: string;
     text?: string;
     html?: string;
+}
+
+export interface SupportTicket {
+    senderId: string;
+    senderName: string;
+    senderEmail: string;
+    recipient: string; // usually 'support@erphpro.com'
+    subject: string;
+    messageBody: string;
+    timestamp: string;
+    status: 'pending' | 'in-progress' | 'resolved';
 }
 
 /**
@@ -49,6 +61,28 @@ export const sendEmail = async (data: EmailData) => {
         return true;
     } catch (error) {
         console.error("[Email Service] Failed to dispatch:", error);
+        return false;
+    }
+};
+
+/**
+ * Creates a new support ticket in the 'support_tickets' collection.
+ * This is an internal messaging system.
+ */
+export const sendSupportTicket = async (ticket: Omit<SupportTicket, 'timestamp' | 'status'>) => {
+    try {
+        const newTicket: SupportTicket = {
+            ...ticket,
+            timestamp: new Date().toISOString(),
+            status: 'pending'
+        };
+
+        await addDoc(collection(db, 'support_tickets'), newTicket);
+
+        console.log('🎫 [Support Ticket] Created:', newTicket);
+        return true;
+    } catch (error) {
+        console.error("[Support Ticket] Failed to create:", error);
         return false;
     }
 };
