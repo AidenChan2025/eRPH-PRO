@@ -23,15 +23,14 @@ import Pricing from './pages/Website/Pricing';
 // Private Portal Pages
 import LoginPage from './pages/LoginPage';
 import Dashboard from './pages/Dashboard';
-import LessonPlanList from './pages/LessonPlanList';
-import LessonPlanEditor from './pages/LessonPlanEditor';
+
 import TaskManager from './pages/TaskManager';
 import UserProfile from './pages/UserProfile';
 import SecurityCenter from './pages/Portal/SecurityCenter';
 import TimetableManager from './pages/TimetableManager';
 import ReferenceManager from './pages/ReferenceManager';
 import CalendarView from './pages/CalendarView';
-import { LeaveManagement, ReviewDashboard } from './pages/Approval';
+import { LeaveManagement } from './pages/Approval';
 import { SchoolSettings, DSKPManager, UserManagement, SchoolManager, NewsletterManager } from './pages/Admin';
 import { Mailbox } from './pages/Admin/Mailbox';
 import { SystemConfig } from './pages/Admin/SystemConfig';
@@ -128,9 +127,7 @@ const AppRoutes = () => {
             <Route path="/portal/login" element={<LoginPage />} />
 
             <Route path="/portal" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
-            <Route path="/portal/plans" element={<PrivateRoute><LessonPlanList /></PrivateRoute>} />
-            <Route path="/portal/plans/new" element={<PrivateRoute><LessonPlanEditor /></PrivateRoute>} />
-            <Route path="/portal/plans/:id" element={<PrivateRoute><LessonPlanEditor /></PrivateRoute>} />
+
             <Route path="/portal/tasks" element={<PrivateRoute><TaskManager /></PrivateRoute>} />
             <Route path="/portal/timetable" element={<PrivateRoute><TimetableManager /></PrivateRoute>} />
             <Route path="/portal/records" element={<PrivateRoute><LeaveManagement /></PrivateRoute>} />
@@ -138,7 +135,7 @@ const AppRoutes = () => {
             <Route path="/portal/profile" element={<PrivateRoute><UserProfile /></PrivateRoute>} />
             <Route path="/portal/security" element={<PrivateRoute>{currentUser?.role === UserRole.SUPER_ADMIN ? <SecurityCenter /> : <Navigate to="/portal" />}</PrivateRoute>} />
             <Route path="/portal/calendar" element={<PrivateRoute><CalendarView /></PrivateRoute>} />
-            <Route path="/portal/reviews" element={<PrivateRoute><ReviewDashboard /></PrivateRoute>} />
+
 
             {/* Unified Admin/SA Routes */}
             <Route path="/portal/users" element={<PrivateRoute><UserManagement /></PrivateRoute>} />

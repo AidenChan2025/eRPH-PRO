@@ -49,7 +49,7 @@ export const dskpFetcher = {
             const snap = await getDoc(docRef);
             if (snap.exists()) {
                 const data = snap.data();
-                return { success: true, data: data.standards as DSKPStandard[] };
+                return { success: true, data: (data as any).standards as DSKPStandard[] };
             }
             return { success: false, error: "Subject not found" };
 

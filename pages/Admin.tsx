@@ -19,12 +19,12 @@ import {
 } from '../services/firebase';
 import { api } from '../services/api';
 
-import { DSKPStandard, UserRole, School, User, SchoolType, AcademicWeek, LessonStatus, DSKPStructure } from '../types';
+import { DSKPStandard, UserRole, School, User, SchoolType, AcademicWeek, DSKPStructure } from '../types';
 import { useTranslation } from 'react-i18next';
 
 // --- SCHOOL SETTINGS COMPONENT ---
 export const SchoolSettings = () => {
-        const { t } = useLanguage();
+    const { t } = useLanguage();
     const { currentUser, schools, refreshGlobalData } = useGlobal();
     const [isSaving, setIsSaving] = useState(false);
     const [school, setSchool] = useState<School | null>(null);
@@ -165,7 +165,7 @@ export const SchoolSettings = () => {
 
 export { DSKPContainer as DSKPManager } from '../src/pages/dskp/DSKPContainer';
 export const UserManagement = () => {
-        const { t } = useLanguage();
+    const { t } = useLanguage();
     const { currentUser } = useGlobal();
     const [users, setUsers] = useState<User[]>([]);
     const [isLoading, setIsLoading] = useState(false);
@@ -202,7 +202,7 @@ export const UserManagement = () => {
 
 // --- REMAINING ADMIN COMPONENTS ---
 export const TransferMarketplace = () => {
-        const { t } = useLanguage();
+    const { t } = useLanguage();
     return (
         <div className="space-y-6 max-w-4xl mx-auto p-6">
             <div className="text-center py-20 bg-white rounded-3xl border border-dashed border-slate-200 shadow-inner">
@@ -216,7 +216,7 @@ export const TransferMarketplace = () => {
 };
 
 export const YearlyPlanManager = () => {
-        const { t } = useLanguage();
+    const { t } = useLanguage();
     return (
         <div className="space-y-6 max-w-4xl mx-auto p-6">
             <div className="flex justify-between items-center">
@@ -229,7 +229,7 @@ export const YearlyPlanManager = () => {
 };
 
 export const NewsletterManager = () => {
-        const { t } = useLanguage();
+    const { t } = useLanguage();
     const [loading, setLoading] = useState(false);
     const [form, setForm] = useState({
         subject: '',
@@ -328,7 +328,7 @@ export const NewsletterManager = () => {
     );
 };
 const AddSchoolModal = ({ isOpen, onClose, onAdded }: { isOpen: boolean, onClose: () => void, onAdded: () => void }) => {
-        const { t } = useLanguage();
+    const { t } = useLanguage();
     const [step, setStep] = useState(1);
     const [isAdminCheckLoading, setIsAdminCheckLoading] = useState(false);
     const [adminStatus, setAdminStatus] = useState<'idle' | 'found' | 'not_found'>('idle');
@@ -477,7 +477,7 @@ const AddSchoolModal = ({ isOpen, onClose, onAdded }: { isOpen: boolean, onClose
     );
 };
 export const SchoolManager = () => {
-        const { t } = useLanguage();
+    const { t } = useLanguage();
     const { schools } = useGlobal();
     // Wait, useGlobal typically exposes schools. refresh might need implementation or local fetch. 
     // Let's implement local fetch for now to be safe, or just accept global update lag.

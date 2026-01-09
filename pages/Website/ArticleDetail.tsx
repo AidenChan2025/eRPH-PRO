@@ -203,9 +203,9 @@ const ArticleReader = () => {
                                         "Automating DSKP Mapping for SJKC",
                                         "The Economics of Digital Schooling",
                                         "KSSM Standard 4 Physics: AI Insights"
-                                    ].map((t, i) => (
+                                    ].map((title, i) => (
                                         <Link key={i} to={`/blog`} className="block group">
-                                            <p className="text-sm font-black text-slate-800 group-hover:text-blue-600 transition-colors leading-snug">{t}</p>
+                                            <p className="text-sm font-black text-slate-800 group-hover:text-blue-600 transition-colors leading-snug">{title}</p>
                                             <p className="text-[10px] font-bold text-slate-400 uppercase mt-1">{t('april20254MinRead')}</p>
                                         </Link>
                                     ))}

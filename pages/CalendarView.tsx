@@ -4,7 +4,7 @@ import { useGlobal } from '../context/GlobalContext';
 import { useLanguage } from '../context/LanguageContext';
 import Card from '../components/Card';
 import Button from '../components/Button';
-import { CalendarEvent, LessonPlan, Task, LeaveRecord, UserRole } from '../types';
+import { CalendarEvent, Task, LeaveRecord, UserRole } from '../types';
 import { collection, query, where, getDocs, db, setDoc, doc, deleteDoc } from '../services/firebase';
 import {
     ChevronLeft, ChevronRight, Plus, Calendar as CalendarIcon,
@@ -13,7 +13,7 @@ import {
 import { ACADEMIC_CALENDAR_2026, SCHOOL_HOLIDAYS_2026, SchoolGroup } from '../utils/academicCalendar';
 import { useTranslation } from 'react-i18next';
 
-type EventType = 'rph' | 'task' | 'leave' | 'event' | 'holiday' | 'term';
+type EventType = 'task' | 'leave' | 'event' | 'holiday' | 'term';
 
 interface UnifiedEvent {
     id: string;
@@ -26,7 +26,7 @@ interface UnifiedEvent {
 }
 
 const CalendarView = () => {
-        const { t } = useLanguage();
+    const { t } = useLanguage();
     const { currentUser, schools } = useGlobal();
     const [currentDate, setCurrentDate] = useState(new Date());
     const [selectedDate, setSelectedDate] = useState<string | null>(null);
@@ -103,18 +103,7 @@ const CalendarView = () => {
                 });
             });
 
-            let rphQ;
-            if (currentUser.role === UserRole.TEACHER) {
-                // Modified: Order by date to ensure consistency if needed, though we push to array
-                rphQ = query(collection(db, 'lessonPlans'), where('teacherId', '==', currentUser.id), where('schoolId', '==', schoolId));
-            } else {
-                rphQ = query(collection(db, 'lessonPlans'), where('schoolId', '==', schoolId));
-            }
-            const rphSnap = await getDocs(rphQ);
-            rphSnap.docs.forEach((d: any) => {
-                const data = d.data() as LessonPlan;
-                eventsList.push({ id: d.id, title: `${data.subject} (${data.className})`, date: data.date, type: 'rph', details: data.topic, meta: data });
-            });
+
 
             const taskQ = query(collection(db, 'tasks'), where('assigneeId', '==', currentUser.id));
             const taskSnap = await getDocs(taskQ);
@@ -199,7 +188,7 @@ const CalendarView = () => {
 
     const getTypeColor = (type: EventType) => {
         switch (type) {
-            case 'rph': return 'bg-green-100 text-green-700 border-green-200';
+
             case 'task': return 'bg-amber-100 text-amber-700 border-amber-200';
             case 'leave': return 'bg-purple-100 text-purple-700 border-purple-200';
             case 'holiday': return 'bg-red-100 text-red-700 border-red-200';

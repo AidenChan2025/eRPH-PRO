@@ -8,7 +8,7 @@ export const userService = {
     getProfile: async (uid: string) => {
         const snap = await getDoc(doc(db, COLLECTION, uid));
         if (snap.exists()) {
-            return { success: true, data: { ...(snap.data() || {}), id: uid } };
+            return { success: true, data: { ...(snap.data() as any), id: uid } };
         }
         return { success: false, message: 'User not found' };
     },

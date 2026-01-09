@@ -32,7 +32,7 @@ const SidebarContent = ({ user, onLogout, t, onClose }: SidebarProps) => {
 
     const links = [
         { path: '/', label: t('dashboard'), modes: ['admin', 'teacher'], icon: LayoutDashboard },
-        { path: '/plans', label: t('my_lesson_plans'), modes: ['teacher'], icon: BookOpen },
+
         { path: '/tasks', label: t('tasks'), modes: ['teacher'], icon: ClipboardList },
         { path: '/timetable', label: t('timetable'), modes: ['teacher'], icon: Calendar },
         { path: '/records', label: t('leave_management'), modes: ['teacher'], icon: Clock },
@@ -40,7 +40,7 @@ const SidebarContent = ({ user, onLogout, t, onClose }: SidebarProps) => {
         { path: '/dskp', label: t('dskp_management'), modes: ['admin', 'teacher'], icon: DatabaseZap },
         { path: '/schools', label: t('school_list'), modes: ['admin'], onlyRoles: [UserRole.SUPER_ADMIN], icon: School },
         { path: '/admin/articles', label: t('article_hub'), modes: ['admin'], onlyRoles: [UserRole.SUPER_ADMIN], icon: Newspaper },
-        { path: '/reviews', label: t('erph_approval'), modes: ['admin'], excludeRoles: [UserRole.SUPER_ADMIN], icon: CheckSquare },
+
         { path: '/records', label: t('leave_approvals'), modes: ['admin'], excludeRoles: [UserRole.SUPER_ADMIN], icon: CalendarRange },
         { path: '/users', label: t('manage_users'), modes: ['admin'], icon: Users },
         { path: '/security', label: t('security_center'), modes: ['admin'], onlyRoles: [UserRole.SUPER_ADMIN], icon: ShieldCheck },

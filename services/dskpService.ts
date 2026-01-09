@@ -325,7 +325,7 @@ export const dskpService = {
         }
     },
 
-    // Get Options (Used by LessonPlanEditor)
+    // Get Options
     getOptions: async () => {
         try {
             // For now, fallback to the old structure doc for options to keep it fast

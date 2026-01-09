@@ -148,40 +148,7 @@ export interface User {
   google_token?: string;
 }
 
-export enum LessonStatus {
-  DRAFT = 'Draft',
-  SUBMITTED = 'Submitted',
-  APPROVED = 'Approved',
-  REJECTED = 'Rejected'
-}
 
-export interface LessonPlan {
-  id: string;
-  schoolId: string;
-  teacherId: string;
-  teacherName: string;
-  subject: string;
-  grade: string;
-  className?: string;
-  time?: string;
-  topic: string;
-  date: string;
-  contentStandard?: string;
-  learningStandard?: string;
-  objectives: string[];
-  successCriteria: string[];
-  activities: string[];
-  teachingAids: string[];
-  pak21: string[];
-  assessment: string[];
-  reflection?: string;
-  status: LessonStatus;
-  version: number;
-  updatedAt: string;
-  hots?: string[];
-  civicValues?: string;
-  history?: LessonPlan[];
-}
 
 export enum TaskStatus {
   PENDING = 'Pending',
@@ -290,12 +257,7 @@ export interface TimetableTemplate {
   slots: TimetableSlot[];
 }
 
-export interface LessonTemplate {
-  id: string;
-  name: string;
-  subject: string;
-  grade: string;
-}
+
 
 export enum ReferenceSource {
   PUBLIC = 'Public',
@@ -348,4 +310,55 @@ export interface Email {
   status: 'unread' | 'read' | 'replied';
   labels?: string[];
   replyToId?: string;
+}
+
+export interface TimetableConfig {
+  id: string; // usually 'default' or a specific term ID
+  label: string;
+  slots: {
+    day: number; // 0-6 (Sun-Sat)
+    period: number;
+    subjectId: string;
+    classId: string;
+    startTime: string;
+    endTime: string;
+  }[];
+}
+
+export interface DSKPStandardEntry {
+  theme: string;
+  topic?: string;
+  sk: string; // Standard Kandungan
+  sp: string; // Standard Pembelajaran
+  sk_code?: string;
+  sp_code?: string;
+}
+
+// Document ID: {Subject}_{Grade} e.g. "English_Year1"
+export interface DSKPRecord {
+  id: string;
+  subject: string;
+  grade: string;
+  standards: DSKPStandardEntry[];
+  lastUpdated: string;
+}
+
+// Composite ID: {teacherId}_{year}_{week}_{day}
+export interface LessonRecord {
+  id: string;
+  teacherId: string;
+  classId: string;
+  subjectId: string;
+  date: string; // YYYY-MM-DD
+  year: number;
+  week: number;
+  day: number; // 0-6
+  topic: string;
+  standardId: string; // Link to DSKP
+  objectives: string[];
+  activities: string[];
+  reflection?: string;
+  status: 'Draft' | 'Submitted' | 'Verified';
+  createdAt: string;
+  updatedAt: string;
 }

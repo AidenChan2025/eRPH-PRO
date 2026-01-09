@@ -63,33 +63,7 @@ class School(db.Model):
     logo_url = Column(String(255))
     settings = Column(JSON)
 
-class LessonPlan(db.Model):
-    __tablename__ = 'lesson_plans'
-    id = Column(String(50), primary_key=True)
-    school_id = Column(String(50), index=True)
-    teacher_id = Column(String(50), index=True)
-    teacher_name = Column(String(255))
-    subject = Column(String(255))
-    grade = Column(String(50))
-    class_name = Column(String(100))
-    time = Column(String(50))
-    topic = Column(String(255))
-    date = Column(Date)
-    content_standard = Column(Text)
-    learning_standard = Column(Text)
-    objectives = Column(JSON)
-    success_criteria = Column(JSON)
-    activities = Column(JSON)
-    teaching_aids = Column(JSON)
-    pak21 = Column(JSON)
-    assessment = Column(JSON)
-    reflection = Column(Text)
-    status = Column(String(50), default='Draft')
-    version = Column(Integer, default=1)
-    updated_at = Column(DateTime, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
-    hots = Column(JSON)
-    civic_values = Column(String(255))
-    full_document = Column(JSON)
+
 
 class Task(db.Model):
     __tablename__ = 'tasks'
@@ -230,59 +204,9 @@ def get_profile():
         return jsonify({'success': True, 'data': {'id': user.id, 'name': user.name, 'email': user.email, 'role': user.role}})
     return jsonify({'success': False}), 404
 
-@app.route('/api/lesson-plans', methods=['GET', 'POST'])
-def lesson_plans():
-    if request.method == 'GET':
-        teacher_id = request.args.get('teacherId')
-        school_id = request.args.get('schoolId')
-        start_date = request.args.get('startDate')
-        end_date = request.args.get('endDate')
-        
-        query = LessonPlan.query
-        if teacher_id: query = query.filter_by(teacher_id=teacher_id)
-        if school_id: query = query.filter_by(school_id=school_id)
-        
-        if start_date: 
-            s_dt = datetime.datetime.strptime(start_date, '%Y-%m-%d').date()
-            query = query.filter(LessonPlan.date >= s_dt)
-        if end_date: 
-            e_dt = datetime.datetime.strptime(end_date, '%Y-%m-%d').date()
-            query = query.filter(LessonPlan.date <= e_dt)
-            
-        plans = query.all()
-        return jsonify({'success': True, 'data': [p.full_document for p in plans]})
-    
-    data = request.json
-    p_id = data.get('id', str(uuid.uuid4()))
-    plan = LessonPlan.query.get(p_id)
-    if not plan:
-        plan = LessonPlan(id=p_id)
-        db.session.add(plan)
-    
-    plan.school_id = data.get('schoolId')
-    plan.teacher_id = data.get('teacherId')
-    plan.teacher_name = data.get('teacherName')
-    plan.subject = data.get('subject')
-    plan.grade = data.get('grade')
-    plan.topic = data.get('topic')
-    try:
-        plan.date = datetime.datetime.strptime(data.get('date'), '%Y-%m-%d').date() if data.get('date') else None
-    except:
-        plan.date = None
-    plan.status = data.get('status', 'Draft')
-    plan.full_document = data
-    db.session.commit()
-    return jsonify({'success': True, 'data': plan.full_document})
 
-@app.route('/api/lesson-plans/<id>', methods=['GET', 'DELETE'])
-def lesson_plan_detail(id):
-    plan = LessonPlan.query.get(id)
-    if not plan: return jsonify({'success': False, 'message': 'Not found'}), 404
-    if request.method == 'GET':
-        return jsonify({'success': True, 'data': plan.full_document})
-    db.session.delete(plan)
-    db.session.commit()
-    return jsonify({'success': True})
+
+
 
 @app.route('/api/articles', methods=['GET'])
 def get_articles():
@@ -740,11 +664,7 @@ def backup_to_drive():
     access_token = user.google_token.get('access_token')
     
     # 1. Generate HTML Backup Content
-    plans = LessonPlan.query.filter_by(teacher_id=user_id).all()
-    html_content = f"<html><body><h1>RPH Backup for {user.name}</h1><p>Generated: {datetime.now()}</p><hr/>"
-    for p in plans:
-        html_content += f"<h3>{p.subject} - {p.date}</h3><p><strong>Topic:</strong> {p.topic}</p><p><strong>Status:</strong> {p.status}</p><hr/>"
-    html_content += "</body></html>"
+    html_content = f"<html><body><h1>RPH Backup for {user.name}</h1><p>Generated: {datetime.now()}</p><hr/><p>Legacy Lesson Plan module disabled.</p></body></html>"
     
     # 2. Upload to Drive
     headers = {'Authorization': f'Bearer {access_token}'}

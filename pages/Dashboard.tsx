@@ -5,7 +5,7 @@ import { useGlobal } from '../context/GlobalContext';
 import { useLanguage } from '../context/LanguageContext';
 import Card from '../components/Card';
 import Button from '../components/Button';
-import { LessonStatus, UserRole, User, DashboardConfig, LessonPlan, TimetableTemplate, Task, TaskStatus } from '../types';
+import { UserRole, User, DashboardConfig, TimetableTemplate, Task, TaskStatus } from '../types';
 import {
     PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend,
     AreaChart, Area, XAxis, YAxis, CartesianGrid
@@ -56,7 +56,7 @@ const StatCard = ({ title, value, icon: Icon, color, subtext }: any) => (
 );
 
 const CustomizationDrawer = ({ isOpen, onClose, config, onSave }: { isOpen: boolean, onClose: () => void, config: DashboardConfig, onSave: (newConfig: DashboardConfig) => void }) => {
-        const { t } = useLanguage();
+    const { t } = useLanguage();
     const [localConfig, setLocalConfig] = useState<DashboardConfig>(config);
     const [isSaving, setIsSaving] = useState(false);
 
@@ -159,7 +159,7 @@ const CustomizationDrawer = ({ isOpen, onClose, config, onSave }: { isOpen: bool
 };
 
 const SuperAdminDashboard = ({ stats }: { stats: any }) => {
-        const { t } = useLanguage();
+    const { t } = useLanguage();
     const navigate = useNavigate();
 
     const getRoleLabel = (role: UserRole) => {
@@ -184,7 +184,8 @@ const SuperAdminDashboard = ({ stats }: { stats: any }) => {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <StatCard title={t('total_schools')} value={stats.totalSchools} icon={Building} color="bg-blue-600" />
                 <StatCard title={t('active_users')} value={stats.totalUsers} icon={Users} color="bg-purple-600" />
-                <StatCard title={t('total_plans')} value={stats.totalPlans} icon={FileText} color="bg-emerald-600" />
+                <StatCard title={t('total_schools')} value={stats.totalSchools} icon={Building} color="bg-blue-600" />
+                <StatCard title={t('active_users')} value={stats.totalUsers} icon={Users} color="bg-purple-600" />
                 <StatCard title="Storage Eng." value="Google Firestore" icon={Database} color="bg-orange-600" />
             </div>
 
@@ -256,7 +257,7 @@ const SuperAdminDashboard = ({ stats }: { stats: any }) => {
 };
 
 const SchoolAdminDashboard = () => {
-        const { t } = useLanguage();
+    const { t } = useLanguage();
     const { currentUser, schools } = useGlobal();
     const navigate = useNavigate();
     const [schoolStats, setSchoolStats] = useState({ teachers: 0, plans: 0, approved: 0, pending: 0, rejected: 0 });
@@ -269,21 +270,7 @@ const SchoolAdminDashboard = () => {
             setLoading(true);
             try {
                 const teachersSnap = await getCountFromServer(query(collection(db, 'users'), where('schoolId', '==', currentUser.schoolId), where('role', '==', UserRole.TEACHER)));
-                const plansQ = query(collection(db, 'lessonPlans'), where('schoolId', '==', currentUser.schoolId));
-                const plansSnap = await getDocs(plansQ);
-                let approved = 0, pending = 0, rejected = 0;
-                plansSnap.docs.forEach((d: any) => {
-                    const s = d.data().status;
-                    if (s === LessonStatus.APPROVED) approved++;
-                    else if (s === LessonStatus.SUBMITTED) pending++;
-                    else if (s === LessonStatus.REJECTED) rejected++;
-                });
-                setSchoolStats({ teachers: teachersSnap.data().count, plans: plansSnap.docs.length, approved, pending, rejected });
-                setStatusData([
-                    { name: t('approved'), value: approved, color: '#22c55e' },
-                    { name: t('pending_review'), value: pending, color: '#3b82f6' },
-                    { name: t('reject'), value: rejected, color: '#ef4444' }
-                ].filter(d => d.value > 0));
+                setSchoolStats({ teachers: teachersSnap.data().count, plans: 0, approved: 0, pending: 0, rejected: 0 });
             } catch (e) { console.error(e); } finally { setLoading(false); }
         };
         fetchSchoolData();
@@ -304,9 +291,6 @@ const SchoolAdminDashboard = () => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 <StatCard title={t('total_teachers')} value={schoolStats.teachers} icon={Users} color="bg-indigo-500" />
-                <StatCard title={t('total_plans')} value={schoolStats.plans} icon={FileText} color="bg-blue-500" />
-                <StatCard title={t('pending_review')} value={schoolStats.pending} icon={Clock} color="bg-amber-500" />
-                <StatCard title={t('approved')} value={schoolStats.approved} icon={CheckCircle} color="bg-green-500" />
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -346,7 +330,7 @@ const SchoolAdminDashboard = () => {
 };
 
 const PersonalDashboard = () => {
-        const { currentUser, setCurrentUser } = useGlobal();
+    const { currentUser, setCurrentUser } = useGlobal();
     const navigate = useNavigate();
     const { t } = useLanguage();
 
@@ -363,27 +347,13 @@ const PersonalDashboard = () => {
     });
 
     const [isConfiguring, setIsConfiguring] = useState(false);
-    const [myStats, setMyStats] = useState({ total: 0, pending: 0, approved: 0 });
-    const [recentPlans, setRecentPlans] = useState<LessonPlan[]>([]);
     const [todayClasses, setTodayClasses] = useState<any[]>([]);
     const [myTasks, setMyTasks] = useState<Task[]>([]);
 
     useEffect(() => {
         const fetchTeacherData = async () => {
             if (!currentUser) return;
-            const statsQ = query(collection(db, 'lessonPlans'), where('teacherId', '==', currentUser.id));
-            const statsSnap = await getDocs(statsQ);
-            let p = 0, a = 0;
-            statsSnap.docs.forEach((d: any) => {
-                const s = d.data().status;
-                if (s === LessonStatus.SUBMITTED) p++;
-                if (s === LessonStatus.APPROVED) a++;
-            });
-            setMyStats({ total: statsSnap.docs.length, pending: p, approved: a });
 
-            const recentQ = query(collection(db, 'lessonPlans'), where('teacherId', '==', currentUser.id), orderBy('updatedAt', 'desc'), limit(3));
-            const recentSnap = await getDocs(recentQ);
-            setRecentPlans(recentSnap.docs.map(d => ({ id: d.id, ...d.data() } as LessonPlan)));
 
             const ttQ = query(collection(db, 'timetableTemplates'), where('teacherId', '==', currentUser.id), where('isActive', '==', true));
             const ttSnap = await getDocs(ttQ);
@@ -469,73 +439,11 @@ const PersonalDashboard = () => {
                 </div>
             </div>
 
-            {config.showStats && (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-in slide-in-from-bottom-4 duration-500">
-                    <Card className="p-6 border-slate-100 hover:border-blue-200 transition-colors">
-                        <div className="flex justify-between items-start">
-                            <div>
-                                <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-1">{t('my_total_plans')}</p>
-                                <h3 className="text-4xl font-black text-slate-900">{myStats.total}</h3>
-                            </div>
-                            <div className="p-3 bg-blue-50 text-blue-600 rounded-xl"><BookOpen className="w-6 h-6" /></div>
-                        </div>
-                    </Card>
-                    <Card className="p-6 border-slate-100 hover:border-amber-200 transition-colors">
-                        <div className="flex justify-between items-start">
-                            <div>
-                                <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-1">{t('pending_review')}</p>
-                                <h3 className="text-4xl font-black text-amber-500">{myStats.pending}</h3>
-                            </div>
-                            <div className="p-3 bg-amber-50 text-amber-600 rounded-xl"><Clock className="w-6 h-6" /></div>
-                        </div>
-                    </Card>
-                    <Card className="p-6 border-slate-100 hover:border-emerald-200 transition-colors">
-                        <div className="flex justify-between items-start">
-                            <div>
-                                <p className="text-xs font-black text-slate-400 uppercase tracking-widest mb-1">{t('approved')}</p>
-                                <h3 className="text-4xl font-black text-emerald-600">{myStats.approved}</h3>
-                            </div>
-                            <div className="p-3 bg-emerald-50 text-emerald-600 rounded-xl"><CheckCircle className="w-6 h-6" /></div>
-                        </div>
-                    </Card>
-                </div>
-            )}
+
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-2 space-y-8">
-                    {config.showRecentPlans && (
-                        <div className="space-y-4">
-                            <div className="flex justify-between items-center px-1">
-                                <h3 className="font-black text-slate-800 uppercase tracking-tight flex items-center gap-2">
-                                    <TrendingUp className={`w-5 h-5 ${currentTheme.text}`} /> {t('recent_activity')}
-                                </h3>
-                                <Link to="/portal/plans" className="text-xs font-bold text-blue-600 hover:underline flex items-center gap-1">{t('view_all')} <ArrowRight className="w-3 h-3" /></Link>
-                            </div>
-                            <div className="grid gap-3">
-                                {recentPlans.length === 0 ? (
-                                    <div className="p-12 text-center border-2 border-dashed border-slate-100 rounded-3xl text-slate-400 italic text-sm">{t('no_plans_found')}</div>
-                                ) : recentPlans.map(plan => (
-                                    <Link key={plan.id} to={`/portal/plans/${plan.id}`} className="group block bg-white border border-slate-100 p-5 rounded-3xl shadow-sm hover:shadow-md hover:border-blue-200 transition-all">
-                                        <div className="flex justify-between items-center">
-                                            <div className="space-y-1">
-                                                <div className="flex items-center gap-2">
-                                                    <span className={`px-2 py-0.5 rounded-md text-[10px] font-black uppercase ${currentTheme.light} ${currentTheme.text} border ${currentTheme.border}`}>
-                                                        {plan.subject}
-                                                    </span>
-                                                    <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{plan.date}</span>
-                                                </div>
-                                                <h4 className="font-bold text-slate-800 group-hover:text-blue-600 transition-colors">{plan.topic}</h4>
-                                                <p className="text-xs text-slate-400 font-medium">{plan.className} • {plan.time}</p>
-                                            </div>
-                                            <div className={`p-2 rounded-xl bg-slate-50 group-hover:${currentTheme.light} group-hover:${currentTheme.text} transition-colors`}>
-                                                <ChevronRight className="w-5 h-5" />
-                                            </div>
-                                        </div>
-                                    </Link>
-                                ))}
-                            </div>
-                        </div>
-                    )}
+
 
                     {config.showTasks && (
                         <Card className="p-6 rounded-3xl border-slate-100">
@@ -607,7 +515,6 @@ const PersonalDashboard = () => {
                             </h3>
                             <div className="grid grid-cols-2 gap-4">
                                 {[
-                                    { label: t('new_rph'), path: '/portal/plans/new', icon: Plus, color: 'bg-blue-600', shadow: 'shadow-blue-100' },
                                     { label: t('records'), path: '/portal/records', icon: ClipboardList, color: 'bg-indigo-600', shadow: 'shadow-indigo-100' },
                                     { label: t('dskp'), path: '/portal/dskp', icon: BookOpen, color: 'bg-emerald-600', shadow: 'shadow-emerald-100' },
                                     { label: t('calendar'), path: '/portal/calendar', icon: Calendar, color: 'bg-rose-600', shadow: 'shadow-rose-100' },
@@ -654,7 +561,7 @@ const PersonalDashboard = () => {
 };
 
 const Dashboard = () => {
-        const { t } = useLanguage();
+    const { t } = useLanguage();
     const { currentUser, viewMode } = useGlobal();
     const [saStats, setSaStats] = useState({ totalSchools: 0, totalUsers: 0, totalPlans: 0 });
 
@@ -663,8 +570,7 @@ const Dashboard = () => {
             if (currentUser?.role === UserRole.SUPER_ADMIN && viewMode === 'admin') {
                 const s = await getCountFromServer(collection(db, 'schools'));
                 const u = await getCountFromServer(collection(db, 'users'));
-                const p = await getCountFromServer(collection(db, 'lessonPlans'));
-                setSaStats({ totalSchools: s.data().count, totalUsers: u.data().count, totalPlans: p.data().count });
+                setSaStats({ totalSchools: s.data().count, totalUsers: u.data().count, totalPlans: 0 });
             }
         };
         fetchStats();

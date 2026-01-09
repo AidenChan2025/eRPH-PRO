@@ -1,9 +1,9 @@
 
 import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import {
-    User, LessonStatus, LeaveStatus, DSKPStandard, LoginRecord,
-    School, UserRole, LessonPlan, Task, TaskStatus, TaskPriority, LeaveRecord,
-    SchoolType, LessonTemplate, TimetableTemplate, TimetableSlot, ReferenceSource, ReferenceItem
+    User, LeaveStatus, DSKPStandard, LoginRecord,
+    School, UserRole, Task, TaskStatus, TaskPriority, LeaveRecord,
+    SchoolType, TimetableTemplate, TimetableSlot, ReferenceSource, ReferenceItem
 } from '../types';
 import {
     db, auth,
@@ -90,40 +90,7 @@ const generateMockTimetable = (teacherId: string, name: string): TimetableTempla
     return { id: `tt-${teacherId}-main`, teacherId, schoolId: 's-1', name, effectiveDate: '2025-01-01', isActive: true, slots };
 };
 
-const generateMockPlans = (teacherId: string, schoolId: string, teacherName: string): LessonPlan[] => {
-    const plans: LessonPlan[] = [];
-    const year = 2025;
-    const subjects = ['华文', '英文', '数学', '科学', '历史', '道德教育', '美术'];
-    const classes = ['4 诚实', '5 聪慧', '6 卓越'];
-    const timeSlots = ['07:45 - 08:45', '08:45 - 09:45', '10:15 - 11:15', '11:45 - 12:45'];
 
-    for (let month = 0; month <= 2; month++) {
-        for (let week = 0; week < 4; week++) {
-            for (let dayOffset = 1; dayOffset <= 5; dayOffset++) {
-                const dayOfMonth = (week * 7) + dayOffset;
-                const date = new Date(year, month, dayOfMonth);
-                if (date.getMonth() !== month) continue;
-                if (date.getDay() === 0 || date.getDay() === 6) continue;
-                const dateStr = date.toISOString().split('T')[0];
-                for (let i = 0; i < 3; i++) {
-                    const subject = subjects[(dayOfMonth + i) % subjects.length];
-                    const className = classes[(dayOfMonth + i) % classes.length];
-                    plans.push({
-                        id: `mock-lp-${year}-${month}-${week}-${dayOffset}-${i}`,
-                        schoolId, teacherId, teacherName, subject,
-                        grade: className.includes('4') ? '四年级' : (className.includes('5') ? '五年级' : '六年级'),
-                        className, time: timeSlots[i], topic: `单元 ${month + 1}.${week + 1}: ${subject} - 课题 ${i + 1}`,
-                        date: dateStr, contentStandard: `${i + 1}.0 内容标准`, learningStandard: `${i + 1}.1.${dayOffset} 学习标准`,
-                        objectives: ['学生能够说出定义的含义。'], successCriteria: ['我能解释课题的含义。'], activities: ['引起动机'],
-                        teachingAids: ['课本'], pak21: ['Think-Pair-Share'], assessment: ['观察'],
-                        status: LessonStatus.APPROVED, version: 1, updatedAt: new Date().toISOString()
-                    });
-                }
-            }
-        }
-    }
-    return plans;
-};
 
 interface GlobalContextType {
     currentUser: User | null;
@@ -176,7 +143,7 @@ export const GlobalProvider: React.FC<{ children: React.ReactNode }> = ({ childr
                         const userRef = doc(db, 'users', authUser.uid);
                         const userSnap = await getDoc(userRef);
                         if (userSnap.exists()) {
-                            setCurrentUser({ id: userSnap.id, ...(userSnap.data() || {}) } as User);
+                            setCurrentUser({ id: userSnap.id, ...(userSnap.data() as any) } as User);
                         } else {
                             const demoByEmail = MOCK_USERS.find(u => u.email === authUser.email);
                             if (demoByEmail) setCurrentUser(demoByEmail);

@@ -23,7 +23,7 @@ if 'DB_USER' not in os.environ:
     os.environ['DB_NAME'] = 'erphpro'
 
 try:
-    from app import app, db, User, School, LessonPlan, Notification, Task, Article, ReferenceItem, CalendarEvent, DSKPStandard, SystemSettings
+    from app import app, db, User, School, Notification, Task, Article, ReferenceItem, CalendarEvent, DSKPStandard, SystemSettings
     
     if 'GATEWAY_INTERFACE' in os.environ:
         print("Content-Type: text/plain\n")
@@ -100,28 +100,7 @@ try:
             db.session.add(ss)
             print("Added system settings.")
 
-        # 6. Seed Lesson Plan
-        if not LessonPlan.query.first():
-            lp = LessonPlan(
-                id='lp-demo-1',
-                school_id=s1_id,
-                teacher_id='u-teacher',
-                teacher_name='Wong Siew Min',
-                subject='English',
-                grade='Form 1',
-                topic='Unit 1: New Beginnings',
-                date=datetime.date.today(),
-                status='Approved',
-                full_document={
-                    'id': 'lp-demo-1',
-                    'subject': 'English',
-                    'topic': 'Unit 1: New Beginnings',
-                    'date': str(datetime.date.today()),
-                    'status': 'Approved'
-                }
-            )
-            db.session.add(lp)
-            print("Added lesson plan.")
+
 
         # 7. Seed Tasks
         if not Task.query.first():

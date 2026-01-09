@@ -32,8 +32,8 @@ const Legal = () => {
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id as any)}
                                 className={`flex px-6 py-3 rounded-2xl items-center gap-2 font-bold transition-all ${activeTab === tab.id
-                                        ? 'bg-white shadow-md text-blue-600 scale-105'
-                                        : 'text-slate-500 hover:text-slate-700 hover:bg-slate-200/50'
+                                    ? 'bg-white shadow-md text-blue-600 scale-105'
+                                    : 'text-slate-500 hover:text-slate-700 hover:bg-slate-200/50'
                                     }`}
                             >
                                 <tab.icon className="w-4 h-4" />
@@ -52,14 +52,12 @@ const Legal = () => {
                                 <p>{t('weCollectMinimalDataNecessary')}</p>
                                 <ul>
                                     <li>{t('teacherNamesAndEmailAddresses')}</li>
-                                    <li>{t('lessonPlanContentRphGenerated')}</li>
                                     <li>{t('schoolProfileInformation')}</li>
                                 </ul>
 
                                 <h3>{t('2DataUsage')}</h3>
                                 <p>{t('yourDataIsUsedStrictly')}</p>
                                 <ul>
-                                    <li>{t('providingTheLessonPlanManagement')}</li>
                                     <li>{t('generatingOfficialPdfReportsFor')}</li>
                                     <li>{t('syncingWithTheNationalDskp')}</li>
                                 </ul>
@@ -128,10 +126,10 @@ const Legal = () => {
                         )}
                     </div>
                 </div>
-            </main>
+            </main >
 
             <PublicFooter />
-        </div>
+        </div >
     );
 };
 

@@ -11,8 +11,7 @@ function fixConflicts() {
         'pages/Approval.tsx',
         'pages/CalendarView.tsx',
         'pages/Dashboard.tsx',
-        'pages/LessonPlanEditor.tsx',
-        'pages/LessonPlanList.tsx',
+
         'pages/LoginPage.tsx',
         'pages/Portal/SecurityCenter.tsx',
         'pages/ReferenceManager.tsx',

@@ -12,7 +12,7 @@ import { CHANGELOG } from '../../src/config/changelog';
 import { useTranslation } from 'react-i18next';
 
 const KnowledgeBase = () => {
-        const { t } = useLanguage();
+    const { t } = useLanguage();
     const [searchQuery, setSearchQuery] = useState('');
     const [activeTab, setActiveTab] = useState<'updates' | 'guides' | 'faq'>('updates');
 
@@ -195,48 +195,16 @@ const KnowledgeBase = () => {
                                         )
                                     },
                                     {
-                                        title: "Creating RPH",
-                                        desc: "Step-by-step to your first lesson plan.",
-                                        icon: FileText,
-                                        content: (
-                                            <div className="space-y-4 text-slate-600">
-                                                <p>{t('creatingALessonPlanIs')}</p>
-                                                <ol className="list-decimal pl-5 space-y-2">
-                                                    <li>{t('click')}<strong>{t('newPlan')}</strong> {t('inTheSidebar')}</li>
-                                                    <li>{t('selectYour')}<strong>{t('dateTimeClassAndSubject')}</strong>.</li>
-                                                    <li>{t('chooseStandardsFromThe')}<strong>{t('dskpSelector')}</strong>.</li>
-                                                    <li>{t('click')}<strong>{t('saveDraft')}</strong> {t('or')}<strong>{t('submit')}</strong>.</li>
-                                                </ol>
-                                            </div>
-                                        )
-                                    },
-                                    {
-                                        title: "DSKP Mapping",
-                                        desc: "Linking standards to your lessons.",
+                                        title: "DSKP Browser",
+                                        desc: "Accessing National Standards.",
                                         icon: Book,
                                         content: (
                                             <div className="space-y-4 text-slate-600">
                                                 <p>{t('weveDigitizedTheEntireDskp')}</p>
                                                 <ul className="list-disc pl-5 space-y-2">
                                                     <li>{t('useThe')}<strong>{t('dskpManager')}</strong> {t('toFavoriteYourSubjects')}</li>
-                                                    <li>{t('duringRphCreationSimply')}<strong>{t('clickToSelect')}</strong> {t('standards_1')}</li>
-                                                    <li>{t('everythingIsAutofilled')}</li>
-                                                </ul>
-                                            </div>
-                                        )
-                                    },
-                                    {
-                                        title: "Submission",
-                                        desc: "Sending weekly plans for review.",
-                                        icon: CheckCircle2,
-                                        content: (
-                                            <div className="space-y-4 text-slate-600">
-                                                <p>{t('onceYoureDoneSendIt')}</p>
-                                                <ul className="list-disc pl-5 space-y-2">
-                                                    <li>{t('goTo')}<strong>{t('myPlans')}</strong>.</li>
-                                                    <li>{t('selectThePlansYouWant')}</li>
-                                                    <li>{t('clickThe')}<strong>{t('submitForReview')}</strong> {t('buttonOnTop')}</li>
-                                                    <li>{t('yourPrincipalWillBeNotified')}</li>
+                                                    <li>{t('browseAndSearchForSpecificStandards')}</li>
+                                                    <li>{t('everythingIsDigitized')}</li>
                                                 </ul>
                                             </div>
                                         )
