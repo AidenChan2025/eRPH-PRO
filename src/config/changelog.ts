@@ -7,6 +7,16 @@ export interface ChangeLogEntry {
 
 export const CHANGELOG: ChangeLogEntry[] = [
     {
+        version: "v1.1.2",
+        date: "Jan 09, 2026",
+        title: "Platform Enhancement",
+        items: [
+            "🚀 General performance optimizations and bug fixes.",
+            "🛡️ Security and stability improvements.",
+            "🔧 Minor UI refinements and infrastructure updates."
+        ]
+    },
+    {
         version: "v1.1.1",
         date: "Jan 08, 2026",
         title: "Autonomous Internationalization Engine",
