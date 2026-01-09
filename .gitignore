@@ -8,8 +8,8 @@ pnpm-lock.yaml
 
 # Production
 # Production
-# build/
-# dist/
+build/
+dist/
 target/
 
 # Logs
