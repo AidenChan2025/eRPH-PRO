@@ -7,6 +7,9 @@ import { Layout } from './components/Layout';
 import NotFoundPage from './components/NotFoundPage';
 import { Sparkles, ShieldCheck } from 'lucide-react';
 import { UserRole } from './types';
+import { CookieConsent } from './components/CookieConsent';
+import ScrollToTop from './components/ScrollToTop';
+import { useTranslation } from 'react-i18next';
 
 // Public Website Pages
 import LandingPage from './pages/Website/LandingPage';
@@ -47,40 +50,43 @@ const SecurityShell: React.FC = () => {
 };
 
 // Global Splash Screen
-const SplashScreen = () => (
-    <div className="fixed inset-0 z-[2000] bg-slate-950 flex flex-col items-center justify-center text-white overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-900/20 via-slate-950 to-black opacity-60"></div>
+const SplashScreen = () => {
+    const { t } = useTranslation();
+    return (
+        <div className="fixed inset-0 z-[2000] bg-slate-950 flex flex-col items-center justify-center text-white overflow-hidden">
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-blue-900/20 via-slate-950 to-black opacity-60"></div>
 
-        <div className="relative flex flex-col items-center gap-8 animate-in fade-in zoom-in duration-700">
-            <div className="relative">
-                <div className="w-24 h-24 bg-blue-600 rounded-[2rem] flex items-center justify-center shadow-[0_0_50px_rgba(37,99,235,0.4)] rotate-12 animate-pulse">
-                    <Sparkles className="w-12 h-12 text-white" />
+            <div className="relative flex flex-col items-center gap-8 animate-in fade-in zoom-in duration-700">
+                <div className="relative">
+                    <div className="w-24 h-24 bg-blue-600 rounded-[2rem] flex items-center justify-center shadow-[0_0_50px_rgba(37,99,235,0.4)] rotate-12 animate-pulse">
+                        <Sparkles className="w-12 h-12 text-white" />
+                    </div>
+                    <div className="absolute -top-3 -right-3 w-10 h-10 bg-emerald-500 rounded-2xl flex items-center justify-center border-4 border-slate-950 shadow-lg animate-bounce">
+                        <ShieldCheck className="w-5 h-5" />
+                    </div>
                 </div>
-                <div className="absolute -top-3 -right-3 w-10 h-10 bg-emerald-500 rounded-2xl flex items-center justify-center border-4 border-slate-950 shadow-lg animate-bounce">
-                    <ShieldCheck className="w-5 h-5" />
-                </div>
-            </div>
 
-            <div className="text-center space-y-3">
-                <h1 className="text-4xl font-black tracking-tight">{t('erph')}<span className="text-blue-500">{t('pro')}</span></h1>
-                <div className="flex flex-col items-center gap-2">
-                    <div className="flex items-center gap-2 text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] ml-1">
-                        <span>{t('verifyingSession')}</span>
-                        <span className="flex gap-1">
-                            <span className="w-1 h-1 bg-blue-500 rounded-full animate-ping"></span>
-                            <span className="w-1 h-1 bg-blue-500 rounded-full animate-ping [animation-delay:0.2s]"></span>
-                            <span className="w-1 h-1 bg-blue-500 rounded-full animate-ping [animation-delay:0.4s]"></span>
-                        </span>
+                <div className="text-center space-y-3">
+                    <h1 className="text-4xl font-black tracking-tight">{t('erph')}<span className="text-blue-500">{t('pro')}</span></h1>
+                    <div className="flex flex-col items-center gap-2">
+                        <div className="flex items-center gap-2 text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] ml-1">
+                            <span>{t('verifyingSession')}</span>
+                            <span className="flex gap-1">
+                                <span className="w-1 h-1 bg-blue-500 rounded-full animate-ping"></span>
+                                <span className="w-1 h-1 bg-blue-500 rounded-full animate-ping [animation-delay:0.2s]"></span>
+                                <span className="w-1 h-1 bg-blue-500 rounded-full animate-ping [animation-delay:0.4s]"></span>
+                            </span>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div className="absolute bottom-12 left-0 right-0 text-center">
-            <p className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">{t('protectedByAidenSecuritySubsystem')}</p>
+            <div className="absolute bottom-12 left-0 right-0 text-center">
+                <p className="text-[10px] font-bold text-slate-600 uppercase tracking-widest">{t('protectedByAidenSecuritySubsystem')}</p>
+            </div>
         </div>
-    </div>
-);
+    );
+};
 
 const PrivateRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const { t } = useTranslation();
@@ -150,9 +156,7 @@ const AppRoutes = () => {
 };
 
 
-import { CookieConsent } from './components/CookieConsent';
-import ScrollToTop from './components/ScrollToTop';
-import { useTranslation } from 'react-i18next';
+
 
 const App = () => {
     const { t } = useTranslation();
