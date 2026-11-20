@@ -3,9 +3,15 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class LessonPlanSubmission extends Model
 {
     protected $fillable = ['school_id', 'lesson_plan_id', 'teacher_profile_id', 'week_no', 'deadline', 'submitted_at', 'status', 'note'];
     protected $casts = ['deadline' => 'date', 'submitted_at' => 'datetime'];
+
+    public function teacherProfile(): BelongsTo
+    {
+        return $this->belongsTo(TeacherProfile::class);
+    }
 }

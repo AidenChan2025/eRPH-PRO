@@ -426,6 +426,6 @@ The first executable baseline is now present under `ssr/`:
 
 The current demo workspace is intentionally a foundation, not a production migration. Real Google OAuth credentials, school-admin CRUD, role policies, existing RPH field mapping, export formats and Plesk document-root cutover remain acceptance gates before production switching.
 
-The existing Firebase project is documented as a controlled read-only migration source in `docs/FIREBASE_BRIDGE_PLAN.md`. Firebase and Laravel SQL must not become permanent dual-write systems.
+Firebase is explicitly out of the new system scope. Laravel SQL is the sole production data source, authentication boundary and reporting source. The old Firebase project is not connected, migrated automatically or used for dual writes; its code remains only as historical reference.
 
 The exact workbook field and workflow mapping is documented in `docs/RPH_FORMAT_MAPPING.md`, based on the supplied teacher and school-level Google Sheets. The current RPH version JSON remains extensible until all school-specific fields are migrated into the UI and renderer.

@@ -5,6 +5,7 @@ use App\Http\Controllers\SchoolHomeController;
 use App\Http\Controllers\WorkspaceController;
 use App\Http\Controllers\SchoolAdminController;
 use App\Http\Controllers\LessonPlanController;
+use App\Http\Controllers\SchoolReportController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('school')->group(function () {
@@ -16,6 +17,7 @@ Route::middleware('school')->group(function () {
         Route::get('/rph/create', [LessonPlanController::class, 'create'])->name('rph.create');
         Route::post('/rph', [LessonPlanController::class, 'store'])->name('rph.store');
     });
+    Route::middleware(['auth', 'school.member:school_admin,principal,vice_principal'])->get('/reports', SchoolReportController::class)->name('school.reports');
     Route::middleware(['auth', 'school.member:school_admin,principal,vice_principal'])->group(function () {
         Route::get('/admin', SchoolAdminController::class)->name('school.admin');
         Route::post('/admin/people', [SchoolAdminController::class, 'store'])->name('school.admin.people.store');

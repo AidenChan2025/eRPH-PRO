@@ -66,4 +66,13 @@ class ExampleTest extends TestCase
         $this->assertDatabaseHas('lesson_plans', ['school_id' => 1, 'status' => 'draft', 'current_version' => 1]);
         $this->assertDatabaseHas('lesson_plan_versions', ['version' => 1, 'source' => 'manual']);
     }
+
+    public function test_school_management_can_view_the_sql_submission_report(): void
+    {
+        $this->seed();
+        $admin = User::where('email', 'demo@erphpro.com')->firstOrFail();
+
+        $this->actingAs($admin)->get('http://demo.erphpro.com/reports')
+            ->assertOk()->assertSee('Submission overview')->assertSee('Active teachers');
+    }
 }
