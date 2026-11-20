@@ -2,6 +2,8 @@
 
 Status: preparation document; production cutover is not yet verified.
 
+Current evidence (2026-11-21): `https://erphpro.com/health` still returns the legacy React/Firebase HTML document with `content-type: text/html`; it does not yet return the Laravel JSON health contract. Do not treat a successful GitHub Actions run as a production deployment.
+
 ## Document root
 
 The PHP document root must point to:
@@ -55,6 +57,22 @@ The hook installs locked dependencies, runs migrations, refreshes caches and fai
 5. Confirm /health returns status=ok, database=ok and cache=ok.
 6. Verify school subdomains, unknown-subdomain rejection, Owner login and member permissions.
 7. Back up the old site and database before switching the production document root.
+
+## Plesk operator checklist
+
+On the subscription's **Hosting & DNS > Hosting** page, set **Document root** to the absolute path ending in `/ssr/public`, then save. Do not use `/ssr` or the repository checkout root. On **PHP Settings**, select PHP 8.3 or newer and confirm the required extensions from `scripts/deploy-ssr.sh`. On **Environment variables**, add the production values above without committing secrets. On **Git > Repository**, pull the `main` branch and run the deployment hook; retain the deployment output.
+
+After the hook completes, verify these exact responses from outside the server:
+
+| Check | Expected evidence |
+| --- | --- |
+| `GET /health` | HTTP 200, JSON, `status=ok`, `database=ok`, `cache=ok` |
+| `GET /` | Laravel school landing page or controlled base-domain response, never the old React shell |
+| known school host | School-specific landing page and `/login` |
+| unknown school host | HTTP 404 / school-not-found response |
+| OAuth callback | Exact URI `https://erphpro.com/auth/google/callback` configured in Google Cloud |
+
+If `/health` returns HTML, stop the cutover and inspect the document root, rewrite rules and the active Plesk hosting subscription; do not debug Laravel application code against that response.
 
 ## Unverified production gates
 
