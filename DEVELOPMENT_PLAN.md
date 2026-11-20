@@ -446,4 +446,6 @@ The future Hal Ehwal Murid/student affairs scope is documented in `docs/STUDENT_
 
 This module is deliberately deferred until the RPH and school administration foundation is accepted. Its future SQL tables must remain school-scoped, and sensitive welfare/discipline records must use separate permissions and audit coverage. No Firebase dependency is planned.
 
+The broader future product map from the supplied school-operations videos is recorded in docs/FUTURE_PRODUCT_ROADMAP_D2-D9.md. Development 1 remains limited to the current RPH and school administration foundation; the roadmap separates later student affairs, teacher operations, co-curricular, PSS, assessment, document automation, resource and AI work into Development 2 through Development 9.
+
 The Plesk deployment contract, environment checklist, preview-first cutover order and document-root requirement are recorded in docs/PLESK_SSR_DEPLOYMENT.md. Production readiness remains unverified until the live webhook, ssr/public document root, /health, SSL, subdomain and Google Workspace login are tested on the actual server.
