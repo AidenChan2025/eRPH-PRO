@@ -439,3 +439,9 @@ Explicit role-to-permission mappings now live in `ssr/config/permissions.php`, w
 Platform Owner identity is separate from school membership through `users.platform_role`. The initial `/owner` overview is read-only and lists school tenants; future support sessions must add reason, expiry and audit records before entering a school context.
 
 Future timetable research and the reserved internal solver/API boundary are recorded in `docs/TIMETABLE_RESEARCH_MY.md`. Timetabling is intentionally not activated in the current RPH release; school-specific bell slots are the only current integration point.
+
+## 18. Future student affairs module
+
+The future Hal Ehwal Murid/student affairs scope is documented in `docs/STUDENT_AFFAIRS_RESEARCH.md`. It covers student profiles, guardians, enrolment history, attendance thresholds, discipline cases, welfare/ counselling records, dashboards, exports, permissions and retention/audit requirements.
+
+This module is deliberately deferred until the RPH and school administration foundation is accepted. Its future SQL tables must remain school-scoped, and sensitive welfare/discipline records must use separate permissions and audit coverage. No Firebase dependency is planned.
