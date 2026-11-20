@@ -6,6 +6,7 @@ use App\Models\LessonPlan;
 use App\Models\TeacherProfile;
 use App\Models\SchoolSetting;
 use App\Models\LessonPlanSubmission;
+use App\Models\SchoolTimetableSlot;
 use App\Services\AuditLogger;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -16,6 +17,7 @@ class LessonPlanController extends Controller
     {
         return view('lesson-plans.create', [
             'school' => $request->attributes->get('school'),
+            'slots' => SchoolTimetableSlot::where('school_id', $request->attributes->get('school')->id)->where('is_active', true)->orderBy('day_of_week')->orderBy('sort_order')->get(),
         ]);
     }
 
@@ -40,6 +42,8 @@ class LessonPlanController extends Controller
             'subject' => ['required', 'string', 'max:120'],
             'class_name' => ['required', 'string', 'max:120'],
             'title' => ['required', 'string', 'max:240'],
+            'start_time' => ['nullable', 'date_format:H:i'],
+            'end_time' => ['nullable', 'date_format:H:i', 'after:start_time'],
             'objectives' => ['nullable', 'string', 'max:10000'],
             'activities' => ['nullable', 'string', 'max:20000'],
             'assessment' => ['nullable', 'string', 'max:10000'],
@@ -58,7 +62,7 @@ class LessonPlanController extends Controller
                 'status' => 'draft',
                 'current_version' => 1,
             ]);
-            $content = collect($data)->only(['title', 'objectives', 'activities', 'assessment', 'reflection', 'homework', 'materials'])->toArray();
+            $content = collect($data)->only(['title', 'start_time', 'end_time', 'objectives', 'activities', 'assessment', 'reflection', 'homework', 'materials'])->toArray();
             $plan->versions()->create(['version' => 1, 'created_by' => $request->user()->id, 'source' => 'manual', 'content' => $content]);
             return $plan;
         });
