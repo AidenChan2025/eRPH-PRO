@@ -50,6 +50,18 @@ class ExampleTest extends TestCase
         $response->assertNotFound();
     }
 
+    public function test_a_school_member_cannot_open_another_school_workspace(): void
+    {
+        $this->seed();
+        \App\Models\School::create([
+            'name' => 'Other School', 'slug' => 'other-school', 'subdomain' => 'other',
+            'is_active' => true,
+        ]);
+        $admin = User::where('email', 'demo@erphpro.com')->firstOrFail();
+
+        $this->actingAs($admin)->get('http://other.erphpro.com/workspace')->assertForbidden();
+    }
+
     public function test_school_admin_can_view_school_people_but_a_teacher_cannot(): void
     {
         $this->seed();
