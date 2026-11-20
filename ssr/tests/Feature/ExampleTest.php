@@ -56,7 +56,7 @@ class ExampleTest extends TestCase
 
         $response = $this->actingAs($user)->get('http://demo.erphpro.com/workspace');
 
-        $response->assertOk()->assertSee('Teacher record')->assertSee('Lesson plans');
+        $response->assertOk()->assertSee('Teacher record')->assertSee('Lesson plans')->assertSee('Submitted')->assertSee('Approved');
     }
 
     public function test_unknown_school_hosts_are_rejected(): void
