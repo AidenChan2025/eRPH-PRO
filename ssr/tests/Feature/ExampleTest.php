@@ -127,6 +127,17 @@ class ExampleTest extends TestCase
         $this->assertDatabaseHas('school_memberships', ['role' => 'inspector', 'access_reason' => 'Annual inspection']);
     }
 
+    public function test_teacher_can_update_their_school_profile(): void
+    {
+        $this->seed();
+        $user = User::where('email', 'demo@erphpro.com')->firstOrFail();
+        $this->actingAs($user)->put('http://demo.erphpro.com/profile', [
+            'staff_no' => 'T-001', 'phone' => '0123456789', 'position' => 'Teacher', 'grade' => 'DG44',
+        ])->assertRedirect(route('teacher.profile.edit'));
+        $this->assertDatabaseHas('teacher_profiles', ['user_id' => $user->id, 'staff_no' => 'T-001', 'grade' => 'DG44']);
+        $this->assertDatabaseHas('audit_logs', ['action' => 'teacher.profile_updated']);
+    }
+
     public function test_a_teacher_can_submit_a_saved_rph_for_the_configured_week(): void
     {
         $this->seed();
