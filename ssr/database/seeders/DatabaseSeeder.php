@@ -27,6 +27,11 @@ class DatabaseSeeder extends Seeder
 
         $school->members()->syncWithoutDetaching([$user->id => ['role' => 'school_admin', 'status' => 'active']]);
 
+        \App\Models\TeacherProfile::query()->updateOrCreate(
+            ['school_id' => $school->id, 'user_id' => $user->id],
+            ['position' => 'School Administrator', 'employment_status' => 'active']
+        );
+
         User::factory()->create([
             'name' => 'Test User',
             'email' => 'test@example.com',

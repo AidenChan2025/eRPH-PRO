@@ -410,3 +410,18 @@ No DeepSeek integration, billing flow or student module should be built before t
 ### 16.7 Required automated checks
 
 The new application must include tests for tenant isolation, host resolution, Google callback failure cases, role policies, temporary-account expiry, audit coverage, lesson-plan versioning and SSR responses without JavaScript. A deployment health endpoint must verify database connectivity, cache readiness and the active application release.
+
+## 17. Implemented SSR baseline (2026-11-20)
+
+The first executable baseline is now present under `ssr/`:
+
+- Laravel 12 + Blade SSR application with school subdomain resolution;
+- Google Socialite callback, Google stable subject binding, Workspace-domain check and membership check;
+- school membership and audit-log foundation;
+- polished SSR school landing page, sign-in page and authenticated teacher workspace;
+- teacher profile cabinet foundation with employment lifecycle fields and extensible profile JSON;
+- school-owned curriculum items;
+- lesson-plan records with status, current version, version content, review decisions and approval fields;
+- SQLite local test database, seed data and automated SSR/tenant/workspace tests.
+
+The current demo workspace is intentionally a foundation, not a production migration. Real Google OAuth credentials, school-admin CRUD, role policies, existing RPH field mapping, export formats and Plesk document-root cutover remain acceptance gates before production switching.

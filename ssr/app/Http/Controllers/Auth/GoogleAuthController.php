@@ -71,6 +71,6 @@ class GoogleAuthController extends Controller
         $request->session()->regenerate();
         $auditLogger->record('auth.google_login', $school, User::class, (string) $user->getKey(), ['email' => $email]);
 
-        return redirect()->route('school.home');
+        return redirect()->route('workspace.dashboard');
     }
 }
