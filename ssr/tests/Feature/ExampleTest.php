@@ -84,6 +84,16 @@ class ExampleTest extends TestCase
             ->assertOk()->assertSee('Submission overview')->assertSee('Active teachers');
     }
 
+    public function test_permission_middleware_rejects_a_teacher_from_school_reports(): void
+    {
+        $this->seed();
+        $teacher = User::factory()->create(['email' => 'teacher-permission@example.com']);
+        $school = \App\Models\School::where('subdomain', 'demo')->firstOrFail();
+        $school->members()->attach($teacher->id, ['role' => 'teacher', 'status' => 'active']);
+
+        $this->actingAs($teacher)->get('http://demo.erphpro.com/reports')->assertForbidden();
+    }
+
     public function test_a_teacher_can_submit_a_saved_rph_for_the_configured_week(): void
     {
         $this->seed();

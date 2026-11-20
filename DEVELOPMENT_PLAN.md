@@ -433,3 +433,5 @@ The exact workbook field and workflow mapping is documented in `docs/RPH_FORMAT_
 The SSR baseline now exposes `/health` with database status and `RELEASE_VERSION`; Plesk deployment checks must call this endpoint after migrations and cache refresh before any domain cutover.
 
 The repository includes `scripts/deploy-ssr.sh` as the controlled Plesk hook. It installs locked production dependencies, runs migrations, refreshes Laravel caches and optionally fails the deployment when the configured `/health` response is not healthy.
+
+Explicit role-to-permission mappings now live in `ssr/config/permissions.php`, with a `permission` middleware alias. New features should add a permission name first, then protect routes with that permission; role labels alone are not the long-term authorization contract.

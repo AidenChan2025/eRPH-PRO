@@ -16,13 +16,13 @@ Route::middleware('school')->group(function () {
     Route::get('/auth/google/redirect', [GoogleAuthController::class, 'redirect'])->name('auth.google.redirect');
     Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->name('auth.google.callback');
     Route::middleware(['auth', 'school.member'])->get('/workspace', WorkspaceController::class)->name('workspace.dashboard');
-    Route::middleware(['auth', 'school.member'])->group(function () {
+    Route::middleware(['auth', 'school.member', 'permission:lesson_plans.create'])->group(function () {
         Route::get('/rph/create', [LessonPlanController::class, 'create'])->name('rph.create');
         Route::post('/rph', [LessonPlanController::class, 'store'])->name('rph.store');
         Route::post('/rph/{lessonPlan}/submit', [LessonPlanController::class, 'submit'])->name('rph.submit');
     });
-    Route::middleware(['auth', 'school.member:school_admin,principal,vice_principal'])->get('/reports', SchoolReportController::class)->name('school.reports');
-    Route::middleware(['auth', 'school.member:school_admin,principal,vice_principal'])->group(function () {
+    Route::middleware(['auth', 'school.member:school_admin,principal,vice_principal', 'permission:reports.view'])->get('/reports', SchoolReportController::class)->name('school.reports');
+    Route::middleware(['auth', 'school.member:school_admin,principal,vice_principal', 'permission:school.users.manage'])->group(function () {
         Route::get('/admin', SchoolAdminController::class)->name('school.admin');
         Route::post('/admin/people', [SchoolAdminController::class, 'store'])->name('school.admin.people.store');
     });
