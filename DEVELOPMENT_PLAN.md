@@ -425,3 +425,5 @@ The first executable baseline is now present under `ssr/`:
 - SQLite local test database, seed data and automated SSR/tenant/workspace tests.
 
 The current demo workspace is intentionally a foundation, not a production migration. Real Google OAuth credentials, school-admin CRUD, role policies, existing RPH field mapping, export formats and Plesk document-root cutover remain acceptance gates before production switching.
+
+The existing Firebase project is documented as a controlled read-only migration source in `docs/FIREBASE_BRIDGE_PLAN.md`. Firebase and Laravel SQL must not become permanent dual-write systems.
