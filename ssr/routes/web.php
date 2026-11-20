@@ -1,7 +1,12 @@
 <?php
 
+use App\Http\Controllers\Auth\GoogleAuthController;
 use App\Http\Controllers\SchoolHomeController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/login', fn () => view('welcome'))->name('login');
-Route::middleware('school')->get('/', SchoolHomeController::class)->name('school.home');
+Route::middleware('school')->group(function () {
+    Route::get('/login', [GoogleAuthController::class, 'show'])->name('login');
+    Route::get('/auth/google/redirect', [GoogleAuthController::class, 'redirect'])->name('auth.google.redirect');
+    Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->name('auth.google.callback');
+    Route::get('/', SchoolHomeController::class)->name('school.home');
+});
