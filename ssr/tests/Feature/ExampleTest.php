@@ -36,4 +36,18 @@ class ExampleTest extends TestCase
 
         $response->assertNotFound();
     }
+
+    public function test_school_admin_can_view_school_people_but_a_teacher_cannot(): void
+    {
+        $this->seed();
+        $admin = User::where('email', 'demo@erphpro.com')->firstOrFail();
+
+        $this->actingAs($admin)->get('http://demo.erphpro.com/admin')
+            ->assertOk()->assertSee('School people')->assertSee('Demo Administrator');
+
+        $teacher = User::factory()->create(['email' => 'teacher@example.com']);
+        $admin->schools()->first()->members()->attach($teacher->id, ['role' => 'teacher', 'status' => 'active']);
+
+        $this->actingAs($teacher)->get('http://demo.erphpro.com/admin')->assertForbidden();
+    }
 }
