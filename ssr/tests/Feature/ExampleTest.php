@@ -33,6 +33,22 @@ class ExampleTest extends TestCase
         $this->get('/owner/login')->assertOk()->assertSee('Platform owner');
     }
 
+    public function test_google_redirect_fails_clearly_when_credentials_are_not_configured(): void
+    {
+        $this->seed();
+        $this->get('http://demo.erphpro.com/auth/google/redirect')
+            ->assertStatus(503);
+    }
+
+    public function test_authenticated_school_user_can_log_out_and_invalidate_session(): void
+    {
+        $this->seed();
+        $user = User::where('email', 'demo@erphpro.com')->firstOrFail();
+        $this->actingAs($user)->post('http://demo.erphpro.com/logout')
+            ->assertRedirect(route('school.home'));
+        $this->assertGuest();
+    }
+
     public function test_a_school_member_can_open_their_workspace(): void
     {
         $this->seed();

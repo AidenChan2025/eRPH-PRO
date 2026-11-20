@@ -25,6 +25,7 @@ Route::middleware('school')->group(function () {
     Route::get('/login', [GoogleAuthController::class, 'show'])->name('login');
     Route::get('/auth/google/redirect', [GoogleAuthController::class, 'redirect'])->name('auth.google.redirect');
     Route::middleware(['auth', 'school.member'])->get('/workspace', WorkspaceController::class)->name('workspace.dashboard');
+    Route::middleware(['auth'])->post('/logout', [GoogleAuthController::class, 'logout'])->name('logout');
     Route::middleware(['auth', 'school.member'])->group(function () {
         Route::get('/profile', [TeacherProfileController::class, 'edit'])->name('teacher.profile.edit');
         Route::put('/profile', [TeacherProfileController::class, 'update'])->name('teacher.profile.update');

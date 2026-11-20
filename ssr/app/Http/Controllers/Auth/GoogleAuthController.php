@@ -102,6 +102,15 @@ class GoogleAuthController extends Controller
         return redirect()->route('workspace.dashboard');
     }
 
+    public function logout(Request $request)
+    {
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('school.home');
+    }
+
     private function schoolFromHost(Request $request): ?School
     {
         $host = strtolower($request->getHost());
