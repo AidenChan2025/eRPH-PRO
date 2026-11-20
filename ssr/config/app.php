@@ -14,6 +14,7 @@ return [
     */
 
     'name' => env('APP_NAME', 'Laravel'),
+    'release_version' => env('RELEASE_VERSION', 'development'),
 
     /*
     |--------------------------------------------------------------------------

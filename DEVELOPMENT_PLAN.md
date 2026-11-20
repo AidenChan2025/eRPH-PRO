@@ -429,3 +429,5 @@ The current demo workspace is intentionally a foundation, not a production migra
 Firebase is explicitly out of the new system scope. Laravel SQL is the sole production data source, authentication boundary and reporting source. The old Firebase project is not connected, migrated automatically or used for dual writes; its code remains only as historical reference.
 
 The exact workbook field and workflow mapping is documented in `docs/RPH_FORMAT_MAPPING.md`, based on the supplied teacher and school-level Google Sheets. The current RPH version JSON remains extensible until all school-specific fields are migrated into the UI and renderer.
+
+The SSR baseline now exposes `/health` with database status and `RELEASE_VERSION`; Plesk deployment checks must call this endpoint after migrations and cache refresh before any domain cutover.

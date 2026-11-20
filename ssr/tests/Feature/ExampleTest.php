@@ -21,6 +21,13 @@ class ExampleTest extends TestCase
         $response->assertOk()->assertSee('eRPH Pro Demo School')->assertSee('School workspace');
     }
 
+    public function test_health_endpoint_reports_the_sql_connection_and_release(): void
+    {
+        $response = $this->get('/health');
+
+        $response->assertOk()->assertJsonPath('status', 'ok')->assertJsonPath('database', 'ok');
+    }
+
     public function test_a_school_member_can_open_their_workspace(): void
     {
         $this->seed();
