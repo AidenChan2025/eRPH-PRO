@@ -24,16 +24,18 @@ class GoogleAuthController extends Controller
         return view('auth.owner-login');
     }
 
-    public function redirect()
+    public function redirect(Request $request)
     {
         abort_unless(config('services.google.client_id') && config('services.google.client_secret'), 503, 'Google Workspace login is not configured yet.');
+        $request->session()->put('auth.school_subdomain', $request->attributes->get('school')?->subdomain);
 
         return Socialite::driver('google')->scopes(['openid', 'email', 'profile'])->redirect();
     }
 
-    public function redirectOwner()
+    public function redirectOwner(Request $request)
     {
         abort_unless(config('services.google.client_id') && config('services.google.client_secret'), 503, 'Google Workspace login is not configured yet.');
+        $request->session()->put('auth.school_subdomain', null);
 
         return Socialite::driver('google')->scopes(['openid', 'email', 'profile'])->redirect();
     }
@@ -54,6 +56,12 @@ class GoogleAuthController extends Controller
         }
 
         $school = $request->attributes->get('school') ?: $this->schoolFromHost($request);
+        if (! $school && $request->session()->has('auth.school_subdomain')) {
+            $school = School::query()
+                ->where('subdomain', $request->session()->pull('auth.school_subdomain'))
+                ->where('is_active', true)
+                ->first();
+        }
         $user = User::where('google_subject', $googleUser->getId())->first();
 
         if (! $user) {

@@ -29,10 +29,13 @@ Keep these values in Plesk or server secrets, never in GitHub:
     SESSION_DRIVER=database
     CACHE_STORE=database
     QUEUE_CONNECTION=database
+    SESSION_DOMAIN=.erphpro.com
     GOOGLE_CLIENT_ID=<Google OAuth client id>
     GOOGLE_CLIENT_SECRET=<Google OAuth client secret>
     GOOGLE_REDIRECT_URI=https://erphpro.com/auth/google/callback
     GOOGLE_WORKSPACE_DOMAIN=<optional Workspace domain>
+
+The session domain must cover the base domain and school subdomains so the single OAuth callback can restore the school selected before Google sign-in.
 
 ## Git deployment
 
