@@ -23,6 +23,7 @@ class User extends Authenticatable
         'name',
         'email',
         'google_subject',
+        'platform_role',
         'password',
     ];
 

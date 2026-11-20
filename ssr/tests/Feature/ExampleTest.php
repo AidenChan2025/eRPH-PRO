@@ -196,4 +196,13 @@ class ExampleTest extends TestCase
         $this->assertSame('Kasih Sayang', $version->content['civic_value']);
         $this->assertSame('Bahasa', $version->content['emk']);
     }
+
+    public function test_only_a_platform_owner_can_open_the_owner_school_overview(): void
+    {
+        $this->seed();
+        $user = User::where('email', 'demo@erphpro.com')->firstOrFail();
+        $this->actingAs($user)->get('/owner')->assertForbidden();
+        $user->update(['platform_role' => 'owner']);
+        $this->actingAs($user)->get('/owner')->assertOk()->assertSee('eRPH Pro Demo School');
+    }
 }

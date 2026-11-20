@@ -436,4 +436,6 @@ The repository includes `scripts/deploy-ssr.sh` as the controlled Plesk hook. It
 
 Explicit role-to-permission mappings now live in `ssr/config/permissions.php`, with a `permission` middleware alias. New features should add a permission name first, then protect routes with that permission; role labels alone are not the long-term authorization contract.
 
+Platform Owner identity is separate from school membership through `users.platform_role`. The initial `/owner` overview is read-only and lists school tenants; future support sessions must add reason, expiry and audit records before entering a school context.
+
 Future timetable research and the reserved internal solver/API boundary are recorded in `docs/TIMETABLE_RESEARCH_MY.md`. Timetabling is intentionally not activated in the current RPH release; school-specific bell slots are the only current integration point.

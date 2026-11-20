@@ -10,9 +10,11 @@ use App\Http\Controllers\HealthController;
 use App\Http\Controllers\TeacherProfileController;
 use App\Http\Controllers\SchoolSettingsController;
 use App\Http\Controllers\LessonPlanReviewController;
+use App\Http\Controllers\OwnerController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/health', HealthController::class)->name('health');
+Route::middleware(['auth', 'platform.owner'])->get('/owner', OwnerController::class)->name('owner.dashboard');
 
 Route::middleware('school')->group(function () {
     Route::get('/login', [GoogleAuthController::class, 'show'])->name('login');
