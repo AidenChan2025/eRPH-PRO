@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\LessonPlan;
 use App\Models\TeacherProfile;
+use App\Models\SchoolSetting;
+use App\Models\LessonPlanSubmission;
 use App\Services\AuditLogger;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -54,5 +56,27 @@ class LessonPlanController extends Controller
         $auditLogger->record('lesson_plan.created', $school, LessonPlan::class, (string) $plan->id, ['version' => 1]);
 
         return redirect()->route('rph.create')->with('status', 'Draft lesson plan saved.');
+    }
+
+    public function submit(Request $request, LessonPlan $lessonPlan, AuditLogger $auditLogger)
+    {
+        $school = $request->attributes->get('school');
+        abort_unless($lessonPlan->school_id === $school->id, 404);
+        $profile = TeacherProfile::where('school_id', $school->id)->where('user_id', $request->user()->id)->firstOrFail();
+        abort_unless($lessonPlan->teacher_profile_id === $profile->id, 403);
+
+        $settings = SchoolSetting::firstOrCreate(['school_id' => $school->id]);
+        $deadline = $settings->active_week_deadline;
+        $submittedAt = now();
+        $status = $deadline && $submittedAt->startOfDay()->gt($deadline->startOfDay()) ? 'late' : 'on_time';
+
+        LessonPlanSubmission::updateOrCreate(
+            ['lesson_plan_id' => $lessonPlan->id, 'week_no' => $settings->active_week],
+            ['school_id' => $school->id, 'teacher_profile_id' => $profile->id, 'deadline' => $deadline, 'submitted_at' => $submittedAt, 'status' => $status]
+        );
+        $lessonPlan->update(['status' => 'submitted', 'submitted_at' => $submittedAt]);
+        $auditLogger->record('lesson_plan.submitted', $school, LessonPlan::class, (string) $lessonPlan->id, ['week_no' => $settings->active_week, 'status' => $status]);
+
+        return redirect()->route('workspace.dashboard')->with('status', 'Lesson plan submitted for review.');
     }
 }

@@ -32,6 +32,11 @@ class DatabaseSeeder extends Seeder
             ['position' => 'School Administrator', 'employment_status' => 'active']
         );
 
+        \App\Models\SchoolSetting::query()->updateOrCreate(
+            ['school_id' => $school->id],
+            ['academic_year' => 2026, 'total_weeks' => 48, 'active_week' => 41, 'submission_weekday' => 'Friday']
+        );
+
         User::factory()->create([
             'name' => 'Test User',
             'email' => 'test@example.com',

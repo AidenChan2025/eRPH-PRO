@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Models\User;
+use App\Models\LessonPlan;
 use Tests\TestCase;
 
 class ExampleTest extends TestCase
@@ -74,5 +75,20 @@ class ExampleTest extends TestCase
 
         $this->actingAs($admin)->get('http://demo.erphpro.com/reports')
             ->assertOk()->assertSee('Submission overview')->assertSee('Active teachers');
+    }
+
+    public function test_a_teacher_can_submit_a_saved_rph_for_the_configured_week(): void
+    {
+        $this->seed();
+        $user = User::where('email', 'demo@erphpro.com')->firstOrFail();
+        $this->actingAs($user)->post('http://demo.erphpro.com/rph', [
+            'lesson_date' => '2026-11-20', 'subject' => 'Science', 'class_name' => '5U', 'title' => 'Matter',
+        ]);
+        $plan = LessonPlan::firstOrFail();
+
+        $this->actingAs($user)->post("http://demo.erphpro.com/rph/{$plan->id}/submit")
+            ->assertRedirect(route('workspace.dashboard'));
+        $this->assertDatabaseHas('lesson_plans', ['id' => $plan->id, 'status' => 'submitted']);
+        $this->assertDatabaseHas('lesson_plan_submissions', ['lesson_plan_id' => $plan->id, 'week_no' => 41]);
     }
 }

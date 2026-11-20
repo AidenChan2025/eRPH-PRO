@@ -16,6 +16,7 @@ Route::middleware('school')->group(function () {
     Route::middleware(['auth', 'school.member'])->group(function () {
         Route::get('/rph/create', [LessonPlanController::class, 'create'])->name('rph.create');
         Route::post('/rph', [LessonPlanController::class, 'store'])->name('rph.store');
+        Route::post('/rph/{lessonPlan}/submit', [LessonPlanController::class, 'submit'])->name('rph.submit');
     });
     Route::middleware(['auth', 'school.member:school_admin,principal,vice_principal'])->get('/reports', SchoolReportController::class)->name('school.reports');
     Route::middleware(['auth', 'school.member:school_admin,principal,vice_principal'])->group(function () {
