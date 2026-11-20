@@ -11,10 +11,12 @@ use App\Http\Controllers\TeacherProfileController;
 use App\Http\Controllers\SchoolSettingsController;
 use App\Http\Controllers\LessonPlanReviewController;
 use App\Http\Controllers\OwnerController;
+use App\Http\Controllers\OwnerAuditController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/health', HealthController::class)->name('health');
 Route::middleware(['auth', 'platform.owner'])->get('/owner', OwnerController::class)->name('owner.dashboard');
+Route::middleware(['auth', 'platform.owner'])->get('/owner/audit', OwnerAuditController::class)->name('owner.audit');
 
 Route::middleware('school')->group(function () {
     Route::get('/login', [GoogleAuthController::class, 'show'])->name('login');

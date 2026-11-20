@@ -205,4 +205,13 @@ class ExampleTest extends TestCase
         $user->update(['platform_role' => 'owner']);
         $this->actingAs($user)->get('/owner')->assertOk()->assertSee('eRPH Pro Demo School');
     }
+
+    public function test_platform_owner_can_view_cross_school_audit_activity(): void
+    {
+        $this->seed();
+        $user = User::where('email', 'demo@erphpro.com')->firstOrFail();
+        $user->update(['platform_role' => 'owner']);
+        \App\Services\AuditLogger::class;
+        $this->actingAs($user)->get('/owner/audit')->assertOk()->assertSee('Audit activity');
+    }
 }
