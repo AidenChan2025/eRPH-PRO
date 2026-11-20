@@ -47,6 +47,24 @@ class GoogleAuthController extends Controller
         return view('auth.identities', ['school' => $request->attributes->get('school'), 'identities' => $request->user()->googleIdentities()->latest()->get()]);
     }
 
+    public function unlinkIdentity(Request $request, GoogleIdentity $identity, AuditLogger $auditLogger)
+    {
+        abort_unless($identity->user_id === $request->user()->id && is_null($identity->unlinked_at), 404);
+        $active = $request->user()->googleIdentities()->get();
+        if ($active->count() < 2) {
+            return back()->withErrors(['identity' => 'You must keep at least one verified Google account linked.']);
+        }
+
+        $wasPrimary = $identity->is_primary;
+        $identity->forceFill(['unlinked_at' => now(), 'is_primary' => false])->save();
+        if ($wasPrimary) {
+            $active->where('id', '!=', $identity->id)->first()?->forceFill(['is_primary' => true])->save();
+        }
+        $auditLogger->record('auth.google_identity_unlinked', $request->attributes->get('school'), User::class, (string) $request->user()->id, ['email' => $identity->email]);
+
+        return back()->with('status', 'Google account unlinked.');
+    }
+
     public function redirectLink(Request $request)
     {
         abort_unless($request->user() && $request->attributes->get('school'), 403);

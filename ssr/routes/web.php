@@ -30,6 +30,7 @@ Route::middleware('school')->group(function () {
     Route::middleware(['auth'])->post('/logout', [GoogleAuthController::class, 'logout'])->name('logout');
     Route::middleware(['auth', 'school.member'])->group(function () {
         Route::get('/account/identities', [GoogleAuthController::class, 'identities'])->name('account.identities');
+        Route::delete('/account/identities/{identity}', [GoogleAuthController::class, 'unlinkIdentity'])->name('account.identities.unlink');
         Route::get('/profile', [TeacherProfileController::class, 'edit'])->name('teacher.profile.edit');
         Route::put('/profile', [TeacherProfileController::class, 'update'])->name('teacher.profile.update');
     });
