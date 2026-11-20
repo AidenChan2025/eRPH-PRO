@@ -13,7 +13,16 @@ if [[ ! -f artisan || ! -f composer.lock ]]; then
   exit 1
 fi
 
+php -r 'if (PHP_VERSION_ID < 80300) { fwrite(STDERR, "SSR deployment aborted: PHP 8.3 or newer is required."); exit(1); }'
+for extension in ctype fileinfo mbstring openssl pdo pdo_mysql tokenizer xml; do
+  if ! php -m | grep -Fxqi "$extension"; then
+    echo "SSR deployment aborted: PHP extension $extension is missing." >&2
+    exit 1
+  fi
+done
+
 composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader
+composer check-platform-reqs --no-dev
 php artisan migrate --force
 php artisan optimize:clear
 php artisan config:cache
