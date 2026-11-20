@@ -44,12 +44,19 @@ class LessonPlanController extends Controller
             'title' => ['required', 'string', 'max:240'],
             'start_time' => ['nullable', 'date_format:H:i'],
             'end_time' => ['nullable', 'date_format:H:i', 'after:start_time'],
+            'civic_value' => ['nullable', 'string', 'max:160'], 'civic_topic' => ['nullable', 'string', 'max:240'],
             'objectives' => ['nullable', 'string', 'max:10000'],
             'activities' => ['nullable', 'string', 'max:20000'],
             'assessment' => ['nullable', 'string', 'max:10000'],
             'reflection' => ['nullable', 'string', 'max:10000'],
             'homework' => ['nullable', 'string', 'max:10000'],
             'materials' => ['nullable', 'string', 'max:10000'],
+            'emk' => ['nullable', 'string', 'max:5000'], 'pak21' => ['nullable', 'string', 'max:5000'],
+            'assessment_written' => ['nullable', 'string', 'max:3000'], 'assessment_oral' => ['nullable', 'string', 'max:3000'],
+            'assessment_observation' => ['nullable', 'string', 'max:3000'], 'moral_values' => ['nullable', 'string', 'max:3000'],
+            'student_count' => ['nullable', 'integer', 'min:0', 'max:500'], 'enrichment' => ['nullable', 'string', 'max:5000'],
+            'remedial' => ['nullable', 'string', 'max:5000'], 'kbat' => ['nullable', 'string', 'max:1000'],
+            'multiple_intelligences' => ['nullable', 'string', 'max:2000'], 'notes' => ['nullable', 'string', 'max:5000'],
         ]);
 
         $plan = DB::transaction(function () use ($data, $school, $profile, $request) {
@@ -62,7 +69,7 @@ class LessonPlanController extends Controller
                 'status' => 'draft',
                 'current_version' => 1,
             ]);
-            $content = collect($data)->only(['title', 'start_time', 'end_time', 'objectives', 'activities', 'assessment', 'reflection', 'homework', 'materials'])->toArray();
+            $content = collect($data)->only(['title', 'start_time', 'end_time', 'civic_value', 'civic_topic', 'objectives', 'activities', 'assessment', 'reflection', 'homework', 'materials', 'emk', 'pak21', 'assessment_written', 'assessment_oral', 'assessment_observation', 'moral_values', 'student_count', 'enrichment', 'remedial', 'kbat', 'multiple_intelligences', 'notes'])->toArray();
             $plan->versions()->create(['version' => 1, 'created_by' => $request->user()->id, 'source' => 'manual', 'content' => $content]);
             return $plan;
         });
@@ -103,9 +110,17 @@ class LessonPlanController extends Controller
         $data = $request->validate([
             'lesson_date' => ['required', 'date'], 'subject' => ['required', 'string', 'max:120'],
             'class_name' => ['required', 'string', 'max:120'], 'title' => ['required', 'string', 'max:240'],
+            'start_time' => ['nullable', 'date_format:H:i'], 'end_time' => ['nullable', 'date_format:H:i', 'after:start_time'],
+            'civic_value' => ['nullable', 'string', 'max:160'], 'civic_topic' => ['nullable', 'string', 'max:240'],
             'objectives' => ['nullable', 'string', 'max:10000'], 'activities' => ['nullable', 'string', 'max:20000'],
             'assessment' => ['nullable', 'string', 'max:10000'], 'reflection' => ['nullable', 'string', 'max:10000'],
             'homework' => ['nullable', 'string', 'max:10000'], 'materials' => ['nullable', 'string', 'max:10000'],
+            'emk' => ['nullable', 'string', 'max:5000'], 'pak21' => ['nullable', 'string', 'max:5000'],
+            'assessment_written' => ['nullable', 'string', 'max:3000'], 'assessment_oral' => ['nullable', 'string', 'max:3000'],
+            'assessment_observation' => ['nullable', 'string', 'max:3000'], 'moral_values' => ['nullable', 'string', 'max:3000'],
+            'student_count' => ['nullable', 'integer', 'min:0', 'max:500'], 'enrichment' => ['nullable', 'string', 'max:5000'],
+            'remedial' => ['nullable', 'string', 'max:5000'], 'kbat' => ['nullable', 'string', 'max:1000'],
+            'multiple_intelligences' => ['nullable', 'string', 'max:2000'], 'notes' => ['nullable', 'string', 'max:5000'],
             'change_note' => ['nullable', 'string', 'max:500'],
         ]);
         $nextVersion = $lessonPlan->current_version + 1;
@@ -114,7 +129,7 @@ class LessonPlanController extends Controller
             $lessonPlan->versions()->create([
                 'version' => $nextVersion, 'created_by' => $request->user()->id, 'source' => 'manual',
                 'change_note' => $data['change_note'] ?? null,
-                'content' => collect($data)->only(['title', 'objectives', 'activities', 'assessment', 'reflection', 'homework', 'materials'])->toArray(),
+                'content' => collect($data)->only(['title', 'start_time', 'end_time', 'civic_value', 'civic_topic', 'objectives', 'activities', 'assessment', 'reflection', 'homework', 'materials', 'emk', 'pak21', 'assessment_written', 'assessment_oral', 'assessment_observation', 'moral_values', 'student_count', 'enrichment', 'remedial', 'kbat', 'multiple_intelligences', 'notes'])->toArray(),
             ]);
         });
         $auditLogger->record('lesson_plan.version_created', $school, LessonPlan::class, (string) $lessonPlan->id, ['version' => $nextVersion]);
