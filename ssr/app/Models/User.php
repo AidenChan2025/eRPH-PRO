@@ -52,7 +52,7 @@ class User extends Authenticatable
     public function schools(): BelongsToMany
     {
         return $this->belongsToMany(School::class, 'school_memberships')
-            ->withPivot(['role', 'status', 'joined_at', 'left_at'])
+            ->withPivot(['role', 'status', 'joined_at', 'left_at', 'expires_at', 'access_reason'])
             ->withTimestamps();
     }
 }

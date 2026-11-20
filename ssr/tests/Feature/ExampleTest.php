@@ -94,6 +94,19 @@ class ExampleTest extends TestCase
         $this->actingAs($teacher)->get('http://demo.erphpro.com/reports')->assertForbidden();
     }
 
+    public function test_expired_temporary_school_access_is_rejected(): void
+    {
+        $this->seed();
+        $visitor = User::factory()->create(['email' => 'inspector@example.com']);
+        $school = \App\Models\School::where('subdomain', 'demo')->firstOrFail();
+        $school->members()->attach($visitor->id, [
+            'role' => 'inspector', 'status' => 'active', 'expires_at' => now()->subMinute(),
+            'access_reason' => 'Annual inspection',
+        ]);
+
+        $this->actingAs($visitor)->get('http://demo.erphpro.com/workspace')->assertForbidden();
+    }
+
     public function test_a_teacher_can_submit_a_saved_rph_for_the_configured_week(): void
     {
         $this->seed();

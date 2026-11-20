@@ -20,7 +20,9 @@ class RequireSchoolMembership
 
         $membership = $school->members()->whereKey($user->getKey())->wherePivot('status', 'active')->first();
 
-        if (!$membership || ($roles && !in_array($membership->pivot->role, $roles, true))) {
+        $expired = $membership?->pivot?->expires_at && now()->greaterThan($membership->pivot->expires_at);
+
+        if (!$membership || $expired || ($roles && !in_array($membership->pivot->role, $roles, true))) {
             abort(403);
         }
 
