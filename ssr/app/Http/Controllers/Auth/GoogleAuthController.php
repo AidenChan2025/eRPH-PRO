@@ -62,11 +62,15 @@ class GoogleAuthController extends Controller
         }
         $auditLogger->record('auth.google_identity_unlinked', $request->attributes->get('school'), User::class, (string) $request->user()->id, ['email' => $identity->email]);
 
-        return back()->with('status', 'Google account unlinked.');
+        $school = $request->attributes->get('school');
+        $url = $school ? 'https://'.$school->subdomain.'.'.config('app.school_base_domain', 'erphpro.com').'/account/identities' : route('account.identities');
+
+        return redirect()->to($url)->with('status', 'Google account unlinked.');
     }
 
     public function redirectLink(Request $request)
     {
+        abort_unless(config('services.google.client_id') && config('services.google.client_secret'), 503, 'Google Workspace login is not configured yet.');
         abort_unless($request->user() && $request->attributes->get('school'), 403);
         $request->session()->put('auth.link_identity', true);
         $request->session()->put('auth.school_subdomain', $request->attributes->get('school')->subdomain);

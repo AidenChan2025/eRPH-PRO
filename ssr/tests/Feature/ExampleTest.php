@@ -270,4 +270,39 @@ class ExampleTest extends TestCase
         \App\Services\AuditLogger::class;
         $this->actingAs($user)->get('/owner/audit')->assertOk()->assertSee('Audit activity');
     }
+
+    public function test_teacher_can_view_google_identity_settings_but_cannot_unlink_the_only_identity(): void
+    {
+        $this->seed();
+        $user = User::where('email', 'demo@erphpro.com')->firstOrFail();
+        $identity = \App\Models\GoogleIdentity::create([
+            'user_id' => $user->id, 'subject' => 'demo-subject', 'email' => $user->email,
+            'email_type' => 'workspace', 'is_primary' => true, 'verified_at' => now(),
+        ]);
+
+        $this->actingAs($user)->get('http://demo.erphpro.com/account/identities')->assertOk()->assertSee($user->email);
+        $this->actingAs($user)->delete("http://demo.erphpro.com/account/identities/{$identity->id}")
+            ->assertSessionHasErrors('identity');
+        $this->assertDatabaseHas('google_identities', ['id' => $identity->id, 'unlinked_at' => null]);
+    }
+
+    public function test_unlinking_primary_google_identity_promotes_the_remaining_identity_and_audits(): void
+    {
+        $this->seed();
+        $user = User::where('email', 'demo@erphpro.com')->firstOrFail();
+        $primary = \App\Models\GoogleIdentity::create([
+            'user_id' => $user->id, 'subject' => 'primary-subject', 'email' => $user->email,
+            'email_type' => 'workspace', 'is_primary' => true, 'verified_at' => now(),
+        ]);
+        $backup = \App\Models\GoogleIdentity::create([
+            'user_id' => $user->id, 'subject' => 'backup-subject', 'email' => 'backup@gmail.com',
+            'email_type' => 'personal', 'is_primary' => false, 'verified_at' => now(),
+        ]);
+
+        $this->actingAs($user)->delete("http://demo.erphpro.com/account/identities/{$primary->id}")
+            ->assertRedirect('https://demo.erphpro.com/account/identities');
+        $this->assertDatabaseHas('google_identities', ['id' => $primary->id, 'is_primary' => false]);
+        $this->assertDatabaseHas('google_identities', ['id' => $backup->id, 'is_primary' => true, 'unlinked_at' => null]);
+        $this->assertDatabaseHas('audit_logs', ['action' => 'auth.google_identity_unlinked', 'actor_id' => $user->id]);
+    }
 }
