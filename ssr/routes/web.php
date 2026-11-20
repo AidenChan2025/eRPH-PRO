@@ -40,6 +40,7 @@ Route::middleware('school')->group(function () {
     Route::middleware(['auth', 'school.member:school_admin,principal,vice_principal', 'permission:school.users.manage'])->group(function () {
         Route::get('/admin', SchoolAdminController::class)->name('school.admin');
         Route::post('/admin/people', [SchoolAdminController::class, 'store'])->name('school.admin.people.store');
+        Route::put('/admin/people/{user}', [SchoolAdminController::class, 'updateMember'])->name('school.admin.people.update');
         Route::get('/admin/access', [SchoolAdminController::class, 'access'])->name('school.admin.access');
         Route::post('/admin/access', [SchoolAdminController::class, 'grantAccess'])->name('school.admin.access.grant');
         Route::get('/admin/settings', [SchoolSettingsController::class, 'edit'])->name('school.settings');

@@ -20,8 +20,9 @@ class SchoolAdminController extends Controller
             ->orderBy('employment_status')
             ->orderBy('staff_no')
             ->get();
+        $memberRoles = $school->members()->get()->keyBy('id');
 
-        return view('school-admin.dashboard', compact('school', 'teachers'));
+        return view('school-admin.dashboard', compact('school', 'teachers', 'memberRoles'));
     }
 
     public function store(Request $request, AuditLogger $auditLogger)
@@ -49,6 +50,51 @@ class SchoolAdminController extends Controller
         $auditLogger->record('school.teacher_profile_upserted', $school, TeacherProfile::class, (string) $profile->id, ['email' => $email, 'role' => $data['role']]);
 
         return redirect()->route('school.admin')->with('status', 'School account saved.');
+    }
+
+    public function updateMember(Request $request, User $user, AuditLogger $auditLogger)
+    {
+        $school = $request->attributes->get('school');
+        $membership = $school->members()->whereKey($user->id)->first();
+        abort_unless($membership, 404);
+
+        $data = $request->validate([
+            'role' => ['required', 'in:teacher,school_admin,principal,vice_principal'],
+            'status' => ['required', 'in:active,inactive'],
+        ]);
+
+        if ($user->is($request->user()) && ($data['status'] !== 'active' || $data['role'] !== $membership->pivot->role)) {
+            return back()->withErrors(['member' => 'You cannot deactivate or change your own school role.']);
+        }
+
+        $managementRoles = ['school_admin', 'principal', 'vice_principal'];
+        $wasManagement = in_array($membership->pivot->role, $managementRoles, true) && $membership->pivot->status === 'active';
+        $willBeManagement = in_array($data['role'], $managementRoles, true) && $data['status'] === 'active';
+        $managementCount = $school->members()
+            ->wherePivot('status', 'active')
+            ->whereIn('role', $managementRoles)
+            ->count();
+
+        if ($wasManagement && ! $willBeManagement && $managementCount <= 1) {
+            return back()->withErrors(['member' => 'A school must retain at least one active management account.']);
+        }
+
+        $school->members()->updateExistingPivot($user->id, [
+            'role' => $data['role'],
+            'status' => $data['status'],
+            'left_at' => $data['status'] === 'active' ? null : now(),
+        ]);
+
+        $profile = TeacherProfile::where('school_id', $school->id)->where('user_id', $user->id)->first();
+        if ($profile) {
+            $profile->update(['employment_status' => $data['status'] === 'active' ? 'active' : 'inactive']);
+        }
+
+        $auditLogger->record('school.member_updated', $school, User::class, (string) $user->id, [
+            'role' => $data['role'], 'status' => $data['status'],
+        ]);
+
+        return redirect()->route('school.admin')->with('status', 'School account updated.');
     }
 
     public function access(Request $request)

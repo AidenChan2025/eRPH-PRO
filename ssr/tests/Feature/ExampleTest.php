@@ -76,6 +76,29 @@ class ExampleTest extends TestCase
         $this->actingAs($teacher)->get('http://demo.erphpro.com/admin')->assertForbidden();
     }
 
+    public function test_school_admin_can_update_member_role_and_status_with_audit(): void
+    {
+        $this->seed();
+        $admin = User::where('email', 'demo@erphpro.com')->firstOrFail();
+        $teacher = User::factory()->create(['email' => 'managed-teacher@example.com']);
+        $school = \App\Models\School::where('subdomain', 'demo')->firstOrFail();
+        $school->members()->attach($teacher->id, ['role' => 'teacher', 'status' => 'active']);
+        \App\Models\TeacherProfile::create([
+            'school_id' => $school->id, 'user_id' => $teacher->id, 'employment_status' => 'active',
+        ]);
+
+        $this->actingAs($admin)->put("http://demo.erphpro.com/admin/people/{$teacher->id}", [
+            'role' => 'vice_principal', 'status' => 'inactive',
+        ])->assertRedirect(route('school.admin'));
+
+        $this->assertDatabaseHas('school_memberships', [
+            'school_id' => $school->id, 'user_id' => $teacher->id,
+            'role' => 'vice_principal', 'status' => 'inactive',
+        ]);
+        $this->assertDatabaseHas('teacher_profiles', ['user_id' => $teacher->id, 'employment_status' => 'inactive']);
+        $this->assertDatabaseHas('audit_logs', ['action' => 'school.member_updated']);
+    }
+
     public function test_a_teacher_can_save_a_versioned_rph_draft(): void
     {
         $this->seed();
