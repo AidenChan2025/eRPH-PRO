@@ -445,3 +445,5 @@ Future timetable research and the reserved internal solver/API boundary are reco
 The future Hal Ehwal Murid/student affairs scope is documented in `docs/STUDENT_AFFAIRS_RESEARCH.md`. It covers student profiles, guardians, enrolment history, attendance thresholds, discipline cases, welfare/ counselling records, dashboards, exports, permissions and retention/audit requirements.
 
 This module is deliberately deferred until the RPH and school administration foundation is accepted. Its future SQL tables must remain school-scoped, and sensitive welfare/discipline records must use separate permissions and audit coverage. No Firebase dependency is planned.
+
+The Plesk deployment contract, environment checklist, preview-first cutover order and document-root requirement are recorded in docs/PLESK_SSR_DEPLOYMENT.md. Production readiness remains unverified until the live webhook, ssr/public document root, /health, SSL, subdomain and Google Workspace login are tested on the actual server.
