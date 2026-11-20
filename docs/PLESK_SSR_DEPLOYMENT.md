@@ -64,6 +64,10 @@ On the subscription's **Hosting & DNS > Hosting** page, set **Document root** to
 
 After the hook completes, verify these exact responses from outside the server:
 
+The repeatable command is:
+
+    bash scripts/verify-ssr-production.sh https://erphpro.com
+
 | Check | Expected evidence |
 | --- | --- |
 | `GET /health` | HTTP 200, JSON, `status=ok`, `database=ok`, `cache=ok` |
