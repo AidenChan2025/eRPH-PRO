@@ -138,6 +138,16 @@ class ExampleTest extends TestCase
         $this->assertDatabaseHas('audit_logs', ['action' => 'teacher.profile_updated']);
     }
 
+    public function test_school_admin_can_configure_school_specific_lesson_times(): void
+    {
+        $this->seed();
+        $admin = User::where('email', 'demo@erphpro.com')->firstOrFail();
+        $this->actingAs($admin)->post('http://demo.erphpro.com/admin/settings/timetable', [
+            'day_of_week' => 'Monday', 'starts_at' => '07:40', 'ends_at' => '08:10', 'label' => 'Period 1', 'sort_order' => 1,
+        ])->assertRedirect(route('school.settings'));
+        $this->assertDatabaseHas('school_timetable_slots', ['day_of_week' => 'Monday', 'label' => 'Period 1']);
+    }
+
     public function test_a_teacher_can_submit_a_saved_rph_for_the_configured_week(): void
     {
         $this->seed();
