@@ -15,13 +15,15 @@ use App\Http\Controllers\OwnerAuditController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/health', HealthController::class)->name('health');
+Route::get('/owner/login', [GoogleAuthController::class, 'showOwner'])->name('owner.login');
+Route::get('/owner/auth/google/redirect', [GoogleAuthController::class, 'redirectOwner'])->name('owner.auth.google.redirect');
+Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->name('auth.google.callback');
 Route::middleware(['auth', 'platform.owner'])->get('/owner', OwnerController::class)->name('owner.dashboard');
 Route::middleware(['auth', 'platform.owner'])->get('/owner/audit', OwnerAuditController::class)->name('owner.audit');
 
 Route::middleware('school')->group(function () {
     Route::get('/login', [GoogleAuthController::class, 'show'])->name('login');
     Route::get('/auth/google/redirect', [GoogleAuthController::class, 'redirect'])->name('auth.google.redirect');
-    Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->name('auth.google.callback');
     Route::middleware(['auth', 'school.member'])->get('/workspace', WorkspaceController::class)->name('workspace.dashboard');
     Route::middleware(['auth', 'school.member'])->group(function () {
         Route::get('/profile', [TeacherProfileController::class, 'edit'])->name('teacher.profile.edit');

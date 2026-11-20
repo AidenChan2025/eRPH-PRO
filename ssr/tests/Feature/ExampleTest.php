@@ -28,6 +28,11 @@ class ExampleTest extends TestCase
         $response->assertOk()->assertJsonPath('status', 'ok')->assertJsonPath('database', 'ok')->assertJsonPath('cache', 'ok');
     }
 
+    public function test_owner_login_entrypoint_is_available_on_the_base_domain(): void
+    {
+        $this->get('/owner/login')->assertOk()->assertSee('Platform owner');
+    }
+
     public function test_a_school_member_can_open_their_workspace(): void
     {
         $this->seed();
