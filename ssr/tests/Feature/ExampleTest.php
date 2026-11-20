@@ -25,7 +25,7 @@ class ExampleTest extends TestCase
     {
         $response = $this->get('/health');
 
-        $response->assertOk()->assertJsonPath('status', 'ok')->assertJsonPath('database', 'ok');
+        $response->assertOk()->assertJsonPath('status', 'ok')->assertJsonPath('database', 'ok')->assertJsonPath('cache', 'ok');
     }
 
     public function test_a_school_member_can_open_their_workspace(): void
