@@ -4,6 +4,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use App\Http\Middleware\ResolveSchool;
+use App\Http\Middleware\RequireSchoolMembership;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -12,7 +13,10 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->alias(['school' => ResolveSchool::class]);
+        $middleware->alias([
+            'school' => ResolveSchool::class,
+            'school.member' => RequireSchoolMembership::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

@@ -22,7 +22,7 @@ class DatabaseSeeder extends Seeder
 
         $user = \App\Models\User::query()->updateOrCreate(
             ['email' => 'demo@erphpro.com'],
-            ['name' => 'Demo Administrator']
+            ['name' => 'Demo Administrator', 'password' => 'demo-only-password']
         );
 
         $school->members()->syncWithoutDetaching([$user->id => ['role' => 'school_admin', 'status' => 'active']]);
