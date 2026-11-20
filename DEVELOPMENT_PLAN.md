@@ -331,3 +331,82 @@ No production release should be considered complete until:
 - DeepSeek keys are server-only;
 - backups and restore are tested;
 - current required output formats are visually accepted.
+
+## 16. Executable technical baseline
+
+### 16.1 Application stack
+
+- Laravel 12 on the Plesk server's supported PHP 8.3 runtime.
+- Blade templates for server-rendered HTML; Alpine.js or small vanilla modules only for progressive enhancement.
+- MySQL or MariaDB using Laravel migrations, factories and seeders.
+- Vite may remain as an asset compiler, but JavaScript must not become the application runtime or security boundary.
+- Laravel queues and the Plesk scheduler are reserved for exports, notifications, AI jobs and maintenance tasks.
+
+### 16.2 Request and tenant resolution
+
+Every request passes through this server-side order:
+
+```text
+trusted proxy / HTTPS
+  -> host normalization
+  -> school subdomain resolution
+  -> authenticated user session
+  -> active school membership
+  -> policy and permission check
+  -> controller/service
+  -> Blade SSR response
+```
+
+The application must reject unknown school hosts, inactive memberships and mismatched school context. Controllers must receive a resolved `School` object rather than accepting arbitrary `school_id` input.
+
+### 16.3 Initial database constraints
+
+- UUID or ULID primary keys for externally referenced entities.
+- `school_id` on every school-owned table, with indexes for school and lifecycle status.
+- Foreign keys and restrictive deletes for official records.
+- Soft deletion only where retention policy permits it; official records are archived rather than silently deleted.
+- Unique membership constraint on `(school_id, user_id)`.
+- Unique school slug/subdomain and normalized Google provider subject.
+- Timestamps, actor IDs and version numbers on records that can be reviewed or approved.
+
+The first migrations must cover users, schools, school domains, memberships, roles, permissions, teacher profiles, curriculum items, lesson plans, lesson plan versions, reviews and audit logs before document or AI features are added.
+
+### 16.4 Authentication and authorization baseline
+
+Google Workspace OAuth/OIDC is implemented with a server-side callback, state/nonce validation and provider-subject matching. Email alone is never the account key. Session rotation occurs after login, and school membership is rechecked on every request.
+
+Authorization uses policies and explicit permission names such as `school.users.view`, `teacher.records.view`, `lesson_plans.review`, `reports.export` and `support.access`. Platform Owner impersonation/support access requires a reason and creates an audit event before access is granted.
+
+### 16.5 Deployment contract
+
+The GitHub `main` branch deploys to Plesk through the configured GitHub push webhook. Deployment must run a controlled script with:
+
+1. dependency installation from the lock file;
+2. safe environment validation;
+3. database migrations with a maintenance/compatibility strategy;
+4. cache/config/route refresh;
+5. queue restart when applicable;
+6. a health check and deployment log;
+7. a documented rollback target.
+
+Secrets remain in Plesk environment/configuration and are never committed to GitHub. The first Laravel deployment must be staged under a non-production path or protected preview host before the domain is switched to the new document root.
+
+### 16.6 Development order
+
+The implementation order is deliberately strict:
+
+1. framework skeleton and environment checks;
+2. tenant host resolution and database migrations;
+3. Google login, sessions and membership policies;
+4. audit log and support-access controls;
+5. school and teacher record cabinet;
+6. lesson-plan workflow and preserved formats;
+7. reports/dashboard queries;
+8. export, Drive integration and AI quotas;
+9. migration tooling and school acceptance.
+
+No DeepSeek integration, billing flow or student module should be built before the first five items pass isolation and authorization tests.
+
+### 16.7 Required automated checks
+
+The new application must include tests for tenant isolation, host resolution, Google callback failure cases, role policies, temporary-account expiry, audit coverage, lesson-plan versioning and SSR responses without JavaScript. A deployment health endpoint must verify database connectivity, cache readiness and the active application release.
