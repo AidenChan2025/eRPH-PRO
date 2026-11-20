@@ -32,6 +32,11 @@ jobs:
       - name: Install Composer dependencies
         run: composer install --no-interaction --prefer-dist
 
+      - name: Initialize test environment
+        run: |
+          cp .env.example .env
+          php artisan key:generate --force
+
       - name: Validate deployment hook
         working-directory: .
         run: bash -n scripts/deploy-ssr.sh
