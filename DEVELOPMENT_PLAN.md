@@ -449,3 +449,7 @@ This module is deliberately deferred until the RPH and school administration fou
 The broader future product map from the supplied school-operations videos is recorded in docs/FUTURE_PRODUCT_ROADMAP_D2-D9.md. Development 1 remains limited to the current RPH and school administration foundation; the roadmap separates later student affairs, teacher operations, co-curricular, PSS, assessment, document automation, resource and AI work into Development 2 through Development 9.
 
 The Plesk deployment contract, environment checklist, preview-first cutover order and document-root requirement are recorded in docs/PLESK_SSR_DEPLOYMENT.md. Production readiness remains unverified until the live webhook, ssr/public document root, /health, SSL, subdomain and Google Workspace login are tested on the actual server.
+
+### 19. Runtime testing policy
+
+The project will not install or run Ollama locally for this product. AI integrations, including the future DeepSeek lesson-plan provider, must be tested in the Plesk PHP environment using server-side secrets, quotas and audit logs. Local verification is limited to PHP/SQL tests, SSR rendering and contract checks; it is not treated as production AI acceptance.
