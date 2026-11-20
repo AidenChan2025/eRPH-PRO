@@ -435,3 +435,5 @@ The SSR baseline now exposes `/health` with database status and `RELEASE_VERSION
 The repository includes `scripts/deploy-ssr.sh` as the controlled Plesk hook. It installs locked production dependencies, runs migrations, refreshes Laravel caches and optionally fails the deployment when the configured `/health` response is not healthy.
 
 Explicit role-to-permission mappings now live in `ssr/config/permissions.php`, with a `permission` middleware alias. New features should add a permission name first, then protect routes with that permission; role labels alone are not the long-term authorization contract.
+
+Future timetable research and the reserved internal solver/API boundary are recorded in `docs/TIMETABLE_RESEARCH_MY.md`. Timetabling is intentionally not activated in the current RPH release; school-specific bell slots are the only current integration point.
