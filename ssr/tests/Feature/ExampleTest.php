@@ -50,4 +50,20 @@ class ExampleTest extends TestCase
 
         $this->actingAs($teacher)->get('http://demo.erphpro.com/admin')->assertForbidden();
     }
+
+    public function test_a_teacher_can_save_a_versioned_rph_draft(): void
+    {
+        $this->seed();
+        $user = User::where('email', 'demo@erphpro.com')->firstOrFail();
+
+        $response = $this->actingAs($user)->post('http://demo.erphpro.com/rph', [
+            'lesson_date' => '2026-11-20', 'subject' => 'Bahasa Melayu', 'class_name' => '5 Bestari',
+            'title' => 'Kata Adjektif', 'objectives' => 'Murid mengenal pasti kata adjektif.',
+            'activities' => 'Perbincangan dan latihan.', 'assessment' => 'Lembaran kerja.',
+        ]);
+
+        $response->assertRedirect(route('rph.create'));
+        $this->assertDatabaseHas('lesson_plans', ['school_id' => 1, 'status' => 'draft', 'current_version' => 1]);
+        $this->assertDatabaseHas('lesson_plan_versions', ['version' => 1, 'source' => 'manual']);
+    }
 }
