@@ -107,6 +107,26 @@ class ExampleTest extends TestCase
         $this->actingAs($visitor)->get('http://demo.erphpro.com/workspace')->assertForbidden();
     }
 
+    public function test_school_management_can_open_temporary_access_page(): void
+    {
+        $this->seed();
+        $admin = User::where('email', 'demo@erphpro.com')->firstOrFail();
+        $this->actingAs($admin)->get('http://demo.erphpro.com/admin/access')
+            ->assertOk()->assertSee('Inspection access');
+    }
+
+    public function test_school_management_can_grant_temporary_access(): void
+    {
+        $this->seed();
+        $admin = User::where('email', 'demo@erphpro.com')->firstOrFail();
+        $this->actingAs($admin)->post('http://demo.erphpro.com/admin/access', [
+            'name' => 'Education Officer', 'email' => 'officer@example.com', 'role' => 'inspector',
+            'expires_at' => now()->addDay()->format('Y-m-d\\TH:i'), 'access_reason' => 'Annual inspection',
+        ])->assertRedirect(route('school.admin.access'));
+        $this->actingAs($admin)->get('http://demo.erphpro.com/admin/access')->assertOk()->assertSee('Education Officer');
+        $this->assertDatabaseHas('school_memberships', ['role' => 'inspector', 'access_reason' => 'Annual inspection']);
+    }
+
     public function test_a_teacher_can_submit_a_saved_rph_for_the_configured_week(): void
     {
         $this->seed();

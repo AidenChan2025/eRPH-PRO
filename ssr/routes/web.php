@@ -25,6 +25,8 @@ Route::middleware('school')->group(function () {
     Route::middleware(['auth', 'school.member:school_admin,principal,vice_principal', 'permission:school.users.manage'])->group(function () {
         Route::get('/admin', SchoolAdminController::class)->name('school.admin');
         Route::post('/admin/people', [SchoolAdminController::class, 'store'])->name('school.admin.people.store');
+        Route::get('/admin/access', [SchoolAdminController::class, 'access'])->name('school.admin.access');
+        Route::post('/admin/access', [SchoolAdminController::class, 'grantAccess'])->name('school.admin.access.grant');
     });
     Route::get('/', SchoolHomeController::class)->name('school.home');
 });
