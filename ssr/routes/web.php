@@ -9,6 +9,7 @@ use App\Http\Controllers\SchoolReportController;
 use App\Http\Controllers\HealthController;
 use App\Http\Controllers\TeacherProfileController;
 use App\Http\Controllers\SchoolSettingsController;
+use App\Http\Controllers\LessonPlanReviewController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/health', HealthController::class)->name('health');
@@ -38,6 +39,10 @@ Route::middleware('school')->group(function () {
         Route::get('/admin/settings', [SchoolSettingsController::class, 'edit'])->name('school.settings');
         Route::put('/admin/settings', [SchoolSettingsController::class, 'update'])->name('school.settings.update');
         Route::post('/admin/settings/timetable', [SchoolSettingsController::class, 'addSlot'])->name('school.settings.timetable.add');
+    });
+    Route::middleware(['auth', 'school.member:school_admin,principal,vice_principal', 'permission:lesson_plans.review'])->group(function () {
+        Route::get('/admin/rph/{lessonPlan}/review', [LessonPlanReviewController::class, 'show'])->name('rph.review');
+        Route::post('/admin/rph/{lessonPlan}/review', [LessonPlanReviewController::class, 'decide'])->name('rph.review.decide');
     });
     Route::get('/', SchoolHomeController::class)->name('school.home');
 });

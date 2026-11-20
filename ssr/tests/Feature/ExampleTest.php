@@ -162,4 +162,21 @@ class ExampleTest extends TestCase
         $this->assertDatabaseHas('lesson_plans', ['id' => $plan->id, 'status' => 'submitted']);
         $this->assertDatabaseHas('lesson_plan_submissions', ['lesson_plan_id' => $plan->id, 'week_no' => 41]);
     }
+
+    public function test_school_management_can_approve_an_rph_and_audit_the_decision(): void
+    {
+        $this->seed();
+        $admin = User::where('email', 'demo@erphpro.com')->firstOrFail();
+        $this->actingAs($admin)->post('http://demo.erphpro.com/rph', [
+            'lesson_date' => '2026-11-20', 'subject' => 'Science', 'class_name' => '5U', 'title' => 'Matter',
+        ]);
+        $plan = \App\Models\LessonPlan::firstOrFail();
+
+        $this->actingAs($admin)->post("http://demo.erphpro.com/admin/rph/{$plan->id}/review", [
+            'decision' => 'approved', 'comment' => 'Meets school format.',
+        ])->assertRedirect(route('rph.review', $plan));
+        $this->assertDatabaseHas('lesson_plans', ['id' => $plan->id, 'status' => 'approved']);
+        $this->assertDatabaseHas('lesson_plan_reviews', ['lesson_plan_id' => $plan->id, 'decision' => 'approved']);
+        $this->assertDatabaseHas('audit_logs', ['action' => 'lesson_plan.review_decided']);
+    }
 }
