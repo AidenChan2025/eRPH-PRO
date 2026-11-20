@@ -9,6 +9,8 @@ use App\Services\AuditLogger;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
+use Google\Client as GoogleClient;
+use App\Models\GoogleIdentity;
 
 class GoogleAuthController extends Controller
 {
@@ -117,6 +119,46 @@ class GoogleAuthController extends Controller
         $request->session()->regenerateToken();
 
         return redirect()->route('school.home');
+    }
+
+    public function oneTap(Request $request, AuditLogger $auditLogger)
+    {
+        abort_unless(config('services.google.client_id') && config('services.google.client_secret'), 503, 'Google Workspace login is not configured yet.');
+
+        $client = new GoogleClient(['client_id' => config('services.google.client_id')]);
+        $credential = (string) $request->input('credential');
+        $claims = $credential !== '' ? $client->verifyIdToken($credential) : false;
+        if (! is_array($claims) || empty($claims['sub']) || empty($claims['email']) || ($claims['email_verified'] ?? false) !== true) {
+            return response()->view('auth.error', ['title' => 'Google sign-in failed', 'message' => 'The Google sign-in response could not be verified. Please use the sign-in button instead.'], 403);
+        }
+
+        $email = strtolower((string) $claims['email']);
+        $workspaceDomain = strtolower(trim((string) config('services.google.workspace_domain')));
+        if ($workspaceDomain !== '' && ! str_ends_with($email, '@'.$workspaceDomain)) {
+            return response()->view('auth.error', ['title' => 'Workspace account required', 'message' => 'Please use the Google Workspace account issued by your school.'], 403);
+        }
+
+        $school = $this->schoolFromHost($request);
+        if (! $school && $request->session()->has('auth.school_subdomain')) {
+            $school = School::query()->where('subdomain', $request->session()->pull('auth.school_subdomain'))->where('is_active', true)->first();
+        }
+
+        $identity = GoogleIdentity::query()->where('subject', $claims['sub'])->whereNull('unlinked_at')->first();
+        $user = $identity?->user ?: User::where('google_subject', $claims['sub'])->first() ?: User::where('email', $email)->first();
+        if (! $user) {
+            $user = User::create(['name' => $claims['name'] ?? $email, 'email' => $email, 'google_subject' => $claims['sub'], 'email_verified_at' => now()]);
+        }
+        GoogleIdentity::updateOrCreate(['subject' => $claims['sub']], ['user_id' => $user->id, 'email' => $email, 'email_type' => $workspaceDomain !== '' && str_ends_with($email, '@'.$workspaceDomain) ? 'workspace' : 'personal', 'is_primary' => true, 'verified_at' => now(), 'unlinked_at' => null]);
+
+        if (! $school || ! $school->members()->whereKey($user->id)->exists()) {
+            return response()->view('auth.not-member', ['school' => $school, 'email' => $email], 403);
+        }
+
+        Auth::login($user, remember: true);
+        $request->session()->regenerate();
+        $auditLogger->record('auth.google_one_tap_login', $school, User::class, (string) $user->id, ['email' => $email]);
+
+        return redirect()->route('workspace.dashboard');
     }
 
     private function schoolFromHost(Request $request): ?School

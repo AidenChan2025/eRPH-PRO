@@ -18,6 +18,7 @@ Route::get('/health', HealthController::class)->name('health');
 Route::get('/owner/login', [GoogleAuthController::class, 'showOwner'])->name('owner.login');
 Route::get('/owner/auth/google/redirect', [GoogleAuthController::class, 'redirectOwner'])->name('owner.auth.google.redirect');
 Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->name('auth.google.callback');
+Route::post('/auth/google/one-tap', [GoogleAuthController::class, 'oneTap'])->name('auth.google.one-tap')->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
 Route::middleware(['auth', 'platform.owner'])->get('/owner', OwnerController::class)->name('owner.dashboard');
 Route::middleware(['auth', 'platform.owner'])->get('/owner/audit', OwnerAuditController::class)->name('owner.audit');
 
