@@ -42,6 +42,20 @@ class GoogleAuthController extends Controller
         return Socialite::driver('google')->scopes(['openid', 'email', 'profile'])->redirect();
     }
 
+    public function identities(Request $request)
+    {
+        return view('auth.identities', ['school' => $request->attributes->get('school'), 'identities' => $request->user()->googleIdentities()->latest()->get()]);
+    }
+
+    public function redirectLink(Request $request)
+    {
+        abort_unless($request->user() && $request->attributes->get('school'), 403);
+        $request->session()->put('auth.link_identity', true);
+        $request->session()->put('auth.school_subdomain', $request->attributes->get('school')->subdomain);
+
+        return Socialite::driver('google')->scopes(['openid', 'email', 'profile'])->redirect();
+    }
+
     public function callback(Request $request, AuditLogger $auditLogger)
     {
         abort_unless(config('services.google.client_id') && config('services.google.client_secret'), 503, 'Google Workspace login is not configured yet.');
@@ -49,8 +63,20 @@ class GoogleAuthController extends Controller
         $googleUser = Socialite::driver('google')->user();
         $email = strtolower((string) $googleUser->getEmail());
         $workspaceDomain = strtolower(trim((string) config('services.google.workspace_domain')));
+        $linkedIdentity = GoogleIdentity::query()->where('subject', $googleUser->getId())->whereNull('unlinked_at')->first();
 
-        if ($workspaceDomain !== '' && ! str_ends_with($email, '@'.$workspaceDomain)) {
+        if ($request->session()->pull('auth.link_identity') === true && Auth::check()) {
+            if ($linkedIdentity && $linkedIdentity->user_id !== $request->user()->id) {
+                return response()->view('auth.error', ['title' => 'Google account already linked', 'message' => 'This Google account belongs to another eRPH Pro user. Ask the platform owner for help.'], 409);
+            }
+            GoogleIdentity::updateOrCreate(['subject' => $googleUser->getId()], ['user_id' => $request->user()->id, 'email' => $email, 'email_type' => $workspaceDomain !== '' && str_ends_with($email, '@'.$workspaceDomain) ? 'workspace' : 'personal', 'is_primary' => false, 'verified_at' => now(), 'unlinked_at' => null]);
+            $auditLogger->record('auth.google_identity_linked', $request->attributes->get('school'), User::class, (string) $request->user()->id, ['email' => $email]);
+            $school = $request->attributes->get('school') ?: $this->schoolFromHost($request);
+            $url = $school ? 'https://'.$school->subdomain.'.'.config('app.school_base_domain', 'erphpro.com').'/account/identities' : route('account.identities');
+            return redirect()->to($url)->with('status', 'Google account linked.');
+        }
+
+        if ($workspaceDomain !== '' && ! str_ends_with($email, '@'.$workspaceDomain) && ! $linkedIdentity) {
             return response()->view('auth.error', [
                 'title' => 'Workspace account required',
                 'message' => 'Please use the Google Workspace account issued by your school.',
@@ -64,7 +90,7 @@ class GoogleAuthController extends Controller
                 ->where('is_active', true)
                 ->first();
         }
-        $user = User::where('google_subject', $googleUser->getId())->first();
+        $user = $linkedIdentity?->user ?: User::where('google_subject', $googleUser->getId())->first();
 
         if (! $user) {
             $user = User::where('email', $email)->first();

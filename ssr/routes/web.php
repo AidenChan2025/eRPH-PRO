@@ -25,9 +25,11 @@ Route::middleware(['auth', 'platform.owner'])->get('/owner/audit', OwnerAuditCon
 Route::middleware('school')->group(function () {
     Route::get('/login', [GoogleAuthController::class, 'show'])->name('login');
     Route::get('/auth/google/redirect', [GoogleAuthController::class, 'redirect'])->name('auth.google.redirect');
+    Route::middleware('auth')->get('/auth/google/link', [GoogleAuthController::class, 'redirectLink'])->name('auth.google.link');
     Route::middleware(['auth', 'school.member'])->get('/workspace', WorkspaceController::class)->name('workspace.dashboard');
     Route::middleware(['auth'])->post('/logout', [GoogleAuthController::class, 'logout'])->name('logout');
     Route::middleware(['auth', 'school.member'])->group(function () {
+        Route::get('/account/identities', [GoogleAuthController::class, 'identities'])->name('account.identities');
         Route::get('/profile', [TeacherProfileController::class, 'edit'])->name('teacher.profile.edit');
         Route::put('/profile', [TeacherProfileController::class, 'update'])->name('teacher.profile.update');
     });

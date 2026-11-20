@@ -25,7 +25,7 @@
 <header class="top"><div class="brand"><span class="mark" aria-hidden="true">✦</span><span>eRPH Pro</span></div><div class="user">{{ auth()->user()->name }} · {{ $school->name }}</div></header>
 <div class="layout">
     <aside>
-        <a class="nav active" href="{{ route('workspace.dashboard') }}">Overview</a><a class="nav" href="{{ route('teacher.profile.edit') }}">Teacher record</a><a class="nav" href="#lesson-plans">Lesson plans</a>
+        <a class="nav active" href="{{ route('workspace.dashboard') }}">Overview</a><a class="nav" href="{{ route('teacher.profile.edit') }}">Teacher record</a><a class="nav" href="{{ route('account.identities') }}">Google accounts</a><a class="nav" href="#lesson-plans">Lesson plans</a>
         <form method="post" action="{{ route('logout') }}" class="logout">@csrf<button class="logout" type="submit">Sign out</button></form>
     </aside>
     <main class="main">
