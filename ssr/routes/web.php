@@ -11,6 +11,9 @@ Route::middleware('school')->group(function () {
     Route::get('/auth/google/redirect', [GoogleAuthController::class, 'redirect'])->name('auth.google.redirect');
     Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->name('auth.google.callback');
     Route::middleware(['auth', 'school.member'])->get('/workspace', WorkspaceController::class)->name('workspace.dashboard');
-    Route::middleware(['auth', 'school.member:school_admin,principal,vice_principal'])->get('/admin', SchoolAdminController::class)->name('school.admin');
+    Route::middleware(['auth', 'school.member:school_admin,principal,vice_principal'])->group(function () {
+        Route::get('/admin', SchoolAdminController::class)->name('school.admin');
+        Route::post('/admin/people', [SchoolAdminController::class, 'store'])->name('school.admin.people.store');
+    });
     Route::get('/', SchoolHomeController::class)->name('school.home');
 });
