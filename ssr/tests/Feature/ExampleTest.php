@@ -179,4 +179,21 @@ class ExampleTest extends TestCase
         $this->assertDatabaseHas('lesson_plan_reviews', ['lesson_plan_id' => $plan->id, 'decision' => 'approved']);
         $this->assertDatabaseHas('audit_logs', ['action' => 'lesson_plan.review_decided']);
     }
+
+    public function test_rph_edit_keeps_extended_fields_when_the_edit_form_does_not_replace_them(): void
+    {
+        $this->seed();
+        $user = User::where('email', 'demo@erphpro.com')->firstOrFail();
+        $this->actingAs($user)->post('http://demo.erphpro.com/rph', [
+            'lesson_date' => '2026-11-20', 'subject' => 'BM', 'class_name' => '5U', 'title' => 'Karangan',
+            'civic_value' => 'Kasih Sayang', 'emk' => 'Bahasa',
+        ]);
+        $plan = \App\Models\LessonPlan::firstOrFail();
+        $this->actingAs($user)->put("http://demo.erphpro.com/rph/{$plan->id}", [
+            'lesson_date' => '2026-11-20', 'subject' => 'BM', 'class_name' => '5U', 'title' => 'Karangan Baharu',
+        ])->assertRedirect(route('rph.edit', $plan));
+        $version = $plan->versions()->latest('version')->firstOrFail();
+        $this->assertSame('Kasih Sayang', $version->content['civic_value']);
+        $this->assertSame('Bahasa', $version->content['emk']);
+    }
 }

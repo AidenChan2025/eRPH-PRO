@@ -124,12 +124,13 @@ class LessonPlanController extends Controller
             'change_note' => ['nullable', 'string', 'max:500'],
         ]);
         $nextVersion = $lessonPlan->current_version + 1;
-        DB::transaction(function () use ($data, $lessonPlan, $nextVersion, $request) {
+        $previousContent = (array) ($lessonPlan->versions()->latest('version')->value('content') ?? []);
+        DB::transaction(function () use ($data, $lessonPlan, $nextVersion, $request, $previousContent) {
             $lessonPlan->update(['lesson_date' => $data['lesson_date'], 'subject' => $data['subject'], 'class_name' => $data['class_name'], 'current_version' => $nextVersion, 'status' => 'draft']);
             $lessonPlan->versions()->create([
                 'version' => $nextVersion, 'created_by' => $request->user()->id, 'source' => 'manual',
                 'change_note' => $data['change_note'] ?? null,
-                'content' => collect($data)->only(['title', 'start_time', 'end_time', 'civic_value', 'civic_topic', 'objectives', 'activities', 'assessment', 'reflection', 'homework', 'materials', 'emk', 'pak21', 'assessment_written', 'assessment_oral', 'assessment_observation', 'moral_values', 'student_count', 'enrichment', 'remedial', 'kbat', 'multiple_intelligences', 'notes'])->toArray(),
+                'content' => array_replace($previousContent, collect($data)->only(['title', 'start_time', 'end_time', 'civic_value', 'civic_topic', 'objectives', 'activities', 'assessment', 'reflection', 'homework', 'materials', 'emk', 'pak21', 'assessment_written', 'assessment_oral', 'assessment_observation', 'moral_values', 'student_count', 'enrichment', 'remedial', 'kbat', 'multiple_intelligences', 'notes'])->toArray()),
             ]);
         });
         $auditLogger->record('lesson_plan.version_created', $school, LessonPlan::class, (string) $lessonPlan->id, ['version' => $nextVersion]);
