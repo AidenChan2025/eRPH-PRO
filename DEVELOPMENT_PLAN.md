@@ -67,6 +67,14 @@ Required controls:
 
 Google Workspace access is an authentication convenience. The eRPH Pro account, school membership and records remain separate so that a teacher can move to another participating school without losing the platform identity or exposing the former school's records.
 
+### One Tap and linked Google identities
+
+The school login page will support Google Identity Services One Tap as a progressive enhancement, while always retaining a normal “Continue with Google” button. One Tap may show the active Google account immediately, but browser privacy controls, FedCM and the user's previous dismissal can prevent the prompt; it is therefore never the only login path.
+
+One eRPH Pro user may link more than one Google identity, normally one school Workspace account and optionally one personal Gmail account. The stable Google subject identifier is stored in `google_identities`; email is a display/contact attribute and is never the sole account key. Linking requires an authenticated session, recent Google re-verification and an audit event. A personal account can sign in to the same teacher profile, but it never grants school access by itself: access continues to come from an active `school_memberships` row and the school's invitation/approval policy.
+
+The existing `users.google_subject` field remains as a migration-compatible primary identity during Development 1. New linking flows must write `google_identities` and must not silently merge two existing eRPH users. If a subject or email is already attached to another user, the operation stops and requires Owner-assisted recovery with an audit trail.
+
 Initial roles:
 
 - Platform Owner: global technical/support access, always audited.
