@@ -1,0 +1,40 @@
+name: SSR baseline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    paths:
+      - 'ssr/**'
+      - 'scripts/deploy-ssr.sh'
+      - '.github/workflows/ssr.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ssr
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: mbstring, sqlite3, pdo_sqlite
+          coverage: none
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Validate deployment hook
+        working-directory: .
+        run: bash -n scripts/deploy-ssr.sh
+
+      - name: Run SSR tests
+        run: php artisan test
