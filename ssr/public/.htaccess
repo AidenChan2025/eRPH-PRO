@@ -5,6 +5,10 @@
 
     RewriteEngine On
 
+    # LiteSpeed can inherit a Node.js directory index from the hosting plan.
+    # Laravel must always enter through its PHP front controller.
+    DirectoryIndex index.php
+
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
