@@ -5,6 +5,9 @@ namespace Tests\Feature;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Models\User;
 use App\Models\LessonPlan;
+use App\Services\SupportAIService;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class ExampleTest extends TestCase
@@ -48,9 +51,60 @@ class ExampleTest extends TestCase
         ]);
 
         $response->assertRedirect();
-        $this->assertStringContainsString('/tickets/', $response->headers->get('Location'));
+        $location = $response->headers->get('Location');
+        $this->assertStringContainsString('/tickets/', $location);
+        $this->assertStringContainsString('?token=', $location);
         $this->assertDatabaseHas('support_tickets', ['requester_email' => 'support-user@example.com', 'status' => 'open']);
         $this->assertDatabaseHas('support_ticket_messages', ['source' => 'requester', 'author_email' => 'support-user@example.com']);
+
+        $this->get($location)->assertRedirect();
+        $this->get(Str::before($location, '?'))->assertOk()->assertSee('Add a reply');
+    }
+
+    public function test_public_ticket_creation_is_rate_limited(): void
+    {
+        $payload = [
+            'name' => 'Support User', 'email' => 'support-user@example.com', 'subject' => 'A question',
+            'category' => 'general', 'message' => 'This is a sufficiently long support question.',
+        ];
+
+        for ($attempt = 0; $attempt < 5; $attempt++) {
+            $this->post('http://support.erphpro.com/tickets', $payload)->assertRedirect();
+        }
+
+        $this->post('http://support.erphpro.com/tickets', $payload)->assertTooManyRequests();
+    }
+
+    public function test_ai_cannot_downgrade_a_security_ticket(): void
+    {
+        $this->mock(SupportAIService::class, function ($mock): void {
+            $mock->shouldReceive('analyse')->once()->andReturn([
+                'state' => 'human_review', 'category' => 'general', 'priority' => 'low',
+                'confidence' => 0.99, 'summary' => 'Security report', 'reply_draft' => 'A human will review this.',
+            ]);
+        });
+
+        $this->post('http://support.erphpro.com/tickets', [
+            'name' => 'Security Reporter', 'email' => 'security@example.com', 'subject' => 'Suspicious access',
+            'category' => 'security', 'message' => 'I saw suspicious access in the school workspace.',
+        ])->assertRedirect();
+
+        $this->assertDatabaseHas('support_tickets', [
+            'requester_email' => 'security@example.com', 'category' => 'security',
+            'priority' => 'high', 'ai_state' => 'human_review',
+        ]);
+    }
+
+    public function test_mail_failure_does_not_lose_a_created_ticket(): void
+    {
+        Mail::shouldReceive('raw')->once()->andThrow(new \RuntimeException('mail transport unavailable'));
+
+        $this->post('http://support.erphpro.com/tickets', [
+            'name' => 'Support User', 'email' => 'support-user@example.com', 'subject' => 'Mail outage',
+            'category' => 'general', 'message' => 'The support email notification is not arriving.',
+        ])->assertRedirect();
+
+        $this->assertDatabaseHas('support_tickets', ['subject' => 'Mail outage']);
     }
 
     public function test_health_endpoint_reports_the_sql_connection_and_release(): void

@@ -53,9 +53,15 @@ class OwnerSupportController extends Controller
         ]);
         $ticket->update(['status' => 'pending', 'last_activity_at' => now()]);
         $ticket->events()->create(['user_id' => $request->user()->id, 'event' => 'ticket.replied_by_agent']);
-        Mail::raw($data['message'], function ($mail) use ($ticket) {
-            $mail->to($ticket->requester_email)->subject('eRPH Pro support update: ' . $ticket->subject);
-        });
+        try {
+            Mail::raw($data['message'], function ($mail) use ($ticket) {
+                $mail->to($ticket->requester_email)
+                    ->replyTo(config('support.admin_email'))
+                    ->subject('eRPH Pro support update: ' . $ticket->subject);
+            });
+        } catch (\Throwable $exception) {
+            report($exception);
+        }
 
         return back()->with('status', 'Reply sent to the requester.');
     }

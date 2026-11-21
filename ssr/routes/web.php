@@ -40,9 +40,9 @@ Route::domain(config('support.host'))->middleware('support.host')->group(functio
     Route::get('/solutions', SupportHomeController::class)->name('support.solutions');
     Route::get('/solutions/{slug}', [SupportArticleController::class, 'show'])->name('support.article');
     Route::get('/tickets/new', [SupportTicketController::class, 'create'])->name('support.ticket.create');
-    Route::post('/tickets', [SupportTicketController::class, 'store'])->name('support.ticket.store');
+    Route::middleware('throttle:5,1')->post('/tickets', [SupportTicketController::class, 'store'])->name('support.ticket.store');
     Route::get('/tickets/{publicId}', [SupportTicketController::class, 'show'])->name('support.ticket.show');
-    Route::post('/tickets/{publicId}/reply', [SupportTicketController::class, 'reply'])->name('support.ticket.reply');
+    Route::middleware('throttle:10,1')->post('/tickets/{publicId}/reply', [SupportTicketController::class, 'reply'])->name('support.ticket.reply');
 });
 
 Route::domain(config('app.school_base_domain', 'erphpro.com'))->middleware('school')->get('/', SchoolHomeController::class)->name('public.home');
