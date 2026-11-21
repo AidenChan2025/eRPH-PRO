@@ -40,6 +40,7 @@ return [
         'client_secret' => env('GOOGLE_CLIENT_SECRET'),
         'redirect' => env('GOOGLE_REDIRECT_URI', env('APP_URL').'/auth/google/callback'),
         'workspace_domain' => env('GOOGLE_WORKSPACE_DOMAIN'),
+        'owner_email' => env('PLATFORM_OWNER_EMAIL'),
     ],
 
     'deepseek' => [

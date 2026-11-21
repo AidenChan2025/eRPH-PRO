@@ -7,7 +7,10 @@ use App\Models\User;
 use App\Models\LessonPlan;
 use App\Services\SupportAIService;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
+use Laravel\Socialite\Facades\Socialite;
+use Laravel\Socialite\Two\User as SocialiteUser;
 use Tests\TestCase;
 
 class ExampleTest extends TestCase
@@ -124,6 +127,28 @@ class ExampleTest extends TestCase
         $this->seed();
         $this->get('http://demo.erphpro.com/auth/google/redirect')
             ->assertStatus(503);
+    }
+
+    public function test_owner_google_callback_can_create_an_owner_without_a_plaintext_password(): void
+    {
+        Config::set([
+            'services.google.client_id' => 'test-client',
+            'services.google.client_secret' => 'test-secret',
+            'services.google.owner_email' => 'owner@example.com',
+        ]);
+
+        $driver = \Mockery::mock();
+        $driver->shouldReceive('user')->once()->andReturn(SocialiteUser::fake([
+            'id' => 'owner-google-subject',
+            'name' => 'Platform Owner',
+            'email' => 'owner@example.com',
+        ]));
+        Socialite::shouldReceive('driver')->once()->with('google')->andReturn($driver);
+
+        $response = $this->withSession(['auth.owner_login' => true])->get('/auth/google/callback');
+
+        $response->assertRedirect(route('owner.dashboard'));
+        $this->assertDatabaseHas('users', ['email' => 'owner@example.com', 'platform_role' => 'owner']);
     }
 
     public function test_authenticated_school_user_can_log_out_and_invalidate_session(): void

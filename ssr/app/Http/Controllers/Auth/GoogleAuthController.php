@@ -8,6 +8,7 @@ use App\Models\School;
 use App\Services\AuditLogger;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
 use Google\Client as GoogleClient;
 use App\Models\GoogleIdentity;
@@ -37,6 +38,7 @@ class GoogleAuthController extends Controller
     public function redirectOwner(Request $request)
     {
         abort_unless(config('services.google.client_id') && config('services.google.client_secret'), 503, 'Google Workspace login is not configured yet.');
+        $request->session()->put('auth.owner_login', true);
         $request->session()->put('auth.school_subdomain', null);
 
         return Socialite::driver('google')->scopes(['openid', 'email', 'profile'])->redirect();
@@ -82,9 +84,27 @@ class GoogleAuthController extends Controller
     {
         abort_unless(config('services.google.client_id') && config('services.google.client_secret'), 503, 'Google Workspace login is not configured yet.');
 
-        $googleUser = Socialite::driver('google')->user();
+        try {
+            $googleUser = Socialite::driver('google')->user();
+        } catch (\Throwable $exception) {
+            report($exception);
+
+            return response()->view('auth.error', ['title' => 'Google sign-in failed', 'message' => 'Google could not complete the sign-in response. Please return to the sign-in page and try again.'], 502);
+        }
+
         $email = strtolower((string) $googleUser->getEmail());
         $workspaceDomain = strtolower(trim((string) config('services.google.workspace_domain')));
+        $isOwnerLogin = $request->session()->pull('auth.owner_login') === true;
+        $ownerEmail = strtolower(trim((string) config('services.google.owner_email')));
+
+        if ($isOwnerLogin && $ownerEmail === '') {
+            return response()->view('auth.error', ['title' => 'Owner sign-in is not configured', 'message' => 'The platform owner email must be configured before owner access can be granted.'], 503);
+        }
+
+        if ($isOwnerLogin && ! hash_equals($ownerEmail, $email)) {
+            return response()->view('auth.error', ['title' => 'Owner account required', 'message' => 'Please use the authorised platform owner Google account.'], 403);
+        }
+
         $linkedIdentity = GoogleIdentity::query()->where('subject', $googleUser->getId())->whereNull('unlinked_at')->first();
 
         if ($request->session()->pull('auth.link_identity') === true && Auth::check()) {
@@ -123,13 +143,16 @@ class GoogleAuthController extends Controller
                 'name' => $googleUser->getName() ?: $email,
                 'email' => $email,
                 'google_subject' => $googleUser->getId(),
+                'platform_role' => $isOwnerLogin ? 'owner' : null,
                 'email_verified_at' => now(),
+                'password' => Str::random(64),
             ]);
         } else {
             $user->forceFill([
                 'name' => $googleUser->getName() ?: $user->name,
                 'google_subject' => $googleUser->getId(),
                 'email_verified_at' => $user->email_verified_at ?: now(),
+                'platform_role' => $isOwnerLogin ? 'owner' : $user->platform_role,
             ])->save();
         }
 
@@ -194,7 +217,7 @@ class GoogleAuthController extends Controller
         $identity = GoogleIdentity::query()->where('subject', $claims['sub'])->whereNull('unlinked_at')->first();
         $user = $identity?->user ?: User::where('google_subject', $claims['sub'])->first() ?: User::where('email', $email)->first();
         if (! $user) {
-            $user = User::create(['name' => $claims['name'] ?? $email, 'email' => $email, 'google_subject' => $claims['sub'], 'email_verified_at' => now()]);
+            $user = User::create(['name' => $claims['name'] ?? $email, 'email' => $email, 'google_subject' => $claims['sub'], 'email_verified_at' => now(), 'password' => Str::random(64)]);
         }
         GoogleIdentity::updateOrCreate(['subject' => $claims['sub']], ['user_id' => $user->id, 'email' => $email, 'email_type' => $workspaceDomain !== '' && str_ends_with($email, '@'.$workspaceDomain) ? 'workspace' : 'personal', 'is_primary' => true, 'verified_at' => now(), 'unlinked_at' => null]);
 
