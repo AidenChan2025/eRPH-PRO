@@ -21,6 +21,38 @@ class ExampleTest extends TestCase
         $response->assertOk()->assertSee('eRPH Pro Demo School')->assertSee('School workspace');
     }
 
+    public function test_the_base_domain_has_a_public_homepage(): void
+    {
+        $this->get('http://erphpro.com/')
+            ->assertOk()
+            ->assertSee('One calm place for better teaching.')
+            ->assertSee('Platform owner sign in');
+    }
+
+    public function test_support_centre_is_available_on_its_own_host(): void
+    {
+        $this->get('http://support.erphpro.com/')
+            ->assertOk()
+            ->assertSee('Find a clear answer, fast.')
+            ->assertSee('Submit a ticket');
+    }
+
+    public function test_support_ticket_creates_a_private_access_link(): void
+    {
+        $response = $this->post('http://support.erphpro.com/tickets', [
+            'name' => 'Support User',
+            'email' => 'support-user@example.com',
+            'subject' => 'Cannot open a lesson plan',
+            'category' => 'lesson_plans',
+            'message' => 'The lesson plan page does not open after I sign in.',
+        ]);
+
+        $response->assertRedirect();
+        $this->assertStringContainsString('/tickets/', $response->headers->get('Location'));
+        $this->assertDatabaseHas('support_tickets', ['requester_email' => 'support-user@example.com', 'status' => 'open']);
+        $this->assertDatabaseHas('support_ticket_messages', ['source' => 'requester', 'author_email' => 'support-user@example.com']);
+    }
+
     public function test_health_endpoint_reports_the_sql_connection_and_release(): void
     {
         $response = $this->get('/health');

@@ -11,6 +11,10 @@ class SchoolHomeController extends Controller
     {
         $school = $request->attributes->get('school');
 
+        if (!$school && strtolower($request->getHost()) === strtolower((string) config('app.school_base_domain', 'erphpro.com'))) {
+            return view('public-home');
+        }
+
         return view('school-home', compact('school'));
     }
 }

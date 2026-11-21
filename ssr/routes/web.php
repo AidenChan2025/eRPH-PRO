@@ -12,6 +12,10 @@ use App\Http\Controllers\SchoolSettingsController;
 use App\Http\Controllers\LessonPlanReviewController;
 use App\Http\Controllers\OwnerController;
 use App\Http\Controllers\OwnerAuditController;
+use App\Http\Controllers\OwnerSupportController;
+use App\Http\Controllers\SupportArticleController;
+use App\Http\Controllers\SupportHomeController;
+use App\Http\Controllers\SupportTicketController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/health', HealthController::class)->name('health');
@@ -21,6 +25,22 @@ Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->
 Route::post('/auth/google/one-tap', [GoogleAuthController::class, 'oneTap'])->name('auth.google.one-tap')->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
 Route::middleware(['auth', 'platform.owner'])->get('/owner', OwnerController::class)->name('owner.dashboard');
 Route::middleware(['auth', 'platform.owner'])->get('/owner/audit', OwnerAuditController::class)->name('owner.audit');
+Route::middleware(['auth', 'platform.owner'])->prefix('owner/support')->group(function () {
+    Route::get('/', [OwnerSupportController::class, 'index'])->name('owner.support.index');
+    Route::get('/{publicId}', [OwnerSupportController::class, 'show'])->name('owner.support.show');
+    Route::put('/{publicId}', [OwnerSupportController::class, 'update'])->name('owner.support.update');
+    Route::post('/{publicId}/reply', [OwnerSupportController::class, 'reply'])->name('owner.support.reply');
+});
+
+Route::domain(config('support.host'))->middleware('support.host')->group(function () {
+    Route::get('/', SupportHomeController::class)->name('support.home');
+    Route::get('/solutions', SupportHomeController::class)->name('support.solutions');
+    Route::get('/solutions/{slug}', [SupportArticleController::class, 'show'])->name('support.article');
+    Route::get('/tickets/new', [SupportTicketController::class, 'create'])->name('support.ticket.create');
+    Route::post('/tickets', [SupportTicketController::class, 'store'])->name('support.ticket.store');
+    Route::get('/tickets/{publicId}', [SupportTicketController::class, 'show'])->name('support.ticket.show');
+    Route::post('/tickets/{publicId}/reply', [SupportTicketController::class, 'reply'])->name('support.ticket.reply');
+});
 
 Route::middleware('school')->group(function () {
     Route::get('/login', [GoogleAuthController::class, 'show'])->name('login');

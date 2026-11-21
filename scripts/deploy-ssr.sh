@@ -24,6 +24,7 @@ done
 composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader
 composer check-platform-reqs --no-dev
 php artisan migrate --force
+php artisan db:seed --class=Database\\Seeders\\SupportContentSeeder --force
 php artisan optimize:clear
 php artisan config:cache
 php artisan route:cache

@@ -15,6 +15,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        $this->call(SupportContentSeeder::class);
+
         $school = \App\Models\School::query()->updateOrCreate(
             ['subdomain' => 'demo'],
             ['name' => 'eRPH Pro Demo School', 'slug' => 'demo-school', 'workspace_domain' => null, 'is_active' => true]

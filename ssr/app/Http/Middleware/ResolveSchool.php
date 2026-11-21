@@ -16,6 +16,10 @@ class ResolveSchool
         $suffix = '.' . $base;
         $subdomain = str_ends_with($host, $suffix) ? substr($host, 0, -strlen($suffix)) : null;
 
+        if ($host === $base && $request->is('/')) {
+            return $next($request);
+        }
+
         if (!$subdomain || str_contains($subdomain, '.')) {
             return response()->view('school-not-found', [], 404);
         }

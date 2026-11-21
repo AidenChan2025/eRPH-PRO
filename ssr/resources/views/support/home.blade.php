@@ -1,0 +1,13 @@
+@extends('support.layout')
+
+@section('title', 'Solutions')
+@section('content')
+@php($supportBase = request()->getScheme() . '://' . config('support.host'))
+<main class="shell">
+    <section class="hero"><div class="hero-card"><span class="eyebrow" style="display:block;text-align:center">eRPH Pro help centre</span><h1>Find a clear answer, fast.</h1><p>Search practical guides for school access, RPH workflows, email and administration. If the answer is not here, our team can take over.</p><form class="search" method="get" action="{{ request()->url() }}"><input class="focus-ring" type="search" name="q" value="{{ request('q') }}" placeholder="Ask about login, RPH, school admin or email…" aria-label="Search solutions"><button class="button" type="submit">Search solutions</button></form></div></section>
+    @if(request('q'))<section class="section" style="padding-top:0"><div class="section-head"><div><span class="eyebrow">Search results</span><h2>Matches for “{{ request('q') }}”</h2></div></div><div class="article-grid">@forelse($articles as $article)<a class="article-card" href="{{ $supportBase }}/solutions/{{ $article->slug }}"><h3>{{ $article->title }}</h3><p>{{ $article->excerpt }}</p><small>{{ $article->category?->name ?: 'Solution' }} · Read article →</small></a>@empty<p class="muted">No exact match yet. Submit a ticket and a human will help.</p>@endforelse</div></section>@endif
+    <section class="section"><div class="section-head"><div><span class="eyebrow">Browse by topic</span><h2>Popular solutions</h2></div><span class="muted">{{ $categories->sum('articles_count') }} published guides</span></div><div class="category-grid">@foreach($categories as $category)<a class="category" href="{{ $supportBase }}/solutions?category={{ $category->slug }}"><div class="category-icon">@include('support.icon', ['icon' => $category->icon])</div><h3>{{ $category->name }}</h3><p>{{ $category->description }}</p><small>{{ $category->articles_count }} articles →</small></a>@endforeach</div></section>
+    <section class="section"><div class="section-head"><div><span class="eyebrow">Quick answers</span><h2>Frequently asked questions</h2></div></div><div class="article-grid">@foreach($articles->take(4) as $article)<a class="article-card" href="{{ $supportBase }}/solutions/{{ $article->slug }}"><h3>{{ $article->title }}</h3><p>{{ $article->excerpt }}</p><small>Read answer →</small></a>@endforeach</div></section>
+    <section class="section" style="padding-top:0"><div class="callout"><div><strong>Still stuck?</strong><p>Tell us what happened. AI can triage the request, and a human will handle sensitive or uncertain cases.</p></div><a class="button" href="{{ $supportBase }}/tickets/new">Submit a ticket</a></div></section>
+</main>
+@endsection
