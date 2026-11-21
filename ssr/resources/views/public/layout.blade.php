@@ -22,8 +22,8 @@
         .site-footer{padding:45px 0 60px;border-top:1px solid var(--line);color:var(--muted);font-size:14px}.footer-row{display:flex;justify-content:space-between;gap:18px}.footer-row a{color:var(--muted);text-decoration:none}
         @media(max-width:800px){.site-wrap{padding:0 20px}.nav{gap:12px}.nav a:not(.nav-cta){display:none}.hero{grid-template-columns:1fr;padding:62px 0 55px;gap:34px}.grid-3,.grid-2{grid-template-columns:1fr}.section{padding:58px 0}.callout,.footer-row{align-items:flex-start;flex-direction:column}}
         @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+        .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
     </style>
-    .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 </head>
 <body><span class="sr-only">One calm place for better teaching. Platform owner sign in.</span><div class="site-wrap">
     <header class="site-header"><a class="brand" href="{{ route('school.home') }}"><span class="mark" aria-hidden="true">✦</span><span>eRPH Pro</span></a><nav class="nav" aria-label="Main navigation"><a href="{{ route('public.features') }}">Features</a><a href="{{ route('public.about') }}">About</a><a href="{{ route('public.faq') }}">FAQ</a><a href="https://support.erphpro.com/solutions">Support</a><a class="nav-cta" href="{{ route('owner.login') }}">Sign in</a></nav></header>
