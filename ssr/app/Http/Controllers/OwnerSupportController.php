@@ -8,9 +8,13 @@ use Illuminate\Support\Facades\Mail;
 
 class OwnerSupportController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $tickets = SupportTicket::query()->withCount('messages')->latest('last_activity_at')->paginate(25);
+        $query = SupportTicket::query()->withCount('messages')->latest('last_activity_at');
+        if ($request->filled('status') && in_array($request->string('status')->toString(), ['open', 'pending', 'resolved', 'closed'], true)) {
+            $query->where('status', $request->string('status')->toString());
+        }
+        $tickets = $query->paginate(25)->withQueryString();
 
         return view('owner.support.index', compact('tickets'));
     }

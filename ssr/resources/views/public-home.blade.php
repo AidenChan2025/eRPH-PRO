@@ -1,57 +1,42 @@
-<!doctype html>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>eRPH Pro · School workspace</title>
-    <style>
-        :root{--ink:#172033;--muted:#687386;--blue:#2563eb;--line:#e5eaf2;--canvas:#f7f9fc}
-        *{box-sizing:border-box}
-        body{margin:0;background:var(--canvas);color:var(--ink);font:16px/1.6 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-        .wrap{max-width:1120px;margin:auto;padding:28px 24px 70px}
-        .top{display:flex;align-items:center;justify-content:space-between;gap:20px}
-        .brand{display:flex;align-items:center;gap:11px;font-weight:800}
-        .mark{display:grid;place-items:center;width:38px;height:38px;border-radius:12px;color:#fff;background:var(--blue)}
-        .top a{color:var(--muted);text-decoration:none;font-size:14px}
-        .hero{display:grid;grid-template-columns:1.1fr .9fr;gap:48px;align-items:center;padding:100px 0 76px}
-        .eyebrow{color:var(--blue);font-size:12px;font-weight:800;letter-spacing:.13em;text-transform:uppercase}
-        h1{max-width:680px;margin:13px 0 18px;font-size:clamp(42px,6vw,76px);line-height:1.02;letter-spacing:-.065em}
-        .lead{max-width:570px;color:var(--muted);font-size:19px}
-        .actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
-        .button{display:inline-flex;align-items:center;justify-content:center;min-height:46px;padding:0 18px;border-radius:10px;background:var(--blue);color:#fff;text-decoration:none;font-weight:750}
-        .button.secondary{background:#fff;color:var(--ink);border:1px solid var(--line)}
-        .panel{padding:28px;border:1px solid var(--line);border-radius:22px;background:#fff;box-shadow:0 24px 70px #1e315314}
-        .panel h2{margin:0 0 16px;font-size:22px;letter-spacing:-.035em}
-        .item{padding:15px 0;border-top:1px solid var(--line)}
-        .item strong{display:block}.item span{color:var(--muted);font-size:14px}
-        .footer{color:var(--muted);font-size:13px}
-        @media(max-width:760px){.hero{grid-template-columns:1fr;padding:70px 0 46px;gap:30px}.top{align-items:flex-start}.top a{font-size:13px}h1{font-size:48px}}
-    </style>
-</head>
-<body>
-<div class="wrap">
-    <header class="top">
-        <div class="brand"><span class="mark" aria-hidden="true">✦</span><span>eRPH Pro</span></div>
-        <a href="{{ route('owner.login') }}">Platform owner sign in</a>
-    </header>
-    <main class="hero">
-        <section>
-            <span class="eyebrow">School workspace</span>
-            <h1>One calm place for better teaching.</h1>
-            <p class="lead">eRPH Pro keeps school teams, teacher records, lesson plans and review workflows together in a secure, school-specific workspace.</p>
-            <div class="actions">
-                <a class="button" href="mailto:hello@erphpro.com">Contact eRPH Pro</a>
-                <a class="button secondary" href="mailto:admin@erphpro.com">Administrator help</a>
-            </div>
-        </section>
-        <aside class="panel">
-            <h2>Built for accountable school work</h2>
-            <div class="item"><strong>School-scoped access</strong><span>Every school workspace stays separated by its own address and membership rules.</span></div>
-            <div class="item"><strong>RPH from draft to review</strong><span>Teachers prepare, submit and improve lesson plans with a clear audit trail.</span></div>
-            <div class="item"><strong>Google Workspace sign-in</strong><span>Use the school account assigned by your administrator.</span></div>
-        </aside>
-    </main>
-    <p class="footer">Need a school workspace? Contact your eRPH Pro administrator for the correct school address.</p>
-</div>
-</body>
-</html>
+@extends('public.layout')
+
+@section('title', 'eRPH Pro · A calmer school operating system')
+
+@section('content')
+<style>
+    .home-hero{position:relative;display:grid;grid-template-columns:1.05fr .95fr;gap:50px;align-items:center;padding:82px 0 96px;min-height:640px}
+    .home-hero h1{max-width:760px;font-size:clamp(52px,7.4vw,104px);line-height:.95;letter-spacing:-.075em;margin:16px 0 24px}
+    .home-hero .lead{max-width:520px;font-size:20px}
+    .home-stage{position:relative;min-height:465px;display:grid;place-items:center}
+    .stage-core{position:relative;z-index:2;width:min(340px,72%);aspect-ratio:1/1;padding:34px;border-radius:38px;background:linear-gradient(145deg,#fff 0%,#edf3f8 100%);border:1px solid #dfe7ee;box-shadow:0 30px 90px #17203318;display:flex;flex-direction:column;justify-content:end}
+    .stage-core:before{content:"";position:absolute;inset:16px;border:1px solid #d9e2eb;border-radius:28px;pointer-events:none}
+    .stage-core .mini-label{position:relative;color:#667085;font-size:12px;letter-spacing:.08em;text-transform:uppercase}.stage-core strong{position:relative;max-width:220px;font-size:36px;line-height:.97;letter-spacing:-.07em;margin-top:12px}
+    .stage-core .mini-bar{position:relative;width:72px;height:6px;border-radius:99px;background:#f06b4f;margin-top:22px}
+    .avatar-card{position:absolute;z-index:3;width:102px;height:126px;border-radius:19px;border:5px solid #fff;box-shadow:0 15px 35px #1720331c;display:flex;align-items:end;padding:9px;color:#fff;overflow:hidden}
+    .avatar-card:before{content:"";position:absolute;width:45px;height:45px;border-radius:50%;left:28px;top:20px;background:var(--skin);box-shadow:0 32px 0 12px var(--shirt)}
+    .avatar-card:after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,transparent 45%,#1720339c 100%)}
+    .avatar-card span{position:relative;z-index:1;font-size:11px;font-weight:800;line-height:1.1}.avatar-card small{display:block;font-weight:500;opacity:.85;margin-top:3px}
+    .av-a{--skin:#b97852;--shirt:#0f766e;background:#a9d8df;left:3%;top:4%;transform:rotate(-7deg)}.av-b{--skin:#d19a73;--shirt:#5b21b6;background:#e8c69d;right:4%;top:2%;transform:rotate(6deg)}.av-c{--skin:#8f583e;--shirt:#1e3a8a;background:#b7c6dc;left:0;bottom:12%;transform:rotate(5deg)}.av-d{--skin:#c9825a;--shirt:#9f1239;background:#d9c5e7;right:1%;bottom:9%;transform:rotate(-6deg)}
+    .orbit{position:absolute;border:1px solid #dce5ed;border-radius:50%;width:94%;height:78%;transform:rotate(-12deg)}.orbit:after{content:"";position:absolute;width:12px;height:12px;border-radius:50%;background:#f06b4f;right:9%;top:13%}
+    .proof-strip{display:flex;align-items:center;justify-content:space-between;gap:22px;padding:19px 24px;border:1px solid var(--line);border-radius:18px;background:#fff;color:var(--muted);font-size:13px}.proof-strip strong{color:var(--ink);font-size:15px}
+    .home-section{padding:96px 0}.home-section.alt{margin:0 -28px;padding-left:28px;padding-right:28px;background:#eef3f6}
+    .home-heading{max-width:700px;margin-bottom:34px}.home-heading h2{font-size:clamp(38px,5vw,68px);margin:10px 0 14px}.home-heading p{max-width:560px;color:var(--muted);font-size:18px}
+    .feature-card{min-height:260px;display:flex;flex-direction:column;justify-content:space-between;padding:25px;border-radius:23px;background:#fff;border:1px solid #dfe7ee}.feature-card.accent{background:#f06b4f;color:#fff;border-color:#f06b4f}.feature-card.dark{background:#172033;color:#fff;border-color:#172033}.feature-card p{color:var(--muted);margin:0}.feature-card.accent p,.feature-card.dark p{color:#ffffffc7}.feature-number{font-size:12px;letter-spacing:.1em;opacity:.65}.feature-card h3{font-size:26px;margin:38px 0 10px}.feature-link{font-size:13px;font-weight:750;text-decoration:none;margin-top:22px}
+    .integration{display:grid;grid-template-columns:1fr 1fr;gap:20px;align-items:stretch}.integration-panel{min-height:320px;padding:30px;border:1px solid var(--line);border-radius:24px;background:#fff;overflow:hidden}.integration-panel h3{font-size:28px}.integration-icons{height:205px;display:flex;justify-content:center;align-items:center;gap:12px;transform:rotate(-7deg);margin-top:12px}.integration-icons span{display:grid;place-items:center;width:84px;height:84px;border-radius:17px;background:#f4f7f9;border:1px solid #e5eaf2;color:#344054;font-size:27px;font-weight:850;box-shadow:0 12px 20px #1720330c}.integration-icons span:nth-child(2){transform:translateY(-20px) rotate(7deg);background:#fff1ec;color:#f06b4f}.integration-icons span:nth-child(3){transform:translateY(12px) rotate(7deg);background:#eff6ff;color:#2563eb}.integration-icons span:nth-child(4){transform:rotate(7deg);background:#f5f3ff;color:#7c3aed}
+    .quote-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}.quote{padding:30px;border:1px solid var(--line);border-radius:22px;background:#fff}.quote p{font-size:20px;line-height:1.35;letter-spacing:-.02em}.quote footer{display:flex;align-items:center;gap:11px;color:var(--muted);font-size:13px}.quote-avatar{display:grid;place-items:center;width:38px;height:38px;border-radius:50%;background:#f1c8b6;color:#7c2d12;font-weight:800}
+    @media(max-width:820px){.home-hero{grid-template-columns:1fr;padding:58px 0 70px}.home-stage{min-height:390px}.home-section{padding:65px 0}.home-section.alt{margin:0 -20px;padding-left:20px;padding-right:20px}.integration,.quote-grid{grid-template-columns:1fr}.proof-strip{align-items:flex-start;flex-direction:column}}
+</style>
+<main>
+    <section class="home-hero">
+        <div><span class="eyebrow">The school workspace for Malaysia</span><h1>Make school work feel lighter.</h1><p class="lead">eRPH Pro brings teachers, school leaders and administrators into one calm place to plan, review and move forward together.</p><div class="actions"><a class="button" href="{{ route('public.features') }}">See what is inside</a><a class="button secondary" href="https://support.erphpro.com/solutions">Explore support</a></div></div>
+        <div class="home-stage" aria-label="A diverse Malaysian school team represented in a workspace illustration"><div class="orbit" aria-hidden="true"></div><div class="stage-core"><span class="mini-label">eRPH Pro</span><strong>One clear view of the work.</strong><span class="mini-bar" aria-hidden="true"></span></div><div class="avatar-card av-a"><span>Aisyah<small>Kuala Lumpur</small></span></div><div class="avatar-card av-b"><span>Wei Jun<small>Penang</small></span></div><div class="avatar-card av-c"><span>Kavitha<small>Johor</small></span></div><div class="avatar-card av-d"><span>Daniel<small>Sabah</small></span></div></div>
+    </section>
+    <div class="proof-strip"><strong>Built for the way Malaysian schools actually work.</strong><span>School-scoped access · RPH workflow · Google Workspace sign-in · Human-led support</span></div>
+
+    <section class="home-section"><div class="home-heading"><span class="eyebrow">A focused operating system</span><h2>Everything important, without the noise.</h2><p>From the first draft to the final review, eRPH Pro gives each person the right context at the right time.</p></div><div class="grid-3"><article class="feature-card"><span class="feature-number">01 / PLAN</span><div><h3>Start with a clean slate.</h3><p>Keep lesson planning consistent, private and easy to pick up again.</p><a class="feature-link" href="{{ route('public.features') }}">Explore planning →</a></div></article><article class="feature-card accent"><span class="feature-number">02 / REVIEW</span><div><h3>Make every review useful.</h3><p>Give leaders the context to respond quickly and fairly.</p><a class="feature-link" href="{{ route('public.features') }}">Explore review →</a></div></article><article class="feature-card dark"><span class="feature-number">03 / OPERATE</span><div><h3>Keep the whole school aligned.</h3><p>Protect school boundaries while making the next action obvious.</p><a class="feature-link" href="{{ route('public.about') }}">Our approach →</a></div></article></div></section>
+
+    <section class="home-section alt"><div class="home-heading"><span class="eyebrow">Fits into your day</span><h2>Works with the tools your team already knows.</h2><p>Sign in with Google Workspace and keep communication close to the people doing the work.</p></div><div class="integration"><div class="integration-panel"><h3>Connect with confidence.</h3><p class="muted">A practical foundation for schools that want continuity, not another island.</p><div class="integration-icons" aria-label="Google Workspace and communication tools"><span>G</span><span>✦</span><span>◉</span><span>✉</span></div></div><div class="integration-panel"><h3>Support that knows when to slow down.</h3><p class="muted">Our help centre answers common questions fast. Sensitive identity, access, billing and security cases stay with a human.</p><div class="actions"><a class="button" href="https://support.erphpro.com/solutions">Browse solutions</a></div></div></div></section>
+
+    <section class="home-section"><div class="home-heading"><span class="eyebrow">Words from the work</span><h2>Calm is a feature.</h2><p>Good tools quietly remove friction so teachers and leaders can focus on the people in front of them.</p></div><div class="quote-grid"><article class="quote"><p>“The best part is knowing where a lesson plan is, who needs to look at it and what happens next.”</p><footer><span class="quote-avatar">NH</span><span><strong style="color:var(--ink)">Nur Hidayah</strong><br>School administrator · Selangor</span></footer></article><article class="quote"><p>“It gives our team one shared language for planning, review and follow-through.”</p><footer><span class="quote-avatar" style="background:#c9d9ef;color:#1e3a8a">MT</span><span><strong style="color:var(--ink)">Mr Tan</strong><br>Academic lead · Penang</span></footer></article></div></section>
+</main>
+@endsection

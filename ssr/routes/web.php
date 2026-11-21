@@ -19,6 +19,9 @@ use App\Http\Controllers\SupportTicketController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/health', HealthController::class)->name('health');
+Route::view('/features', 'public.features')->name('public.features');
+Route::view('/about', 'public.about')->name('public.about');
+Route::view('/faq', 'public.faq')->name('public.faq');
 Route::get('/owner/login', [GoogleAuthController::class, 'showOwner'])->name('owner.login');
 Route::get('/owner/auth/google/redirect', [GoogleAuthController::class, 'redirectOwner'])->name('owner.auth.google.redirect');
 Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])->name('auth.google.callback');
@@ -41,6 +44,8 @@ Route::domain(config('support.host'))->middleware('support.host')->group(functio
     Route::get('/tickets/{publicId}', [SupportTicketController::class, 'show'])->name('support.ticket.show');
     Route::post('/tickets/{publicId}/reply', [SupportTicketController::class, 'reply'])->name('support.ticket.reply');
 });
+
+Route::domain(config('app.school_base_domain', 'erphpro.com'))->middleware('school')->get('/', SchoolHomeController::class)->name('public.home');
 
 Route::middleware('school')->group(function () {
     Route::get('/login', [GoogleAuthController::class, 'show'])->name('login');
