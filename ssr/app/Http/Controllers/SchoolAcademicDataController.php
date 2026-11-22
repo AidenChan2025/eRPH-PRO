@@ -57,6 +57,42 @@ class SchoolAcademicDataController extends Controller
         return back()->with('status', 'Academic year activated.');
     }
 
+    public function copyClasses(Request $request, AuditLogger $auditLogger)
+    {
+        $school = $request->attributes->get('school');
+        $data = $request->validate(['source_academic_year_id' => ['required', 'integer'], 'target_academic_year_id' => ['required', 'integer']]);
+        $academicYear = AcademicYear::query()->findOrFail($data['source_academic_year_id']);
+        abort_unless($academicYear->school_id === $school->id, 404);
+        $target = AcademicYear::query()->findOrFail($data['target_academic_year_id']);
+        abort_unless($target->school_id === $school->id && $target->id !== $academicYear->id, 404);
+
+        $created = 0;
+        $skipped = 0;
+        DB::transaction(function () use ($school, $academicYear, $target, $auditLogger, &$created, &$skipped): void {
+            foreach ($academicYear->classes()->orderBy('code')->get() as $sourceClass) {
+                $existing = SchoolClass::query()->where('school_id', $school->id)
+                    ->where('academic_year_id', $target->id)->where('code', $sourceClass->code)->first();
+                if ($existing) {
+                    $skipped++;
+                    continue;
+                }
+                SchoolClass::create([
+                    'school_id' => $school->id, 'academic_year_id' => $target->id,
+                    'code' => $sourceClass->code, 'name' => $sourceClass->name,
+                    'level' => $sourceClass->level, 'stream' => $sourceClass->stream,
+                    'capacity' => $sourceClass->capacity, 'is_active' => true,
+                    'metadata' => $sourceClass->metadata,
+                ]);
+                $created++;
+            }
+            $auditLogger->record('school.academic_year_classes_copied', $school, AcademicYear::class, (string) $target->id, [
+                'source_academic_year_id' => $academicYear->id, 'created' => $created, 'skipped' => $skipped,
+            ]);
+        });
+
+        return back()->with('status', "Copied {$created} classes; {$skipped} existing classes skipped.");
+    }
+
     public function storeClass(Request $request, AuditLogger $auditLogger)
     {
         $school = $request->attributes->get('school');

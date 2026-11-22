@@ -84,6 +84,7 @@ Route::middleware('school')->group(function () {
         Route::get('/admin/academic-data', [SchoolAcademicDataController::class, 'index'])->name('school.academic-data');
         Route::post('/admin/academic-years', [SchoolAcademicDataController::class, 'storeYear'])->name('school.academic-years.store');
         Route::post('/admin/academic-years/{academicYear}/activate', [SchoolAcademicDataController::class, 'activateYear'])->name('school.academic-years.activate');
+        Route::post('/admin/academic-years/copy-classes', [SchoolAcademicDataController::class, 'copyClasses'])->name('school.academic-years.copy-classes');
         Route::post('/admin/classes', [SchoolAcademicDataController::class, 'storeClass'])->name('school.classes.store');
         Route::put('/admin/classes/{schoolClass}', [SchoolAcademicDataController::class, 'updateClass'])->name('school.classes.update');
         Route::post('/admin/teacher-assignments', [SchoolAcademicDataController::class, 'storeAssignment'])->name('school.teacher-assignments.store');

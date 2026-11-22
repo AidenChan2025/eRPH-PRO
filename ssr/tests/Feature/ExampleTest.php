@@ -116,6 +116,21 @@ class ExampleTest extends TestCase
             'academic_year_id' => $year->id, 'code' => '6A', 'name' => '6 Amanah', 'level' => 'Year 6', 'capacity' => 35,
         ])->assertRedirect()->assertSessionHas('status', 'Class created.');
 
+        $targetYear = AcademicYear::create(['school_id' => $schoolId, 'year' => 2029, 'name' => 'School year 2029', 'status' => 'draft']);
+        $this->actingAs($admin)->post('http://demo.erphpro.com/admin/academic-years/copy-classes', [
+            'source_academic_year_id' => $year->id, 'target_academic_year_id' => $targetYear->id,
+        ])->assertRedirect()->assertSessionHas('status', 'Copied 1 classes; 0 existing classes skipped.');
+        $this->assertDatabaseHas('school_classes', ['school_id' => $schoolId, 'academic_year_id' => $targetYear->id, 'code' => '6A']);
+        $this->actingAs($admin)->post('http://demo.erphpro.com/admin/academic-years/copy-classes', [
+            'source_academic_year_id' => $year->id, 'target_academic_year_id' => $targetYear->id,
+        ])->assertRedirect()->assertSessionHas('status', 'Copied 0 classes; 1 existing classes skipped.');
+        $this->assertDatabaseHas('audit_logs', ['action' => 'school.academic_year_classes_copied']);
+        $otherSchool = School::create(['name' => 'Other copy school', 'slug' => 'other-copy-school', 'subdomain' => 'other-copy-school']);
+        $otherYear = AcademicYear::create(['school_id' => $otherSchool->id, 'year' => 2029, 'name' => 'Other year', 'status' => 'draft']);
+        $this->actingAs($admin)->post('http://demo.erphpro.com/admin/academic-years/copy-classes', [
+            'source_academic_year_id' => $otherYear->id, 'target_academic_year_id' => $targetYear->id,
+        ])->assertStatus(404);
+
         $this->assertDatabaseHas('school_classes', ['school_id' => $schoolId, 'academic_year_id' => $year->id, 'code' => '6A']);
         $this->assertDatabaseHas('audit_logs', ['action' => 'school.academic_year_created']);
         $this->assertDatabaseHas('audit_logs', ['action' => 'school.class_created']);
