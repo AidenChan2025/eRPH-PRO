@@ -970,6 +970,28 @@ class ExampleTest extends TestCase
             'title' => 'Updated assigned RPH',
         ])->assertRedirect();
         $this->assertDatabaseHas('lesson_plans', ['id' => $plan->id, 'subject' => 'Bahasa Melayu', 'class_name' => '5 Bestari']);
+        $stoppedAssignment = TeacherClassAssignment::create([
+            'school_id' => $school->id, 'academic_year_id' => $year->id, 'school_class_id' => $class->id,
+            'teacher_profile_id' => $profile->id, 'subject' => 'Science', 'role' => 'teacher', 'is_active' => false,
+        ]);
+        $otherSchool = School::create(['name' => 'Other RPH School', 'slug' => 'other-rph-school', 'subdomain' => 'other-rph-school']);
+        $otherYear = AcademicYear::create(['school_id' => $otherSchool->id, 'year' => 2028, 'name' => 'Other RPH year', 'status' => 'active']);
+        $otherClass = SchoolClass::create(['school_id' => $otherSchool->id, 'academic_year_id' => $otherYear->id, 'code' => 'O1', 'name' => 'Other class']);
+        $otherProfile = TeacherProfile::create(['school_id' => $otherSchool->id, 'user_id' => User::factory()->create()->id, 'employment_status' => 'active']);
+        $otherAssignment = TeacherClassAssignment::create([
+            'school_id' => $otherSchool->id, 'academic_year_id' => $otherYear->id, 'school_class_id' => $otherClass->id,
+            'teacher_profile_id' => $otherProfile->id, 'subject' => 'Other subject', 'role' => 'teacher',
+        ]);
+        $versionCount = LessonPlanVersion::where('lesson_plan_id', $plan->id)->count();
+        foreach ([$stoppedAssignment->id, $otherAssignment->id, $otherAssignment->id + 99999] as $invalidAssignmentId) {
+            $this->actingAs($admin)->post('http://demo.erphpro.com/rph', [
+                'lesson_date' => '2028-02-05', 'assignment_id' => $invalidAssignmentId, 'title' => 'Invalid assignment RPH',
+            ])->assertStatus(422);
+            $this->actingAs($admin)->put('http://demo.erphpro.com/rph/'.$plan->id, [
+                'lesson_date' => '2028-02-05', 'assignment_id' => $invalidAssignmentId, 'title' => 'Invalid assignment edit',
+            ])->assertStatus(422);
+        }
+        $this->assertSame($versionCount, LessonPlanVersion::where('lesson_plan_id', $plan->id)->count());
         $this->actingAs($admin)->put('http://demo.erphpro.com/rph/'.$plan->id, [
             'lesson_date' => '2028-02-04', 'subject' => 'Unauthorised', 'class_name' => 'Other class', 'title' => 'Invalid edit',
         ])->assertStatus(422);
