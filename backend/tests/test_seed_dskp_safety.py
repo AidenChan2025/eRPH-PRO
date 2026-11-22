@@ -86,6 +86,46 @@ class SeedDskpSafetyTests(unittest.TestCase):
         self.assertIn("Refusing to modify an existing SQLite database", result.stderr)
         self.assertEqual(before, hashlib.sha256(self.database.read_bytes()).hexdigest())
 
+    def test_refuses_database_symlink_without_changing_its_target(self):
+        external = Path(self.temp.name) / "external.db"
+        external.touch()
+        self.database.parent.mkdir(parents=True)
+        self.database.symlink_to(external)
+
+        result = self.run_seed("--init-empty-local-demo")
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("Refusing a symlinked local database path", result.stderr)
+        self.assertEqual(external.stat().st_size, 0)
+        self.assertNotIn("COMMIT_ADDED=", result.stdout)
+
+    def test_refuses_symlinked_instance_directory_without_changing_its_target(self):
+        external_instance = Path(self.temp.name) / "external-instance"
+        external_instance.mkdir()
+        external_db = external_instance / "erph.db"
+        external_db.touch()
+        (self.backend / "instance").symlink_to(external_instance, target_is_directory=True)
+
+        result = self.run_seed("--init-empty-local-demo")
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("Refusing a symlinked local database path", result.stderr)
+        self.assertEqual(external_db.stat().st_size, 0)
+        self.assertNotIn("COMMIT_ADDED=", result.stdout)
+
+    def test_refuses_multiply_linked_empty_database_without_changing_it(self):
+        external = Path(self.temp.name) / "external.db"
+        external.touch()
+        self.database.parent.mkdir(parents=True)
+        os.link(external, self.database)
+
+        result = self.run_seed("--init-empty-local-demo")
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("Refusing a multiply-linked database file", result.stderr)
+        self.assertEqual(external.stat().st_size, 0)
+        self.assertNotIn("COMMIT_ADDED=", result.stdout)
+
     def test_refuses_empty_file_when_dskp_table_already_has_rows(self):
         self.database.parent.mkdir(parents=True)
         self.database.touch()

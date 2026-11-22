@@ -18,9 +18,21 @@ def seed() -> int:
     if os.environ.get('DATABASE_URL'):
         parser.error('Refusing an explicit DATABASE_URL; this script is restricted to its default local SQLite database.')
 
-    local_db = Path(__file__).resolve().parent / 'instance' / 'erph.db'
+    backend_root = Path(__file__).resolve().parent
+    instance_dir = backend_root / 'instance'
+    local_db = instance_dir / 'erph.db'
+    if instance_dir.is_symlink() or local_db.is_symlink():
+        parser.error('Refusing a symlinked local database path; no rows were read or changed.')
+
+    try:
+        local_db.resolve().relative_to(backend_root)
+    except ValueError:
+        parser.error('Refusing a database path outside the backend directory; no rows were read or changed.')
+
     if local_db.exists() and local_db.stat().st_size > 0:
         parser.error('Refusing to modify an existing SQLite database. Back up and review it separately; no rows were read or changed.')
+    if local_db.exists() and local_db.stat().st_nlink > 1:
+        parser.error('Refusing a multiply-linked database file; no rows were read or changed.')
 
     from app import create_app
     from models import db, DSKPData
