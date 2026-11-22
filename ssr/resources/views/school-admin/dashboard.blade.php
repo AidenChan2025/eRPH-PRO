@@ -41,6 +41,11 @@
             <div class="fields"><label>Ticket<select name="ticket_public_id" required><option value="">Choose an open ticket</option>@foreach($supportTickets as $ticket)<option value="{{ $ticket->public_id }}">{{ $ticket->subject }} · {{ $ticket->public_id }}</option>@endforeach</select></label><label>Platform owner<select name="owner_id" required><option value="">Choose an owner</option>@foreach($platformOwners as $owner)<option value="{{ $owner->id }}">{{ $owner->name }}</option>@endforeach</select></label><label>Access duration<select name="duration_minutes" required><option value="15">15 minutes</option><option value="30">30 minutes</option><option value="60" selected>1 hour</option><option value="120">2 hours</option></select></label><label style="grid-column:1/-1">Reason<textarea name="purpose" minlength="12" maxlength="500" required style="min-height:76px;padding:9px 10px;border:1px solid var(--line);border-radius:8px;font:inherit"></textarea></label></div>
             <button class="button" type="submit" @disabled($supportTickets->isEmpty() || $platformOwners->isEmpty())>Grant read-only access</button>
         </form>
+        <div class="table-wrap"><table><thead><tr><th>Ticket</th><th>Platform owner</th><th>Expires</th><th>Action</th></tr></thead><tbody>
+            @forelse($activeSupportGrants as $grant)
+                <tr><td><span class="person">{{ $grant->supportTicket->subject }}</span><span class="sub">{{ $grant->supportTicket->public_id }}</span></td><td>{{ $grant->platformOwner->name }}</td><td>{{ $grant->expires_at->format('d M Y H:i') }}</td><td><form method="post" action="{{ route('school.support-access.revoke', $grant) }}">@csrf<button type="submit">Revoke now</button></form></td></tr>
+            @empty<tr><td colspan="4">No active temporary support grants.</td></tr>@endforelse
+        </tbody></table></div>
     </section>
     <section class="card"><div class="table-wrap"><table><thead><tr><th>Teacher</th><th>Staff no.</th><th>Position</th><th>Status</th><th>Joined</th><th>Access</th></tr></thead><tbody>
         @forelse($teachers as $teacher)

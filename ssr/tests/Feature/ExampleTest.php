@@ -933,6 +933,15 @@ class ExampleTest extends TestCase
             'action' => 'platform_support.ticket_viewed', 'subject_id' => (string) $ticket->id,
         ]);
         $grant = \App\Models\PlatformSupportAccessGrant::query()->firstOrFail();
+        $this->actingAs($admin)->post(route('school.support-access.revoke', $grant))
+            ->assertSessionHasNoErrors();
+        $this->assertNotNull($grant->fresh()->revoked_at);
+        $this->assertNull($grant->fresh()->grant_slot_key);
+        $this->actingAs($owner)->get(route('owner.support.show', $ticket->public_id))->assertNotFound();
+        $this->assertDatabaseHas('audit_logs', [
+            'school_id' => $school->id, 'actor_id' => $admin->id,
+            'action' => 'school_support_access.revoked', 'subject_id' => (string) $grant->id,
+        ]);
         $this->actingAs($admin)->post('http://demo.erphpro.com/admin/support-access', [
             'ticket_public_id' => $ticket->public_id, 'owner_id' => $owner->id,
             'purpose' => 'Continue investigation of the same school ticket', 'duration_minutes' => 30,

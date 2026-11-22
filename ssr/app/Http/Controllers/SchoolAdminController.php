@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\TeacherProfile;
 use App\Models\SupportTicket;
+use App\Models\PlatformSupportAccessGrant;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Services\AuditLogger;
@@ -25,8 +26,12 @@ class SchoolAdminController extends Controller
         $supportTickets = SupportTicket::query()->where('school_id', $school->id)
             ->whereIn('status', ['open', 'pending'])->latest('last_activity_at')->limit(100)->get();
         $platformOwners = User::query()->where('platform_role', 'owner')->orderBy('name')->get(['id', 'name']);
+        $activeSupportGrants = PlatformSupportAccessGrant::query()
+            ->where('school_id', $school->id)->where('expires_at', '>', now())->whereNull('revoked_at')
+            ->with(['supportTicket:id,public_id,subject', 'platformOwner:id,name'])
+            ->latest('expires_at')->get();
 
-        return view('school-admin.dashboard', compact('school', 'teachers', 'memberRoles', 'supportTickets', 'platformOwners'));
+        return view('school-admin.dashboard', compact('school', 'teachers', 'memberRoles', 'supportTickets', 'platformOwners', 'activeSupportGrants'));
     }
 
     public function store(Request $request, AuditLogger $auditLogger)
@@ -132,5 +137,18 @@ class SchoolAdminController extends Controller
         $auditLogger->record('school.temporary_access_granted', $school, User::class, (string) $user->id, ['email' => $email, 'role' => $data['role'], 'expires_at' => $data['expires_at'], 'reason' => $data['access_reason']]);
 
         return redirect()->route('school.admin.access')->with('status', 'Temporary access granted.');
+    }
+
+    public function revokeSupportAccess(Request $request, PlatformSupportAccessGrant $grant, AuditLogger $auditLogger)
+    {
+        $school = $request->attributes->get('school');
+        $grant = PlatformSupportAccessGrant::query()->whereKey($grant->id)->where('school_id', $school->id)
+            ->where('expires_at', '>', now())->whereNull('revoked_at')->firstOrFail();
+        $grant->update(['revoked_at' => now(), 'grant_slot_key' => null]);
+        $auditLogger->record('school_support_access.revoked', $school, PlatformSupportAccessGrant::class, (string) $grant->id, [
+            'ticket_id' => $grant->support_ticket_id, 'platform_owner_id' => $grant->platform_owner_id,
+            'reason' => 'school_admin_manual_revoke', 'mode' => 'read_only',
+        ]);
+        return redirect()->route('school.admin')->with('status', 'Support access revoked immediately.');
     }
 }
