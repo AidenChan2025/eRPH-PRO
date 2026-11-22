@@ -141,8 +141,7 @@ class LessonPlanController extends Controller
         ]);
         $assignment = $this->assignmentForTeacher($data['assignment_id'] ?? null, $school, $profile);
         if (!$assignment && TeacherClassAssignment::query()->where('teacher_profile_id', $profile->id)->where('is_active', true)->exists()) {
-            $assignment = TeacherClassAssignment::query()->with('schoolClass')->where('teacher_profile_id', $profile->id)->where('school_id', $school->id)->where('is_active', true)->where('subject', $data['subject'])->whereHas('schoolClass', fn ($query) => $query->where('name', $data['class_name']))->first();
-            abort_unless($assignment, 422, 'Choose one of your active class and subject assignments.');
+            abort(422, 'Choose one of your active class and subject assignments.');
         }
         if ($assignment) {
             $data['subject'] = $assignment->subject;

@@ -963,6 +963,16 @@ class ExampleTest extends TestCase
         $this->assertDatabaseHas('lesson_plans', [
             'teacher_profile_id' => $profile->id, 'subject' => 'Bahasa Melayu', 'class_name' => '5 Bestari',
         ]);
+        $plan = LessonPlan::where('teacher_profile_id', $profile->id)->latest('id')->firstOrFail();
+        $this->actingAs($admin)->get('http://demo.erphpro.com/rph/'.$plan->id.'/edit')->assertOk()->assertSee('Class and subject assignment');
+        $this->actingAs($admin)->put('http://demo.erphpro.com/rph/'.$plan->id, [
+            'lesson_date' => '2028-02-03', 'assignment_id' => $assignment->id, 'subject' => 'Forged subject', 'class_name' => 'Forged class',
+            'title' => 'Updated assigned RPH',
+        ])->assertRedirect();
+        $this->assertDatabaseHas('lesson_plans', ['id' => $plan->id, 'subject' => 'Bahasa Melayu', 'class_name' => '5 Bestari']);
+        $this->actingAs($admin)->put('http://demo.erphpro.com/rph/'.$plan->id, [
+            'lesson_date' => '2028-02-04', 'subject' => 'Unauthorised', 'class_name' => 'Other class', 'title' => 'Invalid edit',
+        ])->assertStatus(422);
         $this->actingAs($admin)->post('http://demo.erphpro.com/rph', [
             'lesson_date' => '2028-02-02', 'subject' => 'Unauthorised', 'class_name' => 'Other class', 'title' => 'Invalid RPH',
         ])->assertStatus(422);
