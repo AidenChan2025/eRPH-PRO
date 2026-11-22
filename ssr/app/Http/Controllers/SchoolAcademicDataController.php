@@ -200,10 +200,24 @@ class SchoolAcademicDataController extends Controller
                 && $targetClass->academic_year_id === $assignment->academic_year_id,
             404
         );
+        abort_unless($targetClass->is_active && $targetTeacher->employment_status === 'active', 422);
+        abort_unless($school->members()->whereKey($targetTeacher->user_id)->wherePivot('status', 'active')->exists(), 422);
         abort_if($targetClass->id === $assignment->school_class_id && $targetTeacher->id === $assignment->teacher_profile_id, 422, 'Choose a different class or teacher.');
 
         DB::transaction(function () use ($school, $assignment, $targetClass, $targetTeacher, $auditLogger): void {
             $source = TeacherClassAssignment::withoutGlobalScopes()->whereKey($assignment->id)->lockForUpdate()->firstOrFail();
+            abort_unless($source->school_id === $school->id && $source->is_active, 404);
+            $lockedClass = SchoolClass::withoutGlobalScopes()->whereKey($targetClass->id)->lockForUpdate()->firstOrFail();
+            $lockedTeacher = TeacherProfile::withoutGlobalScopes()->whereKey($targetTeacher->id)->lockForUpdate()->firstOrFail();
+            abort_unless(
+                $lockedClass->school_id === $school->id
+                    && $lockedClass->academic_year_id === $source->academic_year_id
+                    && $lockedClass->is_active
+                    && $lockedTeacher->school_id === $school->id
+                    && $lockedTeacher->employment_status === 'active'
+                    && $school->members()->whereKey($lockedTeacher->user_id)->wherePivot('status', 'active')->exists(),
+                422
+            );
             $target = TeacherClassAssignment::withoutGlobalScopes()->where([
                 'school_id' => $school->id,
                 'academic_year_id' => $source->academic_year_id,
