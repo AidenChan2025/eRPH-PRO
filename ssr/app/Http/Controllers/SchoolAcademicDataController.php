@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\AcademicYear;
 use App\Models\SchoolClass;
+use App\Models\TeacherClassAssignment;
+use App\Models\TeacherProfile;
 use App\Services\AuditLogger;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -18,6 +20,8 @@ class SchoolAcademicDataController extends Controller
             'school' => $school,
             'academicYears' => AcademicYear::query()->withCount('classes')->orderByDesc('year')->get(),
             'classes' => SchoolClass::query()->with('academicYear')->orderBy('academic_year_id')->orderBy('name')->get(),
+            'teachers' => TeacherProfile::query()->with('user')->where('employment_status', 'active')->orderBy('staff_no')->get(),
+            'assignments' => TeacherClassAssignment::query()->with(['teacherProfile.user', 'schoolClass', 'academicYear'])->where('is_active', true)->orderBy('subject')->get(),
         ]);
     }
 
@@ -93,5 +97,42 @@ class SchoolAcademicDataController extends Controller
         });
 
         return back()->with('status', 'Class updated.');
+    }
+
+    public function storeAssignment(Request $request, AuditLogger $auditLogger)
+    {
+        $school = $request->attributes->get('school');
+        $data = $request->validate([
+            'academic_year_id' => ['required', 'integer'],
+            'school_class_id' => ['required', 'integer'],
+            'teacher_profile_id' => ['required', 'integer'],
+            'subject' => ['required', 'string', 'max:120'],
+            'role' => ['required', 'in:teacher,head'],
+        ]);
+        $year = AcademicYear::query()->findOrFail($data['academic_year_id']);
+        $class = SchoolClass::query()->findOrFail($data['school_class_id']);
+        $teacher = TeacherProfile::query()->findOrFail($data['teacher_profile_id']);
+        abort_unless($year->school_id === $school->id && $class->school_id === $school->id && $teacher->school_id === $school->id && $class->academic_year_id === $year->id, 404);
+
+        DB::transaction(function () use ($school, $data, $auditLogger, &$assignment): void {
+            $assignment = TeacherClassAssignment::create([...$data, 'school_id' => $school->id]);
+            $auditLogger->record('school.teacher_class_assignment_created', $school, TeacherClassAssignment::class, (string) $assignment->id, [
+                'teacher_profile_id' => $assignment->teacher_profile_id, 'school_class_id' => $assignment->school_class_id, 'subject' => $assignment->subject,
+            ]);
+        });
+
+        return back()->with('status', 'Teacher assignment created.');
+    }
+
+    public function removeAssignment(Request $request, TeacherClassAssignment $assignment, AuditLogger $auditLogger)
+    {
+        $school = $request->attributes->get('school');
+        abort_unless($assignment->school_id === $school->id, 404);
+        DB::transaction(function () use ($school, $assignment, $auditLogger): void {
+            $assignment->update(['is_active' => false]);
+            $auditLogger->record('school.teacher_class_assignment_removed', $school, TeacherClassAssignment::class, (string) $assignment->id, []);
+        });
+
+        return back()->with('status', 'Teacher assignment removed.');
     }
 }

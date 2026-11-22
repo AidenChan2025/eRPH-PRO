@@ -13,6 +13,7 @@ use App\Models\SupportTicket;
 use App\Models\SupportArticle;
 use App\Models\AcademicYear;
 use App\Models\SchoolClass;
+use App\Models\TeacherClassAssignment;
 use App\Models\TeacherProfile;
 use Database\Seeders\SupportContentSeeder;
 use App\Services\SupportAIService;
@@ -118,6 +119,20 @@ class ExampleTest extends TestCase
         $this->assertDatabaseHas('school_classes', ['school_id' => $schoolId, 'academic_year_id' => $year->id, 'code' => '6A']);
         $this->assertDatabaseHas('audit_logs', ['action' => 'school.academic_year_created']);
         $this->assertDatabaseHas('audit_logs', ['action' => 'school.class_created']);
+
+        $teacher = User::factory()->create(['email' => 'assigned-teacher@example.com']);
+        School::whereKey($schoolId)->firstOrFail()->members()->attach($teacher->id, ['role' => 'teacher', 'status' => 'active']);
+        $profile = TeacherProfile::create(['school_id' => $schoolId, 'user_id' => $teacher->id, 'employment_status' => 'active']);
+        $this->actingAs($admin)->post('http://demo.erphpro.com/admin/teacher-assignments', [
+            'academic_year_id' => $year->id, 'school_class_id' => SchoolClass::where('code', '6A')->value('id'),
+            'teacher_profile_id' => $profile->id, 'subject' => 'Mathematics', 'role' => 'teacher',
+        ])->assertRedirect()->assertSessionHas('status', 'Teacher assignment created.');
+        $assignment = TeacherClassAssignment::where('teacher_profile_id', $profile->id)->firstOrFail();
+        $this->actingAs($admin)->post('http://demo.erphpro.com/admin/teacher-assignments/'.$assignment->id.'/remove')
+            ->assertRedirect()->assertSessionHas('status', 'Teacher assignment removed.');
+        $this->assertDatabaseHas('teacher_class_assignments', ['id' => $assignment->id, 'is_active' => 0]);
+        $this->assertDatabaseHas('audit_logs', ['action' => 'school.teacher_class_assignment_created']);
+        $this->assertDatabaseHas('audit_logs', ['action' => 'school.teacher_class_assignment_removed']);
     }
 
     public function test_academic_data_management_rejects_non_admin_and_cross_school_resources(): void
@@ -127,6 +142,9 @@ class ExampleTest extends TestCase
         $otherSchool = School::create(['name' => 'Other School', 'slug' => 'other-school', 'subdomain' => 'other-school']);
         $otherYear = AcademicYear::create(['school_id' => $otherSchool->id, 'year' => 2028, 'name' => 'Other year', 'status' => 'active']);
         $otherClass = SchoolClass::create(['school_id' => $otherSchool->id, 'academic_year_id' => $otherYear->id, 'code' => 'O1', 'name' => 'Other class']);
+        $otherTeacher = User::factory()->create(['email' => 'other-teacher@example.com']);
+        $otherSchool->members()->attach($otherTeacher->id, ['role' => 'teacher', 'status' => 'active']);
+        $otherProfile = TeacherProfile::create(['school_id' => $otherSchool->id, 'user_id' => $otherTeacher->id, 'employment_status' => 'active']);
         $teacher = User::factory()->create(['email' => 'teacher@example.com']);
         $school->members()->attach($teacher->id, ['role' => 'teacher', 'status' => 'active']);
 
@@ -149,10 +167,15 @@ class ExampleTest extends TestCase
         $this->actingAs($admin)->put('http://demo.erphpro.com/admin/classes/'.$otherClass->id, [
             'name' => 'Tampered', 'is_active' => 0,
         ])->assertNotFound();
+        $this->actingAs($admin)->post('http://demo.erphpro.com/admin/teacher-assignments', [
+            'academic_year_id' => $otherYear->id, 'school_class_id' => $otherClass->id,
+            'teacher_profile_id' => $otherProfile->id, 'subject' => 'Science', 'role' => 'teacher',
+        ])->assertNotFound();
 
         $this->assertDatabaseMissing('school_classes', ['school_id' => $school->id, 'code' => 'X1']);
         $this->assertDatabaseHas('school_classes', ['id' => $otherClass->id, 'name' => 'Other class', 'is_active' => 1]);
         $this->assertDatabaseHas('academic_years', ['id' => $otherYear->id, 'status' => 'active']);
+        $this->assertDatabaseCount('teacher_class_assignments', 0);
     }
 
     public function test_academic_data_state_and_audit_transactions_are_atomic(): void

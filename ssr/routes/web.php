@@ -86,6 +86,8 @@ Route::middleware('school')->group(function () {
         Route::post('/admin/academic-years/{academicYear}/activate', [SchoolAcademicDataController::class, 'activateYear'])->name('school.academic-years.activate');
         Route::post('/admin/classes', [SchoolAcademicDataController::class, 'storeClass'])->name('school.classes.store');
         Route::put('/admin/classes/{schoolClass}', [SchoolAcademicDataController::class, 'updateClass'])->name('school.classes.update');
+        Route::post('/admin/teacher-assignments', [SchoolAcademicDataController::class, 'storeAssignment'])->name('school.teacher-assignments.store');
+        Route::post('/admin/teacher-assignments/{assignment}/remove', [SchoolAcademicDataController::class, 'removeAssignment'])->name('school.teacher-assignments.remove');
         Route::post('/admin/people', [SchoolAdminController::class, 'store'])->name('school.admin.people.store');
         Route::put('/admin/people/{user}', [SchoolAdminController::class, 'updateMember'])->name('school.admin.people.update');
         Route::get('/admin/access', [SchoolAdminController::class, 'access'])->name('school.admin.access');
