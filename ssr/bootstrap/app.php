@@ -8,6 +8,7 @@ use App\Http\Middleware\RequireSchoolMembership;
 use App\Http\Middleware\RequirePermission;
 use App\Http\Middleware\RequirePlatformOwner;
 use App\Http\Middleware\ResolveSupportHost;
+use App\Http\Middleware\RequirePlatformHost;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -22,6 +23,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'school.member' => RequireSchoolMembership::class,
             'permission' => RequirePermission::class,
             'platform.owner' => RequirePlatformOwner::class,
+            'platform.host' => RequirePlatformHost::class,
             'support.host' => ResolveSupportHost::class,
             'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         ]);

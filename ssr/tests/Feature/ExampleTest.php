@@ -470,6 +470,14 @@ class ExampleTest extends TestCase
         $this->get('/owner/login')->assertOk()->assertSee('Platform owner');
     }
 
+    public function test_platform_owner_routes_are_not_available_on_school_subdomains(): void
+    {
+        $owner = User::factory()->create(['platform_role' => 'owner']);
+
+        $this->get('http://demo.erphpro.com/owner/login')->assertNotFound();
+        $this->actingAs($owner)->get('http://demo.erphpro.com/owner')->assertNotFound();
+    }
+
     public function test_google_redirect_fails_clearly_when_credentials_are_not_configured(): void
     {
         $this->seed();
@@ -920,13 +928,13 @@ class ExampleTest extends TestCase
             'action' => 'school_support_access.granted',
         ]);
 
-        $this->actingAs($owner)->get(route('owner.support.show', $ticket->public_id))
+        $this->actingAs($owner)->get('http://erphpro.com/owner/support/'.$ticket->public_id)
             ->assertOk()->assertSee('Approved support issue')->assertSee('Read-only school-approved access')
             ->assertDontSee('teacher@example.com')
             ->assertSee('Public ticket details.')->assertDontSee('Private internal note.')
             ->assertDontSee('Private internal AI summary')->assertDontSee('Private unsent draft')
             ->assertDontSee('Send reply')->assertDontSee('Save controls');
-        $this->actingAs($owner)->get(route('owner.support.index'))
+        $this->actingAs($owner)->get('http://erphpro.com/owner/support')
             ->assertOk()->assertSee($ticket->public_id)->assertDontSee($unapprovedTicket->subject);
         $this->assertDatabaseHas('audit_logs', [
             'school_id' => $school->id, 'actor_id' => $owner->id,
@@ -954,7 +962,7 @@ class ExampleTest extends TestCase
         $this->assertNotNull($grant->fresh()->revoked_at);
         $this->assertNull($grant->fresh()->grant_slot_key);
         $this->assertSame(1, \App\Models\PlatformSupportAccessGrant::query()->whereNotNull('grant_slot_key')->count());
-        $this->actingAs($owner)->put(route('owner.support.update', $ticket->public_id), [
+        $this->actingAs($owner)->put('http://erphpro.com/owner/support/'.$ticket->public_id, [
             'status' => 'closed', 'priority' => 'urgent',
         ])->assertForbidden();
         $this->assertDatabaseHas('audit_logs', [
@@ -962,8 +970,8 @@ class ExampleTest extends TestCase
             'subject_id' => hash('sha256', $ticket->public_id),
         ]);
         $this->travel(31)->minutes();
-        $this->actingAs($owner)->get(route('owner.support.show', $ticket->public_id))->assertNotFound();
-        $this->actingAs($owner)->post(route('owner.support.reply', $ticket->public_id), ['message' => 'reply'])
+        $this->actingAs($owner)->get('http://erphpro.com/owner/support/'.$ticket->public_id)->assertNotFound();
+        $this->actingAs($owner)->post('http://erphpro.com/owner/support/'.$ticket->public_id.'/reply', ['message' => 'reply'])
             ->assertNotFound();
         $expiredGrant = \App\Models\PlatformSupportAccessGrant::query()->whereNotNull('grant_slot_key')->firstOrFail();
         $this->actingAs($admin)->post('http://demo.erphpro.com/admin/support-access', [

@@ -23,15 +23,17 @@ Route::get('/health', HealthController::class)->name('health');
 Route::view('/features', 'public.features')->name('public.features');
 Route::view('/about', 'public.about')->name('public.about');
 Route::view('/faq', 'public.faq')->name('public.faq');
-Route::get('/owner/login', [GoogleAuthController::class, 'showOwner'])->name('owner.login');
-Route::get('/owner/auth/google/redirect', [GoogleAuthController::class, 'redirectOwner'])->name('owner.auth.google.redirect');
+Route::middleware('platform.host')->group(function () {
+    Route::get('/owner/login', [GoogleAuthController::class, 'showOwner'])->name('owner.login');
+    Route::get('/owner/auth/google/redirect', [GoogleAuthController::class, 'redirectOwner'])->name('owner.auth.google.redirect');
+});
 Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])
     ->middleware(\App\Http\Middleware\PreventSensitiveResponseCaching::class)
     ->name('auth.google.callback');
 Route::post('/auth/google/one-tap', [GoogleAuthController::class, 'oneTap'])->name('auth.google.one-tap')->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
-Route::middleware(['auth', 'platform.owner'])->get('/owner', OwnerController::class)->name('owner.dashboard');
-Route::middleware(['auth', 'platform.owner'])->get('/owner/audit', OwnerAuditController::class)->name('owner.audit');
-Route::middleware(['auth', 'platform.owner'])->prefix('owner/support')->group(function () {
+Route::middleware(['platform.host', 'auth', 'platform.owner'])->get('/owner', OwnerController::class)->name('owner.dashboard');
+Route::middleware(['platform.host', 'auth', 'platform.owner'])->get('/owner/audit', OwnerAuditController::class)->name('owner.audit');
+Route::middleware(['platform.host', 'auth', 'platform.owner'])->prefix('owner/support')->group(function () {
     Route::get('/', [OwnerSupportController::class, 'index'])->name('owner.support.index');
     Route::get('/{publicId}', [OwnerSupportController::class, 'show'])->name('owner.support.show');
     Route::put('/{publicId}', [OwnerSupportController::class, 'update'])->name('owner.support.update');
