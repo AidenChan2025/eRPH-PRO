@@ -206,6 +206,47 @@ class ExampleTest extends TestCase
         $this->assertDatabaseHas('teacher_profiles', ['id' => $profile->id, 'employment_status' => 'inactive']);
         $this->assertDatabaseHas('teacher_class_assignments', ['teacher_profile_id' => $profile->id, 'is_active' => 0]);
         $this->assertDatabaseHas('audit_logs', ['action' => 'school.teacher_assignments_deactivated_with_member']);
+        $historyPlan = LessonPlan::create([
+            'school_id' => $schoolId, 'teacher_profile_id' => $profile->id,
+            'teacher_class_assignment_id' => $assignment->id, 'lesson_date' => '2029-03-01',
+            'subject' => 'Mathematics', 'class_name' => '6 Amanah', 'status' => 'draft', 'current_version' => 1,
+        ]);
+        $otherTeacher = User::factory()->create(['email' => 'other-assignment-teacher@example.com']);
+        $otherSchool->members()->attach($otherTeacher->id, ['role' => 'teacher', 'status' => 'active']);
+        $otherProfile = TeacherProfile::create(['school_id' => $otherSchool->id, 'user_id' => $otherTeacher->id, 'employment_status' => 'active']);
+        $otherClass = SchoolClass::create(['school_id' => $otherSchool->id, 'academic_year_id' => $otherYear->id, 'code' => 'O1', 'name' => 'Other class']);
+        $otherAssignment = TeacherClassAssignment::create([
+            'school_id' => $otherSchool->id, 'academic_year_id' => $otherYear->id, 'school_class_id' => $otherClass->id,
+            'teacher_profile_id' => $otherProfile->id, 'subject' => 'Other subject', 'role' => 'teacher',
+        ]);
+        $this->actingAs($admin)->put('http://demo.erphpro.com/admin/people/'.$teacher->id, [
+            'role' => 'teacher', 'status' => 'active',
+        ])->assertRedirect()->assertSessionHas('status', 'School account updated.');
+        $this->assertDatabaseHas('teacher_profiles', ['id' => $profile->id, 'employment_status' => 'active']);
+        $this->assertDatabaseHas('teacher_class_assignments', ['id' => $assignment->id, 'is_active' => 0]);
+        $this->assertDatabaseHas('lesson_plans', ['id' => $historyPlan->id, 'teacher_class_assignment_id' => $assignment->id]);
+        $this->assertDatabaseHas('teacher_class_assignments', ['id' => $otherAssignment->id, 'is_active' => 1]);
+
+        $newAssignment = TeacherClassAssignment::create([
+            'school_id' => $schoolId, 'academic_year_id' => $year->id, 'school_class_id' => SchoolClass::where('code', '6A')->value('id'),
+            'teacher_profile_id' => $profile->id, 'subject' => 'History', 'role' => 'teacher',
+        ]);
+        $this->app->instance(AuditLogger::class, Mockery::mock(AuditLogger::class, function ($mock): void {
+            $mock->shouldReceive('record')->once()->andThrow(new \RuntimeException('audit unavailable'));
+        }));
+        $this->withoutExceptionHandling();
+        try {
+            $this->actingAs($admin)->put('http://demo.erphpro.com/admin/people/'.$teacher->id, [
+                'role' => 'teacher', 'status' => 'inactive',
+            ]);
+            $this->fail('An audit failure should roll back member lifecycle changes.');
+        } catch (\RuntimeException $exception) {
+            $this->assertSame('audit unavailable', $exception->getMessage());
+        }
+        $this->assertDatabaseHas('school_memberships', ['school_id' => $schoolId, 'user_id' => $teacher->id, 'status' => 'active']);
+        $this->assertDatabaseHas('teacher_profiles', ['id' => $profile->id, 'employment_status' => 'active']);
+        $this->assertDatabaseHas('teacher_class_assignments', ['id' => $newAssignment->id, 'is_active' => 1]);
+        $this->app->instance(AuditLogger::class, new AuditLogger());
     }
 
     public function test_academic_data_management_rejects_non_admin_and_cross_school_resources(): void
