@@ -17,6 +17,7 @@ use App\Http\Controllers\SupportArticleController;
 use App\Http\Controllers\SupportHomeController;
 use App\Http\Controllers\SupportTicketController;
 use App\Http\Controllers\SchoolSupportAccessController;
+use App\Http\Controllers\SchoolAcademicDataController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/health', HealthController::class)->name('health');
@@ -80,6 +81,11 @@ Route::middleware('school')->group(function () {
         Route::middleware('throttle:10,1')->post('/admin/support-access', [SchoolSupportAccessController::class, 'store'])->name('school.support-access.store');
         Route::post('/admin/support-access/{grant}/revoke', [SchoolAdminController::class, 'revokeSupportAccess'])->name('school.support-access.revoke');
         Route::get('/admin', SchoolAdminController::class)->name('school.admin');
+        Route::get('/admin/academic-data', [SchoolAcademicDataController::class, 'index'])->name('school.academic-data');
+        Route::post('/admin/academic-years', [SchoolAcademicDataController::class, 'storeYear'])->name('school.academic-years.store');
+        Route::post('/admin/academic-years/{academicYear}/activate', [SchoolAcademicDataController::class, 'activateYear'])->name('school.academic-years.activate');
+        Route::post('/admin/classes', [SchoolAcademicDataController::class, 'storeClass'])->name('school.classes.store');
+        Route::put('/admin/classes/{schoolClass}', [SchoolAcademicDataController::class, 'updateClass'])->name('school.classes.update');
         Route::post('/admin/people', [SchoolAdminController::class, 'store'])->name('school.admin.people.store');
         Route::put('/admin/people/{user}', [SchoolAdminController::class, 'updateMember'])->name('school.admin.people.update');
         Route::get('/admin/access', [SchoolAdminController::class, 'access'])->name('school.admin.access');

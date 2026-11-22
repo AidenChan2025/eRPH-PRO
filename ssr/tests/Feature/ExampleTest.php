@@ -93,6 +93,30 @@ class ExampleTest extends TestCase
         $this->assertSame(['School year 2027'], AcademicYear::query()->pluck('name')->all());
     }
 
+    public function test_school_admin_can_manage_academic_years_and_classes(): void
+    {
+        $this->seed();
+        $admin = User::where('email', 'demo@erphpro.com')->firstOrFail();
+
+        $this->actingAs($admin)->get('http://demo.erphpro.com/admin/academic-data')
+            ->assertOk()->assertSee('Academic years')->assertSee('classes');
+        $this->actingAs($admin)->post('http://demo.erphpro.com/admin/academic-years', [
+            'year' => 2028, 'name' => 'School year 2028', 'starts_on' => '2028-01-01', 'ends_on' => '2028-12-31',
+        ])->assertRedirect()->assertSessionHas('status', 'Academic year created.');
+        $schoolId = School::where('subdomain', 'demo')->value('id');
+        $year = AcademicYear::where('school_id', $schoolId)->where('year', 2028)->firstOrFail();
+
+        $this->actingAs($admin)->post('http://demo.erphpro.com/admin/academic-years/'.$year->id.'/activate')
+            ->assertRedirect()->assertSessionHas('status', 'Academic year activated.');
+        $this->actingAs($admin)->post('http://demo.erphpro.com/admin/classes', [
+            'academic_year_id' => $year->id, 'code' => '6A', 'name' => '6 Amanah', 'level' => 'Year 6', 'capacity' => 35,
+        ])->assertRedirect()->assertSessionHas('status', 'Class created.');
+
+        $this->assertDatabaseHas('school_classes', ['school_id' => $schoolId, 'academic_year_id' => $year->id, 'code' => '6A']);
+        $this->assertDatabaseHas('audit_logs', ['action' => 'school.academic_year_created']);
+        $this->assertDatabaseHas('audit_logs', ['action' => 'school.class_created']);
+    }
+
     public function test_support_centre_is_available_on_its_own_host(): void
     {
         $this->get('http://support.erphpro.com/')
