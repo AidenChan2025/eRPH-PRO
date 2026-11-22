@@ -178,6 +178,8 @@ class ExampleTest extends TestCase
             'school_id' => $schoolId, 'academic_year_id' => $targetYear->id, 'code' => '7A', 'name' => '7 Arif',
             'level' => 'Year 7', 'stream' => 'STEM', 'capacity' => 32,
         ]);
+        $copiedClass = SchoolClass::query()->where('academic_year_id', $targetYear->id)->where('code', '7A')->firstOrFail();
+        $this->assertSame($sourceClass->metadata, $copiedClass->metadata);
         $this->assertSame($assignmentCount, TeacherClassAssignment::withoutGlobalScopes()->count());
         $this->assertSame($lessonPlanCount, LessonPlan::withoutGlobalScopes()->count());
         $this->assertDatabaseMissing('teacher_class_assignments', ['academic_year_id' => $targetYear->id, 'subject' => 'Science']);
@@ -185,6 +187,12 @@ class ExampleTest extends TestCase
             'source_academic_year_id' => $year->id, 'target_academic_year_id' => $targetYear->id,
         ])->assertStatus(403);
         $auditCount = DB::table('audit_logs')->where('action', 'school.academic_year_classes_copied')->count();
+        $targetClassCount = SchoolClass::withoutGlobalScopes()->where('academic_year_id', $otherYear->id)->count();
+        $this->actingAs($admin)->post('http://demo.erphpro.com/admin/academic-years/copy-classes', [
+            'source_academic_year_id' => $year->id, 'target_academic_year_id' => $otherYear->id,
+        ])->assertStatus(404);
+        $this->assertSame($targetClassCount, SchoolClass::withoutGlobalScopes()->where('academic_year_id', $otherYear->id)->count());
+        $this->assertSame($auditCount, DB::table('audit_logs')->where('action', 'school.academic_year_classes_copied')->count());
         $this->actingAs($admin)->post('http://demo.erphpro.com/admin/academic-years/copy-classes', [
             'source_academic_year_id' => $year->id, 'target_academic_year_id' => $year->id,
         ])->assertStatus(404);
