@@ -10,7 +10,9 @@ use App\Models\LessonPlanReview;
 use App\Models\LessonPlanSubmission;
 use App\Models\School;
 use App\Models\SupportTicket;
+use App\Models\SupportArticle;
 use App\Models\TeacherProfile;
+use Database\Seeders\SupportContentSeeder;
 use App\Services\SupportAIService;
 use Illuminate\Http\Client\Request as ClientRequest;
 use Illuminate\Support\Facades\Mail;
@@ -42,6 +44,26 @@ class ExampleTest extends TestCase
             ->assertOk()
             ->assertSee('One calm place for better teaching.')
             ->assertSee('Platform owner sign in');
+    }
+
+    public function test_support_content_seeding_does_not_overwrite_operator_edits(): void
+    {
+        $this->seed(SupportContentSeeder::class);
+        $article = SupportArticle::query()->where('slug', 'human-support')->firstOrFail();
+        $article->update([
+            'title' => 'Operator-edited support title',
+            'body' => 'Operator-edited support guidance.',
+            'is_published' => false,
+        ]);
+
+        $this->seed(SupportContentSeeder::class);
+
+        $this->assertDatabaseHas('support_articles', [
+            'id' => $article->id,
+            'title' => 'Operator-edited support title',
+            'body' => 'Operator-edited support guidance.',
+            'is_published' => 0,
+        ]);
     }
 
     public function test_support_centre_is_available_on_its_own_host(): void
