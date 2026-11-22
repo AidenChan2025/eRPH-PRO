@@ -118,7 +118,7 @@ AppSheet 取证路径：在已授权的 AppSheet 页面依次打开 e-RPH、MODU
 完成路由/视图/控制器/模型/迁移/Seeder/JS/生产入口的依赖图；与 AppSheet 每个菜单项和字段映射；锁定删除名单及回滚点。核验 Firebase 文档所定“拒绝桥接”与实际活跃调用/构建依赖一致，盘点遗留 Firebase 配置是否仍在活跃路径。须形成可复核证据包：生产入口与 Plesk 配置、DB/备份恢复演练、队列与定时任务实测、AppSheet 源表/公式/枚举、DSKP 来源和授权清单、当前页面与路由实测、各类敏感数据出站清单。任一关键项未验证时，不进入依赖该项的估时、删代码或发布；只允许开展不依赖该项的审查准备。
 
 ### Phase 1 — 平台级全站管理控制台与学校生命周期
-先建立与学校租户隔离的 platform control plane，固定宿主为 `https://erphpro.com/owner`；学校子域对平台路径一律拒绝，不增设 admin 子域。平台用独立 Guard、host-only/path-scoped session cookie 与 CSRF 状态，和学校登录会话物理隔离。提供 Owner/平台运营角色入口、清楚主导航及学校开户/管理员邀请/暂停恢复流程。平台角色采用显式权限矩阵（Owner、安全/运维、Support、课程/内容运营），默认拒绝；所有平台操作员强制 MFA 才能使用后台，未完成 MFA 只能完成绑定/恢复流程。Owner 无 school membership 仍可进入后台；无有效 membership 的学校用户看到待邀请/联系管理员指引。Owner bootstrap 受控且审计，禁止自助提权或邮箱域名自动赋权。
+先建立与学校租户隔离的 platform control plane，固定宿主为 `https://erphpro.com/owner`；学校子域对平台路径一律拒绝，不增设 admin 子域。平台用独立 Guard、host-only/path-scoped session cookie 与 CSRF 状态，和学校登录会话物理隔离。当前 `SESSION_DOMAIN=.erphpro.com` 是支持学校子域启动、根域 Google OAuth callback 读取同一会话的临时兼容设置，不是最终架构；不得直接改成 host-only，否则 Socialite 当前 session-state 校验会失效。先实现短时、一次性、服务端保存的 OAuth handoff，绑定 OAuth state、发起学校/Owner 意图与允许的返回目标；验证并消费 handoff 后再建立对应 host-only session。覆盖并发跨校登录、state 重放/过期、CSRF、平台/学校会话互不串用，以及浏览器实际 Cookie Domain/Path 的负向验收后，才移除共享 Domain。提供 Owner/平台运营角色入口、清楚主导航及学校开户/管理员邀请/暂停恢复流程。平台角色采用显式权限矩阵（Owner、安全/运维、Support、课程/内容运营），默认拒绝；所有平台操作员强制 MFA 才能使用后台，未完成 MFA 只能完成绑定/恢复流程。Owner 无 school membership 仍可进入后台；无有效 membership 的学校用户看到待邀请/联系管理员指引。Owner bootstrap 受控且审计，禁止自助提权或邮箱域名自动赋权。
 
 平台控制台的功能范围：
 - 总览：学校/账户/待办工单、服务健康、运行告警和最近审计事件；指标注明范围/时间，不展示未授权租户明细。

@@ -41,7 +41,7 @@ Keep these values in Plesk or server secrets, never in GitHub:
     GOOGLE_REDIRECT_URI=https://erphpro.com/auth/google/callback
     GOOGLE_WORKSPACE_DOMAIN=<optional Workspace domain>
 
-The session domain must cover the base domain and school subdomains so the single OAuth callback can restore the school selected before Google sign-in.
+`SESSION_DOMAIN=.erphpro.com` describes the currently observed compatibility setting: school login begins on a school subdomain, while the registered Google callback is on the base domain and currently restores OAuth state from that shared session. It is a temporary, known cross-subdomain session exposure and is **not** the target security setting; it conflicts with Phase 1's separate platform/school host-only sessions. Do not change it to a host-only cookie by itself, because that would break the current callback's session/state lookup. Before removing the shared domain, implement a short-lived, single-use server-side OAuth handoff bound to the initiating school/Owner intent and validated OAuth state, then use separate platform and school session cookies/guards. Verify parallel cross-school flows, replay/expiry, CSRF, callback routing, login/logout, and actual `Set-Cookie` Domain/Path attributes in an isolated browser journey before changing production configuration.
 
 ## Git deployment
 
