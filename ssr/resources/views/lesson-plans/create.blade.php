@@ -17,8 +17,8 @@
 <form method="post" action="{{ route('rph.store') }}">@csrf
 <section class="card"><h2>Lesson details</h2><div class="grid">
 <label>Date<input type="date" name="lesson_date" value="{{ old('lesson_date', now()->format('Y-m-d')) }}" required></label>
-<label>Subject<input name="subject" value="{{ old('subject') }}" required></label>
-<label>Class / year<input name="class_name" value="{{ old('class_name') }}" required></label>
+@if($assignments->isNotEmpty())<label>Class and subject assignment<select name="assignment_id" required><option value="">Choose your assignment</option>@foreach($assignments as $assignment)<option value="{{ $assignment->id }}" @selected(old('assignment_id') == $assignment->id)>{{ $assignment->subject }} · {{ $assignment->schoolClass->name }} · {{ $assignment->academicYear->year }}</option>@endforeach</select><span class="hint">Your school administrator controls these assignments.</span></label>@else<label>Subject<input name="subject" value="{{ old('subject') }}" required></label>
+<label>Class / year<input name="class_name" value="{{ old('class_name') }}" required></label>@endif
 <label>Lesson title<input name="title" value="{{ old('title') }}" required></label>
 <label>School time slot<select id="slot_id" name="slot_id"><option value="">Manual time / not selected</option>@foreach($slots as $slot)<option value="{{ $slot->id }}" data-start="{{ substr($slot->starts_at,0,5) }}" data-end="{{ substr($slot->ends_at,0,5) }}">{{ $slot->day_of_week }} · {{ $slot->label ?: 'Lesson period' }} ({{ substr($slot->starts_at,0,5) }}–{{ substr($slot->ends_at,0,5) }})</option>@endforeach</select><span class="hint">Configured by your school administrator.</span></label>
 <label>Start time<input id="start_time" type="time" name="start_time" value="{{ old('start_time') }}"></label>

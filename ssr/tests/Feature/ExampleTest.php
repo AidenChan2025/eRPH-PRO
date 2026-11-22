@@ -943,6 +943,31 @@ class ExampleTest extends TestCase
         $this->assertDatabaseHas('lesson_plan_versions', ['version' => 1, 'source' => 'manual']);
     }
 
+    public function test_rph_creation_uses_the_teacher_class_subject_assignment(): void
+    {
+        $this->seed();
+        $admin = User::where('email', 'demo@erphpro.com')->firstOrFail();
+        $school = School::where('subdomain', 'demo')->firstOrFail();
+        $year = AcademicYear::create(['school_id' => $school->id, 'year' => 2028, 'name' => 'RPH year', 'status' => 'active']);
+        $class = SchoolClass::create(['school_id' => $school->id, 'academic_year_id' => $year->id, 'code' => '5B', 'name' => '5 Bestari']);
+        $profile = TeacherProfile::withoutGlobalScopes()->where('school_id', $school->id)->where('user_id', $admin->id)->firstOrFail();
+        $assignment = TeacherClassAssignment::create([
+            'school_id' => $school->id, 'academic_year_id' => $year->id, 'school_class_id' => $class->id,
+            'teacher_profile_id' => $profile->id, 'subject' => 'Bahasa Melayu', 'role' => 'teacher',
+        ]);
+
+        $this->actingAs($admin)->get('http://demo.erphpro.com/rph/create')->assertOk()->assertSee('Choose your assignment');
+        $this->actingAs($admin)->post('http://demo.erphpro.com/rph', [
+            'lesson_date' => '2028-02-01', 'assignment_id' => $assignment->id, 'title' => 'Assigned RPH',
+        ])->assertRedirect(route('rph.create'));
+        $this->assertDatabaseHas('lesson_plans', [
+            'teacher_profile_id' => $profile->id, 'subject' => 'Bahasa Melayu', 'class_name' => '5 Bestari',
+        ]);
+        $this->actingAs($admin)->post('http://demo.erphpro.com/rph', [
+            'lesson_date' => '2028-02-02', 'subject' => 'Unauthorised', 'class_name' => 'Other class', 'title' => 'Invalid RPH',
+        ])->assertStatus(422);
+    }
+
     public function test_school_management_can_view_the_sql_submission_report(): void
     {
         $this->seed();
