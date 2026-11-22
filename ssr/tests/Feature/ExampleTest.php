@@ -473,9 +473,34 @@ class ExampleTest extends TestCase
     public function test_platform_owner_routes_are_not_available_on_school_subdomains(): void
     {
         $owner = User::factory()->create(['platform_role' => 'owner']);
+        $ticketId = (string) Str::uuid();
 
         $this->get('http://demo.erphpro.com/owner/login')->assertNotFound();
+        $this->get('http://demo.erphpro.com/owner/auth/google/redirect')->assertNotFound();
         $this->actingAs($owner)->get('http://demo.erphpro.com/owner')->assertNotFound();
+        $this->actingAs($owner)->get('http://demo.erphpro.com/owner/audit')->assertNotFound();
+        $this->actingAs($owner)->get("http://demo.erphpro.com/owner/support/{$ticketId}")->assertNotFound();
+        $this->actingAs($owner)->put("http://demo.erphpro.com/owner/support/{$ticketId}", [
+            'status' => 'closed',
+        ])->assertNotFound();
+        $this->actingAs($owner)->post("http://demo.erphpro.com/owner/support/{$ticketId}/reply", [
+            'message' => 'cross-host attempt',
+        ])->assertNotFound();
+    }
+
+    public function test_school_host_google_callback_cannot_turn_owner_intent_into_platform_access(): void
+    {
+        Config::set([
+            'services.google.client_id' => 'test-client',
+            'services.google.client_secret' => 'test-secret',
+            'services.google.owner_email' => 'owner@example.com',
+        ]);
+
+        $this->withSession(['auth.owner_login' => true])
+            ->get('http://demo.erphpro.com/auth/google/callback')
+            ->assertForbidden()
+            ->assertSeeText('Platform sign-in must use the main domain');
+        $this->assertGuest();
     }
 
     public function test_google_redirect_fails_clearly_when_credentials_are_not_configured(): void

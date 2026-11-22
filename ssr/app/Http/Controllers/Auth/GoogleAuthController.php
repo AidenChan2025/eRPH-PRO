@@ -84,6 +84,20 @@ class GoogleAuthController extends Controller
     {
         abort_unless(config('services.google.client_id') && config('services.google.client_secret'), 503, 'Google Workspace login is not configured yet.');
 
+        $platformHost = strtolower((string) config('app.school_base_domain', 'erphpro.com'));
+        $requestHost = strtolower($request->getHost());
+        $testHost = app()->environment('testing') && in_array($requestHost, ['localhost', '127.0.0.1'], true);
+        if ($request->session()->get('auth.owner_login') === true
+            && $requestHost !== $platformHost
+            && ! $testHost) {
+            $request->session()->forget('auth.owner_login');
+
+            return response()->view('auth.error', [
+                'title' => 'Platform sign-in must use the main domain',
+                'message' => 'Please start platform owner sign-in from the main eRPH Pro domain.',
+            ], 403);
+        }
+
         try {
             $googleUser = Socialite::driver('google')->user();
         } catch (\Throwable $exception) {
