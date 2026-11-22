@@ -2,7 +2,7 @@ name: SSR baseline
 
 on:
   push:
-    branches: [main]
+    branches: [main, 'codex/**']
   pull_request:
     paths:
       - '.gitignore'

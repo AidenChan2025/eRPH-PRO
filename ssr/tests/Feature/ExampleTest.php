@@ -117,6 +117,31 @@ class ExampleTest extends TestCase
         $this->assertDatabaseHas('audit_logs', ['action' => 'school.class_created']);
     }
 
+    public function test_academic_data_management_rejects_non_admin_and_cross_school_resources(): void
+    {
+        $this->seed();
+        $school = School::where('subdomain', 'demo')->firstOrFail();
+        $otherSchool = School::create(['name' => 'Other School', 'slug' => 'other-school', 'subdomain' => 'other-school']);
+        $otherYear = AcademicYear::create(['school_id' => $otherSchool->id, 'year' => 2028, 'name' => 'Other year', 'status' => 'active']);
+        $otherClass = SchoolClass::create(['school_id' => $otherSchool->id, 'academic_year_id' => $otherYear->id, 'code' => 'O1', 'name' => 'Other class']);
+        $teacher = User::factory()->create(['email' => 'teacher@example.com']);
+        $school->members()->attach($teacher->id, ['role' => 'teacher', 'status' => 'active']);
+
+        $this->actingAs($teacher)->get('http://demo.erphpro.com/admin/academic-data')->assertForbidden();
+        $admin = User::where('email', 'demo@erphpro.com')->firstOrFail();
+        $this->actingAs($admin)->post('http://demo.erphpro.com/admin/classes', [
+            'academic_year_id' => $otherYear->id, 'code' => 'X1', 'name' => 'Cross school',
+        ])->assertNotFound();
+        $this->actingAs($admin)->post('http://demo.erphpro.com/admin/academic-years/'.$otherYear->id.'/activate')->assertNotFound();
+        $this->actingAs($admin)->put('http://demo.erphpro.com/admin/classes/'.$otherClass->id, [
+            'name' => 'Tampered', 'is_active' => 0,
+        ])->assertNotFound();
+
+        $this->assertDatabaseMissing('school_classes', ['school_id' => $school->id, 'code' => 'X1']);
+        $this->assertDatabaseHas('school_classes', ['id' => $otherClass->id, 'name' => 'Other class', 'is_active' => 1]);
+        $this->assertDatabaseHas('academic_years', ['id' => $otherYear->id, 'status' => 'active']);
+    }
+
     public function test_support_centre_is_available_on_its_own_host(): void
     {
         $this->get('http://support.erphpro.com/')

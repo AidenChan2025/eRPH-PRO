@@ -31,8 +31,10 @@ class SchoolAcademicDataController extends Controller
             'ends_on' => ['nullable', 'date', 'after_or_equal:starts_on'],
         ]);
 
-        $year = AcademicYear::create(['school_id' => $school->id, ...$data, 'status' => 'draft']);
-        $auditLogger->record('school.academic_year_created', $school, AcademicYear::class, (string) $year->id, ['year' => $year->year]);
+        DB::transaction(function () use ($school, $data, $auditLogger, &$year): void {
+            $year = AcademicYear::create(['school_id' => $school->id, ...$data, 'status' => 'draft']);
+            $auditLogger->record('school.academic_year_created', $school, AcademicYear::class, (string) $year->id, ['year' => $year->year]);
+        });
 
         return back()->with('status', 'Academic year created.');
     }
@@ -43,7 +45,7 @@ class SchoolAcademicDataController extends Controller
         abort_unless($academicYear->school_id === $school->id, 404);
 
         DB::transaction(function () use ($school, $academicYear, $auditLogger): void {
-            AcademicYear::query()->where('school_id', $school->id)->where('id', '!=', $academicYear->id)->update(['status' => 'closed']);
+            AcademicYear::query()->where('school_id', $school->id)->where('id', '!=', $academicYear->id)->where('status', 'active')->update(['status' => 'closed']);
             $academicYear->update(['status' => 'active']);
             $auditLogger->record('school.academic_year_activated', $school, AcademicYear::class, (string) $academicYear->id, ['year' => $academicYear->year]);
         });
@@ -65,8 +67,10 @@ class SchoolAcademicDataController extends Controller
 
         $academicYear = AcademicYear::query()->findOrFail($data['academic_year_id']);
         abort_unless($academicYear->school_id === $school->id, 404);
-        $class = SchoolClass::create([...$data, 'school_id' => $school->id]);
-        $auditLogger->record('school.class_created', $school, SchoolClass::class, (string) $class->id, ['academic_year_id' => $academicYear->id, 'code' => $class->code]);
+        DB::transaction(function () use ($school, $data, $academicYear, $auditLogger, &$class): void {
+            $class = SchoolClass::create([...$data, 'school_id' => $school->id]);
+            $auditLogger->record('school.class_created', $school, SchoolClass::class, (string) $class->id, ['academic_year_id' => $academicYear->id, 'code' => $class->code]);
+        });
 
         return back()->with('status', 'Class created.');
     }
@@ -82,8 +86,11 @@ class SchoolAcademicDataController extends Controller
             'capacity' => ['nullable', 'integer', 'between:1,300'],
             'is_active' => ['required', 'boolean'],
         ]);
-        $schoolClass->update($data);
-        $auditLogger->record('school.class_updated', $school, SchoolClass::class, (string) $schoolClass->id, ['is_active' => $schoolClass->is_active]);
+        $before = ['name' => $schoolClass->name, 'level' => $schoolClass->level, 'stream' => $schoolClass->stream, 'capacity' => $schoolClass->capacity, 'is_active' => $schoolClass->is_active];
+        DB::transaction(function () use ($school, $schoolClass, $data, $auditLogger, $before): void {
+            $schoolClass->update($data);
+            $auditLogger->record('school.class_updated', $school, SchoolClass::class, (string) $schoolClass->id, ['before' => $before, 'after' => $schoolClass->only(array_keys($before))]);
+        });
 
         return back()->with('status', 'Class updated.');
     }
