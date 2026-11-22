@@ -229,6 +229,30 @@ class ExampleTest extends TestCase
         ])->assertRedirect()->assertSessionHas('status', 'Teacher assignment transferred.');
         $this->assertDatabaseHas('teacher_class_assignments', ['id' => $restoreSource->id, 'is_active' => 0]);
         $this->assertDatabaseHas('teacher_class_assignments', ['id' => $restoreTarget->id, 'is_active' => 1, 'role' => 'teacher']);
+        $restoreFailureSource = TeacherClassAssignment::create([
+            'school_id' => $schoolId, 'academic_year_id' => $year->id, 'school_class_id' => SchoolClass::where('code', '6A')->value('id'),
+            'teacher_profile_id' => $profile->id, 'subject' => 'Music', 'role' => 'teacher',
+        ]);
+        $restoreFailureTarget = TeacherClassAssignment::create([
+            'school_id' => $schoolId, 'academic_year_id' => $year->id, 'school_class_id' => $transferClass->id,
+            'teacher_profile_id' => $targetProfile->id, 'subject' => 'Music', 'role' => 'head', 'is_active' => false,
+        ]);
+        $this->app->instance(AuditLogger::class, Mockery::mock(AuditLogger::class, function ($mock): void {
+            $mock->shouldReceive('record')->once()->andThrow(new \RuntimeException('restore audit unavailable'));
+        }));
+        $this->withoutExceptionHandling();
+        try {
+            $this->actingAs($admin)->put('http://demo.erphpro.com/admin/teacher-assignments/'.$restoreFailureSource->id.'/transfer', [
+                'school_class_id' => $transferClass->id, 'teacher_profile_id' => $targetProfile->id,
+            ]);
+            $this->fail('A restore audit failure should roll back the inactive target restoration.');
+        } catch (\RuntimeException $exception) {
+            $this->assertSame('restore audit unavailable', $exception->getMessage());
+        }
+        $this->assertDatabaseHas('teacher_class_assignments', ['id' => $restoreFailureSource->id, 'is_active' => 1]);
+        $this->assertDatabaseHas('teacher_class_assignments', ['id' => $restoreFailureTarget->id, 'is_active' => 0]);
+        $this->app->instance(AuditLogger::class, new AuditLogger());
+        $this->withExceptionHandling();
         $rollbackSource = TeacherClassAssignment::create([
             'school_id' => $schoolId, 'academic_year_id' => $year->id, 'school_class_id' => SchoolClass::where('code', '6A')->value('id'),
             'teacher_profile_id' => $profile->id, 'subject' => 'Art', 'role' => 'teacher',
@@ -253,6 +277,18 @@ class ExampleTest extends TestCase
         $this->actingAs($admin)->put('http://demo.erphpro.com/admin/teacher-assignments/'.$rollbackSource->id.'/transfer', [
             'school_class_id' => $otherClass->id, 'teacher_profile_id' => $targetProfile->id,
         ])->assertStatus(404);
+        $inactiveClass = SchoolClass::create(['school_id' => $schoolId, 'academic_year_id' => $year->id, 'code' => '6C', 'name' => '6 Cemerlang', 'is_active' => false]);
+        $this->actingAs($admin)->put('http://demo.erphpro.com/admin/teacher-assignments/'.$rollbackSource->id.'/transfer', [
+            'school_class_id' => $inactiveClass->id, 'teacher_profile_id' => $targetProfile->id,
+        ])->assertStatus(422);
+        $this->assertDatabaseHas('teacher_class_assignments', ['id' => $rollbackSource->id, 'is_active' => 1]);
+        $crossTeacher = User::factory()->create(['email' => 'cross-school-transfer@example.com']);
+        $otherSchool->members()->attach($crossTeacher->id, ['role' => 'teacher', 'status' => 'active']);
+        $crossProfile = TeacherProfile::create(['school_id' => $otherSchool->id, 'user_id' => $crossTeacher->id, 'employment_status' => 'active']);
+        $this->actingAs($admin)->put('http://demo.erphpro.com/admin/teacher-assignments/'.$rollbackSource->id.'/transfer', [
+            'school_class_id' => $transferClass->id, 'teacher_profile_id' => $crossProfile->id,
+        ])->assertStatus(404);
+        $this->assertDatabaseHas('teacher_class_assignments', ['id' => $rollbackSource->id, 'is_active' => 1]);
         LessonPlan::create([
             'school_id' => $schoolId, 'teacher_profile_id' => $profile->id,
             'teacher_class_assignment_id' => $sourceAssignment->id, 'lesson_date' => '2029-02-01',
@@ -262,7 +298,7 @@ class ExampleTest extends TestCase
         $lessonPlanCount = LessonPlan::withoutGlobalScopes()->count();
         $this->actingAs($admin)->post('http://demo.erphpro.com/admin/academic-years/copy-classes', [
             'source_academic_year_id' => $year->id, 'target_academic_year_id' => $targetYear->id,
-        ])->assertRedirect()->assertSessionHas('status', 'Copied 2 classes; 1 existing classes skipped.');
+        ])->assertRedirect()->assertSessionHas('status', 'Copied 3 classes; 1 existing classes skipped.');
         $this->assertDatabaseHas('school_classes', [
             'school_id' => $schoolId, 'academic_year_id' => $targetYear->id, 'code' => '7A', 'name' => '7 Arif',
             'level' => 'Year 7', 'stream' => 'STEM', 'capacity' => 32,
@@ -286,7 +322,7 @@ class ExampleTest extends TestCase
             'source_academic_year_id' => $year->id, 'target_academic_year_id' => $year->id,
         ])->assertStatus(404);
         $this->assertSame($auditCount, DB::table('audit_logs')->where('action', 'school.academic_year_classes_copied')->count());
-        $this->assertDatabaseCount('teacher_class_assignments', 8);
+        $this->assertDatabaseCount('teacher_class_assignments', 10);
         $this->assertDatabaseHas('audit_logs', ['action' => 'school.teacher_class_assignment_created']);
         $this->assertDatabaseHas('audit_logs', ['action' => 'school.teacher_class_assignment_removed']);
         $activeAssignmentIds = TeacherClassAssignment::withoutGlobalScopes()->where('teacher_profile_id', $profile->id)->where('is_active', true)->pluck('id')->all();
@@ -303,7 +339,7 @@ class ExampleTest extends TestCase
         $assignmentAuditContext = json_decode($assignmentAudit->context, true);
         $this->assertSame($schoolId, $assignmentAudit->school_id);
         $this->assertSame($profile->id, (int) $assignmentAudit->subject_id);
-        $this->assertSame(3, $assignmentAuditContext['assignment_count']);
+        $this->assertSame(4, $assignmentAuditContext['assignment_count']);
         $this->assertSame('member_inactive', $assignmentAuditContext['reason']);
         $historyPlan = LessonPlan::create([
             'school_id' => $schoolId, 'teacher_profile_id' => $profile->id,
