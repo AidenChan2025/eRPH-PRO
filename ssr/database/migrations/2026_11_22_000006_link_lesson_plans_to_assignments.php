@@ -16,14 +16,18 @@ return new class extends Migration {
         });
         Schema::table('lesson_plans', function (Blueprint $table): void {
             $table->foreign(['teacher_class_assignment_id', 'school_id'], 'lesson_plans_assignment_school_foreign')
-                ->references(['id', 'school_id'])->on('teacher_class_assignments')->nullOnDelete();
+                ->references(['id', 'school_id'])->on('teacher_class_assignments')->restrictOnDelete();
         });
     }
 
     public function down(): void
     {
         Schema::table('lesson_plans', function (Blueprint $table): void {
-            $table->dropForeign('lesson_plans_assignment_school_foreign');
+            if (Schema::getConnection()->getDriverName() === 'sqlite') {
+                $table->dropForeign(['teacher_class_assignment_id', 'school_id']);
+            } else {
+                $table->dropForeign('lesson_plans_assignment_school_foreign');
+            }
             $table->dropIndex('lesson_plans_assignment_lookup');
             $table->dropColumn('teacher_class_assignment_id');
         });

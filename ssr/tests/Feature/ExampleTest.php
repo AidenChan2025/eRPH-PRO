@@ -986,6 +986,18 @@ class ExampleTest extends TestCase
             'school_id' => $otherSchool->id, 'academic_year_id' => $otherYear->id, 'school_class_id' => $otherClass->id,
             'teacher_profile_id' => $otherProfile->id, 'subject' => 'Other subject', 'role' => 'teacher',
         ]);
+        try {
+            DB::table('lesson_plans')->insert([
+                'school_id' => $school->id, 'teacher_profile_id' => $profile->id,
+                'teacher_class_assignment_id' => $otherAssignment->id,
+                'lesson_date' => '2028-02-03', 'subject' => 'Other subject',
+                'class_name' => 'Other class', 'status' => 'draft', 'current_version' => 1,
+                'created_at' => now(), 'updated_at' => now(),
+            ]);
+            $this->fail('A lesson plan must not reference an assignment from another school.');
+        } catch (QueryException) {
+            $this->assertTrue(true);
+        }
         $versionCount = LessonPlanVersion::where('lesson_plan_id', $plan->id)->count();
         foreach ([$stoppedAssignment->id, $otherAssignment->id, $otherAssignment->id + 99999] as $invalidAssignmentId) {
             $this->actingAs($admin)->post('http://demo.erphpro.com/rph', [
