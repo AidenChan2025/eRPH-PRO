@@ -961,7 +961,8 @@ class ExampleTest extends TestCase
             'lesson_date' => '2028-02-01', 'assignment_id' => $assignment->id, 'title' => 'Assigned RPH',
         ])->assertRedirect(route('rph.create'));
         $this->assertDatabaseHas('lesson_plans', [
-            'teacher_profile_id' => $profile->id, 'subject' => 'Bahasa Melayu', 'class_name' => '5 Bestari',
+            'teacher_profile_id' => $profile->id, 'teacher_class_assignment_id' => $assignment->id,
+            'subject' => 'Bahasa Melayu', 'class_name' => '5 Bestari',
         ]);
         $plan = LessonPlan::where('teacher_profile_id', $profile->id)->latest('id')->firstOrFail();
         $this->actingAs($admin)->get('http://demo.erphpro.com/rph/'.$plan->id.'/edit')->assertOk()->assertSee('Class and subject assignment');
@@ -969,7 +970,10 @@ class ExampleTest extends TestCase
             'lesson_date' => '2028-02-03', 'assignment_id' => $assignment->id, 'subject' => 'Forged subject', 'class_name' => 'Forged class',
             'title' => 'Updated assigned RPH',
         ])->assertRedirect();
-        $this->assertDatabaseHas('lesson_plans', ['id' => $plan->id, 'subject' => 'Bahasa Melayu', 'class_name' => '5 Bestari']);
+        $this->assertDatabaseHas('lesson_plans', [
+            'id' => $plan->id, 'teacher_class_assignment_id' => $assignment->id,
+            'subject' => 'Bahasa Melayu', 'class_name' => '5 Bestari',
+        ]);
         $stoppedAssignment = TeacherClassAssignment::create([
             'school_id' => $school->id, 'academic_year_id' => $year->id, 'school_class_id' => $class->id,
             'teacher_profile_id' => $profile->id, 'subject' => 'Science', 'role' => 'teacher', 'is_active' => false,

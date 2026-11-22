@@ -74,10 +74,11 @@ class LessonPlanController extends Controller
             $data['class_name'] = $assignment->schoolClass->name;
         }
 
-        $plan = DB::transaction(function () use ($data, $school, $profile, $request) {
+        $plan = DB::transaction(function () use ($data, $school, $profile, $request, $assignment) {
             $plan = LessonPlan::create([
                 'school_id' => $school->id,
                 'teacher_profile_id' => $profile->id,
+                'teacher_class_assignment_id' => $assignment?->id,
                 'lesson_date' => $data['lesson_date'],
                 'subject' => $data['subject'],
                 'class_name' => $data['class_name'],
@@ -149,8 +150,8 @@ class LessonPlanController extends Controller
         }
         $nextVersion = $lessonPlan->current_version + 1;
         $previousContent = (array) ($lessonPlan->versions()->latest('version')->value('content') ?? []);
-        DB::transaction(function () use ($data, $lessonPlan, $nextVersion, $request, $previousContent) {
-            $lessonPlan->update(['lesson_date' => $data['lesson_date'], 'subject' => $data['subject'], 'class_name' => $data['class_name'], 'current_version' => $nextVersion, 'status' => 'draft']);
+        DB::transaction(function () use ($data, $lessonPlan, $nextVersion, $request, $previousContent, $assignment) {
+            $lessonPlan->update(['teacher_class_assignment_id' => $assignment?->id ?? $lessonPlan->teacher_class_assignment_id, 'lesson_date' => $data['lesson_date'], 'subject' => $data['subject'], 'class_name' => $data['class_name'], 'current_version' => $nextVersion, 'status' => 'draft']);
             $lessonPlan->versions()->create([
                 'version' => $nextVersion, 'created_by' => $request->user()->id, 'source' => 'manual',
                 'change_note' => $data['change_note'] ?? null,
