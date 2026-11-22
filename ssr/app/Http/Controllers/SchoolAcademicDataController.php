@@ -119,10 +119,10 @@ class SchoolAcademicDataController extends Controller
                 'school_id' => $school->id, 'academic_year_id' => $data['academic_year_id'], 'school_class_id' => $data['school_class_id'],
                 'teacher_profile_id' => $data['teacher_profile_id'], 'subject' => $data['subject'],
             ])->first();
-            $action = $assignment?->is_active ? 'school.teacher_class_assignment_duplicate' : 'school.teacher_class_assignment_created';
             if ($assignment?->is_active) {
                 abort(422, 'This teacher is already assigned to this class and subject.');
             }
+            $action = $assignment ? 'school.teacher_class_assignment_reactivated' : 'school.teacher_class_assignment_created';
             if ($assignment) {
                 $assignment->update(['role' => $data['role'], 'is_active' => true]);
             } else {

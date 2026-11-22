@@ -136,6 +136,12 @@ class ExampleTest extends TestCase
             'teacher_profile_id' => $profile->id, 'subject' => 'Mathematics', 'role' => 'head',
         ])->assertRedirect();
         $this->assertDatabaseHas('teacher_class_assignments', ['id' => $assignment->id, 'is_active' => 1, 'role' => 'head']);
+        $this->assertDatabaseHas('audit_logs', ['action' => 'school.teacher_class_assignment_reactivated']);
+        $this->actingAs($admin)->post('http://demo.erphpro.com/admin/teacher-assignments', [
+            'academic_year_id' => $year->id, 'school_class_id' => SchoolClass::where('code', '6A')->value('id'),
+            'teacher_profile_id' => $profile->id, 'subject' => 'Mathematics', 'role' => 'teacher',
+        ])->assertStatus(422);
+        $this->assertDatabaseCount('teacher_class_assignments', 1);
         $this->assertDatabaseHas('audit_logs', ['action' => 'school.teacher_class_assignment_created']);
         $this->assertDatabaseHas('audit_logs', ['action' => 'school.teacher_class_assignment_removed']);
     }
@@ -180,18 +186,28 @@ class ExampleTest extends TestCase
             'academic_year_id' => $otherYear->id, 'school_class_id' => $otherClass->id,
             'teacher_profile_id' => $otherProfile->id, 'subject' => 'Science', 'role' => 'teacher',
         ])->assertNotFound();
+        $otherAssignment = TeacherClassAssignment::create([
+            'school_id' => $otherSchool->id, 'academic_year_id' => $otherYear->id, 'school_class_id' => $otherClass->id,
+            'teacher_profile_id' => $otherProfile->id, 'subject' => 'History', 'role' => 'teacher', 'is_active' => true,
+        ]);
+        $auditBefore = DB::table('audit_logs')->where('action', 'school.teacher_class_assignment_removed')->count();
+        $this->actingAs($admin)->post('http://demo.erphpro.com/admin/teacher-assignments/'.$otherAssignment->id.'/remove')->assertNotFound();
 
         $this->assertDatabaseMissing('school_classes', ['school_id' => $school->id, 'code' => 'X1']);
         $this->assertDatabaseHas('school_classes', ['id' => $otherClass->id, 'name' => 'Other class', 'is_active' => 1]);
         $this->assertDatabaseHas('academic_years', ['id' => $otherYear->id, 'status' => 'active']);
-        $this->assertDatabaseCount('teacher_class_assignments', 0);
+        $this->assertDatabaseCount('teacher_class_assignments', 1);
+        $this->assertDatabaseHas('teacher_class_assignments', ['id' => $otherAssignment->id, 'is_active' => 1]);
+        $this->assertSame($auditBefore, DB::table('audit_logs')->where('action', 'school.teacher_class_assignment_removed')->count());
 
         $demoYear = AcademicYear::create(['school_id' => $school->id, 'year' => 2029, 'name' => 'Demo year', 'status' => 'active']);
         $demoClass = SchoolClass::create(['school_id' => $school->id, 'academic_year_id' => $demoYear->id, 'code' => 'D1', 'name' => 'Demo class']);
+        $demoYear2 = AcademicYear::create(['school_id' => $school->id, 'year' => 2030, 'name' => 'Demo year 2', 'status' => 'draft']);
+        $demoProfile = TeacherProfile::create(['school_id' => $school->id, 'user_id' => $teacher->id, 'employment_status' => 'active']);
         try {
             TeacherClassAssignment::create([
-                'school_id' => $school->id, 'academic_year_id' => $otherYear->id, 'school_class_id' => $demoClass->id,
-                'teacher_profile_id' => $otherProfile->id, 'subject' => 'Invalid', 'role' => 'teacher',
+                'school_id' => $school->id, 'academic_year_id' => $demoYear2->id, 'school_class_id' => $demoClass->id,
+                'teacher_profile_id' => $demoProfile->id, 'subject' => 'Invalid', 'role' => 'teacher',
             ]);
             $this->fail('A teacher assignment must reference the class academic year.');
         } catch (QueryException) {

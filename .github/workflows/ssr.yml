@@ -58,3 +58,9 @@ jobs:
 
       - name: Run SSR tests
         run: php artisan test
+
+      - name: Verify migration round trip
+        run: |
+          php artisan migrate:fresh --force
+          php artisan migrate:rollback --step=1 --force
+          php artisan migrate --force
