@@ -11,6 +11,8 @@ use App\Models\LessonPlanSubmission;
 use App\Models\School;
 use App\Models\SupportTicket;
 use App\Models\SupportArticle;
+use App\Models\AcademicYear;
+use App\Models\SchoolClass;
 use App\Models\TeacherProfile;
 use Database\Seeders\SupportContentSeeder;
 use App\Services\SupportAIService;
@@ -64,6 +66,23 @@ class ExampleTest extends TestCase
             'body' => 'Operator-edited support guidance.',
             'is_published' => 0,
         ]);
+    }
+
+    public function test_academic_years_and_classes_are_scoped_to_the_current_school(): void
+    {
+        $this->seed();
+        $school = School::where('subdomain', 'demo')->firstOrFail();
+        $otherSchool = School::create(['name' => 'Other School', 'slug' => 'other-school', 'subdomain' => 'other-school']);
+
+        $demoYear = AcademicYear::create(['school_id' => $school->id, 'year' => 2027, 'name' => 'School year 2027', 'status' => 'active']);
+        $otherYear = AcademicYear::create(['school_id' => $otherSchool->id, 'year' => 2027, 'name' => 'Other year 2027', 'status' => 'active']);
+        SchoolClass::create(['school_id' => $school->id, 'academic_year_id' => $demoYear->id, 'code' => '5B', 'name' => '5 Bestari', 'level' => 'Year 5']);
+        SchoolClass::create(['school_id' => $otherSchool->id, 'academic_year_id' => $otherYear->id, 'code' => '5B', 'name' => 'Other 5 Bestari', 'level' => 'Year 5']);
+
+        $this->get('http://demo.erphpro.com/')->assertOk();
+
+        $this->assertSame(['5 Bestari'], SchoolClass::query()->pluck('name')->all());
+        $this->assertSame(['School year 2027'], AcademicYear::query()->pluck('name')->all());
     }
 
     public function test_support_centre_is_available_on_its_own_host(): void

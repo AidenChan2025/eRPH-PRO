@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class School extends Model
 {
@@ -16,5 +17,15 @@ class School extends Model
         return $this->belongsToMany(User::class, 'school_memberships')
             ->withPivot(['role', 'status', 'joined_at', 'left_at', 'expires_at', 'access_reason'])
             ->withTimestamps();
+    }
+
+    public function academicYears(): HasMany
+    {
+        return $this->hasMany(AcademicYear::class);
+    }
+
+    public function classes(): HasMany
+    {
+        return $this->hasMany(SchoolClass::class);
     }
 }
