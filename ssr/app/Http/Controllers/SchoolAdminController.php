@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\TeacherProfile;
+use App\Models\SupportTicket;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Services\AuditLogger;
@@ -21,8 +22,11 @@ class SchoolAdminController extends Controller
             ->orderBy('staff_no')
             ->get();
         $memberRoles = $school->members()->get()->keyBy('id');
+        $supportTickets = SupportTicket::query()->where('school_id', $school->id)
+            ->whereIn('status', ['open', 'pending'])->latest('last_activity_at')->limit(100)->get();
+        $platformOwners = User::query()->where('platform_role', 'owner')->orderBy('name')->get(['id', 'name']);
 
-        return view('school-admin.dashboard', compact('school', 'teachers', 'memberRoles'));
+        return view('school-admin.dashboard', compact('school', 'teachers', 'memberRoles', 'supportTickets', 'platformOwners'));
     }
 
     public function store(Request $request, AuditLogger $auditLogger)

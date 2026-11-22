@@ -10,8 +10,9 @@ SSR_RELEASES_DIR="${SSR_RELEASES_DIR:-}"
 SSR_CURRENT_LINK="${SSR_CURRENT_LINK:-}"
 SSR_SHARED_DIR="${SSR_SHARED_DIR:-}"
 SSR_HEALTH_URL="${SSR_HEALTH_URL:-}"
+SSR_DOCUMENT_ROOT="${SSR_DOCUMENT_ROOT:-}"
 
-for required in SSR_RELEASES_DIR SSR_CURRENT_LINK SSR_SHARED_DIR SSR_HEALTH_URL; do
+for required in SSR_RELEASES_DIR SSR_CURRENT_LINK SSR_SHARED_DIR SSR_HEALTH_URL SSR_DOCUMENT_ROOT; do
   if [[ -z "${!required}" ]]; then
     echo "SSR deployment aborted: $required must be configured for an atomic release." >&2
     exit 1
@@ -23,7 +24,7 @@ if [[ "$SSR_HEALTH_URL" != https://* ]]; then
   exit 1
 fi
 
-for path_name in SSR_RELEASES_DIR SSR_CURRENT_LINK SSR_SHARED_DIR; do
+for path_name in SSR_RELEASES_DIR SSR_CURRENT_LINK SSR_SHARED_DIR SSR_DOCUMENT_ROOT; do
   if [[ "${!path_name}" != /* ]]; then
     echo "SSR deployment aborted: $path_name must be an absolute path." >&2
     exit 1
@@ -36,6 +37,28 @@ if [[ ! -d "$GIT_SOURCE_DIR" || ! -d "$SSR_APP_DIR" ]]; then
 fi
 GIT_SOURCE_DIR="$(cd "$GIT_SOURCE_DIR" && pwd -P)"
 SSR_APP_DIR="$(cd "$SSR_APP_DIR" && pwd -P)"
+if [[ ! -d "$SSR_DOCUMENT_ROOT" ]]; then
+  echo "SSR deployment aborted: SSR_DOCUMENT_ROOT must resolve to the active document-root directory." >&2
+  exit 1
+fi
+SSR_DOCUMENT_ROOT="$(cd "$SSR_DOCUMENT_ROOT" && pwd -P)"
+paths_overlap() {
+  local left="${1%/}" right="${2%/}"
+  [[ "$left" == "$right" || "$left" == "$right/"* || "$right" == "$left/"* ]]
+}
+for source_path in "$SSR_APP_DIR" "$GIT_SOURCE_DIR"; do
+  if [[ -d "$source_path/public" ]]; then
+    source_public="$(cd "$source_path/public" && pwd -P)"
+    if paths_overlap "$source_public" "$SSR_DOCUMENT_ROOT"; then
+      echo "SSR deployment aborted: Git source public directory and active document root overlap ($source_public)." >&2
+      exit 1
+    fi
+  fi
+  if paths_overlap "$source_path" "$SSR_DOCUMENT_ROOT"; then
+    echo "SSR deployment aborted: Git source checkout and active document root overlap; Plesk pull may write live files before this hook." >&2
+    exit 1
+  fi
+done
 if [[ ! -f "$SSR_APP_DIR/artisan" || ! -f "$SSR_APP_DIR/composer.lock" ]]; then
   echo "SSR deployment aborted: Laravel source is missing in $SSR_APP_DIR" >&2
   exit 1

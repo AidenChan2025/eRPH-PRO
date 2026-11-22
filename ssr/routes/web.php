@@ -16,6 +16,7 @@ use App\Http\Controllers\OwnerSupportController;
 use App\Http\Controllers\SupportArticleController;
 use App\Http\Controllers\SupportHomeController;
 use App\Http\Controllers\SupportTicketController;
+use App\Http\Controllers\SchoolSupportAccessController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/health', HealthController::class)->name('health');
@@ -74,6 +75,7 @@ Route::middleware('school')->group(function () {
     });
     Route::middleware(['auth', 'school.member:school_admin,principal,vice_principal', 'permission:reports.view'])->get('/reports', SchoolReportController::class)->name('school.reports');
     Route::middleware(['auth', 'school.member:school_admin,principal,vice_principal', 'permission:school.users.manage'])->group(function () {
+        Route::middleware('throttle:10,1')->post('/admin/support-access', [SchoolSupportAccessController::class, 'store'])->name('school.support-access.store');
         Route::get('/admin', SchoolAdminController::class)->name('school.admin');
         Route::post('/admin/people', [SchoolAdminController::class, 'store'])->name('school.admin.people.store');
         Route::put('/admin/people/{user}', [SchoolAdminController::class, 'updateMember'])->name('school.admin.people.update');

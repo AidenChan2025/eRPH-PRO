@@ -15,6 +15,11 @@ class SupportTicket extends Model
         'ai_processing_consent_version', 'assigned_to', 'last_activity_at',
     ];
 
+    public function platformAccessGrants(): HasMany
+    {
+        return $this->hasMany(PlatformSupportAccessGrant::class);
+    }
+
     protected $casts = [
         'ai_confidence' => 'float',
         'last_activity_at' => 'datetime',

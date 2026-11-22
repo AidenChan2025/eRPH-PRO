@@ -841,6 +841,129 @@ class ExampleTest extends TestCase
         $this->actingAs($user)->get('/owner/audit')->assertOk()->assertSee('Audit activity');
     }
 
+    public function test_platform_owner_cannot_read_school_ticket_without_explicit_jit_grant(): void
+    {
+        $this->seed();
+        $owner = User::where('email', 'demo@erphpro.com')->firstOrFail();
+        $owner->update(['platform_role' => 'owner']);
+        $school = School::firstOrFail();
+        $ticket = SupportTicket::create([
+            'public_id' => (string) Str::uuid(), 'access_token_hash' => hash('sha256', 'secret'),
+            'school_id' => $school->id, 'requester_name' => 'Teacher Private',
+            'requester_email' => 'teacher@example.com', 'subject' => 'Sensitive issue',
+            'category' => 'general', 'priority' => 'normal', 'status' => 'open',
+        ]);
+
+        $this->actingAs($owner)->get(route('owner.support.show', $ticket->public_id))->assertNotFound();
+        $this->actingAs($owner)->get(route('owner.support.index'))->assertOk()->assertDontSee('Sensitive issue');
+    }
+
+    public function test_school_admin_can_issue_bounded_read_only_support_access_and_owner_read_is_audited(): void
+    {
+        $this->seed();
+        $admin = User::where('email', 'demo@erphpro.com')->firstOrFail();
+        $owner = User::factory()->create(['platform_role' => 'owner']);
+        $school = School::firstOrFail();
+        $school->members()->updateExistingPivot($admin->id, ['role' => 'school_admin']);
+        $otherSchool = School::create(['name' => 'Other Test School', 'slug' => 'other-test', 'subdomain' => 'other-test']);
+        $ticket = SupportTicket::create([
+            'public_id' => (string) Str::uuid(), 'access_token_hash' => hash('sha256', 'secret'),
+            'school_id' => $school->id, 'requester_name' => 'Teacher Private',
+            'requester_email' => 'teacher@example.com', 'subject' => 'Approved support issue',
+            'category' => 'general', 'priority' => 'normal', 'status' => 'open',
+            'ai_summary' => 'Private internal AI summary', 'ai_reply_draft' => 'Private unsent draft',
+        ]);
+        \App\Models\SupportTicketMessage::create([
+            'support_ticket_id' => $ticket->id, 'author_name' => 'Teacher Private', 'author_email' => 'teacher@example.com',
+            'source' => 'requester', 'is_internal' => false, 'body' => 'Public ticket details.',
+        ]);
+        \App\Models\SupportTicketMessage::create([
+            'support_ticket_id' => $ticket->id, 'author_name' => 'School agent', 'source' => 'agent',
+            'is_internal' => true, 'body' => 'Private internal note.',
+        ]);
+        $unapprovedTicket = SupportTicket::create([
+            'public_id' => (string) Str::uuid(), 'access_token_hash' => hash('sha256', 'other'),
+            'school_id' => $school->id, 'requester_name' => 'Other Teacher',
+            'requester_email' => 'other@example.com', 'subject' => 'Unapproved confidential subject',
+            'category' => 'general', 'priority' => 'high', 'status' => 'open',
+        ]);
+        $foreignTicket = SupportTicket::create([
+            'public_id' => (string) Str::uuid(), 'access_token_hash' => hash('sha256', 'foreign'),
+            'school_id' => $otherSchool->id, 'requester_name' => 'Other Teacher',
+            'requester_email' => 'other@example.com', 'subject' => 'Foreign school ticket',
+            'category' => 'general', 'priority' => 'normal', 'status' => 'open',
+        ]);
+
+        $this->actingAs($admin)->post('http://demo.erphpro.com/admin/support-access', [
+            'ticket_public_id' => $ticket->public_id, 'owner_id' => $admin->id,
+            'purpose' => 'Attempted self authorization request', 'duration_minutes' => 30,
+        ])->assertSessionHasErrors('owner_id');
+        $this->actingAs($admin)->post('http://demo.erphpro.com/admin/support-access', [
+            'ticket_public_id' => $foreignTicket->public_id, 'owner_id' => $owner->id,
+            'purpose' => 'Attempted foreign ticket request', 'duration_minutes' => 30,
+        ])->assertNotFound();
+        $this->assertDatabaseMissing('platform_support_access_grants', ['support_ticket_id' => $foreignTicket->id]);
+        $this->assertDatabaseHas('audit_logs', [
+            'school_id' => $school->id, 'actor_id' => $admin->id, 'action' => 'school_support_access.denied',
+            'subject_id' => hash('sha256', $foreignTicket->public_id),
+        ]);
+
+        $this->actingAs($admin)->post('http://demo.erphpro.com/admin/support-access', [
+            'ticket_public_id' => $ticket->public_id, 'owner_id' => $owner->id,
+            'purpose' => 'Investigate ticket reported by our school', 'duration_minutes' => 60,
+        ])->assertSessionHasNoErrors();
+        $this->actingAs($admin)->get('http://demo.erphpro.com/admin')
+            ->assertOk()->assertDontSee($owner->email);
+
+        $this->assertDatabaseHas('audit_logs', [
+            'school_id' => $school->id, 'actor_id' => $admin->id,
+            'action' => 'school_support_access.granted',
+        ]);
+
+        $this->actingAs($owner)->get(route('owner.support.show', $ticket->public_id))
+            ->assertOk()->assertSee('Approved support issue')->assertSee('Read-only school-approved access')
+            ->assertDontSee('teacher@example.com')
+            ->assertSee('Public ticket details.')->assertDontSee('Private internal note.')
+            ->assertDontSee('Private internal AI summary')->assertDontSee('Private unsent draft')
+            ->assertDontSee('Send reply')->assertDontSee('Save controls');
+        $this->actingAs($owner)->get(route('owner.support.index'))
+            ->assertOk()->assertSee($ticket->public_id)->assertDontSee($unapprovedTicket->subject);
+        $this->assertDatabaseHas('audit_logs', [
+            'school_id' => $school->id, 'actor_id' => $owner->id,
+            'action' => 'platform_support.ticket_viewed', 'subject_id' => (string) $ticket->id,
+        ]);
+        $grant = \App\Models\PlatformSupportAccessGrant::query()->firstOrFail();
+        $this->actingAs($admin)->post('http://demo.erphpro.com/admin/support-access', [
+            'ticket_public_id' => $ticket->public_id, 'owner_id' => $owner->id,
+            'purpose' => 'Continue investigation of the same school ticket', 'duration_minutes' => 30,
+        ])->assertSessionHasNoErrors();
+        $this->assertNotNull($grant->fresh()->revoked_at);
+        $this->assertNull($grant->fresh()->grant_slot_key);
+        $this->assertSame(1, \App\Models\PlatformSupportAccessGrant::query()->whereNotNull('grant_slot_key')->count());
+        $this->actingAs($owner)->put(route('owner.support.update', $ticket->public_id), [
+            'status' => 'closed', 'priority' => 'urgent',
+        ])->assertForbidden();
+        $this->assertDatabaseHas('audit_logs', [
+            'school_id' => $school->id, 'actor_id' => $owner->id, 'action' => 'platform_support.write_denied',
+            'subject_id' => hash('sha256', $ticket->public_id),
+        ]);
+        $this->travel(31)->minutes();
+        $this->actingAs($owner)->get(route('owner.support.show', $ticket->public_id))->assertNotFound();
+        $this->actingAs($owner)->post(route('owner.support.reply', $ticket->public_id), ['message' => 'reply'])
+            ->assertNotFound();
+        $expiredGrant = \App\Models\PlatformSupportAccessGrant::query()->whereNotNull('grant_slot_key')->firstOrFail();
+        $this->actingAs($admin)->post('http://demo.erphpro.com/admin/support-access', [
+            'ticket_public_id' => $ticket->public_id, 'owner_id' => $owner->id,
+            'purpose' => 'Renew expired school support access', 'duration_minutes' => 15,
+        ])->assertSessionHasNoErrors();
+        $this->assertNotNull($expiredGrant->fresh()->revoked_at);
+        $this->assertSame(1, \App\Models\PlatformSupportAccessGrant::query()->whereNotNull('grant_slot_key')->count());
+        $this->assertDatabaseHas('audit_logs', [
+            'school_id' => $school->id, 'actor_id' => $owner->id, 'action' => 'platform_support.ticket_access_denied',
+            'subject_id' => hash('sha256', $ticket->public_id),
+        ]);
+    }
+
     public function test_teacher_can_view_google_identity_settings_but_cannot_unlink_the_only_identity(): void
     {
         $this->seed();

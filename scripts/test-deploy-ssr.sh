@@ -86,9 +86,10 @@ run_hook() {
     REAL_READLINK_BIN="$real_readlink_bin" \
     SSR_GIT_DIR="$repo_root" \
     SSR_APP_DIR="$repo_root/ssr" \
-    SSR_RELEASES_DIR="$RELEASES" \
-    SSR_CURRENT_LINK="$CURRENT" \
-    SSR_SHARED_DIR="$SHARED" \
+    SSR_RELEASES_DIR="${OVERRIDE_RELEASES_DIR-$RELEASES}" \
+    SSR_CURRENT_LINK="${OVERRIDE_CURRENT_LINK-$CURRENT}" \
+    SSR_SHARED_DIR="${OVERRIDE_SHARED_DIR-$SHARED}" \
+    SSR_DOCUMENT_ROOT="${DOCUMENT_ROOT:-$CURRENT/public}" \
     SSR_HEALTH_URL="${HEALTH_URL:-https://example.test/health}" \
     SSR_PHP_BIN="$tmp_dir/bin/php" \
     SSR_COMPOSER_BIN="$tmp_dir/bin/composer" \
@@ -125,6 +126,35 @@ if [[ -s "$TRACE" || "$(readlink "$CURRENT")" != "$OLD_RELEASE" ]]; then
   exit 1
 fi
 
+new_sandbox missing_atomic_path
+if OVERRIDE_RELEASES_DIR= run_hook >"$SANDBOX/out" 2>&1; then
+  echo 'Expected a missing atomic-release path to stop deployment.' >&2
+  exit 1
+fi
+if ! grep -q 'SSR_RELEASES_DIR must be configured' "$SANDBOX/out"; then
+  cat "$SANDBOX/out" >&2
+  echo 'The missing atomic-release path test failed for an unexpected reason.' >&2
+  exit 1
+fi
+if [[ -s "$TRACE" || "$(readlink "$CURRENT")" != "$OLD_RELEASE" ]]; then
+  echo 'A missing atomic-release path reached build commands or changed the live release.' >&2
+  exit 1
+fi
+
+new_sandbox source_overlaps_document_root
+if DOCUMENT_ROOT="$repo_root/ssr/public" run_hook >"$SANDBOX/out" 2>&1; then
+  echo 'Expected a Git source checkout overlapping the active document root to stop deployment.' >&2
+  exit 1
+fi
+if ! grep -q 'source public directory and active document root overlap' "$SANDBOX/out"; then
+  cat "$SANDBOX/out" >&2
+  echo 'The overlap test failed for a reason other than the overlap guard.' >&2
+  exit 1
+fi
+if [[ -s "$TRACE" || "$(readlink "$CURRENT")" != "$OLD_RELEASE" ]]; then
+  echo 'An overlapping source checkout reached build commands or changed the live release.' >&2
+  exit 1
+fi
 new_sandbox missing_extension
 if FAKE_PHP_MODULES='ctype fileinfo mbstring openssl PDO tokenizer xml' run_hook >"$SANDBOX/out" 2>&1; then
   echo 'Expected a missing PHP extension to stop deployment.' >&2
