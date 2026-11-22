@@ -200,12 +200,22 @@ class ExampleTest extends TestCase
         $this->assertDatabaseCount('teacher_class_assignments', 2);
         $this->assertDatabaseHas('audit_logs', ['action' => 'school.teacher_class_assignment_created']);
         $this->assertDatabaseHas('audit_logs', ['action' => 'school.teacher_class_assignment_removed']);
+        $activeAssignmentIds = TeacherClassAssignment::withoutGlobalScopes()->where('teacher_profile_id', $profile->id)->where('is_active', true)->pluck('id')->all();
         $this->actingAs($admin)->put('http://demo.erphpro.com/admin/people/'.$teacher->id, [
             'role' => 'teacher', 'status' => 'inactive',
         ])->assertRedirect()->assertSessionHas('status', 'School account updated.');
         $this->assertDatabaseHas('teacher_profiles', ['id' => $profile->id, 'employment_status' => 'inactive']);
-        $this->assertDatabaseHas('teacher_class_assignments', ['teacher_profile_id' => $profile->id, 'is_active' => 0]);
+        $this->assertSame(0, TeacherClassAssignment::withoutGlobalScopes()->where('teacher_profile_id', $profile->id)->where('is_active', true)->count());
+        foreach ($activeAssignmentIds as $activeAssignmentId) {
+            $this->assertDatabaseHas('teacher_class_assignments', ['id' => $activeAssignmentId, 'is_active' => 0]);
+        }
         $this->assertDatabaseHas('audit_logs', ['action' => 'school.teacher_assignments_deactivated_with_member']);
+        $assignmentAudit = DB::table('audit_logs')->where('action', 'school.teacher_assignments_deactivated_with_member')->latest('id')->first();
+        $assignmentAuditContext = json_decode($assignmentAudit->context, true);
+        $this->assertSame($schoolId, $assignmentAudit->school_id);
+        $this->assertSame($profile->id, (int) $assignmentAudit->subject_id);
+        $this->assertSame(2, $assignmentAuditContext['assignment_count']);
+        $this->assertSame('member_inactive', $assignmentAuditContext['reason']);
         $historyPlan = LessonPlan::create([
             'school_id' => $schoolId, 'teacher_profile_id' => $profile->id,
             'teacher_class_assignment_id' => $assignment->id, 'lesson_date' => '2029-03-01',
@@ -242,6 +252,27 @@ class ExampleTest extends TestCase
             $this->fail('An audit failure should roll back member lifecycle changes.');
         } catch (\RuntimeException $exception) {
             $this->assertSame('audit unavailable', $exception->getMessage());
+        }
+        $this->assertDatabaseHas('school_memberships', ['school_id' => $schoolId, 'user_id' => $teacher->id, 'status' => 'active']);
+        $this->assertDatabaseHas('teacher_profiles', ['id' => $profile->id, 'employment_status' => 'active']);
+        $this->assertDatabaseHas('teacher_class_assignments', ['id' => $newAssignment->id, 'is_active' => 1]);
+        $this->app->instance(AuditLogger::class, new AuditLogger());
+        $recordCalls = 0;
+        $this->app->instance(AuditLogger::class, Mockery::mock(AuditLogger::class, function ($mock) use (&$recordCalls): void {
+            $mock->shouldReceive('record')->twice()->ordered()->andReturnUsing(function () use (&$recordCalls): void {
+                $recordCalls++;
+                if ($recordCalls === 2) {
+                    throw new \RuntimeException('audit unavailable on member record');
+                }
+            });
+        }));
+        try {
+            $this->actingAs($admin)->put('http://demo.erphpro.com/admin/people/'.$teacher->id, [
+                'role' => 'teacher', 'status' => 'inactive',
+            ]);
+            $this->fail('A later audit failure should roll back the complete lifecycle transaction.');
+        } catch (\RuntimeException $exception) {
+            $this->assertSame('audit unavailable on member record', $exception->getMessage());
         }
         $this->assertDatabaseHas('school_memberships', ['school_id' => $schoolId, 'user_id' => $teacher->id, 'status' => 'active']);
         $this->assertDatabaseHas('teacher_profiles', ['id' => $profile->id, 'employment_status' => 'active']);
