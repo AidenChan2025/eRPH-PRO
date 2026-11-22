@@ -5,9 +5,17 @@ namespace Tests\Feature;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use App\Models\User;
 use App\Models\LessonPlan;
+use App\Models\LessonPlanVersion;
+use App\Models\LessonPlanReview;
+use App\Models\LessonPlanSubmission;
+use App\Models\School;
+use App\Models\SupportTicket;
+use App\Models\TeacherProfile;
 use App\Services\SupportAIService;
+use Illuminate\Http\Client\Request as ClientRequest;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
 use Laravel\Socialite\Two\User as SocialiteUser;
@@ -16,6 +24,7 @@ use Tests\TestCase;
 class ExampleTest extends TestCase
 {
     use RefreshDatabase;
+
     /**
      * A basic test example.
      */
@@ -43,7 +52,31 @@ class ExampleTest extends TestCase
             ->assertSee('Submit a ticket');
     }
 
-    public function test_support_ticket_creates_a_private_access_link(): void
+    public function test_ticket_form_discloses_optional_ai_processing_in_three_languages(): void
+    {
+        Config::set('support.ai_enabled', true);
+
+        $this->get('http://support.erphpro.com/tickets/new')
+            ->assertOk()
+            ->assertSee('name="ai_processing_consent"', false)
+            ->assertSee('lang="en"', false)
+            ->assertSee('lang="ms"', false)
+            ->assertSee('lang="zh-Hans"', false)
+            ->assertSee('aria-describedby="ai-consent-description"', false)
+            ->assertSee('human-only handling');
+    }
+
+    public function test_ticket_form_hides_ai_consent_when_ai_is_not_enabled(): void
+    {
+        Config::set('support.ai_enabled', false);
+
+        $this->get('http://support.erphpro.com/tickets/new')
+            ->assertOk()
+            ->assertDontSee('name="ai_processing_consent"', false)
+            ->assertDontSee('DeepSeek');
+    }
+
+    public function test_support_ticket_access_stays_in_the_current_session(): void
     {
         $response = $this->post('http://support.erphpro.com/tickets', [
             'name' => 'Support User',
@@ -56,12 +89,327 @@ class ExampleTest extends TestCase
         $response->assertRedirect();
         $location = $response->headers->get('Location');
         $this->assertStringContainsString('/tickets/', $location);
-        $this->assertStringContainsString('?token=', $location);
+        $this->assertStringNotContainsString('token=', $location);
         $this->assertDatabaseHas('support_tickets', ['requester_email' => 'support-user@example.com', 'status' => 'open']);
         $this->assertDatabaseHas('support_ticket_messages', ['source' => 'requester', 'author_email' => 'support-user@example.com']);
 
-        $this->get($location)->assertRedirect();
-        $this->get(Str::before($location, '?'))->assertOk()->assertSee('Add a reply');
+        $this->get($location)
+            ->assertOk()
+            ->assertSee('Add a reply')
+            ->assertHeader('Cache-Control', 'no-store, private')
+            ->assertHeader('Referrer-Policy', 'no-referrer');
+    }
+
+    public function test_ticket_bearer_tokens_in_query_are_removed_and_do_not_grant_access(): void
+    {
+        $ticket = SupportTicket::create([
+            'public_id' => (string) Str::uuid(),
+            'access_token_hash' => hash('sha256', 'legacy-token'),
+            'requester_name' => 'Support User',
+            'requester_email' => 'support-user@example.com',
+            'subject' => 'Cannot open a lesson plan',
+            'category' => 'lesson_plans',
+            'priority' => 'normal',
+            'status' => 'open',
+        ]);
+
+        $response = $this->get("http://support.erphpro.com/tickets/{$ticket->public_id}?token=legacy-token");
+        $response->assertRedirect("http://support.erphpro.com/tickets/{$ticket->public_id}")
+            ->assertHeader('Cache-Control', 'no-store, private')
+            ->assertHeader('Referrer-Policy', 'no-referrer');
+
+        $this->get($response->headers->get('Location'))->assertForbidden();
+    }
+
+    public function test_multiple_tickets_remain_available_in_the_same_session(): void
+    {
+        $payload = [
+            'name' => 'Support User', 'email' => 'support-user@example.com', 'subject' => 'A question',
+            'category' => 'general', 'message' => 'This is a sufficiently long support question.',
+        ];
+
+        $first = $this->post('http://support.erphpro.com/tickets', $payload)->assertRedirect();
+        $second = $this->post('http://support.erphpro.com/tickets', array_merge($payload, ['subject' => 'Another question']))->assertRedirect();
+
+        $this->get($first->headers->get('Location'))->assertOk();
+        $this->get($second->headers->get('Location'))->assertOk();
+    }
+
+    public function test_deepseek_processing_requires_ticket_specific_opt_in(): void
+    {
+        Config::set('support.ai_enabled', true);
+        Config::set('services.deepseek.api_key', 'test-key');
+        Http::fake();
+        Mail::fake();
+
+        $this->post('http://support.erphpro.com/tickets', [
+            'name' => 'Support User', 'email' => 'support-user@example.com', 'subject' => 'General question',
+            'category' => 'general', 'message' => 'Please explain how the support process works.',
+        ])->assertRedirect();
+
+        $ticket = SupportTicket::query()->where('subject', 'General question')->firstOrFail();
+        $this->assertNull($ticket->ai_processing_consent_at);
+        $this->assertSame('not_consented', $ticket->ai_state);
+        Http::assertNothingSent();
+    }
+
+    public function test_consent_is_not_recorded_while_ai_feature_is_disabled(): void
+    {
+        Config::set('support.ai_enabled', false);
+        Http::fake();
+        Mail::fake();
+
+        $this->post('http://support.erphpro.com/tickets', [
+            'name' => 'Support User', 'email' => 'support-user@example.com', 'subject' => 'General question',
+            'category' => 'general', 'message' => 'Please explain how the support process works.',
+            'ai_processing_consent' => '1',
+        ])->assertRedirect();
+
+        $ticket = SupportTicket::query()->where('subject', 'General question')->firstOrFail();
+        $this->assertNull($ticket->ai_processing_consent_at);
+        $this->assertNull($ticket->ai_processing_consent_version);
+        $this->assertSame('not_consented', $ticket->ai_state);
+        Http::assertNothingSent();
+    }
+
+    public function test_sensitive_ticket_categories_stay_human_only_even_with_ai_consent(): void
+    {
+        Config::set('support.ai_enabled', true);
+        Config::set('services.deepseek.api_key', 'test-key');
+        Http::fake();
+        Mail::fake();
+
+        $this->post('http://support.erphpro.com/tickets', [
+            'name' => 'Security Reporter', 'email' => 'security@example.com', 'subject' => 'Suspicious access',
+            'category' => 'security', 'message' => 'I saw suspicious access in the school workspace.',
+            'ai_processing_consent' => '1',
+        ])->assertRedirect();
+
+        $ticket = SupportTicket::query()->where('subject', 'Suspicious access')->firstOrFail();
+        $this->assertNotNull($ticket->ai_processing_consent_at);
+        $this->assertSame(SupportAIService::CONSENT_VERSION, $ticket->ai_processing_consent_version);
+        $this->assertSame('human_review', $ticket->ai_state);
+        Http::assertNothingSent();
+    }
+
+    public function test_deepseek_requires_the_current_consent_disclosure_version(): void
+    {
+        Config::set('support.ai_enabled', true);
+        Config::set('services.deepseek.api_key', 'test-key');
+        Http::fake();
+
+        $ticket = SupportTicket::create([
+            'public_id' => (string) Str::uuid(), 'access_token_hash' => hash('sha256', 'token'),
+            'requester_name' => 'Support User', 'requester_email' => 'support-user@example.com',
+            'subject' => 'General question', 'category' => 'general', 'priority' => 'normal', 'status' => 'open',
+            'ai_processing_consent_at' => now(), 'ai_processing_consent_version' => 'retired-consent-v0',
+        ]);
+
+        $this->assertSame('not_consented', app(SupportAIService::class)->analyse($ticket)['state']);
+        Http::assertNothingSent();
+    }
+
+    public function test_deepseek_payload_redacts_common_contact_and_identity_patterns(): void
+    {
+        Config::set('support.ai_enabled', true);
+        Config::set('services.deepseek.api_key', 'test-key');
+        Http::fake([
+            'api.deepseek.com/chat/completions' => Http::response([
+                'choices' => [[
+                    'message' => ['content' => json_encode([
+                        'category' => 'general', 'priority' => 'normal', 'confidence' => 0.92,
+                        'summary' => 'General help request', 'reply_draft' => 'A team member will assist.', 'needs_human' => false,
+                    ], JSON_THROW_ON_ERROR)],
+                ]],
+            ]),
+        ]);
+
+        $ticket = SupportTicket::create([
+            'public_id' => (string) Str::uuid(), 'access_token_hash' => hash('sha256', 'token'),
+            'requester_name' => 'Support User', 'requester_email' => 'support-user@example.com',
+            'subject' => 'Contact teacher@example.com about this issue', 'category' => 'general',
+            'priority' => 'normal', 'status' => 'open', 'ai_processing_consent_at' => now(),
+            'ai_processing_consent_version' => SupportAIService::CONSENT_VERSION,
+        ]);
+        $ticket->messages()->create([
+            'author_name' => 'Support User', 'author_email' => 'support-user@example.com',
+            'source' => 'requester', 'body' => 'Email teacher@example.com or call +6012 345 6789. IC 900101-14-1234. Card 4111 1111 1111 1111.',
+        ]);
+
+        $result = app(SupportAIService::class)->analyse($ticket);
+
+        $this->assertSame('draft_ready', $result['state']);
+        Http::assertSent(function (ClientRequest $request): bool {
+            $payload = json_decode($request['messages'][1]['content'], true, 512, JSON_THROW_ON_ERROR);
+
+            return ! str_contains($payload['subject'], 'teacher@example.com')
+                && ! str_contains($payload['message'], 'teacher@example.com')
+                && ! str_contains($payload['message'], '+6012 345 6789')
+                && ! str_contains($payload['message'], '900101-14-1234')
+                && ! str_contains($payload['message'], '4111 1111 1111 1111')
+                && str_contains($payload['message'], '[redacted email]')
+                && str_contains($payload['message'], '[redacted phone number]')
+                && str_contains($payload['message'], '[redacted identity number]')
+                && str_contains($payload['message'], '[redacted payment number]');
+        });
+    }
+
+    public function test_ticket_access_recovery_does_not_render_private_messages_before_verification(): void
+    {
+        $ticket = SupportTicket::create([
+            'public_id' => (string) Str::uuid(),
+            'access_token_hash' => hash('sha256', 'session-token'),
+            'requester_name' => 'Support User',
+            'requester_email' => 'support-user@example.com',
+            'subject' => 'Private ticket subject',
+            'category' => 'general',
+            'priority' => 'normal',
+            'status' => 'open',
+        ]);
+        $ticket->messages()->create([
+            'author_name' => 'Support User', 'author_email' => 'support-user@example.com',
+            'source' => 'requester', 'body' => 'Private message body', 'sent_at' => now(),
+        ]);
+
+        $this->get("http://support.erphpro.com/tickets/{$ticket->public_id}")
+            ->assertForbidden()
+            ->assertSee('Restore access to your ticket')
+            ->assertDontSee('Private message body');
+    }
+
+    public function test_ticket_owner_can_recover_access_with_a_single_use_email_code(): void
+    {
+        $ticket = SupportTicket::create([
+            'public_id' => (string) Str::uuid(),
+            'access_token_hash' => hash('sha256', 'expired-session-token'),
+            'requester_name' => 'Support User',
+            'requester_email' => 'support-user@example.com',
+            'subject' => 'Recover access',
+            'category' => 'general',
+            'priority' => 'normal',
+            'status' => 'open',
+        ]);
+        $this->get("http://support.erphpro.com/tickets/{$ticket->public_id}")->assertForbidden();
+
+        $code = null;
+        Mail::shouldReceive('raw')->once()->withArgs(function (string $body) use (&$code): bool {
+            preg_match('/code is (\d{6})/', $body, $matches);
+            $code = $matches[1] ?? null;
+
+            return $code !== null;
+        });
+
+        $this->from("http://support.erphpro.com/tickets/{$ticket->public_id}")
+            ->post("http://support.erphpro.com/tickets/{$ticket->public_id}/recovery-code", ['email' => 'support-user@example.com'])
+            ->assertRedirect();
+        $ticket->refresh();
+        $this->assertNotNull($ticket->recovery_code_hash);
+        $this->assertSame(0, $ticket->recovery_code_attempts);
+
+        $this->post("http://support.erphpro.com/tickets/{$ticket->public_id}/recovery-verify", ['code' => $code])
+            ->assertRedirect("http://support.erphpro.com/tickets/{$ticket->public_id}");
+        $this->get("http://support.erphpro.com/tickets/{$ticket->public_id}")->assertOk();
+
+        $this->post("http://support.erphpro.com/tickets/{$ticket->public_id}/recovery-verify", ['code' => $code])
+            ->assertSessionHasErrors('code');
+    }
+
+    public function test_recovery_code_attempts_require_the_session_that_requested_the_email(): void
+    {
+        $ticket = SupportTicket::create([
+            'public_id' => (string) Str::uuid(), 'access_token_hash' => hash('sha256', 'token'),
+            'requester_name' => 'Support User', 'requester_email' => 'support-user@example.com',
+            'subject' => 'Recover access', 'category' => 'general', 'priority' => 'normal', 'status' => 'open',
+        ]);
+        Mail::shouldReceive('raw')->once();
+
+        $this->post("http://support.erphpro.com/tickets/{$ticket->public_id}/recovery-code", ['email' => 'support-user@example.com']);
+        $this->flushSession();
+
+        $this->post("http://support.erphpro.com/tickets/{$ticket->public_id}/recovery-verify", ['code' => '000000'])
+            ->assertSessionHasErrors('code');
+        $this->assertSame(0, $ticket->fresh()->recovery_code_attempts);
+    }
+
+    public function test_recovery_code_is_rate_limited_per_ticket_and_invalidated_after_five_failures(): void
+    {
+        $ticket = SupportTicket::create([
+            'public_id' => (string) Str::uuid(), 'access_token_hash' => hash('sha256', 'token'),
+            'requester_name' => 'Support User', 'requester_email' => 'support-user@example.com',
+            'subject' => 'Recover access', 'category' => 'general', 'priority' => 'normal', 'status' => 'open',
+        ]);
+        Mail::shouldReceive('raw')->once();
+
+        $send = "http://support.erphpro.com/tickets/{$ticket->public_id}/recovery-code";
+        $this->post($send, ['email' => 'support-user@example.com'])->assertSessionHasNoErrors();
+        $hash = $ticket->fresh()->recovery_code_hash;
+        $this->post($send, ['email' => 'support-user@example.com'])->assertSessionHasNoErrors();
+        $this->assertSame($hash, $ticket->fresh()->recovery_code_hash);
+
+        $verify = "http://support.erphpro.com/tickets/{$ticket->public_id}/recovery-verify";
+        for ($attempt = 0; $attempt < 5; $attempt++) {
+            $this->withServerVariables(['REMOTE_ADDR' => '192.0.2.'.($attempt + 1)])
+                ->post($verify, ['code' => '000000'])
+                ->assertSessionHasErrors('code');
+        }
+
+        $this->assertNull($ticket->fresh()->recovery_code_hash);
+        $this->assertSame(5, $ticket->fresh()->recovery_code_attempts);
+    }
+
+    public function test_recovery_attempt_budget_persists_across_code_resends_and_expires_after_lockout_window(): void
+    {
+        $ticket = SupportTicket::create([
+            'public_id' => (string) Str::uuid(), 'access_token_hash' => hash('sha256', 'token'),
+            'requester_name' => 'Support User', 'requester_email' => 'support-user@example.com',
+            'subject' => 'Recover access', 'category' => 'general', 'priority' => 'normal', 'status' => 'open',
+        ]);
+        Mail::shouldReceive('raw')->times(3);
+
+        $send = "http://support.erphpro.com/tickets/{$ticket->public_id}/recovery-code";
+        $verify = "http://support.erphpro.com/tickets/{$ticket->public_id}/recovery-verify";
+        $this->post($send, ['email' => 'support-user@example.com']);
+        for ($attempt = 0; $attempt < 3; $attempt++) {
+            $this->post($verify, ['code' => '000000'])->assertSessionHasErrors('code');
+        }
+        $this->assertSame(3, $ticket->fresh()->recovery_code_attempts);
+
+        $this->travel(61)->seconds();
+        $this->post($send, ['email' => 'support-user@example.com']);
+        $this->assertSame(3, $ticket->fresh()->recovery_code_attempts);
+        for ($attempt = 0; $attempt < 2; $attempt++) {
+            $this->post($verify, ['code' => '000000'])->assertSessionHasErrors('code');
+        }
+        $this->assertSame(5, $ticket->fresh()->recovery_code_attempts);
+        $this->assertNull($ticket->fresh()->recovery_code_hash);
+
+        $this->travel(61)->seconds();
+        $this->post($send, ['email' => 'support-user@example.com']);
+        $this->assertSame(5, $ticket->fresh()->recovery_code_attempts);
+        $this->assertNull($ticket->fresh()->recovery_code_hash);
+
+        $this->travel(15)->minutes();
+        $this->post($send, ['email' => 'support-user@example.com']);
+        $this->assertSame(0, $ticket->fresh()->recovery_code_attempts);
+        $this->assertNotNull($ticket->fresh()->recovery_code_hash);
+    }
+
+    public function test_ticket_recovery_email_is_limited_to_five_requests_per_hour(): void
+    {
+        $ticket = SupportTicket::create([
+            'public_id' => (string) Str::uuid(), 'access_token_hash' => hash('sha256', 'token'),
+            'requester_name' => 'Support User', 'requester_email' => 'support-user@example.com',
+            'subject' => 'Recover access', 'category' => 'general', 'priority' => 'normal', 'status' => 'open',
+        ]);
+        Mail::shouldReceive('raw')->times(5);
+
+        $send = "http://support.erphpro.com/tickets/{$ticket->public_id}/recovery-code";
+        for ($attempt = 0; $attempt < 5; $attempt++) {
+            $this->post($send, ['email' => 'support-user@example.com'])->assertSessionHasNoErrors();
+            $this->travel(61)->seconds();
+        }
+
+        $this->post($send, ['email' => 'support-user@example.com'])->assertSessionHasNoErrors();
     }
 
     public function test_public_ticket_creation_is_rate_limited(): void
@@ -129,6 +477,43 @@ class ExampleTest extends TestCase
             ->assertStatus(503);
     }
 
+    public function test_google_one_tap_rejects_missing_or_mismatched_double_submit_csrf(): void
+    {
+        Config::set([
+            'services.google.client_id' => 'test-client',
+            'services.google.client_secret' => 'test-secret',
+        ]);
+
+        $this->post('http://demo.erphpro.com/auth/google/one-tap', ['credential' => ''])
+            ->assertForbidden()
+            ->assertSeeText('Google sign-in request could not be verified');
+
+        $this->withCookie('g_csrf_token', 'cookie-token')
+            ->post('http://demo.erphpro.com/auth/google/one-tap', [
+                'credential' => '',
+                'g_csrf_token' => 'body-token',
+            ])
+            ->assertForbidden()
+            ->assertSeeText('Google sign-in request could not be verified');
+    }
+
+    public function test_google_one_tap_checks_matching_csrf_before_rejecting_an_empty_credential(): void
+    {
+        Config::set([
+            'services.google.client_id' => 'test-client',
+            'services.google.client_secret' => 'test-secret',
+        ]);
+
+        $this->withCookie('g_csrf_token', 'matching-token')
+            ->post('http://demo.erphpro.com/auth/google/one-tap', [
+                'credential' => '',
+                'g_csrf_token' => 'matching-token',
+            ])
+            ->assertForbidden()
+            ->assertSeeText('Google sign-in failed')
+            ->assertDontSeeText('Google sign-in request could not be verified');
+    }
+
     public function test_owner_google_callback_can_create_an_owner_without_a_plaintext_password(): void
     {
         Config::set([
@@ -147,7 +532,9 @@ class ExampleTest extends TestCase
 
         $response = $this->withSession(['auth.owner_login' => true])->get('/auth/google/callback');
 
-        $response->assertRedirect(route('owner.dashboard'));
+        $response->assertRedirect(route('owner.dashboard'))
+            ->assertHeader('Cache-Control', 'no-store, private')
+            ->assertHeader('Referrer-Policy', 'no-referrer');
         $this->assertDatabaseHas('users', ['email' => 'owner@example.com', 'platform_role' => 'owner']);
     }
 
@@ -187,6 +574,78 @@ class ExampleTest extends TestCase
         $admin = User::where('email', 'demo@erphpro.com')->firstOrFail();
 
         $this->actingAs($admin)->get('http://other.erphpro.com/workspace')->assertForbidden();
+    }
+
+    public function test_school_tenant_scope_blocks_cross_school_lesson_plan_binding_and_versions(): void
+    {
+        $this->seed();
+        $user = User::where('email', 'demo@erphpro.com')->firstOrFail();
+        $otherSchool = School::create([
+            'name' => 'Other School', 'slug' => 'other-school', 'subdomain' => 'other', 'is_active' => true,
+        ]);
+        $profile = TeacherProfile::create([
+            'school_id' => $otherSchool->id,
+            'user_id' => $user->id,
+            'staff_no' => 'OTHER-1',
+            'employment_status' => 'active',
+        ]);
+        $plan = LessonPlan::create([
+            'school_id' => $otherSchool->id,
+            'teacher_profile_id' => $profile->id,
+            'lesson_date' => '2026-11-23',
+            'subject' => 'Mathematics',
+            'class_name' => 'Year 1',
+            'status' => 'draft',
+            'current_version' => 1,
+        ]);
+        $version = $plan->versions()->create([
+            'version' => 1,
+            'created_by' => $user->id,
+            'source' => 'manual',
+            'content' => ['title' => 'Private other-school plan'],
+        ]);
+        $demoSchool = School::where('subdomain', 'demo')->firstOrFail();
+        $demoProfile = TeacherProfile::withoutGlobalScopes()
+            ->where('school_id', $demoSchool->id)
+            ->where('user_id', $user->id)
+            ->firstOrFail();
+        $review = LessonPlanReview::create([
+            'school_id' => $demoSchool->id,
+            'lesson_plan_id' => $plan->id,
+            'reviewer_id' => $user->id,
+            'decision' => 'approved',
+        ]);
+        $submission = LessonPlanSubmission::create([
+            'school_id' => $demoSchool->id,
+            'lesson_plan_id' => $plan->id,
+            'teacher_profile_id' => $demoProfile->id,
+            'week_no' => 41,
+            'submitted_at' => now(),
+            'status' => 'on_time',
+        ]);
+
+        $this->actingAs($user)
+            ->get("http://demo.erphpro.com/rph/{$plan->id}/edit")
+            ->assertNotFound();
+
+        $this->get('http://demo.erphpro.com/login')->assertOk();
+        $this->assertFalse(LessonPlanVersion::query()->whereKey($version->id)->exists());
+        $this->assertFalse(LessonPlanReview::query()->whereKey($review->id)->exists());
+        $this->assertFalse(LessonPlanSubmission::query()->whereKey($submission->id)->exists());
+    }
+
+    public function test_school_owned_models_fail_closed_on_non_school_hosts(): void
+    {
+        $this->seed();
+        $this->assertFalse(TeacherProfile::query()->exists(), 'CLI/database work without explicit tenant context must fail closed.');
+
+        $this->get('http://erphpro.com/')->assertOk();
+        $this->assertFalse(TeacherProfile::query()->exists());
+        $this->assertFalse(LessonPlan::query()->exists());
+
+        $this->get('http://support.erphpro.com/')->assertOk();
+        $this->assertFalse(TeacherProfile::query()->exists());
+        $this->assertFalse(LessonPlan::query()->exists());
     }
 
     public function test_school_admin_can_view_school_people_but_a_teacher_cannot(): void
@@ -322,7 +781,7 @@ class ExampleTest extends TestCase
         $this->actingAs($user)->post('http://demo.erphpro.com/rph', [
             'lesson_date' => '2026-11-20', 'subject' => 'Science', 'class_name' => '5U', 'title' => 'Matter',
         ]);
-        $plan = LessonPlan::firstOrFail();
+        $plan = \App\Models\LessonPlan::firstOrFail();
 
         $this->actingAs($user)->post("http://demo.erphpro.com/rph/{$plan->id}/submit")
             ->assertRedirect(route('workspace.dashboard'));
@@ -406,7 +865,7 @@ class ExampleTest extends TestCase
             'email_type' => 'workspace', 'is_primary' => true, 'verified_at' => now(),
         ]);
         $backup = \App\Models\GoogleIdentity::create([
-            'user_id' => $user->id, 'subject' => 'backup-subject', 'email' => 'backup@gmail.com',
+            'user_id' => $user->id, 'subject' => 'backup-subject', 'email' => 'recovery-user@example.com',
             'email_type' => 'personal', 'is_primary' => false, 'verified_at' => now(),
         ]);
 

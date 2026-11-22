@@ -9,9 +9,22 @@ use Illuminate\Support\Str;
 class SupportAIService
 {
     public const PROMPT_VERSION = 'support-triage-v1';
+    public const CONSENT_VERSION = 'support-ai-consent-v1';
 
     public function analyse(SupportTicket $ticket): array
     {
+        if (! $ticket->ai_processing_consent_at || $ticket->ai_processing_consent_version !== self::CONSENT_VERSION) {
+            return ['state' => 'not_consented'];
+        }
+
+        if (! config('support.ai_enabled')) {
+            return ['state' => 'disabled'];
+        }
+
+        if (in_array($ticket->category, ['account', 'login', 'school_admin', 'billing', 'security'], true)) {
+            return ['state' => 'human_review', 'needs_human' => true];
+        }
+
         $apiKey = (string) config('services.deepseek.api_key');
         if ($apiKey === '' || strtolower($apiKey) === 'null') {
             return ['state' => 'not_configured'];
@@ -33,8 +46,8 @@ PROMPT;
                         ['role' => 'system', 'content' => $system],
                         ['role' => 'user', 'content' => json_encode([
                             'prompt_version' => self::PROMPT_VERSION,
-                            'subject' => Str::limit($ticket->subject, 240),
-                            'message' => Str::limit((string) $ticket->messages()->where('is_internal', false)->latest('id')->value('body'), 6000),
+                            'subject' => $this->redactSensitiveText(Str::limit($ticket->subject, 240)),
+                            'message' => $this->redactSensitiveText(Str::limit((string) $ticket->messages()->where('is_internal', false)->latest('id')->value('body'), 6000)),
                         ], JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR)],
                     ],
                 ]);
@@ -52,7 +65,7 @@ PROMPT;
             $priority = in_array($result['priority'] ?? null, $priorities, true) ? $result['priority'] : 'normal';
             $needsHuman = (bool) ($result['needs_human'] ?? false)
                 || $confidence < (float) config('support.ai_min_confidence', 0.86)
-                || in_array($category, ['security', 'billing', 'account'], true)
+                || in_array($category, ['security', 'billing', 'account', 'login', 'school_admin'], true)
                 || $priority === 'urgent';
 
             return [
@@ -67,5 +80,21 @@ PROMPT;
         } catch (\Throwable) {
             return ['state' => 'failed'];
         }
+    }
+
+    private function redactSensitiveText(string $text): string
+    {
+        $patterns = [
+            '/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i' => '[redacted email]',
+            '/(?<!\d)\d{6}-?\d{2}-?\d{4}(?!\d)/' => '[redacted identity number]',
+            '/(?<!\d)(?:\d[ -]?){13,19}(?!\d)/' => '[redacted payment number]',
+            '/(?<!\w)(?:\+?60|0)\d(?:[\s().-]*\d){7,11}(?!\w)/' => '[redacted phone number]',
+        ];
+
+        foreach ($patterns as $pattern => $replacement) {
+            $text = preg_replace($pattern, $replacement, $text) ?? $text;
+        }
+
+        return $text;
     }
 }

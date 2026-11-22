@@ -16,6 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->prependToGroup('web', \App\Http\Middleware\ResolveTenantContext::class);
         $middleware->alias([
             'school' => ResolveSchool::class,
             'school.member' => RequireSchoolMembership::class,

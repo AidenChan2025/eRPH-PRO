@@ -45,3 +45,7 @@ The first migration targets should be users, teacher profile fields, RPH records
 ## Cost and operational decision
 
 Removing Firebase entirely is cheaper and simpler for the target Plesk environment. It keeps tenant boundaries, audit logs, exports and future student/discipline modules under one SQL authorization model.
+
+## Hosting console evidence (2026-11-21)
+
+Read-only inspection of the Firebase Console Hosting view for project `erph-pro` showed the “Get started” setup page, with no deployed release inventory visible in that view. This is evidence that an active Hosting deployment was not exposed by the observed console page; it does not prove the Firebase project, Auth, Firestore, Storage, historical data, or every Hosting site is unused. Keep the SSR/Plesk app as the sole production write path. Before removing the root React/Vite Firebase code, credentials, or project resources, verify all Hosting sites/domains and historical asset/data retention, then preserve any records needed for audit or authorized migration. No Firebase deployment, configuration, data, or user was changed.

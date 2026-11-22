@@ -12,7 +12,9 @@ app = Flask(__name__)
 
 # Database Configuration
 DB_USER = os.environ.get('DB_USER', 'erphpro')
-DB_PASS = os.environ.get('DB_PASS', 'Jnj9AP4JieDkQ9A')
+DB_PASS = os.environ.get('DB_PASS')
+if not DB_PASS:
+    raise RuntimeError('DB_PASS must be set to use the archived application')
 DB_HOST = os.environ.get('DB_HOST', 'localhost')
 DB_NAME = os.environ.get('DB_NAME', 'erphpro')
 

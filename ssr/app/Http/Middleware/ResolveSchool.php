@@ -24,7 +24,10 @@ class ResolveSchool
             return response()->view('school-not-found', [], 404);
         }
 
-        $school = School::query()->where('subdomain', $subdomain)->where('is_active', true)->first();
+        $tenantId = $request->attributes->get('tenant_school_id');
+        $school = is_int($tenantId)
+            ? School::query()->whereKey($tenantId)->where('is_active', true)->first()
+            : null;
 
         if (!$school) {
             return response()->view('school-not-found', [], 404);

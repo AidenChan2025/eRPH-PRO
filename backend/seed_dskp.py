@@ -1,17 +1,36 @@
-from app import create_app
-from models import db, DSKPData
+import argparse
+import os
+import sys
+from pathlib import Path
 
-def seed():
+def seed() -> int:
+    parser = argparse.ArgumentParser(description='Initialize demo DSKP rows in a new local SQLite database.')
+    parser.add_argument(
+        '--init-empty-local-demo',
+        action='store_true',
+        help='Explicitly allow initialization of the default, empty local SQLite database.',
+    )
+    args = parser.parse_args()
+
+    if not args.init_empty_local_demo:
+        parser.error('No database changes were made. Pass --init-empty-local-demo only for a new local demo database.')
+
+    if os.environ.get('DATABASE_URL'):
+        parser.error('Refusing an explicit DATABASE_URL; this script is restricted to its default local SQLite database.')
+
+    local_db = Path(__file__).resolve().parent / 'instance' / 'erph.db'
+    if local_db.exists() and local_db.stat().st_size > 0:
+        parser.error('Refusing to modify an existing SQLite database. Back up and review it separately; no rows were read or changed.')
+
+    from app import create_app
+    from models import db, DSKPData
+
     app = create_app()
     with app.app_context():
-        print("Seeding DSKP Data...")
-        
-        # Clear existing
-        try:
-            db.session.query(DSKPData).delete()
-            db.session.commit()
-        except:
-            pass # Tables might not exist yet, create_app handles creation
+        if db.session.query(DSKPData).count() != 0:
+            parser.error('Refusing to seed a database that already contains DSKP rows.')
+
+        print('Initializing demo DSKP rows in the local SQLite database...')
 
         # Sample Data: Bahasa Melayu (Form 1)
         bm_data = [
@@ -81,7 +100,9 @@ def seed():
             db.session.add(entry)
 
         db.session.commit()
-        print("Seeding Complete: Created DSKP entries for BM and English.")
+        print('Seed complete: created demo entries for Bahasa Melayu and English.')
+
+    return 0
 
 if __name__ == "__main__":
-    seed()
+    sys.exit(seed())

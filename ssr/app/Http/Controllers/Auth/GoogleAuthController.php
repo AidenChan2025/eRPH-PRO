@@ -196,6 +196,12 @@ class GoogleAuthController extends Controller
     {
         abort_unless(config('services.google.client_id') && config('services.google.client_secret'), 503, 'Google Workspace login is not configured yet.');
 
+        $csrfCookie = $request->cookie('g_csrf_token');
+        $csrfBody = $request->input('g_csrf_token');
+        if (! is_string($csrfCookie) || $csrfCookie === '' || ! is_string($csrfBody) || ! hash_equals($csrfCookie, $csrfBody)) {
+            return response()->view('auth.error', ['title' => 'Google sign-in request could not be verified', 'message' => 'Please return to the sign-in page and try again.'], 403);
+        }
+
         $client = new GoogleClient(['client_id' => config('services.google.client_id')]);
         $credential = (string) $request->input('credential');
         $claims = $credential !== '' ? $client->verifyIdToken($credential) : false;

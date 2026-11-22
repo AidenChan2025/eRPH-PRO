@@ -397,7 +397,7 @@ The GitHub `main` branch deploys to Plesk through the configured GitHub push web
 6. a health check and deployment log;
 7. a documented rollback target.
 
-Secrets remain in Plesk environment/configuration and are never committed to GitHub. The first Laravel deployment must be staged under a non-production path or protected preview host before the domain is switched to the new document root.
+Secrets remain in Plesk environment/configuration and are never committed to GitHub. Prefer a non-production path or protected preview host. If the Plesk plan cannot provide one, keep the existing document root serving traffic until the candidate is verified, then use only a reviewed, reversible cutover with an isolated demo tenant and explicit feature controls; do not imply that demo isolation alone is a substitute for a rollback-capable release.
 
 ### 16.6 Development order
 
@@ -438,9 +438,9 @@ Firebase is explicitly out of the new system scope. Laravel SQL is the sole prod
 
 The exact workbook field and workflow mapping is documented in `docs/RPH_FORMAT_MAPPING.md`, based on the supplied teacher and school-level Google Sheets. The current RPH version JSON remains extensible until all school-specific fields are migrated into the UI and renderer.
 
-The SSR baseline now exposes `/health` with database status and `RELEASE_VERSION`; Plesk deployment checks must call this endpoint after migrations and cache refresh before any domain cutover.
+The SSR baseline exposes `/health` with database status and `RELEASE_VERSION`. The Plesk hook resolves the checked-out Git commit and injects it only while building Laravel's config cache; it does not write `.env`. A matching health label is useful deployment evidence, but does not independently prove that PHP-FPM/OPcache is serving that code. Plesk deployment checks must call this endpoint after cache refresh and before any domain cutover.
 
-The repository includes `scripts/deploy-ssr.sh` as the controlled Plesk hook. It installs locked production dependencies, runs migrations, refreshes Laravel caches and optionally fails the deployment when the configured `/health` response is not healthy.
+The repository includes `scripts/deploy-ssr.sh` as the controlled Plesk hook. It selects PHP through `SSR_PHP_BIN`, the Plesk PHP 8.3 CLI path when present, or PATH; validates PHP 8.3+ and required extensions; then invokes Composer and Artisan through that same PHP binary. It prefers the subscription's `ssr/bin/composer` and accepts `SSR_COMPOSER_BIN` as an explicit override. The hook resolves the commit from `SSR_GIT_DIR` or its invocation directory before falling back to the application directory; set `SSR_GIT_DIR` to Plesk's Git checkout if the post-deployment command runs outside that checkout. It fails closed when no valid commit SHA is available. The hook installs locked production dependencies, checks the migration ledger and refreshes Laravel caches only when no migration is pending. It fails closed if migrations are pending or cannot be inspected; applying migrations and initial support-content seeding require a separately approved operation after a verified recovery point. It injects the SHA only while building Laravel's config cache; it does not modify `.env`. When `SSR_HEALTH_URL` is configured, the hook requires `status=ok`, `database=ok`, `cache=ok`, and a `/health` release value matching the checked-out SHA. This binds the endpoint's configuration label to the deployment hook, but does not independently prove PHP-FPM/OPcache runtime identity.
 
 Explicit role-to-permission mappings now live in `ssr/config/permissions.php`, with a `permission` middleware alias. New features should add a permission name first, then protect routes with that permission; role labels alone are not the long-term authorization contract.
 

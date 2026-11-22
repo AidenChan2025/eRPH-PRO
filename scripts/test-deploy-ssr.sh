@@ -1,0 +1,219 @@
+#!/usr/bin/env bash
+set -Eeuo pipefail
+
+repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd -P)"
+tmp_dir="$(mktemp -d)"
+real_php_bin="$(command -v php)"
+real_readlink_bin="$(command -v readlink)"
+trap 'rm -rf "$tmp_dir"' EXIT
+
+mkdir -p "$tmp_dir/bin"
+touch "$tmp_dir/bin/composer"
+cat > "$tmp_dir/bin/php" <<'PHP'
+#!/usr/bin/env bash
+set -Eeuo pipefail
+if [[ "${1:-}" == "-r" ]]; then
+  case "$2" in
+    *'PHP_VERSION_ID'*) printf '%s' "${FAKE_PHP_VERSION_ID:-80300}" ;;
+    *'stat($argv[1])'*) exec "$REAL_PHP_BIN" "$@" ;;
+    *'rename($argv[1], $argv[2])'*) exec "$REAL_PHP_BIN" "$@" ;;
+    *) printf 'Unexpected PHP probe: %s\n' "$2" >&2; exit 99 ;;
+  esac
+  exit 0
+fi
+if [[ "${1:-}" == "-m" ]]; then
+  tr ' ' '\n' <<<"${FAKE_PHP_MODULES:-ctype fileinfo mbstring openssl PDO pdo_mysql tokenizer xml}"
+  exit 0
+fi
+if [[ "${1:-}" == */composer ]]; then
+  printf 'composer %s\n' "${*:2}" >> "$TRACE_FILE"
+  if [[ "${2:-}" == "install" ]]; then
+    mkdir -p vendor
+    touch vendor/autoload.php
+  fi
+  exit "${COMPOSER_FAIL:-0}"
+fi
+if [[ "${1:-}" == "artisan" && "${2:-}" == "migrate:status" ]]; then
+  printf 'migrate:status\n' >> "$TRACE_FILE"
+  exit "${MIGRATION_PENDING:-0}"
+fi
+if [[ "${1:-}" == "artisan" ]]; then
+  printf 'artisan %s\n' "${*:2}" >> "$TRACE_FILE"
+  if [[ "${2:-}" == "config:cache" ]]; then
+    mkdir -p bootstrap/cache
+    touch bootstrap/cache/config.php
+  fi
+  exit 0
+fi
+printf 'Unexpected PHP invocation: %s\n' "$*" >&2
+exit 99
+PHP
+
+cat > "$tmp_dir/bin/curl" <<'CURL'
+#!/usr/bin/env bash
+set -Eeuo pipefail
+printf 'curl %s\n' "$*" >> "$TRACE_FILE"
+if [[ "${CURL_FAIL:-0}" == 1 ]]; then exit 22; fi
+printf '%s' "${FAKE_HEALTH_RESPONSE:-}"
+CURL
+
+cat > "$tmp_dir/bin/readlink" <<'READLINK'
+#!/usr/bin/env bash
+set -Eeuo pipefail
+if [[ "${FAIL_READLINK:-0}" == 1 ]]; then exit 1; fi
+exec "$REAL_READLINK_BIN" "$@"
+READLINK
+
+chmod +x "$tmp_dir/bin/php" "$tmp_dir/bin/curl" "$tmp_dir/bin/readlink"
+
+new_sandbox() {
+  local name="$1"
+  SANDBOX="$tmp_dir/$name"
+  RELEASES="$SANDBOX/releases"
+  SHARED="$SANDBOX/shared"
+  CURRENT="$SANDBOX/current"
+  OLD_RELEASE="$RELEASES/previous-release"
+  mkdir -p "$RELEASES" "$SHARED/storage" "$OLD_RELEASE/public" "$SANDBOX/bin"
+  printf 'APP_KEY=test-only\n' > "$SHARED/.env"
+  ln -s "$OLD_RELEASE" "$CURRENT"
+  TRACE="$SANDBOX/trace"
+  : > "$TRACE"
+}
+
+run_hook() {
+  env PATH="$tmp_dir/bin:$PATH" \
+    REAL_PHP_BIN="$real_php_bin" \
+    REAL_READLINK_BIN="$real_readlink_bin" \
+    SSR_GIT_DIR="$repo_root" \
+    SSR_APP_DIR="$repo_root/ssr" \
+    SSR_RELEASES_DIR="$RELEASES" \
+    SSR_CURRENT_LINK="$CURRENT" \
+    SSR_SHARED_DIR="$SHARED" \
+    SSR_HEALTH_URL="${HEALTH_URL:-https://example.test/health}" \
+    SSR_PHP_BIN="$tmp_dir/bin/php" \
+    SSR_COMPOSER_BIN="$tmp_dir/bin/composer" \
+    TRACE_FILE="$TRACE" \
+    FAKE_HEALTH_RESPONSE="${FAKE_HEALTH_RESPONSE:-}" \
+    FAKE_PHP_MODULES="${FAKE_PHP_MODULES:-ctype fileinfo mbstring openssl PDO pdo_mysql tokenizer xml}" \
+    FAKE_PHP_VERSION_ID="${FAKE_PHP_VERSION_ID:-80300}" \
+    MIGRATION_PENDING="${MIGRATION_PENDING:-0}" \
+    COMPOSER_FAIL="${COMPOSER_FAIL:-0}" \
+    CURL_FAIL="${CURL_FAIL:-0}" \
+    FAIL_READLINK="${FAIL_READLINK:-0}" \
+    bash "$repo_root/scripts/deploy-ssr.sh"
+}
+
+expected_sha="$(git -C "$repo_root" rev-parse HEAD)"
+
+new_sandbox old_php
+if FAKE_PHP_VERSION_ID=80134 run_hook >"$SANDBOX/out" 2>&1; then
+  echo 'Expected an unsupported PHP CLI version to stop deployment.' >&2
+  exit 1
+fi
+if [[ -s "$TRACE" || "$(readlink "$CURRENT")" != "$OLD_RELEASE" ]]; then
+  echo 'Unsupported PHP reached build commands or changed the live release.' >&2
+  exit 1
+fi
+
+new_sandbox insecure_health_url
+if HEALTH_URL=http://example.test/health run_hook >"$SANDBOX/out" 2>&1; then
+  echo 'Expected an HTTP health URL to stop deployment.' >&2
+  exit 1
+fi
+if [[ -s "$TRACE" || "$(readlink "$CURRENT")" != "$OLD_RELEASE" ]]; then
+  echo 'An HTTP health URL reached build commands or changed the live release.' >&2
+  exit 1
+fi
+
+new_sandbox missing_extension
+if FAKE_PHP_MODULES='ctype fileinfo mbstring openssl PDO tokenizer xml' run_hook >"$SANDBOX/out" 2>&1; then
+  echo 'Expected a missing PHP extension to stop deployment.' >&2
+  exit 1
+fi
+if [[ -s "$TRACE" || "$(readlink "$CURRENT")" != "$OLD_RELEASE" ]]; then
+  echo 'Missing PHP extension reached build commands or changed the live release.' >&2
+  exit 1
+fi
+
+new_sandbox current_link_read_failure
+if FAIL_READLINK=1 run_hook >"$SANDBOX/out" 2>&1; then
+  echo 'Expected a failed current-link read to stop deployment.' >&2
+  exit 1
+fi
+if [[ -e "$RELEASES/.deploy.lock" || "$(readlink "$CURRENT")" != "$OLD_RELEASE" ]]; then
+  echo 'A failed current-link read left a stale lock or changed the live release.' >&2
+  exit 1
+fi
+
+new_sandbox pending
+if MIGRATION_PENDING=1 FAKE_HEALTH_RESPONSE="{\"status\":\"ok\",\"database\":\"ok\",\"cache\":\"ok\",\"release\":\"$expected_sha\"}" run_hook >"$SANDBOX/out" 2>&1; then
+  echo 'Expected pending migrations to stop deployment.' >&2
+  exit 1
+fi
+if [[ "$(readlink "$CURRENT")" != "$OLD_RELEASE" ]] || grep -q 'artisan config:cache' "$TRACE"; then
+  echo 'Pending migrations changed the live release or built production caches.' >&2
+  exit 1
+fi
+
+new_sandbox composer_failure
+if COMPOSER_FAIL=1 run_hook >"$SANDBOX/out" 2>&1; then
+  echo 'Expected Composer failure to stop deployment.' >&2
+  exit 1
+fi
+if [[ "$(readlink "$CURRENT")" != "$OLD_RELEASE" ]]; then
+  echo 'Composer failure changed the live release.' >&2
+  exit 1
+fi
+
+new_sandbox health_failure
+if CURL_FAIL=1 run_hook >"$SANDBOX/out" 2>&1; then
+  echo 'Expected an HTTP health failure to stop deployment.' >&2
+  exit 1
+fi
+if [[ "$(readlink "$CURRENT")" != "$OLD_RELEASE" ]]; then
+  echo 'Health failure did not restore the previous release symlink.' >&2
+  exit 1
+fi
+if [[ ! -d "$RELEASES/$expected_sha" ]]; then
+  cat "$SANDBOX/out" >&2
+  find "$RELEASES" -maxdepth 2 -mindepth 1 -print >&2
+  echo 'Failed release was not preserved for diagnosis.' >&2
+  exit 1
+fi
+FAKE_HEALTH_RESPONSE="{\"status\":\"ok\",\"database\":\"ok\",\"cache\":\"ok\",\"release\":\"$expected_sha\"}" run_hook >"$SANDBOX/retry.out" 2>&1
+if [[ "$(readlink "$CURRENT")" != "$RELEASES/$expected_sha" ]] || ! grep -q 'migrate:status' "$TRACE"; then
+  echo 'Retry did not reuse and promote the previously built release.' >&2
+  exit 1
+fi
+
+new_sandbox wrong_release
+if FAKE_HEALTH_RESPONSE='{"status":"ok","database":"ok","cache":"ok","release":"wrong"}' run_hook >"$SANDBOX/out" 2>&1; then
+  echo 'Expected a mismatched release health response to stop deployment.' >&2
+  exit 1
+fi
+if [[ "$(readlink "$CURRENT")" != "$OLD_RELEASE" ]]; then
+  echo 'Mismatched release health did not restore the previous release.' >&2
+  exit 1
+fi
+
+new_sandbox healthy
+FAKE_HEALTH_RESPONSE="{\"status\":\"ok\",\"database\":\"ok\",\"cache\":\"ok\",\"release\":\"$expected_sha\"}" run_hook >"$SANDBOX/out" 2>&1
+if [[ "$(readlink "$CURRENT")" != "$RELEASES/$expected_sha" ]]; then
+  echo 'Healthy release was not promoted to current.' >&2
+  exit 1
+fi
+FAKE_HEALTH_RESPONSE="{\"status\":\"ok\",\"database\":\"ok\",\"cache\":\"ok\",\"release\":\"$expected_sha\"}" run_hook >"$SANDBOX/repeat.out" 2>&1
+if ! grep -q 'already active and healthy' "$SANDBOX/repeat.out"; then
+  echo 'A repeat deployment of the current healthy SHA was not idempotent.' >&2
+  exit 1
+fi
+if [[ ! -L "$RELEASES/$expected_sha/.env" || ! -L "$RELEASES/$expected_sha/storage" ]]; then
+  echo 'The release did not use the shared environment and persistent storage.' >&2
+  exit 1
+fi
+if ! grep -q 'migrate:status' "$TRACE" || grep -Eq 'artisan migrate($| )|artisan db:seed' "$TRACE"; then
+  echo 'The release check wrote to the database or skipped the read-only migration check.' >&2
+  exit 1
+fi
+
+echo 'Atomic deployment hook self-check passed.'

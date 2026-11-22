@@ -271,7 +271,7 @@ Excel 导入、平均成绩、等级分布、TOV、AR1、AR2、ETR、学科分�
 5. 报告从 SQL 结构化资料计算。
 6. PDF、打印和下载记录生成者、筛选条件和时间。
 7. 纪律、辅导、PPKI、学生健康和财务使用独立权限。
-8. 界面支持 BM、English，未来加入简体中文。
+8. 继承 Development 1 已建立的简体中文、Bahasa Melayu、English 三语界面架构；所有新增模块同步提供三语标签。
 9. 批量操作可审计、可重试、可标记失败。
 10. AI 只能在授权资料范围内工作，输出必须人工确认。
 
@@ -322,3 +322,13 @@ RMT、缴费、场地预约和资源，每一块使用独立权限。
 输入一次 → 自动计算 → Dashboard 即时回答 → 需要时打印正式报告。
 
 如果新模块仍要求管理层打开多个 Excel 手工计算，就没有真正解决这些视频展示的学校痛点。
+
+## 8. 下一阶段目标：Commercial Automation & Growth Platform V1.0
+
+状态：已由 Owner 指定为当前 eRPH Pro 全面 Goal 完成后的后续开发目标；当前不得提前启动。详细需求原文归档于 [`COMMERCIAL_AUTOMATION_GROWTH_PLATFORM_V1.md`](COMMERCIAL_AUTOMATION_GROWTH_PLATFORM_V1.md)。
+
+范围覆盖软件知识产权与版权治理、学校 CRM 和潜客来源/同意管理、三语营销与自动化、DeepSeek 支持中心和邮件工单、Affiliate/销售伙伴与可审计佣金、订阅及支付接口、收入分配、运营分析，以及相应的 Super Admin Business Operations Center。原始 V1.0 文件是需求输入，不代表其中的价格、佣金率、预算、法律文本、权属安排或供应商选择已获批准。
+
+执行顺序：先完成当前 eRPH Pro 全面 Goal 及其全部 Phase/Gemini/Plesk 验收；之后重新审查届时的仓库、部署、数据库、权限、客服/邮件及相关产品状态，形成新的依赖图和分阶段实施计划；再把完整计划提交 Gemini 内部浏览器第三方审查，依 Owner 已定流程迭代到 10.0/10 且无未解决重要问题，才开始该后续 Goal 的实现。不得直接执行原文中“Start with Phase 0 immediately”来打断当前 Goal。
+
+后续实现必须继续保护 RPH/DSKP 核心教学功能，使用 feature flags 和可审计权限；测试环境先走完整流程。真实收费/退款/佣金付款、法律权属声明、正式定价、营销邮件发送、联系人导入、生产发布及任何不可逆生产数据操作仍需按原授权边界单独放行。开展该阶段时逐 Phase 自审与 Gemini 满分门禁、UI 相关技能审查及真实但受控的验收证据要求继续适用。

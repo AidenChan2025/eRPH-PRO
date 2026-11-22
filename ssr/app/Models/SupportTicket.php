@@ -11,12 +11,19 @@ class SupportTicket extends Model
     protected $fillable = [
         'public_id', 'access_token_hash', 'requester_user_id', 'school_id', 'requester_name',
         'requester_email', 'subject', 'category', 'priority', 'status', 'ai_state',
-        'ai_confidence', 'ai_summary', 'ai_reply_draft', 'assigned_to', 'last_activity_at',
+        'ai_confidence', 'ai_summary', 'ai_reply_draft', 'ai_processing_consent_at',
+        'ai_processing_consent_version', 'assigned_to', 'last_activity_at',
     ];
 
     protected $casts = [
         'ai_confidence' => 'float',
         'last_activity_at' => 'datetime',
+        'ai_processing_consent_at' => 'datetime',
+        'recovery_code_expires_at' => 'datetime',
+        'recovery_code_sent_at' => 'datetime',
+        'recovery_code_last_attempt_at' => 'datetime',
+        'recovery_code_window_started_at' => 'datetime',
+        'recovery_code_sent_count' => 'integer',
     ];
 
     public function requester(): BelongsTo

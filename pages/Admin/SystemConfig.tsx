@@ -28,7 +28,7 @@ export const SystemConfig = () => {
             host: 'erphpro.com',
             port: 465,
             user: 'admin@erphpro.com',
-            pass: 'Qw3445jz#',
+            pass: '',
             fromEmail: 'admin@erphpro.com',
             pop3Port: 995,
             imapPort: 993,

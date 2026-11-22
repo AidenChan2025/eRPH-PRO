@@ -29,12 +29,12 @@ class DatabaseSeeder extends Seeder
 
         $school->members()->syncWithoutDetaching([$user->id => ['role' => 'school_admin', 'status' => 'active']]);
 
-        \App\Models\TeacherProfile::query()->updateOrCreate(
+        \App\Models\TeacherProfile::withoutGlobalScopes()->updateOrCreate(
             ['school_id' => $school->id, 'user_id' => $user->id],
             ['position' => 'School Administrator', 'employment_status' => 'active']
         );
 
-        \App\Models\SchoolSetting::query()->updateOrCreate(
+        \App\Models\SchoolSetting::withoutGlobalScopes()->updateOrCreate(
             ['school_id' => $school->id],
             ['academic_year' => 2026, 'total_weeks' => 48, 'active_week' => 41, 'submission_weekday' => 'Friday']
         );

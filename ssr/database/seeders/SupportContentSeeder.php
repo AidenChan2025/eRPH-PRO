@@ -33,13 +33,13 @@ class SupportContentSeeder extends Seeder
         ];
 
         foreach ($content as [$slug, $name, $description, $icon, $articles]) {
-            $category = SupportCategory::query()->updateOrCreate(
+            $category = SupportCategory::query()->firstOrCreate(
                 ['slug' => $slug],
                 ['name' => $name, 'description' => $description, 'icon' => $icon, 'sort_order' => array_search($slug, array_column($content, 0), true), 'is_active' => true]
             );
 
             foreach ($articles as $sort => [$articleSlug, $title, $body]) {
-                SupportArticle::query()->updateOrCreate(
+                SupportArticle::query()->firstOrCreate(
                     ['slug' => $articleSlug],
                     ['support_category_id' => $category->id, 'title' => $title, 'excerpt' => $body, 'body' => $body, 'is_published' => true, 'sort_order' => $sort]
                 );
