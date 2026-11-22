@@ -156,7 +156,40 @@ class ExampleTest extends TestCase
             'academic_year_id' => $year->id, 'school_class_id' => SchoolClass::where('code', '6A')->value('id'),
             'teacher_profile_id' => $profile->id, 'subject' => 'Mathematics', 'role' => 'teacher',
         ])->assertStatus(422);
-        $this->assertDatabaseCount('teacher_class_assignments', 1);
+        $sourceClass = SchoolClass::create([
+            'school_id' => $schoolId, 'academic_year_id' => $year->id, 'code' => '7A', 'name' => '7 Arif',
+            'level' => 'Year 7', 'stream' => 'STEM', 'capacity' => 32, 'metadata' => ['homeroom' => 'B-12'],
+        ]);
+        $sourceAssignment = TeacherClassAssignment::create([
+            'school_id' => $schoolId, 'academic_year_id' => $year->id, 'school_class_id' => $sourceClass->id,
+            'teacher_profile_id' => $profile->id, 'subject' => 'Science', 'role' => 'teacher',
+        ]);
+        LessonPlan::create([
+            'school_id' => $schoolId, 'teacher_profile_id' => $profile->id,
+            'teacher_class_assignment_id' => $sourceAssignment->id, 'lesson_date' => '2029-02-01',
+            'subject' => 'Science', 'class_name' => '7 Arif', 'status' => 'draft', 'current_version' => 1,
+        ]);
+        $assignmentCount = TeacherClassAssignment::withoutGlobalScopes()->count();
+        $lessonPlanCount = LessonPlan::withoutGlobalScopes()->count();
+        $this->actingAs($admin)->post('http://demo.erphpro.com/admin/academic-years/copy-classes', [
+            'source_academic_year_id' => $year->id, 'target_academic_year_id' => $targetYear->id,
+        ])->assertRedirect()->assertSessionHas('status', 'Copied 1 classes; 1 existing classes skipped.');
+        $this->assertDatabaseHas('school_classes', [
+            'school_id' => $schoolId, 'academic_year_id' => $targetYear->id, 'code' => '7A', 'name' => '7 Arif',
+            'level' => 'Year 7', 'stream' => 'STEM', 'capacity' => 32,
+        ]);
+        $this->assertSame($assignmentCount, TeacherClassAssignment::withoutGlobalScopes()->count());
+        $this->assertSame($lessonPlanCount, LessonPlan::withoutGlobalScopes()->count());
+        $this->assertDatabaseMissing('teacher_class_assignments', ['academic_year_id' => $targetYear->id, 'subject' => 'Science']);
+        $this->actingAs($teacher)->post('http://demo.erphpro.com/admin/academic-years/copy-classes', [
+            'source_academic_year_id' => $year->id, 'target_academic_year_id' => $targetYear->id,
+        ])->assertStatus(403);
+        $auditCount = DB::table('audit_logs')->where('action', 'school.academic_year_classes_copied')->count();
+        $this->actingAs($admin)->post('http://demo.erphpro.com/admin/academic-years/copy-classes', [
+            'source_academic_year_id' => $year->id, 'target_academic_year_id' => $year->id,
+        ])->assertStatus(404);
+        $this->assertSame($auditCount, DB::table('audit_logs')->where('action', 'school.academic_year_classes_copied')->count());
+        $this->assertDatabaseCount('teacher_class_assignments', 2);
         $this->assertDatabaseHas('audit_logs', ['action' => 'school.teacher_class_assignment_created']);
         $this->assertDatabaseHas('audit_logs', ['action' => 'school.teacher_class_assignment_removed']);
     }
