@@ -23,8 +23,15 @@ return new class extends Migration {
     public function down(): void
     {
         Schema::table('school_classes', function (Blueprint $table): void {
-            $table->dropForeign('school_classes_year_school_foreign');
-            $table->foreignId('academic_year_id')->constrained()->restrictOnDelete();
+            if (Schema::getConnection()->getDriverName() === 'sqlite') {
+                $table->dropForeign(['academic_year_id', 'school_id']);
+            } else {
+                $table->dropForeign('school_classes_year_school_foreign');
+            }
+            $table->foreign('academic_year_id')
+                ->references('id')
+                ->on('academic_years')
+                ->restrictOnDelete();
         });
 
         Schema::table('academic_years', function (Blueprint $table): void {
