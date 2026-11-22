@@ -131,6 +131,11 @@ class ExampleTest extends TestCase
         $this->actingAs($admin)->post('http://demo.erphpro.com/admin/teacher-assignments/'.$assignment->id.'/remove')
             ->assertRedirect()->assertSessionHas('status', 'Teacher assignment removed.');
         $this->assertDatabaseHas('teacher_class_assignments', ['id' => $assignment->id, 'is_active' => 0]);
+        $this->actingAs($admin)->post('http://demo.erphpro.com/admin/teacher-assignments', [
+            'academic_year_id' => $year->id, 'school_class_id' => SchoolClass::where('code', '6A')->value('id'),
+            'teacher_profile_id' => $profile->id, 'subject' => 'Mathematics', 'role' => 'head',
+        ])->assertRedirect();
+        $this->assertDatabaseHas('teacher_class_assignments', ['id' => $assignment->id, 'is_active' => 1, 'role' => 'head']);
         $this->assertDatabaseHas('audit_logs', ['action' => 'school.teacher_class_assignment_created']);
         $this->assertDatabaseHas('audit_logs', ['action' => 'school.teacher_class_assignment_removed']);
     }
@@ -159,6 +164,10 @@ class ExampleTest extends TestCase
         $this->actingAs($teacher)->put('http://demo.erphpro.com/admin/classes/1', [
             'name' => 'Forbidden update', 'is_active' => 0,
         ])->assertNotFound();
+        $this->actingAs($teacher)->post('http://demo.erphpro.com/admin/teacher-assignments', [
+            'academic_year_id' => 1, 'school_class_id' => 1, 'teacher_profile_id' => 1, 'subject' => 'Science', 'role' => 'teacher',
+        ])->assertForbidden();
+        $this->actingAs($teacher)->post('http://demo.erphpro.com/admin/teacher-assignments/1/remove')->assertNotFound();
         $admin = User::where('email', 'demo@erphpro.com')->firstOrFail();
         $this->actingAs($admin)->post('http://demo.erphpro.com/admin/classes', [
             'academic_year_id' => $otherYear->id, 'code' => 'X1', 'name' => 'Cross school',
@@ -176,6 +185,18 @@ class ExampleTest extends TestCase
         $this->assertDatabaseHas('school_classes', ['id' => $otherClass->id, 'name' => 'Other class', 'is_active' => 1]);
         $this->assertDatabaseHas('academic_years', ['id' => $otherYear->id, 'status' => 'active']);
         $this->assertDatabaseCount('teacher_class_assignments', 0);
+
+        $demoYear = AcademicYear::create(['school_id' => $school->id, 'year' => 2029, 'name' => 'Demo year', 'status' => 'active']);
+        $demoClass = SchoolClass::create(['school_id' => $school->id, 'academic_year_id' => $demoYear->id, 'code' => 'D1', 'name' => 'Demo class']);
+        try {
+            TeacherClassAssignment::create([
+                'school_id' => $school->id, 'academic_year_id' => $otherYear->id, 'school_class_id' => $demoClass->id,
+                'teacher_profile_id' => $otherProfile->id, 'subject' => 'Invalid', 'role' => 'teacher',
+            ]);
+            $this->fail('A teacher assignment must reference the class academic year.');
+        } catch (QueryException) {
+            $this->assertTrue(true);
+        }
     }
 
     public function test_academic_data_state_and_audit_transactions_are_atomic(): void

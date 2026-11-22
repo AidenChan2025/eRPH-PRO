@@ -115,8 +115,20 @@ class SchoolAcademicDataController extends Controller
         abort_unless($year->school_id === $school->id && $class->school_id === $school->id && $teacher->school_id === $school->id && $class->academic_year_id === $year->id, 404);
 
         DB::transaction(function () use ($school, $data, $auditLogger, &$assignment): void {
-            $assignment = TeacherClassAssignment::create([...$data, 'school_id' => $school->id]);
-            $auditLogger->record('school.teacher_class_assignment_created', $school, TeacherClassAssignment::class, (string) $assignment->id, [
+            $assignment = TeacherClassAssignment::withoutGlobalScopes()->where([
+                'school_id' => $school->id, 'academic_year_id' => $data['academic_year_id'], 'school_class_id' => $data['school_class_id'],
+                'teacher_profile_id' => $data['teacher_profile_id'], 'subject' => $data['subject'],
+            ])->first();
+            $action = $assignment?->is_active ? 'school.teacher_class_assignment_duplicate' : 'school.teacher_class_assignment_created';
+            if ($assignment?->is_active) {
+                abort(422, 'This teacher is already assigned to this class and subject.');
+            }
+            if ($assignment) {
+                $assignment->update(['role' => $data['role'], 'is_active' => true]);
+            } else {
+                $assignment = TeacherClassAssignment::create([...$data, 'school_id' => $school->id]);
+            }
+            $auditLogger->record($action, $school, TeacherClassAssignment::class, (string) $assignment->id, [
                 'teacher_profile_id' => $assignment->teacher_profile_id, 'school_class_id' => $assignment->school_class_id, 'subject' => $assignment->subject,
             ]);
         });

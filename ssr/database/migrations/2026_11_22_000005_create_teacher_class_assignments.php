@@ -9,6 +9,7 @@ return new class extends Migration {
     {
         Schema::table('school_classes', function (Blueprint $table): void {
             $table->unique(['id', 'school_id'], 'school_classes_id_school_id_unique');
+            $table->unique(['id', 'school_id', 'academic_year_id'], 'school_classes_id_school_year_unique');
         });
         Schema::table('teacher_profiles', function (Blueprint $table): void {
             $table->unique(['id', 'school_id'], 'teacher_profiles_id_school_id_unique');
@@ -29,8 +30,8 @@ return new class extends Migration {
             $table->index(['school_id', 'academic_year_id', 'school_class_id', 'is_active'], 'teacher_class_assignments_lookup');
             $table->foreign(['academic_year_id', 'school_id'], 'assignments_year_school_foreign')
                 ->references(['id', 'school_id'])->on('academic_years')->restrictOnDelete();
-            $table->foreign(['school_class_id', 'school_id'], 'assignments_class_school_foreign')
-                ->references(['id', 'school_id'])->on('school_classes')->restrictOnDelete();
+            $table->foreign(['school_class_id', 'school_id', 'academic_year_id'], 'assignments_class_school_year_foreign')
+                ->references(['id', 'school_id', 'academic_year_id'])->on('school_classes')->restrictOnDelete();
             $table->foreign(['teacher_profile_id', 'school_id'], 'assignments_teacher_school_foreign')
                 ->references(['id', 'school_id'])->on('teacher_profiles')->restrictOnDelete();
         });
@@ -43,6 +44,7 @@ return new class extends Migration {
             $table->dropUnique('teacher_profiles_id_school_id_unique');
         });
         Schema::table('school_classes', function (Blueprint $table): void {
+            $table->dropUnique('school_classes_id_school_year_unique');
             $table->dropUnique('school_classes_id_school_id_unique');
         });
     }
