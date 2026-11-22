@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Services\AuditLogger;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class SchoolAdminController extends Controller
@@ -142,13 +143,15 @@ class SchoolAdminController extends Controller
     public function revokeSupportAccess(Request $request, PlatformSupportAccessGrant $grant, AuditLogger $auditLogger)
     {
         $school = $request->attributes->get('school');
-        $grant = PlatformSupportAccessGrant::query()->whereKey($grant->id)->where('school_id', $school->id)
-            ->where('expires_at', '>', now())->whereNull('revoked_at')->firstOrFail();
-        $grant->update(['revoked_at' => now(), 'grant_slot_key' => null]);
-        $auditLogger->record('school_support_access.revoked', $school, PlatformSupportAccessGrant::class, (string) $grant->id, [
-            'ticket_id' => $grant->support_ticket_id, 'platform_owner_id' => $grant->platform_owner_id,
-            'reason' => 'school_admin_manual_revoke', 'mode' => 'read_only',
-        ]);
+        DB::transaction(function () use ($school, $grant, $auditLogger): void {
+            $grant = PlatformSupportAccessGrant::query()->whereKey($grant->id)->where('school_id', $school->id)
+                ->where('expires_at', '>', now())->whereNull('revoked_at')->lockForUpdate()->firstOrFail();
+            $grant->update(['revoked_at' => now(), 'grant_slot_key' => null]);
+            $auditLogger->record('school_support_access.revoked', $school, PlatformSupportAccessGrant::class, (string) $grant->id, [
+                'ticket_id' => $grant->support_ticket_id, 'platform_owner_id' => $grant->platform_owner_id,
+                'reason' => 'school_admin_manual_revoke', 'mode' => 'read_only',
+            ]);
+        });
         return redirect()->route('school.admin')->with('status', 'Support access revoked immediately.');
     }
 }

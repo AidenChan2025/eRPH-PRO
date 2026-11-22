@@ -933,7 +933,12 @@ class ExampleTest extends TestCase
             'action' => 'platform_support.ticket_viewed', 'subject_id' => (string) $ticket->id,
         ]);
         $grant = \App\Models\PlatformSupportAccessGrant::query()->firstOrFail();
-        $this->actingAs($admin)->post(route('school.support-access.revoke', $grant))
+        $otherAdmin = User::factory()->create();
+        $otherSchool->members()->attach($otherAdmin->id, ['role' => 'school_admin', 'status' => 'active', 'joined_at' => now()]);
+        $this->actingAs($otherAdmin)->post("http://other-test.erphpro.com/admin/support-access/{$grant->id}/revoke")
+            ->assertNotFound();
+        $this->assertNull($grant->fresh()->revoked_at);
+        $this->actingAs($admin)->post("http://demo.erphpro.com/admin/support-access/{$grant->id}/revoke")
             ->assertSessionHasNoErrors();
         $this->assertNotNull($grant->fresh()->revoked_at);
         $this->assertNull($grant->fresh()->grant_slot_key);
