@@ -44,7 +44,7 @@ else
     fail=1
   }
 fi
-if grep -qi '<!doctype html' <<<"$body" || grep -qi 'Google Tag Manager' <<<"$body"; then
+if grep -qi 'Google Tag Manager' <<<"$body"; then
   echo "FAIL: legacy HTML shell detected; document root is not the Laravel SSR public directory" >&2
   fail=1
 fi
@@ -57,7 +57,7 @@ if [[ "$homepage_status" != "200" || "$homepage_type" != text/html* ]]; then
   fail=1
 fi
 homepage_body_text="$(cat "$homepage_body")"
-if grep -qi '<!doctype html' <<<"$homepage_body_text" || grep -qi 'Google Tag Manager' <<<"$homepage_body_text"; then
+if grep -qi 'Google Tag Manager' <<<"$homepage_body_text"; then
   echo "FAIL: legacy HTML shell detected in homepage response; document root is not the Laravel SSR public directory" >&2
   fail=1
 fi

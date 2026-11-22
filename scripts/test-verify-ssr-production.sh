@@ -27,7 +27,7 @@ if [[ "$url" == */health ]]; then
 else
   printf 'HTTP/1.1 %s\r\nContent-Type: %s\r\n\r\n' "${FAKE_HOME_STATUS:-200}" "${FAKE_HOME_TYPE:-text/html; charset=UTF-8}"
   if [[ "$output" != /dev/null && -n "$output" ]]; then
-    printf '%s' "${FAKE_HOME_BODY:-<html><body>Laravel SSR</body></html>}" > "$output"
+    printf '%s' "${FAKE_HOME_BODY:-<!doctype html><html><body>Laravel SSR</body></html>}" > "$output"
   fi
 fi
 CURL
@@ -39,6 +39,7 @@ run_verifier() {
     FAKE_HEALTH_BODY="${FAKE_HEALTH_BODY:-{\"status\":\"ok\",\"database\":\"ok\",\"cache\":\"ok\",\"release\":\"0123456789abcdef0123456789abcdef01234567\"}}" \
     FAKE_HOME_STATUS="${FAKE_HOME_STATUS:-200}" \
     FAKE_HOME_TYPE="${FAKE_HOME_TYPE:-text/html; charset=UTF-8}" \
+    FAKE_HOME_BODY="${FAKE_HOME_BODY:-<!doctype html><html><body>Laravel SSR</body></html>}" \
     bash "$repo_root/scripts/verify-ssr-production.sh" https://example.test
 }
 
@@ -72,7 +73,7 @@ if FAKE_HOME_TYPE='application/json' run_verifier >/dev/null 2>&1; then
   exit 1
 fi
 
-if FAKE_HOME_BODY='<!doctype html><html><script src="/assets/index.js"></script></html>' run_verifier >/dev/null 2>&1; then
+if FAKE_HOME_BODY='<!doctype html><html><head><!-- Google Tag Manager --></head><body><div id="root"></div><script type="module" src="./index.tsx"></script></body></html>' run_verifier >/dev/null 2>&1; then
   echo 'A legacy homepage shell was accepted.' >&2
   exit 1
 fi
