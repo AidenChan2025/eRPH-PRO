@@ -111,15 +111,72 @@ class ExampleTest extends TestCase
         $profile = TeacherProfile::create(['school_id' => $school->id, 'user_id' => $teacher->id, 'employment_status' => 'active']);
         $assignment = TeacherClassAssignment::create(['school_id' => $school->id, 'academic_year_id' => $sourceYear->id, 'school_class_id' => $sourceClass->id, 'teacher_profile_id' => $profile->id, 'subject' => 'Science', 'role' => 'head', 'metadata' => ['from' => '2030']]);
         $plan = LessonPlan::create(['school_id' => $school->id, 'teacher_profile_id' => $profile->id, 'teacher_class_assignment_id' => $assignment->id, 'lesson_date' => '2030-02-01', 'subject' => 'Science', 'class_name' => '4 Amanah', 'status' => 'draft', 'current_version' => 1]);
-        $this->actingAs($admin)->post('http://demo.erphpro.com/admin/academic-years/copy-assignments', ['source_academic_year_id' => $sourceYear->id, 'target_academic_year_id' => $targetYear->id])->assertRedirect()->assertSessionHas('status', 'Copied 1 assignments; 0 existing, 0 missing classes, 0 inactive teachers skipped.');
+        $missingSourceClass = SchoolClass::create(['school_id' => $school->id, 'academic_year_id' => $sourceYear->id, 'code' => '4B', 'name' => '4 Bina']);
+        TeacherClassAssignment::create(['school_id' => $school->id, 'academic_year_id' => $sourceYear->id, 'school_class_id' => $missingSourceClass->id, 'teacher_profile_id' => $profile->id, 'subject' => 'History', 'role' => 'teacher']);
+        $inactiveTargetClass = SchoolClass::create(['school_id' => $school->id, 'academic_year_id' => $targetYear->id, 'code' => '4C', 'name' => '4 Cekal', 'is_active' => false]);
+        $inactiveSourceClass = SchoolClass::create(['school_id' => $school->id, 'academic_year_id' => $sourceYear->id, 'code' => '4C', 'name' => '4 Cekal']);
+        TeacherClassAssignment::create(['school_id' => $school->id, 'academic_year_id' => $sourceYear->id, 'school_class_id' => $inactiveSourceClass->id, 'teacher_profile_id' => $profile->id, 'subject' => 'Art', 'role' => 'teacher']);
+        $inactiveTeacher = User::factory()->create(['email' => 'year-copy-inactive@example.com']);
+        $school->members()->attach($inactiveTeacher->id, ['role' => 'teacher', 'status' => 'inactive']);
+        $inactiveProfile = TeacherProfile::create(['school_id' => $school->id, 'user_id' => $inactiveTeacher->id, 'employment_status' => 'inactive']);
+        TeacherClassAssignment::create(['school_id' => $school->id, 'academic_year_id' => $sourceYear->id, 'school_class_id' => $sourceClass->id, 'teacher_profile_id' => $inactiveProfile->id, 'subject' => 'Music', 'role' => 'teacher']);
+        $status = 'Copied 1 assignments; 0 existing, 1 missing classes, 1 inactive classes, 1 inactive teachers skipped.';
+        $this->actingAs($admin)->post('http://demo.erphpro.com/admin/academic-years/copy-assignments', ['source_academic_year_id' => $sourceYear->id, 'target_academic_year_id' => $targetYear->id])->assertRedirect()->assertSessionHas('status', $status);
         $copied = TeacherClassAssignment::withoutGlobalScopes()->where('academic_year_id', $targetYear->id)->firstOrFail();
         $this->assertSame($targetClass->id, $copied->school_class_id);
         $this->assertSame($assignment->metadata, $copied->metadata);
         $this->assertDatabaseHas('lesson_plans', ['id' => $plan->id, 'teacher_class_assignment_id' => $assignment->id]);
-        $this->actingAs($admin)->post('http://demo.erphpro.com/admin/academic-years/copy-assignments', ['source_academic_year_id' => $sourceYear->id, 'target_academic_year_id' => $targetYear->id])->assertRedirect()->assertSessionHas('status', 'Copied 0 assignments; 1 existing, 0 missing classes, 0 inactive teachers skipped.');
-        $this->assertDatabaseCount('teacher_class_assignments', 2);
+        $this->actingAs($admin)->post('http://demo.erphpro.com/admin/academic-years/copy-assignments', ['source_academic_year_id' => $sourceYear->id, 'target_academic_year_id' => $targetYear->id])->assertRedirect()->assertSessionHas('status', 'Copied 0 assignments; 1 existing, 1 missing classes, 1 inactive classes, 1 inactive teachers skipped.');
+        $this->assertDatabaseCount('teacher_class_assignments', 5);
         $audit = DB::table('audit_logs')->where('action', 'school.academic_year_assignments_copied')->latest('id')->firstOrFail();
         $this->assertSame($targetYear->id, (int) $audit->subject_id);
+        $context = json_decode($audit->context, true);
+        $this->assertSame(['created' => 0, 'skipped' => 1, 'missing_class' => 1, 'inactive_class' => 1, 'inactive_teacher' => 1], array_intersect_key($context, array_flip(['created', 'skipped', 'missing_class', 'inactive_class', 'inactive_teacher'])));
+    }
+
+    public function test_assignment_copy_rejects_cross_school_years_and_rolls_back_when_audit_fails(): void
+    {
+        $this->seed();
+        $admin = User::where('email', 'demo@erphpro.com')->firstOrFail();
+        $school = School::where('subdomain', 'demo')->firstOrFail();
+        $otherSchool = School::create(['name' => 'Other School', 'slug' => 'copy-other-school', 'subdomain' => 'copy-other-school']);
+        $sourceYear = AcademicYear::create(['school_id' => $school->id, 'year' => 2032, 'name' => 'Source 2032', 'status' => 'closed']);
+        $targetYear = AcademicYear::create(['school_id' => $school->id, 'year' => 2033, 'name' => 'Target 2033', 'status' => 'draft']);
+        $otherYear = AcademicYear::create(['school_id' => $otherSchool->id, 'year' => 2033, 'name' => 'Other 2033', 'status' => 'draft']);
+        $sourceClass = SchoolClass::create(['school_id' => $school->id, 'academic_year_id' => $sourceYear->id, 'code' => '5A', 'name' => '5 Amanah']);
+        SchoolClass::create(['school_id' => $school->id, 'academic_year_id' => $targetYear->id, 'code' => '5A', 'name' => '5 Amanah next']);
+        $teacher = User::factory()->create(['email' => 'copy-rollback-teacher@example.com']);
+        $school->members()->attach($teacher->id, ['role' => 'teacher', 'status' => 'active']);
+        $profile = TeacherProfile::create(['school_id' => $school->id, 'user_id' => $teacher->id, 'employment_status' => 'active']);
+        TeacherClassAssignment::create(['school_id' => $school->id, 'academic_year_id' => $sourceYear->id, 'school_class_id' => $sourceClass->id, 'teacher_profile_id' => $profile->id, 'subject' => 'Science', 'role' => 'teacher']);
+
+        $beforeAssignments = TeacherClassAssignment::withoutGlobalScopes()->count();
+        $beforeAudits = DB::table('audit_logs')->where('action', 'school.academic_year_assignments_copied')->count();
+        $this->actingAs($admin)->post('http://demo.erphpro.com/admin/academic-years/copy-assignments', [
+            'source_academic_year_id' => $sourceYear->id,
+            'target_academic_year_id' => $otherYear->id,
+        ])->assertNotFound();
+        $this->assertSame($beforeAssignments, TeacherClassAssignment::withoutGlobalScopes()->count());
+        $this->assertSame($beforeAudits, DB::table('audit_logs')->where('action', 'school.academic_year_assignments_copied')->count());
+
+        $this->app->instance(AuditLogger::class, Mockery::mock(AuditLogger::class, function ($mock): void {
+            $mock->shouldReceive('record')->once()->andThrow(new \RuntimeException('audit unavailable'));
+        }));
+        $this->withoutExceptionHandling();
+        try {
+            $this->actingAs($admin)->post('http://demo.erphpro.com/admin/academic-years/copy-assignments', [
+                'source_academic_year_id' => $sourceYear->id,
+                'target_academic_year_id' => $targetYear->id,
+            ]);
+            $this->fail('The audit failure must be propagated.');
+        } catch (\RuntimeException $exception) {
+            $this->assertSame('audit unavailable', $exception->getMessage());
+        } finally {
+            $this->app->instance(AuditLogger::class, new AuditLogger());
+            $this->withExceptionHandling();
+        }
+        $this->assertSame($beforeAssignments, TeacherClassAssignment::withoutGlobalScopes()->count());
+        $this->assertSame($beforeAudits, DB::table('audit_logs')->where('action', 'school.academic_year_assignments_copied')->count());
     }
 
     public function test_school_admin_can_manage_academic_years_and_classes(): void
