@@ -12,6 +12,7 @@ on:
       - 'scripts/deploy-ssr.sh'
       - 'scripts/test-deploy-ssr.sh'
       - 'scripts/verify-ssr-production.sh'
+      - 'scripts/test-verify-ssr-production.sh'
       - '.github/workflows/ssr.yml'
 
 permissions:
@@ -51,7 +52,9 @@ jobs:
         run: |
           bash -n scripts/deploy-ssr.sh
           bash -n scripts/verify-ssr-production.sh
+          bash -n scripts/test-verify-ssr-production.sh
           bash scripts/test-deploy-ssr.sh
+          bash scripts/test-verify-ssr-production.sh
 
       - name: Run SSR tests
         run: php artisan test
