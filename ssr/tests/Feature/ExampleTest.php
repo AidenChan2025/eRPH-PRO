@@ -156,6 +156,33 @@ class ExampleTest extends TestCase
             'academic_year_id' => $year->id, 'school_class_id' => SchoolClass::where('code', '6A')->value('id'),
             'teacher_profile_id' => $profile->id, 'subject' => 'Mathematics', 'role' => 'teacher',
         ])->assertStatus(422);
+        $transferClass = SchoolClass::create([
+            'school_id' => $schoolId, 'academic_year_id' => $year->id, 'code' => '6B', 'name' => '6 Bestari',
+            'level' => 'Year 6', 'capacity' => 30,
+        ]);
+        $transferAssignment = TeacherClassAssignment::create([
+            'school_id' => $schoolId, 'academic_year_id' => $year->id, 'school_class_id' => SchoolClass::where('code', '6A')->value('id'),
+            'teacher_profile_id' => $profile->id, 'subject' => 'English', 'role' => 'head', 'metadata' => ['source' => 'timetable'],
+        ]);
+        $transferPlan = LessonPlan::create([
+            'school_id' => $schoolId, 'teacher_profile_id' => $profile->id,
+            'teacher_class_assignment_id' => $transferAssignment->id, 'lesson_date' => '2029-01-15',
+            'subject' => 'English', 'class_name' => '6 Amanah', 'status' => 'draft', 'current_version' => 1,
+        ]);
+        $targetTeacher = User::factory()->create(['email' => 'transfer-target@example.com']);
+        School::whereKey($schoolId)->firstOrFail()->members()->attach($targetTeacher->id, ['role' => 'teacher', 'status' => 'active']);
+        $targetProfile = TeacherProfile::create(['school_id' => $schoolId, 'user_id' => $targetTeacher->id, 'employment_status' => 'active']);
+        $this->actingAs($admin)->put('http://demo.erphpro.com/admin/teacher-assignments/'.$transferAssignment->id.'/transfer', [
+            'school_class_id' => $transferClass->id, 'teacher_profile_id' => $targetProfile->id,
+        ])->assertRedirect()->assertSessionHas('status', 'Teacher assignment transferred.');
+        $transferred = TeacherClassAssignment::withoutGlobalScopes()->where('school_class_id', $transferClass->id)->where('subject', 'English')->firstOrFail();
+        $this->assertDatabaseHas('teacher_class_assignments', ['id' => $transferAssignment->id, 'is_active' => 0]);
+        $this->assertTrue($transferred->is_active);
+        $this->assertSame($transferAssignment->id, $transferPlan->fresh()->teacher_class_assignment_id);
+        $transferAudit = DB::table('audit_logs')->where('action', 'school.teacher_class_assignment_transferred')->latest('id')->firstOrFail();
+        $this->assertSame($schoolId, $transferAudit->school_id);
+        $this->assertSame($transferred->id, (int) $transferAudit->subject_id);
+        $this->assertSame($transferAssignment->id, json_decode($transferAudit->context, true)['from_assignment_id']);
         $sourceClass = SchoolClass::create([
             'school_id' => $schoolId, 'academic_year_id' => $year->id, 'code' => '7A', 'name' => '7 Arif',
             'level' => 'Year 7', 'stream' => 'STEM', 'capacity' => 32, 'metadata' => ['homeroom' => 'B-12'],
@@ -164,6 +191,10 @@ class ExampleTest extends TestCase
             'school_id' => $schoolId, 'academic_year_id' => $year->id, 'school_class_id' => $sourceClass->id,
             'teacher_profile_id' => $profile->id, 'subject' => 'Science', 'role' => 'teacher',
         ]);
+        $otherClass = SchoolClass::create(['school_id' => $otherSchool->id, 'academic_year_id' => $otherYear->id, 'code' => 'X1', 'name' => 'Other class']);
+        $this->actingAs($admin)->put('http://demo.erphpro.com/admin/teacher-assignments/'.$sourceAssignment->id.'/transfer', [
+            'school_class_id' => $otherClass->id, 'teacher_profile_id' => $targetProfile->id,
+        ])->assertStatus(404);
         LessonPlan::create([
             'school_id' => $schoolId, 'teacher_profile_id' => $profile->id,
             'teacher_class_assignment_id' => $sourceAssignment->id, 'lesson_date' => '2029-02-01',
@@ -173,7 +204,7 @@ class ExampleTest extends TestCase
         $lessonPlanCount = LessonPlan::withoutGlobalScopes()->count();
         $this->actingAs($admin)->post('http://demo.erphpro.com/admin/academic-years/copy-classes', [
             'source_academic_year_id' => $year->id, 'target_academic_year_id' => $targetYear->id,
-        ])->assertRedirect()->assertSessionHas('status', 'Copied 1 classes; 1 existing classes skipped.');
+        ])->assertRedirect()->assertSessionHas('status', 'Copied 2 classes; 1 existing classes skipped.');
         $this->assertDatabaseHas('school_classes', [
             'school_id' => $schoolId, 'academic_year_id' => $targetYear->id, 'code' => '7A', 'name' => '7 Arif',
             'level' => 'Year 7', 'stream' => 'STEM', 'capacity' => 32,
@@ -197,7 +228,7 @@ class ExampleTest extends TestCase
             'source_academic_year_id' => $year->id, 'target_academic_year_id' => $year->id,
         ])->assertStatus(404);
         $this->assertSame($auditCount, DB::table('audit_logs')->where('action', 'school.academic_year_classes_copied')->count());
-        $this->assertDatabaseCount('teacher_class_assignments', 2);
+        $this->assertDatabaseCount('teacher_class_assignments', 4);
         $this->assertDatabaseHas('audit_logs', ['action' => 'school.teacher_class_assignment_created']);
         $this->assertDatabaseHas('audit_logs', ['action' => 'school.teacher_class_assignment_removed']);
         $activeAssignmentIds = TeacherClassAssignment::withoutGlobalScopes()->where('teacher_profile_id', $profile->id)->where('is_active', true)->pluck('id')->all();

@@ -183,4 +183,62 @@ class SchoolAcademicDataController extends Controller
 
         return back()->with('status', 'Teacher assignment removed.');
     }
+
+    public function transferAssignment(Request $request, TeacherClassAssignment $assignment, AuditLogger $auditLogger)
+    {
+        $school = $request->attributes->get('school');
+        abort_unless($assignment->school_id === $school->id && $assignment->is_active, 404);
+        $data = $request->validate([
+            'school_class_id' => ['required', 'integer'],
+            'teacher_profile_id' => ['required', 'integer'],
+        ]);
+        $targetClass = SchoolClass::query()->findOrFail($data['school_class_id']);
+        $targetTeacher = TeacherProfile::query()->findOrFail($data['teacher_profile_id']);
+        abort_unless(
+            $targetClass->school_id === $school->id
+                && $targetTeacher->school_id === $school->id
+                && $targetClass->academic_year_id === $assignment->academic_year_id,
+            404
+        );
+        abort_if($targetClass->id === $assignment->school_class_id && $targetTeacher->id === $assignment->teacher_profile_id, 422, 'Choose a different class or teacher.');
+
+        DB::transaction(function () use ($school, $assignment, $targetClass, $targetTeacher, $auditLogger): void {
+            $source = TeacherClassAssignment::withoutGlobalScopes()->whereKey($assignment->id)->lockForUpdate()->firstOrFail();
+            $target = TeacherClassAssignment::withoutGlobalScopes()->where([
+                'school_id' => $school->id,
+                'academic_year_id' => $source->academic_year_id,
+                'school_class_id' => $targetClass->id,
+                'teacher_profile_id' => $targetTeacher->id,
+                'subject' => $source->subject,
+            ])->lockForUpdate()->first();
+            if ($target?->is_active) {
+                abort(422, 'The target teacher is already assigned to this class and subject.');
+            }
+            $target ??= TeacherClassAssignment::create([
+                'school_id' => $school->id,
+                'academic_year_id' => $source->academic_year_id,
+                'school_class_id' => $targetClass->id,
+                'teacher_profile_id' => $targetTeacher->id,
+                'subject' => $source->subject,
+                'role' => $source->role,
+                'is_active' => true,
+                'metadata' => $source->metadata,
+            ]);
+            if ($target->exists && !$target->is_active) {
+                $target->update(['role' => $source->role, 'is_active' => true, 'metadata' => $source->metadata]);
+            }
+            $source->update(['is_active' => false]);
+            $auditLogger->record('school.teacher_class_assignment_transferred', $school, TeacherClassAssignment::class, (string) $target->id, [
+                'from_assignment_id' => $source->id,
+                'to_assignment_id' => $target->id,
+                'from_school_class_id' => $source->school_class_id,
+                'to_school_class_id' => $target->school_class_id,
+                'from_teacher_profile_id' => $source->teacher_profile_id,
+                'to_teacher_profile_id' => $target->teacher_profile_id,
+                'subject' => $source->subject,
+            ]);
+        });
+
+        return back()->with('status', 'Teacher assignment transferred.');
+    }
 }
