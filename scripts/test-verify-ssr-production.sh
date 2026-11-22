@@ -26,6 +26,9 @@ if [[ "$url" == */health ]]; then
   fi
 else
   printf 'HTTP/1.1 %s\r\nContent-Type: %s\r\n\r\n' "${FAKE_HOME_STATUS:-200}" "${FAKE_HOME_TYPE:-text/html; charset=UTF-8}"
+  if [[ "$output" != /dev/null && -n "$output" ]]; then
+    printf '%s' "${FAKE_HOME_BODY:-<html><body>Laravel SSR</body></html>}" > "$output"
+  fi
 fi
 CURL
 chmod +x "$tmp_dir/bin/curl"
@@ -49,6 +52,11 @@ if FAKE_HEALTH_BODY='not-json' run_verifier >/dev/null 2>&1; then
   exit 1
 fi
 
+if FAKE_HEALTH_BODY='[]' run_verifier >/dev/null 2>&1; then
+  echo 'A list-valued health JSON response was accepted.' >&2
+  exit 1
+fi
+
 if FAKE_HEALTH_BODY='{"status":"ok","database":"ok","cache":"ok","release":"test"}' run_verifier >/dev/null 2>&1; then
   echo 'A non-SHA release label was accepted.' >&2
   exit 1
@@ -61,6 +69,11 @@ fi
 
 if FAKE_HOME_TYPE='application/json' run_verifier >/dev/null 2>&1; then
   echo 'A non-HTML homepage response was accepted.' >&2
+  exit 1
+fi
+
+if FAKE_HOME_BODY='<!doctype html><html><script src="/assets/index.js"></script></html>' run_verifier >/dev/null 2>&1; then
+  echo 'A legacy homepage shell was accepted.' >&2
   exit 1
 fi
 
