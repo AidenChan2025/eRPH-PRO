@@ -17,6 +17,7 @@ if [[ "${1:-}" == "-r" ]]; then
     *'PHP_VERSION_ID'*) printf '%s' "${FAKE_PHP_VERSION_ID:-80300}" ;;
     *'stat($argv[1])'*) exec "$REAL_PHP_BIN" "$@" ;;
     *'rename($argv[1], $argv[2])'*) exec "$REAL_PHP_BIN" "$@" ;;
+    *'json_decode($payload'*) exec "$REAL_PHP_BIN" "$@" ;;
     *) printf 'Unexpected PHP probe: %s\n' "$2" >&2; exit 99 ;;
   esac
   exit 0
@@ -175,6 +176,20 @@ if [[ -e "$RELEASES/.deploy.lock" || "$(readlink "$CURRENT")" != "$OLD_RELEASE" 
   exit 1
 fi
 
+new_sandbox current_outside_releases
+OUTSIDE_RELEASE="$SANDBOX/outside-release"
+mkdir -p "$OUTSIDE_RELEASE/public"
+rm "$CURRENT"
+ln -s "$OUTSIDE_RELEASE" "$CURRENT"
+if run_hook >"$SANDBOX/out" 2>&1; then
+  echo 'Expected a current symlink outside releases to stop deployment.' >&2
+  exit 1
+fi
+if ! grep -q 'current must resolve inside SSR_RELEASES_DIR' "$SANDBOX/out"; then
+  cat "$SANDBOX/out" >&2
+  echo 'The outside-current test failed for an unexpected reason.' >&2
+  exit 1
+fi
 new_sandbox pending
 if MIGRATION_PENDING=1 FAKE_HEALTH_RESPONSE="{\"status\":\"ok\",\"database\":\"ok\",\"cache\":\"ok\",\"release\":\"$expected_sha\"}" run_hook >"$SANDBOX/out" 2>&1; then
   echo 'Expected pending migrations to stop deployment.' >&2
@@ -223,6 +238,26 @@ if FAKE_HEALTH_RESPONSE='{"status":"ok","database":"ok","cache":"ok","release":"
 fi
 if [[ "$(readlink "$CURRENT")" != "$OLD_RELEASE" ]]; then
   echo 'Mismatched release health did not restore the previous release.' >&2
+  exit 1
+fi
+
+new_sandbox malformed_health
+if FAKE_HEALTH_RESPONSE='not-json' run_hook >"$SANDBOX/out" 2>&1; then
+  echo 'Expected malformed JSON health response to stop deployment.' >&2
+  exit 1
+fi
+if [[ "$(readlink "$CURRENT")" != "$OLD_RELEASE" ]]; then
+  echo 'Malformed JSON health response changed the live release.' >&2
+  exit 1
+fi
+
+new_sandbox non_string_health
+if FAKE_HEALTH_RESPONSE="{\"status\":true,\"database\":\"ok\",\"cache\":\"ok\",\"release\":\"$expected_sha\"}" run_hook >"$SANDBOX/out" 2>&1; then
+  echo 'Expected non-string health fields to stop deployment.' >&2
+  exit 1
+fi
+if [[ "$(readlink "$CURRENT")" != "$OLD_RELEASE" ]]; then
+  echo 'Non-string health fields changed the live release.' >&2
   exit 1
 fi
 

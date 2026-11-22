@@ -46,6 +46,10 @@ paths_overlap() {
   local left="${1%/}" right="${2%/}"
   [[ "$left" == "$right" || "$left" == "$right/"* || "$right" == "$left/"* ]]
 }
+path_within() {
+  local child="${1%/}" parent="${2%/}"
+  [[ "$child" == "$parent" || "$child" == "$parent/"* ]]
+}
 for source_path in "$SSR_APP_DIR" "$GIT_SOURCE_DIR"; do
   if [[ -d "$source_path/public" ]]; then
     source_public="$(cd "$source_path/public" && pwd -P)"
@@ -153,12 +157,29 @@ replace_current_link() {
 
 check_health_payload() {
   local payload="$1"
-  for health_check in '"status":"ok"' '"database":"ok"' '"cache":"ok"' "\"release\":\"$release_version\""; do
-    if ! grep -Fq "$health_check" <<<"$payload"; then
-      echo "SSR deployment health check failed: missing $health_check in $payload" >&2
-      return 1
-    fi
-  done
+  if ! "$PHP_BIN" -r '
+    $payload = $argv[1] ?? "";
+    $expectedRelease = $argv[2] ?? "";
+    try {
+        $health = json_decode($payload, true, 512, JSON_THROW_ON_ERROR);
+    } catch (Throwable $exception) {
+        fwrite(STDERR, "Health response is not valid JSON.\n");
+        exit(1);
+    }
+    foreach (["status", "database", "cache", "release"] as $key) {
+        if (!array_key_exists($key, $health) || !is_string($health[$key])) {
+            fwrite(STDERR, "Health response is missing a string field: {$key}.\n");
+            exit(1);
+        }
+    }
+    if ($health["status"] !== "ok" || $health["database"] !== "ok" || $health["cache"] !== "ok" || $health["release"] !== $expectedRelease) {
+        fwrite(STDERR, "Health response fields do not match the expected release.\n");
+        exit(1);
+    }
+  ' -- "$payload" "$release_version"; then
+    echo "SSR deployment health check failed: expected strict JSON status/database/cache/release for $release_version." >&2
+    return 1
+  fi
 }
 
 finish_deployment() {
@@ -183,6 +204,12 @@ trap 'exit 130' INT
 trap 'exit 143' TERM
 
 previous_target="$(readlink "$SSR_CURRENT_LINK")"
+current_target="$(cd -P "$SSR_CURRENT_LINK" && pwd -P)"
+releases_root="$(cd -P "$SSR_RELEASES_DIR" && pwd -P)"
+if ! path_within "$current_target" "$releases_root"; then
+  echo "SSR deployment aborted: current must resolve inside SSR_RELEASES_DIR for safe rollback." >&2
+  exit 1
+fi
 
 if ! "$PHP_BIN" -r 'exit(stat($argv[1])["dev"] === stat($argv[2])["dev"] ? 0 : 1);' "$SSR_RELEASES_DIR" "$(dirname "$SSR_CURRENT_LINK")"; then
   echo "SSR deployment aborted: releases and current must share a filesystem for atomic symlink replacement." >&2
