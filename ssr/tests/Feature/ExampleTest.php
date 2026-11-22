@@ -200,6 +200,12 @@ class ExampleTest extends TestCase
         $this->assertDatabaseCount('teacher_class_assignments', 2);
         $this->assertDatabaseHas('audit_logs', ['action' => 'school.teacher_class_assignment_created']);
         $this->assertDatabaseHas('audit_logs', ['action' => 'school.teacher_class_assignment_removed']);
+        $this->actingAs($admin)->put('http://demo.erphpro.com/admin/people/'.$teacher->id, [
+            'role' => 'teacher', 'status' => 'inactive',
+        ])->assertRedirect()->assertSessionHas('status', 'School account updated.');
+        $this->assertDatabaseHas('teacher_profiles', ['id' => $profile->id, 'employment_status' => 'inactive']);
+        $this->assertDatabaseHas('teacher_class_assignments', ['teacher_profile_id' => $profile->id, 'is_active' => 0]);
+        $this->assertDatabaseHas('audit_logs', ['action' => 'school.teacher_assignments_deactivated_with_member']);
     }
 
     public function test_academic_data_management_rejects_non_admin_and_cross_school_resources(): void

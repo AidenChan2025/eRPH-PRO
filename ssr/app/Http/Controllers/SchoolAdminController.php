@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\TeacherProfile;
+use App\Models\TeacherClassAssignment;
 use App\Models\SupportTicket;
 use App\Models\PlatformSupportAccessGrant;
 use Illuminate\Http\Request;
@@ -89,20 +90,32 @@ class SchoolAdminController extends Controller
             return back()->withErrors(['member' => 'A school must retain at least one active management account.']);
         }
 
-        $school->members()->updateExistingPivot($user->id, [
-            'role' => $data['role'],
-            'status' => $data['status'],
-            'left_at' => $data['status'] === 'active' ? null : now(),
-        ]);
+        DB::transaction(function () use ($school, $user, $data, $auditLogger): void {
+            $school->members()->updateExistingPivot($user->id, [
+                'role' => $data['role'],
+                'status' => $data['status'],
+                'left_at' => $data['status'] === 'active' ? null : now(),
+            ]);
 
-        $profile = TeacherProfile::where('school_id', $school->id)->where('user_id', $user->id)->first();
-        if ($profile) {
-            $profile->update(['employment_status' => $data['status'] === 'active' ? 'active' : 'inactive']);
-        }
+            $profile = TeacherProfile::where('school_id', $school->id)->where('user_id', $user->id)->first();
+            if ($profile) {
+                $profile->update(['employment_status' => $data['status'] === 'active' ? 'active' : 'inactive']);
+                if ($data['status'] !== 'active') {
+                    $deactivated = TeacherClassAssignment::withoutGlobalScopes()
+                        ->where('school_id', $school->id)->where('teacher_profile_id', $profile->id)
+                        ->where('is_active', true)->update(['is_active' => false]);
+                    if ($deactivated > 0) {
+                        $auditLogger->record('school.teacher_assignments_deactivated_with_member', $school, TeacherProfile::class, (string) $profile->id, [
+                            'assignment_count' => $deactivated, 'reason' => 'member_inactive',
+                        ]);
+                    }
+                }
+            }
 
-        $auditLogger->record('school.member_updated', $school, User::class, (string) $user->id, [
-            'role' => $data['role'], 'status' => $data['status'],
-        ]);
+            $auditLogger->record('school.member_updated', $school, User::class, (string) $user->id, [
+                'role' => $data['role'], 'status' => $data['status'],
+            ]);
+        });
 
         return redirect()->route('school.admin')->with('status', 'School account updated.');
     }
