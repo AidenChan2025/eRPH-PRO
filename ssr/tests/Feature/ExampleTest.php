@@ -21,6 +21,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
+use Illuminate\Database\QueryException;
 use Laravel\Socialite\Facades\Socialite;
 use Laravel\Socialite\Two\User as SocialiteUser;
 use Tests\TestCase;
@@ -78,6 +79,13 @@ class ExampleTest extends TestCase
         $otherYear = AcademicYear::create(['school_id' => $otherSchool->id, 'year' => 2027, 'name' => 'Other year 2027', 'status' => 'active']);
         SchoolClass::create(['school_id' => $school->id, 'academic_year_id' => $demoYear->id, 'code' => '5B', 'name' => '5 Bestari', 'level' => 'Year 5']);
         SchoolClass::create(['school_id' => $otherSchool->id, 'academic_year_id' => $otherYear->id, 'code' => '5B', 'name' => 'Other 5 Bestari', 'level' => 'Year 5']);
+
+        try {
+            SchoolClass::create(['school_id' => $school->id, 'academic_year_id' => $otherYear->id, 'code' => '6X', 'name' => 'Cross-school class']);
+            $this->fail('A class must not reference an academic year owned by another school.');
+        } catch (QueryException) {
+            $this->assertTrue(true);
+        }
 
         $this->get('http://demo.erphpro.com/')->assertOk();
 
