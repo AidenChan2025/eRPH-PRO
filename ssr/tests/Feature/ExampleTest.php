@@ -20,6 +20,9 @@ use Illuminate\Http\Client\Request as ClientRequest;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\DB;
+use App\Services\AuditLogger;
+use Mockery;
 use Illuminate\Support\Str;
 use Illuminate\Database\QueryException;
 use Laravel\Socialite\Facades\Socialite;
@@ -128,6 +131,16 @@ class ExampleTest extends TestCase
         $school->members()->attach($teacher->id, ['role' => 'teacher', 'status' => 'active']);
 
         $this->actingAs($teacher)->get('http://demo.erphpro.com/admin/academic-data')->assertForbidden();
+        $this->actingAs($teacher)->post('http://demo.erphpro.com/admin/academic-years', [
+            'year' => 2030, 'name' => 'Forbidden year',
+        ])->assertForbidden();
+        $this->actingAs($teacher)->post('http://demo.erphpro.com/admin/academic-years/1/activate')->assertNotFound();
+        $this->actingAs($teacher)->post('http://demo.erphpro.com/admin/classes', [
+            'academic_year_id' => 1, 'code' => 'T1', 'name' => 'Forbidden class',
+        ])->assertForbidden();
+        $this->actingAs($teacher)->put('http://demo.erphpro.com/admin/classes/1', [
+            'name' => 'Forbidden update', 'is_active' => 0,
+        ])->assertNotFound();
         $admin = User::where('email', 'demo@erphpro.com')->firstOrFail();
         $this->actingAs($admin)->post('http://demo.erphpro.com/admin/classes', [
             'academic_year_id' => $otherYear->id, 'code' => 'X1', 'name' => 'Cross school',
@@ -140,6 +153,44 @@ class ExampleTest extends TestCase
         $this->assertDatabaseMissing('school_classes', ['school_id' => $school->id, 'code' => 'X1']);
         $this->assertDatabaseHas('school_classes', ['id' => $otherClass->id, 'name' => 'Other class', 'is_active' => 1]);
         $this->assertDatabaseHas('academic_years', ['id' => $otherYear->id, 'status' => 'active']);
+    }
+
+    public function test_academic_data_state_and_audit_transactions_are_atomic(): void
+    {
+        $this->seed();
+        $school = School::where('subdomain', 'demo')->firstOrFail();
+        $admin = User::where('email', 'demo@erphpro.com')->firstOrFail();
+        $active = AcademicYear::create(['school_id' => $school->id, 'year' => 2026, 'name' => 'Active year', 'status' => 'active']);
+        $draft = AcademicYear::create(['school_id' => $school->id, 'year' => 2027, 'name' => 'Draft year', 'status' => 'draft']);
+        $target = AcademicYear::create(['school_id' => $school->id, 'year' => 2028, 'name' => 'Target year', 'status' => 'draft']);
+
+        $this->actingAs($admin)->post('http://demo.erphpro.com/admin/academic-years/'.$target->id.'/activate')->assertRedirect();
+        $this->assertDatabaseHas('academic_years', ['id' => $active->id, 'status' => 'closed']);
+        $this->assertDatabaseHas('academic_years', ['id' => $draft->id, 'status' => 'draft']);
+        $this->assertDatabaseHas('academic_years', ['id' => $target->id, 'status' => 'active']);
+
+        $class = SchoolClass::create(['school_id' => $school->id, 'academic_year_id' => $target->id, 'code' => '6A', 'name' => 'Original name']);
+        $this->actingAs($admin)->put('http://demo.erphpro.com/admin/classes/'.$class->id, [
+            'name' => 'Updated name', 'is_active' => 0,
+        ])->assertRedirect();
+        $audit = DB::table('audit_logs')->where('action', 'school.class_updated')->latest('id')->first();
+        $context = json_decode($audit->context, true);
+        $this->assertSame('Original name', $context['before']['name']);
+        $this->assertSame('Updated name', $context['after']['name']);
+
+        $this->app->instance(AuditLogger::class, Mockery::mock(AuditLogger::class, function ($mock): void {
+            $mock->shouldReceive('record')->once()->andThrow(new \RuntimeException('audit unavailable'));
+        }));
+        $this->withoutExceptionHandling();
+        try {
+            $this->actingAs($admin)->post('http://demo.erphpro.com/admin/academic-years', [
+                'year' => 2029, 'name' => 'Should roll back',
+            ]);
+            $this->fail('An audit failure should abort the request.');
+        } catch (\RuntimeException $exception) {
+            $this->assertSame('audit unavailable', $exception->getMessage());
+        }
+        $this->assertDatabaseMissing('academic_years', ['school_id' => $school->id, 'year' => 2029]);
     }
 
     public function test_support_centre_is_available_on_its_own_host(): void
