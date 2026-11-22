@@ -97,6 +97,31 @@ class ExampleTest extends TestCase
         $this->assertSame(['School year 2027'], AcademicYear::query()->pluck('name')->all());
     }
 
+    public function test_school_admin_can_copy_active_assignments_between_years_without_copying_rph(): void
+    {
+        $this->seed();
+        $admin = User::where('email', 'demo@erphpro.com')->firstOrFail();
+        $school = School::where('subdomain', 'demo')->firstOrFail();
+        $sourceYear = AcademicYear::create(['school_id' => $school->id, 'year' => 2030, 'name' => 'Source 2030', 'status' => 'closed']);
+        $targetYear = AcademicYear::create(['school_id' => $school->id, 'year' => 2031, 'name' => 'Target 2031', 'status' => 'draft']);
+        $sourceClass = SchoolClass::create(['school_id' => $school->id, 'academic_year_id' => $sourceYear->id, 'code' => '4A', 'name' => '4 Amanah']);
+        $targetClass = SchoolClass::create(['school_id' => $school->id, 'academic_year_id' => $targetYear->id, 'code' => '4A', 'name' => '4 Amanah next']);
+        $teacher = User::factory()->create(['email' => 'year-copy-teacher@example.com']);
+        $school->members()->attach($teacher->id, ['role' => 'teacher', 'status' => 'active']);
+        $profile = TeacherProfile::create(['school_id' => $school->id, 'user_id' => $teacher->id, 'employment_status' => 'active']);
+        $assignment = TeacherClassAssignment::create(['school_id' => $school->id, 'academic_year_id' => $sourceYear->id, 'school_class_id' => $sourceClass->id, 'teacher_profile_id' => $profile->id, 'subject' => 'Science', 'role' => 'head', 'metadata' => ['from' => '2030']]);
+        $plan = LessonPlan::create(['school_id' => $school->id, 'teacher_profile_id' => $profile->id, 'teacher_class_assignment_id' => $assignment->id, 'lesson_date' => '2030-02-01', 'subject' => 'Science', 'class_name' => '4 Amanah', 'status' => 'draft', 'current_version' => 1]);
+        $this->actingAs($admin)->post('http://demo.erphpro.com/admin/academic-years/copy-assignments', ['source_academic_year_id' => $sourceYear->id, 'target_academic_year_id' => $targetYear->id])->assertRedirect()->assertSessionHas('status', 'Copied 1 assignments; 0 existing, 0 missing classes, 0 inactive teachers skipped.');
+        $copied = TeacherClassAssignment::withoutGlobalScopes()->where('academic_year_id', $targetYear->id)->firstOrFail();
+        $this->assertSame($targetClass->id, $copied->school_class_id);
+        $this->assertSame($assignment->metadata, $copied->metadata);
+        $this->assertDatabaseHas('lesson_plans', ['id' => $plan->id, 'teacher_class_assignment_id' => $assignment->id]);
+        $this->actingAs($admin)->post('http://demo.erphpro.com/admin/academic-years/copy-assignments', ['source_academic_year_id' => $sourceYear->id, 'target_academic_year_id' => $targetYear->id])->assertRedirect()->assertSessionHas('status', 'Copied 0 assignments; 1 existing, 0 missing classes, 0 inactive teachers skipped.');
+        $this->assertDatabaseCount('teacher_class_assignments', 2);
+        $audit = DB::table('audit_logs')->where('action', 'school.academic_year_assignments_copied')->latest('id')->firstOrFail();
+        $this->assertSame($targetYear->id, (int) $audit->subject_id);
+    }
+
     public function test_school_admin_can_manage_academic_years_and_classes(): void
     {
         $this->seed();

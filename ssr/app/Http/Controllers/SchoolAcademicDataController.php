@@ -93,6 +93,43 @@ class SchoolAcademicDataController extends Controller
         return back()->with('status', "Copied {$created} classes; {$skipped} existing classes skipped.");
     }
 
+    public function copyAssignments(Request $request, AuditLogger $auditLogger)
+    {
+        $school = $request->attributes->get('school');
+        $data = $request->validate(['source_academic_year_id' => ['required', 'integer'], 'target_academic_year_id' => ['required', 'integer']]);
+        $sourceYear = AcademicYear::query()->findOrFail($data['source_academic_year_id']);
+        $targetYear = AcademicYear::query()->findOrFail($data['target_academic_year_id']);
+        abort_unless($sourceYear->school_id === $school->id && $targetYear->school_id === $school->id && $sourceYear->id !== $targetYear->id, 404);
+
+        $created = $skipped = $missingClass = $inactiveTeacher = 0;
+        DB::transaction(function () use ($school, $sourceYear, $targetYear, $auditLogger, &$created, &$skipped, &$missingClass, &$inactiveTeacher): void {
+            $targetClasses = SchoolClass::query()->where('academic_year_id', $targetYear->id)->get()->keyBy('code');
+            foreach (TeacherClassAssignment::query()->with('schoolClass')->where('academic_year_id', $sourceYear->id)->where('is_active', true)->orderBy('id')->get() as $source) {
+                $targetClass = $targetClasses->get($source->schoolClass->code);
+                if (!$targetClass) { $missingClass++; continue; }
+                $teacher = TeacherProfile::query()->find($source->teacher_profile_id);
+                if (!$teacher || $teacher->employment_status !== 'active' || !$school->members()->whereKey($teacher->user_id)->wherePivot('status', 'active')->exists()) { $inactiveTeacher++; continue; }
+                $existing = TeacherClassAssignment::withoutGlobalScopes()->where([
+                    'school_id' => $school->id, 'academic_year_id' => $targetYear->id, 'school_class_id' => $targetClass->id,
+                    'teacher_profile_id' => $source->teacher_profile_id, 'subject' => $source->subject,
+                ])->first();
+                if ($existing) { $skipped++; continue; }
+                TeacherClassAssignment::create([
+                    'school_id' => $school->id, 'academic_year_id' => $targetYear->id, 'school_class_id' => $targetClass->id,
+                    'teacher_profile_id' => $source->teacher_profile_id, 'subject' => $source->subject, 'role' => $source->role,
+                    'is_active' => true, 'metadata' => $source->metadata,
+                ]);
+                $created++;
+            }
+            $auditLogger->record('school.academic_year_assignments_copied', $school, AcademicYear::class, (string) $targetYear->id, [
+                'source_academic_year_id' => $sourceYear->id, 'created' => $created, 'skipped' => $skipped,
+                'missing_class' => $missingClass, 'inactive_teacher' => $inactiveTeacher,
+            ]);
+        });
+
+        return back()->with('status', "Copied {$created} assignments; {$skipped} existing, {$missingClass} missing classes, {$inactiveTeacher} inactive teachers skipped.");
+    }
+
     public function storeClass(Request $request, AuditLogger $auditLogger)
     {
         $school = $request->attributes->get('school');
