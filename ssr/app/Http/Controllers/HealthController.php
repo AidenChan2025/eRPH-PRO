@@ -8,14 +8,21 @@ use Illuminate\Support\Facades\Route;
 
 class HealthController extends Controller
 {
+    private function runtimeFileSha256(): string
+    {
+        return hash_file('sha256', __FILE__) ?: 'unavailable';
+    }
+
     public function __invoke()
     {
+        $runtimeFileSha256 = $this->runtimeFileSha256();
+
         try {
             DB::connection()->getPdo();
             $database = 'ok';
         } catch (\Throwable $exception) {
             report($exception);
-            return response()->json(['status' => 'degraded', 'database' => 'failed', 'cache' => 'unknown', 'release' => config('app.release_version')], 503);
+            return response()->json(['status' => 'degraded', 'database' => 'failed', 'cache' => 'unknown', 'release' => config('app.release_version'), 'runtime_file_sha256' => $runtimeFileSha256], 503);
         }
 
         try {
@@ -33,6 +40,7 @@ class HealthController extends Controller
                 'database' => $database,
                 'cache' => $cache,
                 'release' => config('app.release_version'),
+                'runtime_file_sha256' => $runtimeFileSha256,
             ], 503);
         }
 
@@ -41,6 +49,7 @@ class HealthController extends Controller
             'database' => $database,
             'cache' => $cache,
             'release' => config('app.release_version'),
+            'runtime_file_sha256' => $runtimeFileSha256,
             'app' => config('app.name'),
         ]);
     }

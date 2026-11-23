@@ -1047,7 +1047,7 @@ class ExampleTest extends TestCase
     {
         $response = $this->get('/health');
 
-        $response->assertOk()->assertJsonPath('status', 'ok')->assertJsonPath('database', 'ok')->assertJsonPath('cache', 'ok');
+        $response->assertOk()->assertJsonPath('status', 'ok')->assertJsonPath('database', 'ok')->assertJsonPath('cache', 'ok')->assertJsonPath('runtime_file_sha256', hash_file('sha256', app_path('Http/Controllers/HealthController.php')));
     }
 
     public function test_owner_login_entrypoint_is_available_on_the_base_domain(): void
