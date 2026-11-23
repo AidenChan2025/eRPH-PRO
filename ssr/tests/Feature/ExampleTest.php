@@ -1310,6 +1310,9 @@ class ExampleTest extends TestCase
             'session.path' => config('session.path'),
         ];
         config(['session.driver' => 'file', 'session.files' => $sessionDir]);
+        app('session')->forgetDrivers();
+        $this->assertSame('file', app('session')->getDefaultDriver());
+        $this->assertSame($sessionDir, config('session.files'));
         \Illuminate\Support\Facades\Route::get('/__test/session-cookie', function (\Illuminate\Http\Request $request) {
             $seen = $request->session()->get('host-session-probe');
             $request->session()->put('host-session-probe', 'ok');
