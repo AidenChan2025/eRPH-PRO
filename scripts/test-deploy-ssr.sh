@@ -40,6 +40,9 @@ if [[ "${1:-}" == "artisan" && "${2:-}" == "migrate:status" ]]; then
 fi
 if [[ "${1:-}" == "artisan" ]]; then
   printf 'artisan %s\n' "${*:2}" >> "$TRACE_FILE"
+  if [[ "${ARTISAN_FAIL:-}" == "${2:-}" ]]; then
+    exit 23
+  fi
   if [[ "${2:-}" == "config:cache" ]]; then
     mkdir -p bootstrap/cache
     printf '%s\n' "$PWD" > bootstrap/cache/config.php
@@ -102,6 +105,7 @@ run_hook() {
     COMPOSER_FAIL="${COMPOSER_FAIL:-0}" \
     CURL_FAIL="${CURL_FAIL:-0}" \
     FAIL_READLINK="${FAIL_READLINK:-0}" \
+    ARTISAN_FAIL="${ARTISAN_FAIL:-}" \
     bash "$repo_root/scripts/deploy-ssr.sh"
 }
 
@@ -241,6 +245,18 @@ if [[ "$(readlink "$CURRENT")" != "$RELEASES/$expected_sha" ]] || ! grep -q 'mig
   exit 1
 fi
 
+for failed_cache in config:cache route:cache view:cache; do
+  new_sandbox "${failed_cache//:/-}_failure"
+  if ARTISAN_FAIL="$failed_cache" run_hook >"$SANDBOX/out" 2>&1; then
+    echo "Expected $failed_cache failure to stop deployment." >&2
+    exit 1
+  fi
+  if [[ "$(readlink "$CURRENT")" != "$OLD_RELEASE" || -e "$RELEASES/$expected_sha" || -e "$RELEASES/.deploy.lock" ]]; then
+    echo "$failed_cache failure did not clean the new release and lock safely." >&2
+    exit 1
+  fi
+done
+
 new_sandbox wrong_release
 if FAKE_HEALTH_RESPONSE='{"status":"ok","database":"ok","cache":"ok","release":"wrong"}' run_hook >"$SANDBOX/out" 2>&1; then
   echo 'Expected a mismatched release health response to stop deployment.' >&2
@@ -288,6 +304,10 @@ if [[ ! -L "$RELEASES/$expected_sha/.env" || ! -L "$RELEASES/$expected_sha/stora
 fi
 if grep -q '/\.build-' "$RELEASES/$expected_sha/bootstrap/cache/config.php"; then
   echo 'The cached Laravel config still points at the removed temporary build directory.' >&2
+  exit 1
+fi
+if [[ "$(cat "$RELEASES/$expected_sha/bootstrap/cache/config.php")" != "$RELEASES/$expected_sha" ]]; then
+  echo 'The cached Laravel config was not generated from the fixed SHA release directory.' >&2
   exit 1
 fi
 if ! grep -q 'migrate:status' "$TRACE" || grep -Eq 'artisan migrate($| )|artisan db:seed' "$TRACE"; then
