@@ -55,7 +55,10 @@ if [[ -n "$SSR_HEALTH_URL" ]]; then
     echo "SSR development deployment aborted: curl is required for SSR_HEALTH_URL verification." >&2
     exit 1
   fi
-  health_payload="$(curl --fail --silent --show-error --max-time 15 "$SSR_HEALTH_URL")"
+  if ! health_payload="$(curl --fail --silent --show-error --max-time 15 "$SSR_HEALTH_URL")"; then
+    echo "SSR development deployment aborted: health endpoint request failed." >&2
+    exit 1
+  fi
   if ! "$SSR_PHP_BIN" -r '
     $health = json_decode($argv[1] ?? "", true);
     if (!is_array($health) || ($health["status"] ?? null) !== "ok" || ($health["database"] ?? null) !== "ok" || ($health["cache"] ?? null) !== "ok") {

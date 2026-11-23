@@ -12,6 +12,7 @@ make_sandbox() {
   DOCROOT="$APP_DIR/public"
   TRACE_FILE="$SANDBOX/trace"
   mkdir -p "$DOCROOT" "$APP_DIR/bin" "$APP_DIR/bootstrap/cache"
+  mkdir -p "$SANDBOX/bin"
   touch "$APP_DIR/artisan" "$APP_DIR/composer.lock"
   : > "$TRACE_FILE"
   cat > "$SANDBOX/php" <<'PHP'
@@ -20,6 +21,7 @@ set -Eeuo pipefail
 if [[ "${1:-}" == "-r" ]]; then
   case "$2" in
     *PHP_VERSION_ID*) printf '%s' "${FAKE_PHP_VERSION_ID:-80300}" ;;
+    *json_decode*) [[ "${HEALTH_PAYLOAD_OK:-0}" == 1 ]] || exit 25 ;;
     *) printf 'unexpected php probe\n' >&2; exit 99 ;;
   esac
   exit 0
@@ -38,6 +40,13 @@ printf 'unexpected invocation: %s\n' "$*" >&2
 exit 99
 PHP
   chmod +x "$SANDBOX/php"
+  cat > "$SANDBOX/bin/curl" <<'CURL'
+#!/usr/bin/env bash
+set -Eeuo pipefail
+[[ "${CURL_FAIL:-0}" == 1 ]] && exit 22
+printf '{"status":"ok","database":"ok","cache":"ok"}'
+CURL
+  chmod +x "$SANDBOX/bin/curl"
   cat > "$APP_DIR/bin/composer" <<'COMPOSER'
 #!/usr/bin/env bash
 exit 0
@@ -55,6 +64,9 @@ run_hook() {
   FAKE_PHP_VERSION_ID="${FAKE_PHP_VERSION_ID:-80300}" \
   COMPOSER_FAIL="${COMPOSER_FAIL:-0}" \
   ARTISAN_FAIL="${ARTISAN_FAIL:-0}" \
+  CURL_FAIL="${CURL_FAIL:-0}" \
+  HEALTH_PAYLOAD_OK="${HEALTH_PAYLOAD_OK:-0}" \
+  PATH="$SANDBOX/bin:$PATH" \
   bash "$repo_root/scripts/deploy-ssr-development.sh"
 }
 
@@ -104,5 +116,23 @@ if SSR_HEALTH_URL='http://erphpro.com/health' run_hook >"$SANDBOX/out" 2>&1; the
   exit 1
 fi
 grep -q 'SSR_HEALTH_URL must use HTTPS' "$SANDBOX/out"
+
+make_sandbox health_success
+HEALTH_PAYLOAD_OK=1 SSR_HEALTH_URL='https://erphpro.com/health' run_hook >"$SANDBOX/out"
+grep -q 'SSR direct-development deployment completed' "$SANDBOX/out"
+
+make_sandbox health_curl_failure
+if CURL_FAIL=1 HEALTH_PAYLOAD_OK=1 SSR_HEALTH_URL='https://erphpro.com/health' run_hook >"$SANDBOX/out" 2>&1; then
+  echo 'Expected curl failure to stop direct deployment.' >&2
+  exit 1
+fi
+grep -q 'health endpoint request failed' "$SANDBOX/out"
+
+make_sandbox health_invalid_json
+if HEALTH_PAYLOAD_OK=0 SSR_HEALTH_URL='https://erphpro.com/health' run_hook >"$SANDBOX/out" 2>&1; then
+  echo 'Expected invalid health JSON to stop direct deployment.' >&2
+  exit 1
+fi
+grep -q 'health check failed' "$SANDBOX/out"
 
 echo 'Direct-development deployment hook self-check passed.'
