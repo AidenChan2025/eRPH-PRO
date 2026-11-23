@@ -1534,6 +1534,19 @@ class ExampleTest extends TestCase
             ->assertOk()->assertSee('Submission overview')->assertSee('Active teachers');
     }
 
+    public function test_school_submission_report_accepts_period_and_status_filters(): void
+    {
+        $this->seed();
+        $admin = User::where('email', 'demo@erphpro.com')->firstOrFail();
+
+        $this->actingAs($admin)->get('http://demo.erphpro.com/reports?from=2028-01-01&to=2028-01-31&status=late')
+            ->assertOk()
+            ->assertSee('Apply filters')
+            ->assertSee('value="2028-01-01"', false)
+            ->assertSee('value="2028-01-31"', false)
+            ->assertSee('option value="late" selected', false);
+    }
+
     public function test_permission_middleware_rejects_a_teacher_from_school_reports(): void
     {
         $this->seed();
