@@ -2,6 +2,10 @@
 
 ## Current authenticated Plesk recheck (2026-11-23)
 
+### Latest direct-development hook hardening (2026-11-23)
+
+Candidate SHA `1aa7a96bb37ac3b9870810d04d6a741b011e2231` adds an optional HTTPS health check to `scripts/deploy-ssr-development.sh`. The hook now fails closed with an explicit diagnostic when the health request fails or returns unhealthy JSON; its sandbox self-check covers a healthy response, curl failure, invalid JSON, and a non-HTTPS URL. Laravel tests remained **65 passed / 476 assertions**, the atomic hook self-check and production verifier self-check passed, and GitHub Actions Run 121 for the candidate completed **SUCCESS**. The same ChatGPT review conversation accepted this exact SHA at **10/10, zero blockers, ACCEPTED / CLOSED** for the code/test change. This does not close the production gates: the live Plesk setup remains single-directory, and PROD-01/02/03 plus complete D2 and Phase 0 remain open/hold; no production deployment or Plesk setting change was performed for this commit.
+
 Using the Codex internal browser in the authenticated Plesk subscription, the `erphpro.com` overview showed the domain as Active, the website path as `erphpro.com/ssr/public`, and IP `103.6.198.190`. Hosting Settings showed the same `erphpro.com/ssr/public` home directory. PHP Settings showed PHP `8.3.37` running as a FastCGI application and resolved `{DOCROOT}` as `/home/w4chinese.com/erphpro.com/ssr/public`.
 
 The Plesk page displayed a completed deployment-task notification whose post-deployment action failed at `/home/w4chinese.com/erphpro-source/scripts/deploy-ssr.sh: line 24` with `composer: command not found`. This is evidence of a failed deployment hook invocation, not evidence that the candidate was deployed or that production was changed. No Pull, Deploy, Save, migration, or database action was performed during this observation. The deployment PATH/Composer resolution issue remains open and must be fixed and independently verified before a production release can be accepted.
