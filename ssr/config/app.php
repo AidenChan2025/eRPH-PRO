@@ -30,6 +30,7 @@ return [
     'env' => env('APP_ENV', 'production'),
 
     'school_base_domain' => env('SCHOOL_BASE_DOMAIN', 'erphpro.com'),
+    'reserved_school_subdomains' => ['support', 'www', 'owner', 'mail', 'ftp', 'admin'],
 
     /*
     |--------------------------------------------------------------------------

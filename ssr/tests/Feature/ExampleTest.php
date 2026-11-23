@@ -1731,6 +1731,33 @@ class ExampleTest extends TestCase
         ]);
     }
 
+    public function test_platform_school_lifecycle_rejects_reserved_subdomains_and_rolls_back_audit_failures(): void
+    {
+        $owner = User::factory()->create(['platform_role' => 'owner']);
+
+        $this->actingAs($owner)->post('http://erphpro.com/owner/schools', [
+            'name' => 'Reserved School', 'subdomain' => 'support',
+        ])->assertSessionHasErrors('subdomain');
+        $this->assertDatabaseMissing('schools', ['subdomain' => 'support']);
+
+        $this->app->instance(AuditLogger::class, Mockery::mock(AuditLogger::class, function ($mock): void {
+            $mock->shouldReceive('record')->once()->andThrow(new \RuntimeException('audit unavailable'));
+        }));
+        $this->withoutExceptionHandling();
+        try {
+            $this->actingAs($owner)->post('http://erphpro.com/owner/schools', [
+                'name' => 'Rolled Back School', 'subdomain' => 'rolled-back',
+            ]);
+            $this->fail('The audit failure must roll back school creation.');
+        } catch (\RuntimeException $exception) {
+            $this->assertSame('audit unavailable', $exception->getMessage());
+        } finally {
+            $this->app->instance(AuditLogger::class, new AuditLogger());
+            $this->withExceptionHandling();
+        }
+        $this->assertDatabaseMissing('schools', ['subdomain' => 'rolled-back']);
+    }
+
     public function test_non_owner_platform_roles_cannot_mutate_school_lifecycle(): void
     {
         $security = User::factory()->create(['platform_role' => 'security']);

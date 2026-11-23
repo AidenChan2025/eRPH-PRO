@@ -7,6 +7,7 @@ use App\Services\AuditLogger;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 
 class OwnerSchoolController extends Controller
 {
@@ -25,14 +26,18 @@ class OwnerSchoolController extends Controller
     public function store(Request $request, AuditLogger $auditLogger)
     {
         $data = $this->validated($request);
-        $school = School::create([
-            ...$data,
-            'slug' => Str::slug($data['name']),
-            'is_active' => true,
-        ]);
-        $auditLogger->record('platform.school_created', null, School::class, (string) $school->id, [
-            'subdomain' => $school->subdomain,
-        ]);
+        $school = DB::transaction(function () use ($data, $auditLogger): School {
+            $school = School::create([
+                ...$data,
+                'slug' => Str::slug($data['name']),
+                'is_active' => true,
+            ]);
+            $auditLogger->record('platform.school_created', null, School::class, (string) $school->id, [
+                'subdomain' => $school->subdomain,
+            ]);
+
+            return $school;
+        });
 
         return redirect()->route('owner.schools.index')->with('status', 'School created.');
     }
@@ -45,21 +50,25 @@ class OwnerSchoolController extends Controller
     public function update(Request $request, School $school, AuditLogger $auditLogger)
     {
         $data = $this->validated($request, $school);
-        $school->update([
-            ...$data,
-            'slug' => Str::slug($data['name']),
-        ]);
-        $auditLogger->record('platform.school_updated', null, School::class, (string) $school->id, [
-            'subdomain' => $school->subdomain,
-        ]);
+        DB::transaction(function () use ($school, $data, $auditLogger): void {
+            $school->update([
+                ...$data,
+                'slug' => Str::slug($data['name']),
+            ]);
+            $auditLogger->record('platform.school_updated', null, School::class, (string) $school->id, [
+                'subdomain' => $school->subdomain,
+            ]);
+        });
 
         return redirect()->route('owner.schools.index')->with('status', 'School updated.');
     }
 
     public function toggle(School $school, AuditLogger $auditLogger)
     {
-        $school->update(['is_active' => ! $school->is_active]);
-        $auditLogger->record($school->is_active ? 'platform.school_activated' : 'platform.school_suspended', null, School::class, (string) $school->id);
+        DB::transaction(function () use ($school, $auditLogger): void {
+            $school->update(['is_active' => ! $school->is_active]);
+            $auditLogger->record($school->is_active ? 'platform.school_activated' : 'platform.school_suspended', null, School::class, (string) $school->id);
+        });
 
         return redirect()->route('owner.schools.index')->with('status', $school->is_active ? 'School activated.' : 'School suspended.');
     }
@@ -70,6 +79,7 @@ class OwnerSchoolController extends Controller
             'name' => ['required', 'string', 'max:120'],
             'subdomain' => [
                 'required', 'string', 'max:63', 'regex:/^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/',
+                Rule::notIn(config('app.reserved_school_subdomains', [])),
                 Rule::unique('schools', 'subdomain')->ignore($school?->id),
             ],
             'workspace_domain' => ['nullable', 'string', 'max:190'],
