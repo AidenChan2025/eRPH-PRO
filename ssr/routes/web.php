@@ -13,6 +13,7 @@ use App\Http\Controllers\LessonPlanReviewController;
 use App\Http\Controllers\OwnerController;
 use App\Http\Controllers\OwnerAuditController;
 use App\Http\Controllers\OwnerSupportController;
+use App\Http\Controllers\OwnerSchoolController;
 use App\Http\Controllers\SupportArticleController;
 use App\Http\Controllers\SupportHomeController;
 use App\Http\Controllers\SupportTicketController;
@@ -33,6 +34,16 @@ Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])
     ->name('auth.google.callback');
 Route::post('/auth/google/one-tap', [GoogleAuthController::class, 'oneTap'])->name('auth.google.one-tap')->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
 Route::middleware(['platform.host', 'auth', 'platform.permission:platform.dashboard.view'])->get('/owner', OwnerController::class)->name('owner.dashboard');
+Route::middleware(['platform.host', 'auth', 'platform.permission:platform.schools.view'])->prefix('owner/schools')->group(function () {
+    Route::get('/', [OwnerSchoolController::class, 'index'])->name('owner.schools.index');
+});
+Route::middleware(['platform.host', 'auth', 'platform.permission:platform.schools.manage'])->prefix('owner/schools')->group(function () {
+    Route::get('/create', [OwnerSchoolController::class, 'create'])->name('owner.schools.create');
+    Route::post('/', [OwnerSchoolController::class, 'store'])->name('owner.schools.store');
+    Route::get('/{school}/edit', [OwnerSchoolController::class, 'edit'])->name('owner.schools.edit');
+    Route::put('/{school}', [OwnerSchoolController::class, 'update'])->name('owner.schools.update');
+    Route::post('/{school}/toggle', [OwnerSchoolController::class, 'toggle'])->name('owner.schools.toggle');
+});
 Route::middleware(['platform.host', 'auth', 'platform.permission:platform.audit.view'])->get('/owner/audit', OwnerAuditController::class)->name('owner.audit');
 Route::middleware(['platform.host', 'auth', 'platform.permission:platform.support.view'])->prefix('owner/support')->group(function () {
     Route::get('/', [OwnerSupportController::class, 'index'])->name('owner.support.index');

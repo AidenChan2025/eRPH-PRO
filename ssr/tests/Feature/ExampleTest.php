@@ -1704,6 +1704,43 @@ class ExampleTest extends TestCase
         $this->assertDatabaseHas('audit_logs', ['action' => 'auth.google_identity_unlinked', 'actor_id' => $user->id]);
     }
 
+    public function test_platform_owner_can_create_and_suspend_a_school_with_audit_trail(): void
+    {
+        $owner = User::factory()->create(['platform_role' => 'owner']);
+
+        $this->actingAs($owner)->post('http://erphpro.com/owner/schools', [
+            'name' => 'North Star School',
+            'subdomain' => 'north-star',
+            'workspace_domain' => 'northstar.edu.my',
+        ])->assertRedirect(route('owner.schools.index'));
+
+        $school = \App\Models\School::where('subdomain', 'north-star')->firstOrFail();
+        $this->assertDatabaseHas('audit_logs', [
+            'actor_id' => $owner->id,
+            'action' => 'platform.school_created',
+            'subject_id' => (string) $school->id,
+        ]);
+
+        $this->actingAs($owner)->post(route('owner.schools.toggle', $school))
+            ->assertRedirect(route('owner.schools.index'));
+        $this->assertFalse($school->fresh()->is_active);
+        $this->assertDatabaseHas('audit_logs', [
+            'actor_id' => $owner->id,
+            'action' => 'platform.school_suspended',
+            'subject_id' => (string) $school->id,
+        ]);
+    }
+
+    public function test_non_owner_platform_roles_cannot_mutate_school_lifecycle(): void
+    {
+        $security = User::factory()->create(['platform_role' => 'security']);
+
+        $this->actingAs($security)->get('http://erphpro.com/owner/schools/create')->assertForbidden();
+        $this->actingAs($security)->post('http://erphpro.com/owner/schools', [
+            'name' => 'Not Allowed School', 'subdomain' => 'not-allowed',
+        ])->assertForbidden();
+    }
+
     public function test_platform_permissions_are_explicit_and_default_deny(): void
     {
         $security = User::factory()->create(['platform_role' => 'security']);
