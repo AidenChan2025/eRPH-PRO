@@ -10,6 +10,11 @@ class SchoolReportController extends Controller
 {
     public function __invoke(Request $request)
     {
+        $request->validate([
+            'from' => ['nullable', 'date_format:Y-m-d'],
+            'to' => ['nullable', 'date_format:Y-m-d'],
+            'status' => ['nullable', 'in:on_time,late'],
+        ]);
         $school = $request->attributes->get('school');
         $start = $request->date('from')?->startOfDay() ?? now()->startOfWeek();
         $end = $request->date('to')?->endOfDay() ?? now()->endOfWeek();

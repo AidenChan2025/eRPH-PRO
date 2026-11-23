@@ -1592,6 +1592,22 @@ class ExampleTest extends TestCase
             ->assertDontSee('Other report school');
     }
 
+    public function test_school_submission_report_rejects_invalid_dates_and_renders_empty_results(): void
+    {
+        $this->seed();
+        $admin = User::where('email', 'demo@erphpro.com')->firstOrFail();
+
+        $this->actingAs($admin)
+            ->get('http://demo.erphpro.com/reports?from=not-a-date&to=2028-01-31')
+            ->assertRedirect()
+            ->assertSessionHasErrors('from');
+
+        $this->actingAs($admin)
+            ->get('http://demo.erphpro.com/reports?from=2028-01-01&to=2028-01-31&status=late')
+            ->assertOk()
+            ->assertSee('No submissions recorded in this period.');
+    }
+
     public function test_permission_middleware_rejects_a_teacher_from_school_reports(): void
     {
         $this->seed();
