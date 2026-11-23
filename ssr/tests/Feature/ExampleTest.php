@@ -1783,10 +1783,19 @@ class ExampleTest extends TestCase
             'subject_id' => (string) $operator->id,
         ]);
 
+        $secondOwner = User::factory()->create(['platform_role' => 'owner']);
+        $this->actingAs($owner)->post(route('owner.team.role', $secondOwner), [
+            'platform_role' => 'content',
+        ])->assertRedirect(route('owner.team.index'));
+        $this->assertSame('content', $secondOwner->fresh()->platform_role);
+
         $this->actingAs($owner)->post(route('owner.team.role', $owner), [
             'platform_role' => 'none',
         ])->assertSessionHasErrors('platform_role');
         $this->assertSame('owner', $owner->fresh()->platform_role);
+
+        $this->actingAs($owner)->get(route('owner.team.index', ['q' => $operator->email]))
+            ->assertOk()->assertSee($operator->email);
     }
 
     public function test_non_owner_platform_roles_cannot_manage_platform_team(): void
