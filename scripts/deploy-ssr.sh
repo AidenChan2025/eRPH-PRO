@@ -159,6 +159,7 @@ previous_target=""
 switched=0
 healthy=0
 reuse_release=0
+release_created=0
 
 replace_current_link() {
   local target="$1"
@@ -211,6 +212,9 @@ finish_deployment() {
   fi
   if [[ -n "$build_dir" && -d "$build_dir" && "$build_dir" == "$SSR_RELEASES_DIR/.build-${release_version}."* ]]; then
     rm -rf -- "$build_dir"
+  fi
+  if (( release_created == 1 && switched == 0 )) && [[ -d "$release_dir" && "$release_dir" == "$SSR_RELEASES_DIR/$release_version" ]]; then
+    rm -rf -- "$release_dir"
   fi
   rmdir "$lock_dir" 2>/dev/null || true
   exit "$result"
@@ -294,15 +298,20 @@ if ! "$PHP_BIN" artisan migrate:status --pending=1 --no-ansi; then
 fi
 
 if (( reuse_release == 0 )); then
-  RELEASE_VERSION="$release_version" "$PHP_BIN" artisan config:cache
-  "$PHP_BIN" artisan route:cache
-  "$PHP_BIN" artisan view:cache
   printf '%s\n' "$release_version" > "$build_dir/.deploy-release-sha"
   # mktemp creates the build root as 0700; the web server must be able to
   # traverse the immutable release while secrets remain in shared/.env.
   chmod 755 "$build_dir"
   mv "$build_dir" "$release_dir"
   build_dir=""
+  release_created=1
+  # Cache after moving into the immutable SHA directory. Laravel's cached
+  # config contains absolute resource/view paths; caching in .build-* would
+  # leave those paths pointing at a directory removed by the atomic publish.
+  cd "$release_dir"
+  RELEASE_VERSION="$release_version" "$PHP_BIN" artisan config:cache
+  "$PHP_BIN" artisan route:cache
+  "$PHP_BIN" artisan view:cache
 fi
 replace_current_link "$release_dir"
 switched=1

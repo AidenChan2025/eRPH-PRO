@@ -42,7 +42,7 @@ if [[ "${1:-}" == "artisan" ]]; then
   printf 'artisan %s\n' "${*:2}" >> "$TRACE_FILE"
   if [[ "${2:-}" == "config:cache" ]]; then
     mkdir -p bootstrap/cache
-    touch bootstrap/cache/config.php
+    printf '%s\n' "$PWD" > bootstrap/cache/config.php
   fi
   exit 0
 fi
@@ -284,6 +284,10 @@ if ! grep -q 'already active and healthy' "$SANDBOX/repeat.out"; then
 fi
 if [[ ! -L "$RELEASES/$expected_sha/.env" || ! -L "$RELEASES/$expected_sha/storage" ]]; then
   echo 'The release did not use the shared environment and persistent storage.' >&2
+  exit 1
+fi
+if grep -q '/\.build-' "$RELEASES/$expected_sha/bootstrap/cache/config.php"; then
+  echo 'The cached Laravel config still points at the removed temporary build directory.' >&2
   exit 1
 fi
 if ! grep -q 'migrate:status' "$TRACE" || grep -Eq 'artisan migrate($| )|artisan db:seed' "$TRACE"; then
