@@ -103,6 +103,7 @@ Route::domain(config('app.school_base_domain', 'erphpro.com'))->middleware('scho
 Route::middleware('school')->group(function () {
     Route::get('/login', [GoogleAuthController::class, 'show'])->name('login');
     Route::get('/auth/google/redirect', [GoogleAuthController::class, 'redirect'])->name('auth.google.redirect');
+    Route::get('/auth/google/complete', [GoogleAuthController::class, 'complete'])->name('auth.google.complete');
     Route::middleware('auth')->get('/auth/google/link', [GoogleAuthController::class, 'redirectLink'])->name('auth.google.link');
     Route::middleware(['auth', 'school.member'])->get('/workspace', WorkspaceController::class)->name('workspace.dashboard');
     Route::middleware(['auth'])->post('/logout', [GoogleAuthController::class, 'logout'])->name('logout');

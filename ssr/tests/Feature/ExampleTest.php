@@ -1162,6 +1162,25 @@ class ExampleTest extends TestCase
         $this->assertDatabaseHas('users', ['email' => 'owner@example.com', 'platform_role' => 'owner']);
     }
 
+    public function test_existing_non_owner_platform_operator_can_complete_platform_google_login(): void
+    {
+        Config::set([
+            'services.google.client_id' => 'test-client',
+            'services.google.client_secret' => 'test-secret',
+            'services.google.owner_email' => 'owner@example.com',
+        ]);
+        $operator = User::factory()->create(['email' => 'support@example.com', 'platform_role' => 'support']);
+        $driver = \Mockery::mock();
+        $driver->shouldReceive('user')->once()->andReturn(SocialiteUser::fake([
+            'id' => 'support-google-subject', 'name' => 'Support Operator', 'email' => $operator->email,
+        ]));
+        Socialite::shouldReceive('driver')->once()->with('google')->andReturn($driver);
+
+        $this->withSession(['auth.owner_login' => true])->get('/auth/google/callback')
+            ->assertRedirect(route('owner.dashboard'));
+        $this->assertAuthenticatedAs($operator, 'platform');
+    }
+
     public function test_oauth_handoff_is_single_use_and_expires_server_side(): void
     {
         $service = app(\App\Services\OAuthHandoffService::class);
@@ -1171,6 +1190,39 @@ class ExampleTest extends TestCase
         $this->assertSame('school_login', $handoff?->intent);
         $this->assertSame('demo', $handoff?->school_subdomain);
         $this->assertNull($service->consume($state));
+    }
+
+    public function test_school_oauth_result_handoff_establishes_session_on_the_school_host(): void
+    {
+        $school = School::create(['name' => 'Handoff School', 'slug' => 'handoff-school', 'subdomain' => 'handoff-school']);
+        $user = User::factory()->create(['email' => 'handoff@example.com']);
+        $school->members()->attach($user->id, ['role' => 'teacher', 'status' => 'active', 'joined_at' => now()]);
+        $state = app(\App\Services\OAuthHandoffService::class)->issueResult('school_login_result', $school->subdomain, $user->id);
+
+        $this->get('http://handoff-school.erphpro.com/auth/google/complete?handoff='.$state)
+            ->assertRedirect(route('workspace.dashboard'));
+        $this->assertAuthenticatedAs($user, 'web');
+    }
+
+    public function test_google_identity_link_handoff_requires_the_original_school_session(): void
+    {
+        $this->seed();
+        $user = User::where('email', 'demo@erphpro.com')->firstOrFail();
+        $state = app(\App\Services\OAuthHandoffService::class)->issueResult('link_identity_result', 'demo', $user->id, [
+            'subject' => 'linked-after-handoff', 'email' => 'linked@example.com', 'email_type' => 'workspace',
+        ]);
+
+        $this->get('http://demo.erphpro.com/auth/google/complete?handoff='.$state)
+            ->assertForbidden()
+            ->assertSeeText('Original school session required');
+        $this->assertDatabaseMissing('google_identities', ['subject' => 'linked-after-handoff']);
+
+        $state = app(\App\Services\OAuthHandoffService::class)->issueResult('link_identity_result', 'demo', $user->id, [
+            'subject' => 'linked-after-handoff', 'email' => 'linked@example.com', 'email_type' => 'workspace',
+        ]);
+        $this->actingAs($user, 'web')->get('http://demo.erphpro.com/auth/google/complete?handoff='.$state)
+            ->assertRedirect(route('account.identities'));
+        $this->assertDatabaseHas('google_identities', ['subject' => 'linked-after-handoff', 'user_id' => $user->id]);
     }
 
     public function test_authenticated_school_user_can_log_out_and_invalidate_session(): void

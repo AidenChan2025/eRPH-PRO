@@ -16,7 +16,27 @@ class OAuthHandoffService
             'intent' => $intent,
             'school_subdomain' => $schoolSubdomain,
             'user_id' => $userId,
+            'payload' => null,
             'expires_at' => now()->addMinutes(10),
+            'consumed_at' => null,
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        return $state;
+    }
+
+    public function issueResult(string $intent, string $schoolSubdomain, int $userId, array $payload = []): string
+    {
+        $state = Str::random(96);
+
+        DB::table('oauth_handoffs')->insert([
+            'token_hash' => hash('sha256', $state),
+            'intent' => $intent,
+            'school_subdomain' => $schoolSubdomain,
+            'user_id' => $userId,
+            'payload' => json_encode($payload, JSON_THROW_ON_ERROR),
+            'expires_at' => now()->addMinutes(5),
             'consumed_at' => null,
             'created_at' => now(),
             'updated_at' => now(),
