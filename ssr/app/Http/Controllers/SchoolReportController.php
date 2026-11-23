@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\LessonPlanSubmission;
 use App\Models\TeacherProfile;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class SchoolReportController extends Controller
 {
@@ -23,22 +22,23 @@ class SchoolReportController extends Controller
         }
         $period = fn ($query) => $query
             ->where('school_id', $school->id)
-            ->whereBetween('submitted_at', [$start, $end])
+            ->whereBetween('submitted_at', [$start, $end]);
+        $filtered = fn ($query) => $period($query)
             ->when($status !== '', fn ($query) => $query->where('status', $status));
         $activeTeachers = TeacherProfile::where('school_id', $school->id)->where('employment_status', 'active')->count();
-        $submitted = $period(LessonPlanSubmission::query())->count();
+        $submittedRecords = $period(LessonPlanSubmission::query())->count();
+        $submittedTeachers = $period(LessonPlanSubmission::query())->distinct('teacher_profile_id')->count('teacher_profile_id');
         $onTime = $period(LessonPlanSubmission::query())->where('status', 'on_time')->count();
         $late = $period(LessonPlanSubmission::query())->where('status', 'late')->count();
-        $pending = max($activeTeachers - $submitted, 0);
-        $recent = LessonPlanSubmission::query()
-            ->where('school_id', $school->id)
-            ->whereBetween('submitted_at', [$start, $end])
-            ->when($status !== '', fn ($query) => $query->where('status', $status))
+        $pendingTeachers = max($activeTeachers - $submittedTeachers, 0);
+        $completionRate = $activeTeachers > 0 ? round(($submittedTeachers / $activeTeachers) * 100) : 0;
+        $matchedRecords = $filtered(LessonPlanSubmission::query())->count();
+        $recent = $filtered(LessonPlanSubmission::query())
             ->with(['teacherProfile.user'])
             ->latest('submitted_at')
             ->limit(20)
             ->get();
 
-        return view('school-reports.dashboard', compact('school', 'activeTeachers', 'submitted', 'onTime', 'late', 'pending', 'recent', 'start', 'end', 'status'));
+        return view('school-reports.dashboard', compact('school', 'activeTeachers', 'submittedRecords', 'submittedTeachers', 'onTime', 'late', 'pendingTeachers', 'completionRate', 'matchedRecords', 'recent', 'start', 'end', 'status'));
     }
 }

@@ -1547,6 +1547,44 @@ class ExampleTest extends TestCase
             ->assertSee('option value="late" selected', false);
     }
 
+    public function test_school_submission_report_filters_real_records_without_cross_school_leakage(): void
+    {
+        $this->seed();
+        $admin = User::where('email', 'demo@erphpro.com')->firstOrFail();
+        $school = School::where('subdomain', 'demo')->firstOrFail();
+        $profile = TeacherProfile::withoutGlobalScopes()->where('school_id', $school->id)->where('user_id', $admin->id)->firstOrFail();
+        $plan = LessonPlan::withoutGlobalScopes()->create([
+            'school_id' => $school->id, 'teacher_profile_id' => $profile->id,
+            'lesson_date' => '2028-01-10', 'subject' => 'Science', 'class_name' => '4 Amanah', 'status' => 'draft', 'current_version' => 1,
+        ]);
+        LessonPlanSubmission::withoutGlobalScopes()->create([
+            'school_id' => $school->id, 'lesson_plan_id' => $plan->id, 'teacher_profile_id' => $profile->id,
+            'week_no' => 2, 'submitted_at' => '2028-01-10 09:00:00', 'status' => 'on_time',
+        ]);
+        LessonPlanSubmission::withoutGlobalScopes()->create([
+            'school_id' => $school->id, 'lesson_plan_id' => $plan->id, 'teacher_profile_id' => $profile->id,
+            'week_no' => 3, 'submitted_at' => '2028-01-20 09:00:00', 'status' => 'late',
+        ]);
+        $otherSchool = School::create(['name' => 'Other report school', 'slug' => 'other-report-school', 'subdomain' => 'other-report-school']);
+        $otherProfile = TeacherProfile::withoutGlobalScopes()->create(['school_id' => $otherSchool->id, 'user_id' => User::factory()->create()->id, 'employment_status' => 'active']);
+        $otherPlan = LessonPlan::withoutGlobalScopes()->create([
+            'school_id' => $otherSchool->id, 'teacher_profile_id' => $otherProfile->id,
+            'lesson_date' => '2028-01-20', 'subject' => 'Other', 'class_name' => 'Other', 'status' => 'draft', 'current_version' => 1,
+        ]);
+        LessonPlanSubmission::withoutGlobalScopes()->create([
+            'school_id' => $otherSchool->id, 'lesson_plan_id' => $otherPlan->id, 'teacher_profile_id' => $otherProfile->id,
+            'week_no' => 3, 'submitted_at' => '2028-01-20 09:00:00', 'status' => 'late',
+        ]);
+
+        $this->actingAs($admin)->get('http://demo.erphpro.com/reports?from=2028-01-01&to=2028-01-31&status=late')
+            ->assertOk()
+            ->assertSee('Teachers submitted')
+            ->assertSee('2 total submission records')
+            ->assertSee('1 match the selected status filter')
+            ->assertSee('Late')
+            ->assertDontSee('Other report school');
+    }
+
     public function test_permission_middleware_rejects_a_teacher_from_school_reports(): void
     {
         $this->seed();

@@ -36,12 +36,12 @@
         </form>
         <section class="stats">
             <div class="card stat"><span>Active teachers</span><strong>{{ $activeTeachers }}</strong></div>
-            <div class="card stat"><span>Submitted</span><strong class="good">{{ $submitted }}</strong></div>
-            <div class="card stat"><span>Pending action</span><strong class="warn">{{ $pending }}</strong></div>
+            <div class="card stat"><span>Teachers submitted</span><strong class="good">{{ $submittedTeachers }}</strong></div>
+            <div class="card stat"><span>Pending teachers</span><strong class="warn">{{ $pendingTeachers }}</strong></div>
             <div class="card stat"><span>On time</span><strong>{{ $onTime }}</strong></div>
         </section>
         <div class="grid">
-            <section class="card"><h2>Selected period</h2><div class="progress"><i style="width:{{ $activeTeachers ? min(100, round(($submitted / $activeTeachers) * 100)) : 0 }}%"></i></div><div class="legend"><span>{{ $submitted }} of {{ $activeTeachers }} submitted</span><span>{{ $activeTeachers ? round(($submitted / $activeTeachers) * 100) : 0 }}%</span></div><p class="empty">Late submissions in this period: <strong>{{ $late }}</strong>.</p></section>
+            <section class="card"><h2>Selected period</h2><div class="progress"><i style="width:{{ $completionRate }}%"></i></div><div class="legend"><span>{{ $submittedTeachers }} of {{ $activeTeachers }} teachers submitted</span><span>{{ $completionRate }}%</span></div><p class="empty">{{ $submittedRecords }} total submission records; {{ $matchedRecords }} match the selected status filter. Late records in this period: <strong>{{ $late }}</strong>.</p></section>
             <section class="card"><h2>Audit interpretation</h2><p class="empty">This report is computed from school-owned submission records and can be filtered by period and status.</p></section>
         </div>
         <section class="card" style="margin-top:18px"><h2>Recent submissions</h2><div class="table-wrap"><table><thead><tr><th>Teacher</th><th>Week</th><th>Submitted</th><th>Status</th></tr></thead><tbody>@forelse($recent as $item)<tr><td>{{ $item->teacherProfile->user->name }}</td><td>M{{ $item->week_no }}</td><td>{{ $item->submitted_at->format('d M Y H:i') }}</td><td><span class="pill {{ $item->status === 'on_time' ? 'good' : 'warn' }}">{{ $item->status === 'on_time' ? 'On time' : 'Late' }}</span></td></tr>@empty<tr><td colspan="4" class="empty">No submissions recorded in this period.</td></tr>@endforelse</tbody></table></div></section>
