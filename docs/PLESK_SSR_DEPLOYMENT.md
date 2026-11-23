@@ -1,10 +1,24 @@
 # Plesk SSR Deployment Contract
 
+## Current authenticated Plesk recheck (2026-11-23)
+
+Using the Codex internal browser in the authenticated Plesk subscription, the `erphpro.com` overview showed the domain as Active, the website path as `erphpro.com/ssr/public`, and IP `103.6.198.190`. Hosting Settings showed the same `erphpro.com/ssr/public` home directory. PHP Settings showed PHP `8.3.37` running as a FastCGI application and resolved `{DOCROOT}` as `/home/w4chinese.com/erphpro.com/ssr/public`.
+
+The Plesk page displayed a completed deployment-task notification whose post-deployment action failed at `/home/w4chinese.com/erphpro-source/scripts/deploy-ssr.sh: line 24` with `composer: command not found`. This is evidence of a failed deployment hook invocation, not evidence that the candidate was deployed or that production was changed. No Pull, Deploy, Save, migration, or database action was performed during this observation. The deployment PATH/Composer resolution issue remains open and must be fixed and independently verified before a production release can be accepted.
+
+The Git Repositories view showed `eRPH-PRO.git` using `git@github.com:AidenChan2025/eRPH-PRO.git`, branch `main`, and automatic deployment to `/erphpro.com`. The card displayed latest commit `8ac9d7f` and exposed Pull/Deploy controls; neither was activated. Repository settings were opened read-only to confirm the branch and automatic deployment mode; deploy keys and webhook values were not copied into this record. This confirms that the live source checkout still overlaps the configured `ssr/public` document-root tree and that the current Plesk deployment path is not the atomic release layout.
+
+The Plesk PHP Composer page for this domain offered only a scan for Composer applications under `/erphpro.com/ssr`; the read-only scan did not return an application result during the observation. It did not provide a usable CLI Composer path, so the failed hook remains unresolved. No Composer installation, dependency update, or settings save was performed.
+
+Read-only SSH Terminal follow-up identified two executable Composer-related paths: `/home/w4chinese.com/.phpenv/shims/composer` and `/home/w4chinese.com/erphpro.com/ssr/bin/composer`. The phpenv shim reported `phpenv: composer: command not found`, while the application-local Composer reported Composer `2.11.2` and PHP `8.1.34`. The Plesk PHP 8.3 CLI was independently verified at `/opt/plesk/php/8.3/bin/php` and reported PHP `8.3.37`. The candidate hook invokes Composer through its selected `SSR_PHP_BIN`, so the evidence-backed candidate settings are `SSR_PHP_BIN=/opt/plesk/php/8.3/bin/php` and `SSR_COMPOSER_BIN=/home/w4chinese.com/erphpro.com/ssr/bin/composer`. These values have not been written to Plesk; a controlled deployment retry and its timestamped result remain outstanding.
+
 ## Development-stage operating mode
 
 Until the product is formally released, `erphpro.com` is the single working directory for direct Plesk development and testing. During this stage, the existing Plesk Git checkout and the active `ssr/public` document root may intentionally be the same application tree; deployment can be performed directly into that directory for development verification. The isolated `source`/`releases`/`shared`/`current` layout and the atomic cutover contract below are production-release requirements, not a blocker for this development workflow. Do not delete backups or application data while using the direct-development mode.
 
 The atomic hook in `scripts/deploy-ssr.sh` is therefore a production-readiness artifact and local contract test at this stage. It must not be enabled against the current development checkout until the product enters the formal release phase and an approved migration/rollback window exists.
+
+For the authorized single-directory development workflow, use `scripts/deploy-ssr-development.sh` instead. It deliberately operates on the existing checkout, requires explicit PHP/Composer paths, installs locked dependencies, and rebuilds Laravel caches; it does not claim atomic release or rollback safety and does not run migrations.
 
 Status: 2026-11-21 production P0 repair applied and immediately verified; Gemini independently passed this P0 repair subtask at 10.0/10 with zero findings. This is not Phase 0 acceptance: Laravel SSR homepage and health were available at the observed time. A controlled 128-file code/config/assets manifest now matches local `f84cb98`; the `/health` label is confirmed to come from the static `.env` `RELEASE_VERSION`, while vendor, PHP-FPM/OPcache runtime identity, deployment provenance, sustained stability, and full operational acceptance remain open.
 

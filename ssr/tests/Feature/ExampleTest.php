@@ -179,13 +179,48 @@ class ExampleTest extends TestCase
         $this->assertSame($beforeAudits, DB::table('audit_logs')->where('action', 'school.academic_year_assignments_copied')->count());
     }
 
+    public function test_assignment_copy_rolls_back_when_insert_fails_for_a_non_duplicate_reason(): void
+    {
+        $this->seed();
+        $admin = User::where('email', 'demo@erphpro.com')->firstOrFail();
+        $school = School::where('subdomain', 'demo')->firstOrFail();
+        $sourceYear = AcademicYear::create(['school_id' => $school->id, 'year' => 2034, 'name' => 'Source 2034', 'status' => 'closed']);
+        $targetYear = AcademicYear::create(['school_id' => $school->id, 'year' => 2035, 'name' => 'Target 2035', 'status' => 'draft']);
+        $sourceClass = SchoolClass::create(['school_id' => $school->id, 'academic_year_id' => $sourceYear->id, 'code' => '6A', 'name' => '6 Amanah']);
+        SchoolClass::create(['school_id' => $school->id, 'academic_year_id' => $targetYear->id, 'code' => '6A', 'name' => '6 Amanah next']);
+        $teacher = User::factory()->create(['email' => 'copy-insert-failure@example.com']);
+        $school->members()->attach($teacher->id, ['role' => 'teacher', 'status' => 'active']);
+        $profile = TeacherProfile::create(['school_id' => $school->id, 'user_id' => $teacher->id, 'employment_status' => 'active']);
+        TeacherClassAssignment::create(['school_id' => $school->id, 'academic_year_id' => $sourceYear->id, 'school_class_id' => $sourceClass->id, 'teacher_profile_id' => $profile->id, 'subject' => 'Broken', 'role' => 'teacher']);
+
+        DB::statement("CREATE TRIGGER fail_assignment_copy BEFORE INSERT ON teacher_class_assignments WHEN NEW.subject = 'Broken' BEGIN SELECT RAISE(ABORT, 'forced assignment insert failure'); END");
+        try {
+            $this->withoutExceptionHandling();
+            $this->actingAs($admin)->post('http://demo.erphpro.com/admin/academic-years/copy-assignments', [
+                'source_academic_year_id' => $sourceYear->id,
+                'target_academic_year_id' => $targetYear->id,
+            ]);
+            $this->fail('A non-duplicate insert failure must abort the copy.');
+        } catch (\Throwable $exception) {
+            $this->assertStringContainsString('forced assignment insert failure', $exception->getMessage());
+        } finally {
+            DB::statement('DROP TRIGGER IF EXISTS fail_assignment_copy');
+            $this->withExceptionHandling();
+        }
+
+        $this->assertDatabaseMissing('teacher_class_assignments', ['academic_year_id' => $targetYear->id, 'subject' => 'Broken']);
+        $this->assertDatabaseMissing('audit_logs', ['action' => 'school.academic_year_assignments_copied', 'subject_id' => $targetYear->id]);
+    }
+
     public function test_school_admin_can_manage_academic_years_and_classes(): void
     {
         $this->seed();
         $admin = User::where('email', 'demo@erphpro.com')->firstOrFail();
 
         $this->actingAs($admin)->get('http://demo.erphpro.com/admin/academic-data')
-            ->assertOk()->assertSee('Academic years')->assertSee('classes');
+            ->assertOk()->assertSee('Academic years')->assertSee('classes')
+            ->assertSee('Copy active teacher assignments')
+            ->assertSee('/admin/academic-years/copy-assignments', false);
         $this->actingAs($admin)->post('http://demo.erphpro.com/admin/academic-years', [
             'year' => 2028, 'name' => 'School year 2028', 'starts_on' => '2028-01-01', 'ends_on' => '2028-12-31',
         ])->assertRedirect()->assertSessionHas('status', 'Academic year created.');

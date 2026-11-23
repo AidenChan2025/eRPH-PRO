@@ -65,7 +65,7 @@ if [[ "${FAIL_READLINK:-0}" == 1 ]]; then exit 1; fi
 exec "$REAL_READLINK_BIN" "$@"
 READLINK
 
-chmod +x "$tmp_dir/bin/php" "$tmp_dir/bin/curl" "$tmp_dir/bin/readlink"
+chmod +x "$tmp_dir/bin/composer" "$tmp_dir/bin/php" "$tmp_dir/bin/curl" "$tmp_dir/bin/readlink"
 
 new_sandbox() {
   local name="$1"
@@ -93,7 +93,7 @@ run_hook() {
     SSR_DOCUMENT_ROOT="${DOCUMENT_ROOT:-$CURRENT/public}" \
     SSR_HEALTH_URL="${HEALTH_URL:-https://example.test/health}" \
     SSR_PHP_BIN="$tmp_dir/bin/php" \
-    SSR_COMPOSER_BIN="$tmp_dir/bin/composer" \
+    SSR_COMPOSER_BIN="${COMPOSER_BIN_OVERRIDE:-$tmp_dir/bin/composer}" \
     TRACE_FILE="$TRACE" \
     FAKE_HEALTH_RESPONSE="${FAKE_HEALTH_RESPONSE:-}" \
     FAKE_PHP_MODULES="${FAKE_PHP_MODULES:-ctype fileinfo mbstring openssl PDO pdo_mysql tokenizer xml}" \
@@ -207,6 +207,16 @@ if COMPOSER_FAIL=1 run_hook >"$SANDBOX/out" 2>&1; then
 fi
 if [[ "$(readlink "$CURRENT")" != "$OLD_RELEASE" ]]; then
   echo 'Composer failure changed the live release.' >&2
+  exit 1
+fi
+
+new_sandbox composer_missing
+if COMPOSER_BIN_OVERRIDE="$SANDBOX/bin/missing-composer" run_hook >"$SANDBOX/out" 2>&1; then
+  echo 'Expected a missing Composer executable to stop deployment.' >&2
+  exit 1
+fi
+if ! grep -q 'SSR_COMPOSER_BIN' "$SANDBOX/out"; then
+  echo 'Missing Composer failure did not explain how to configure SSR_COMPOSER_BIN.' >&2
   exit 1
 fi
 

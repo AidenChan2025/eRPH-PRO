@@ -121,7 +121,19 @@ class SchoolAcademicDataController extends Controller
                     'is_active' => true, 'metadata' => $source->metadata ? json_encode($source->metadata, JSON_THROW_ON_ERROR) : null,
                     'created_at' => now(), 'updated_at' => now(),
                 ]);
-                $inserted ? $created++ : $skipped++;
+                if ($inserted) {
+                    $created++;
+                    continue;
+                }
+
+                $duplicate = TeacherClassAssignment::withoutGlobalScopes()->where([
+                    'school_id' => $school->id, 'academic_year_id' => $targetYear->id, 'school_class_id' => $targetClass->id,
+                    'teacher_profile_id' => $source->teacher_profile_id, 'subject' => $source->subject,
+                ])->exists();
+                if (!$duplicate) {
+                    throw new \RuntimeException('Assignment insert failed without a duplicate target.');
+                }
+                $skipped++;
             }
             $auditLogger->record('school.academic_year_assignments_copied', $school, AcademicYear::class, (string) $targetYear->id, [
                 'source_academic_year_id' => $sourceYear->id, 'created' => $created, 'skipped' => $skipped,

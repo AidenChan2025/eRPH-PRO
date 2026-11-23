@@ -103,8 +103,8 @@ elif [[ -f "$SSR_APP_DIR/bin/composer" ]]; then
 else
   COMPOSER_BIN="$(command -v composer || true)"
 fi
-if [[ -z "$COMPOSER_BIN" || ! -f "$COMPOSER_BIN" ]]; then
-  echo "SSR deployment aborted: Composer executable was not found." >&2
+if [[ -z "$COMPOSER_BIN" || ! -x "$COMPOSER_BIN" ]]; then
+  echo "SSR deployment aborted: Composer executable was not found or is not executable; set SSR_COMPOSER_BIN to its absolute path for the non-interactive Plesk hook." >&2
   exit 1
 fi
 
