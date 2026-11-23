@@ -185,7 +185,7 @@ class GoogleAuthController extends Controller
                 'name' => $googleUser->getName() ?: $user->name,
                 'google_subject' => $googleUser->getId(),
                 'email_verified_at' => $user->email_verified_at ?: now(),
-                'platform_role' => $isOwnerLogin ? 'owner' : $user->platform_role,
+                'platform_role' => $user->platform_role ?: ($isOwnerLogin && hash_equals($ownerEmail, $email) ? 'owner' : null),
             ])->save();
         }
 
@@ -222,7 +222,8 @@ class GoogleAuthController extends Controller
         $handoff = $handoffs->consume($request->query('handoff'));
         $school = $request->attributes->get('school') ?: $this->schoolFromHost($request);
 
-        if (! $handoff || ! $school || $handoff->school_subdomain !== $school->subdomain) {
+        if (! $handoff || ! in_array($handoff->intent, ['school_login_result', 'link_identity_result'], true)
+            || ! $school || $handoff->school_subdomain !== $school->subdomain) {
             return response()->view('auth.error', ['title' => 'Google sign-in handoff expired', 'message' => 'Please return to your school sign-in page and try again.'], 403);
         }
 

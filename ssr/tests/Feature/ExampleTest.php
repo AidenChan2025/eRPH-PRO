@@ -1179,6 +1179,7 @@ class ExampleTest extends TestCase
         $this->withSession(['auth.owner_login' => true])->get('/auth/google/callback')
             ->assertRedirect(route('owner.dashboard'));
         $this->assertAuthenticatedAs($operator, 'platform');
+        $this->assertSame('support', User::findOrFail($operator->id)->platform_role);
     }
 
     public function test_oauth_handoff_is_single_use_and_expires_server_side(): void
@@ -1223,6 +1224,17 @@ class ExampleTest extends TestCase
         $this->actingAs($user, 'web')->get('http://demo.erphpro.com/auth/google/complete?handoff='.$state)
             ->assertRedirect(route('account.identities'));
         $this->assertDatabaseHas('google_identities', ['subject' => 'linked-after-handoff', 'user_id' => $user->id]);
+    }
+
+    public function test_school_oauth_complete_rejects_a_handoff_for_another_intent(): void
+    {
+        $this->seed();
+        $user = User::where('email', 'demo@erphpro.com')->firstOrFail();
+        $state = app(\App\Services\OAuthHandoffService::class)->issue('owner_login', 'demo', $user->id);
+
+        $this->get('http://demo.erphpro.com/auth/google/complete?handoff='.$state)
+            ->assertForbidden()
+            ->assertSeeText('Google sign-in handoff expired');
     }
 
     public function test_authenticated_school_user_can_log_out_and_invalidate_session(): void
