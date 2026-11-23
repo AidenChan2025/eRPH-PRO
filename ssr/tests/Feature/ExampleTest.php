@@ -1768,6 +1768,38 @@ class ExampleTest extends TestCase
         ])->assertForbidden();
     }
 
+    public function test_platform_owner_can_manage_operator_roles_but_cannot_remove_the_last_owner(): void
+    {
+        $owner = User::factory()->create(['platform_role' => 'owner']);
+        $operator = User::factory()->create(['platform_role' => null]);
+
+        $this->actingAs($owner)->post(route('owner.team.role', $operator), [
+            'platform_role' => 'operations',
+        ])->assertRedirect(route('owner.team.index'));
+        $this->assertSame('operations', $operator->fresh()->platform_role);
+        $this->assertDatabaseHas('audit_logs', [
+            'action' => 'platform.operator_role_updated',
+            'actor_id' => $owner->id,
+            'subject_id' => (string) $operator->id,
+        ]);
+
+        $this->actingAs($owner)->post(route('owner.team.role', $owner), [
+            'platform_role' => 'none',
+        ])->assertSessionHasErrors('platform_role');
+        $this->assertSame('owner', $owner->fresh()->platform_role);
+    }
+
+    public function test_non_owner_platform_roles_cannot_manage_platform_team(): void
+    {
+        $security = User::factory()->create(['platform_role' => 'security']);
+        $operator = User::factory()->create(['platform_role' => 'support']);
+
+        $this->actingAs($security)->get(route('owner.team.index'))->assertForbidden();
+        $this->actingAs($security)->post(route('owner.team.role', $operator), [
+            'platform_role' => 'content',
+        ])->assertForbidden();
+    }
+
     public function test_platform_permissions_are_explicit_and_default_deny(): void
     {
         $security = User::factory()->create(['platform_role' => 'security']);

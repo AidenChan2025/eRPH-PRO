@@ -14,6 +14,7 @@ use App\Http\Controllers\OwnerController;
 use App\Http\Controllers\OwnerAuditController;
 use App\Http\Controllers\OwnerSupportController;
 use App\Http\Controllers\OwnerSchoolController;
+use App\Http\Controllers\OwnerTeamController;
 use App\Http\Controllers\SupportArticleController;
 use App\Http\Controllers\SupportHomeController;
 use App\Http\Controllers\SupportTicketController;
@@ -43,6 +44,10 @@ Route::middleware(['platform.host', 'auth', 'platform.permission:platform.school
     Route::get('/{school}/edit', [OwnerSchoolController::class, 'edit'])->name('owner.schools.edit');
     Route::put('/{school}', [OwnerSchoolController::class, 'update'])->name('owner.schools.update');
     Route::post('/{school}/toggle', [OwnerSchoolController::class, 'toggle'])->name('owner.schools.toggle');
+});
+Route::middleware(['platform.host', 'auth', 'platform.permission:platform.team.manage'])->prefix('owner/team')->group(function () {
+    Route::get('/', [OwnerTeamController::class, 'index'])->name('owner.team.index');
+    Route::post('/{user}/role', [OwnerTeamController::class, 'updateRole'])->name('owner.team.role');
 });
 Route::middleware(['platform.host', 'auth', 'platform.permission:platform.audit.view'])->get('/owner/audit', OwnerAuditController::class)->name('owner.audit');
 Route::middleware(['platform.host', 'auth', 'platform.permission:platform.support.view'])->prefix('owner/support')->group(function () {
