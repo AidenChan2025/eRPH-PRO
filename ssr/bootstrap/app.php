@@ -22,8 +22,8 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        $middleware->prependToGroup('web', ConfigureHostSessionCookie::class);
         $middleware->prependToGroup('web', \App\Http\Middleware\ResolveTenantContext::class);
+        $middleware->prependToGroup('web', ConfigureHostSessionCookie::class);
         $middleware->appendToGroup('web', BindAuthenticatedSessionToHost::class);
         $middleware->alias([
             'school' => ResolveSchool::class,

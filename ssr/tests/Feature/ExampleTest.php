@@ -1300,15 +1300,42 @@ class ExampleTest extends TestCase
 
     public function test_platform_school_and_support_sessions_use_separate_host_only_cookies(): void
     {
-        $middleware = app(\App\Http\Middleware\ConfigureHostSessionCookie::class);
-        foreach ([
+        $sessionDir = sys_get_temp_dir().'/erph-host-session-'.bin2hex(random_bytes(4));
+        mkdir($sessionDir, 0700, true);
+        config(['session.driver' => 'file', 'session.files' => $sessionDir]);
+        \Illuminate\Support\Facades\Route::get('/__test/session-cookie', function (\Illuminate\Http\Request $request) {
+            $seen = $request->session()->get('host-session-probe');
+            $request->session()->put('host-session-probe', 'ok');
+
+            return response()->json(['seen' => $seen, 'host' => $request->getHost(), 'cookie' => config('session.cookie')]);
+        })->middleware('web');
+
+        $responses = [];
+        $firstCookieNames = [];
+        try {
+            foreach ([
             'erphpro.com' => 'erph-platform-session',
             'demo.erphpro.com' => 'erph-school-session',
             'support.erphpro.com' => 'erph-support-session',
-        ] as $host => $expectedCookie) {
-            $middleware->handle(\Illuminate\Http\Request::create('https://'.$host.'/'), fn () => response('ok'));
-            $this->assertSame($expectedCookie, config('session.cookie'));
-            $this->assertNull(config('session.domain'));
+            ] as $host => $expectedCookie) {
+            $first = app()->handle(\Illuminate\Http\Request::create('https://'.$host.'/__test/session-cookie'));
+            $cookie = collect($first->headers->getCookies())->first(fn ($cookie) => $cookie->getName() === $expectedCookie);
+            $this->assertNotNull($cookie, "Expected {$expectedCookie} from {$host}; got ".implode(',', array_map(fn ($item) => $item->getName(), $first->headers->getCookies())).' body='.$first->getContent());
+            $this->assertNull($cookie->getDomain());
+            $firstCookieNames[$host] = array_map(fn ($item) => $item->getName(), $first->headers->getCookies());
+            $secondRequest = \Illuminate\Http\Request::create('https://'.$host.'/__test/session-cookie', 'GET', [], [$expectedCookie => $cookie->getValue()]);
+            $responses[$host] = app()->handle($secondRequest);
+            $this->assertSame('ok', json_decode($responses[$host]->getContent(), true)['seen'] ?? null);
+            }
+
+            $platformNames = $firstCookieNames['erphpro.com'];
+            $schoolNames = $firstCookieNames['demo.erphpro.com'];
+            $this->assertContains('erph-platform-session', $platformNames);
+            $this->assertContains('erph-school-session', $schoolNames);
+            $this->assertNotContains('erph-school-session', $platformNames);
+            $this->assertNotContains('erph-platform-session', $schoolNames);
+        } finally {
+            \Illuminate\Support\Facades\File::deleteDirectory($sessionDir);
         }
     }
 

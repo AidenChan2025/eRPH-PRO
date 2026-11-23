@@ -26,6 +26,9 @@ class ConfigureHostSessionCookie
             'session.domain' => null,
             'session.path' => '/',
         ]);
+        // Keep a long-lived worker or feature-test application's existing
+        // session store aligned with the per-host cookie selected above.
+        app('session')->driver()->setName($cookie);
 
         return $next($request);
     }
