@@ -32,13 +32,15 @@ Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])
     ->middleware(\App\Http\Middleware\PreventSensitiveResponseCaching::class)
     ->name('auth.google.callback');
 Route::post('/auth/google/one-tap', [GoogleAuthController::class, 'oneTap'])->name('auth.google.one-tap')->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
-Route::middleware(['platform.host', 'auth', 'platform.owner'])->get('/owner', OwnerController::class)->name('owner.dashboard');
-Route::middleware(['platform.host', 'auth', 'platform.owner'])->get('/owner/audit', OwnerAuditController::class)->name('owner.audit');
-Route::middleware(['platform.host', 'auth', 'platform.owner'])->prefix('owner/support')->group(function () {
+Route::middleware(['platform.host', 'auth', 'platform.permission:platform.dashboard.view'])->get('/owner', OwnerController::class)->name('owner.dashboard');
+Route::middleware(['platform.host', 'auth', 'platform.permission:platform.audit.view'])->get('/owner/audit', OwnerAuditController::class)->name('owner.audit');
+Route::middleware(['platform.host', 'auth', 'platform.permission:platform.support.view'])->prefix('owner/support')->group(function () {
     Route::get('/', [OwnerSupportController::class, 'index'])->name('owner.support.index');
     Route::get('/{publicId}', [OwnerSupportController::class, 'show'])->name('owner.support.show');
-    Route::put('/{publicId}', [OwnerSupportController::class, 'update'])->name('owner.support.update');
-    Route::post('/{publicId}/reply', [OwnerSupportController::class, 'reply'])->name('owner.support.reply');
+    Route::middleware('platform.permission:platform.support.write')->group(function () {
+        Route::put('/{publicId}', [OwnerSupportController::class, 'update'])->name('owner.support.update');
+        Route::post('/{publicId}/reply', [OwnerSupportController::class, 'reply'])->name('owner.support.reply');
+    });
 });
 
 Route::domain(config('support.host'))->middleware('support.host')->group(function () {

@@ -1703,4 +1703,27 @@ class ExampleTest extends TestCase
         $this->assertDatabaseHas('google_identities', ['id' => $backup->id, 'is_primary' => true, 'unlinked_at' => null]);
         $this->assertDatabaseHas('audit_logs', ['action' => 'auth.google_identity_unlinked', 'actor_id' => $user->id]);
     }
+
+    public function test_platform_permissions_are_explicit_and_default_deny(): void
+    {
+        $security = User::factory()->create(['platform_role' => 'security']);
+        $support = User::factory()->create(['platform_role' => 'support']);
+        $schoolUser = User::factory()->create(['platform_role' => null]);
+
+        $this->actingAs($security)->get('http://erphpro.com/owner')->assertOk();
+        $this->actingAs($security)->get('http://erphpro.com/owner/audit')->assertOk();
+        $this->actingAs($security)->get('http://erphpro.com/owner/support')->assertForbidden();
+        $this->actingAs($support)->get('http://erphpro.com/owner')->assertOk();
+        $this->actingAs($support)->get('http://erphpro.com/owner/audit')->assertForbidden();
+        $this->actingAs($schoolUser)->get('http://erphpro.com/owner')->assertForbidden();
+    }
+
+    public function test_platform_support_writes_require_a_separate_write_permission(): void
+    {
+        $support = User::factory()->create(['platform_role' => 'support']);
+
+        $this->actingAs($support)->put('http://erphpro.com/owner/support/missing-ticket', [
+            'status' => 'closed',
+        ])->assertForbidden();
+    }
 }

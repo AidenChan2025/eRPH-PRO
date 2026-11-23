@@ -1,6 +1,39 @@
 <?php
 
 return [
+    'platform_roles' => [
+        'owner' => [
+            'platform.dashboard.view',
+            'platform.schools.view',
+            'platform.schools.manage',
+            'platform.team.manage',
+            'platform.accounts.manage',
+            'platform.audit.view',
+            'platform.support.view',
+            'platform.support.write',
+            'platform.runtime.view',
+            'platform.settings.manage',
+        ],
+        'security' => [
+            'platform.dashboard.view',
+            'platform.schools.view',
+            'platform.audit.view',
+            'platform.runtime.view',
+        ],
+        'support' => [
+            'platform.dashboard.view',
+            'platform.schools.view',
+            'platform.support.view',
+        ],
+        'operations' => [
+            'platform.dashboard.view',
+            'platform.schools.view',
+            'platform.runtime.view',
+        ],
+        'content' => [
+            'platform.dashboard.view',
+        ],
+    ],
     'roles' => [
         'teacher' => [
             'teacher.records.view_own',

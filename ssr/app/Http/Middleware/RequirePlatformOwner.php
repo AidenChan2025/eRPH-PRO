@@ -10,7 +10,7 @@ class RequirePlatformOwner
 {
     public function handle(Request $request, Closure $next): Response
     {
-        abort_unless($request->user()?->platform_role === 'owner', 403);
+        abort_unless(in_array($request->user()?->platform_role, array_keys(config('permissions.platform_roles', [])), true), 403);
 
         return $next($request);
     }
