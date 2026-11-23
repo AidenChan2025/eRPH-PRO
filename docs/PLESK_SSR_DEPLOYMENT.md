@@ -10,6 +10,12 @@ The Git Repositories view showed `eRPH-PRO.git` using `git@github.com:AidenChan2
 
 The Plesk PHP Composer page for this domain offered only a scan for Composer applications under `/erphpro.com/ssr`; the read-only scan did not return an application result during the observation. It did not provide a usable CLI Composer path, so the failed hook remains unresolved. No Composer installation, dependency update, or settings save was performed.
 
+### Live runtime recheck (2026-11-23, Codex internal browser, read-only)
+
+The authenticated Plesk SSH Terminal was rechecked without changing files, settings, databases, or deployment state. The single working directory `/home/w4chinese.com/erphpro.com` contains `ssr/artisan` and an executable `ssr/bin/composer`, but it is not a Git worktree and does not contain `scripts/deploy-ssr-development.sh`. The Plesk CLI reported PHP `8.3.37`, Laravel `12.73.0`, and Composer `2.11.2` when the application-local Composer was invoked through the PHP 8.3 binary.
+
+From that same SSH session, `GET https://erphpro.com/health` returned HTTP 200 JSON with `status=ok`, `database=ok`, `cache=ok`, and configured release label `0973ac7474e915ed6cd9027829c47f547daad043`. A header-only request to `/` returned HTTP/2 200 and `x-powered-by: PHP/8.3.37`. This is current point-in-time availability and runtime evidence; it does not prove that candidate SHA `6522bf2d1f909999aed988df8c37fedd8fc347f6` is deployed, because the served release label differs and the live directory has no Git provenance. No Plesk Pull/Deploy/Apply action was triggered.
+
 Read-only SSH Terminal follow-up identified two executable Composer-related paths: `/home/w4chinese.com/.phpenv/shims/composer` and `/home/w4chinese.com/erphpro.com/ssr/bin/composer`. The phpenv shim reported `phpenv: composer: command not found`, while the application-local Composer reported Composer `2.11.2` and PHP `8.1.34`. The Plesk PHP 8.3 CLI was independently verified at `/opt/plesk/php/8.3/bin/php` and reported PHP `8.3.37`. The candidate hook invokes Composer through its selected `SSR_PHP_BIN`, so the evidence-backed candidate settings are `SSR_PHP_BIN=/opt/plesk/php/8.3/bin/php` and `SSR_COMPOSER_BIN=/home/w4chinese.com/erphpro.com/ssr/bin/composer`. These values have not been written to Plesk; a controlled deployment retry and its timestamped result remain outstanding.
 
 ## Development-stage operating mode
