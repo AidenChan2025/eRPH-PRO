@@ -1302,6 +1302,13 @@ class ExampleTest extends TestCase
     {
         $sessionDir = sys_get_temp_dir().'/erph-host-session-'.bin2hex(random_bytes(4));
         mkdir($sessionDir, 0700, true);
+        $originalSessionConfig = [
+            'session.driver' => config('session.driver'),
+            'session.files' => config('session.files'),
+            'session.cookie' => config('session.cookie'),
+            'session.domain' => config('session.domain'),
+            'session.path' => config('session.path'),
+        ];
         config(['session.driver' => 'file', 'session.files' => $sessionDir]);
         \Illuminate\Support\Facades\Route::get('/__test/session-cookie', function (\Illuminate\Http\Request $request) {
             $seen = $request->session()->get('host-session-probe');
@@ -1335,6 +1342,8 @@ class ExampleTest extends TestCase
             $this->assertNotContains('erph-school-session', $platformNames);
             $this->assertNotContains('erph-platform-session', $schoolNames);
         } finally {
+            config($originalSessionConfig);
+            app('session')->forgetDrivers();
             \Illuminate\Support\Facades\File::deleteDirectory($sessionDir);
         }
     }
