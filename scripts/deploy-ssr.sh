@@ -5,6 +5,7 @@ set -Eeuo pipefail
 # preconfigured `current` symlink only after all local checks pass.
 HOOK_WORKING_DIR="$PWD"
 GIT_SOURCE_DIR="${SSR_GIT_DIR:-$HOOK_WORKING_DIR}"
+SSR_REPOSITORY_DIR="${SSR_REPOSITORY_DIR:-}"
 SSR_APP_DIR="${SSR_APP_DIR:-$GIT_SOURCE_DIR/ssr}"
 SSR_RELEASES_DIR="${SSR_RELEASES_DIR:-}"
 SSR_CURRENT_LINK="${SSR_CURRENT_LINK:-}"
@@ -32,11 +33,18 @@ for path_name in SSR_RELEASES_DIR SSR_CURRENT_LINK SSR_SHARED_DIR SSR_DOCUMENT_R
 done
 
 if [[ ! -d "$GIT_SOURCE_DIR" || ! -d "$SSR_APP_DIR" ]]; then
-  echo "SSR deployment aborted: Git checkout or Laravel source directory is missing." >&2
+  echo "SSR deployment aborted: deployed source or Laravel source directory is missing." >&2
   exit 1
 fi
 GIT_SOURCE_DIR="$(cd "$GIT_SOURCE_DIR" && pwd -P)"
 SSR_APP_DIR="$(cd "$SSR_APP_DIR" && pwd -P)"
+if [[ -n "$SSR_REPOSITORY_DIR" ]]; then
+  if [[ ! -d "$SSR_REPOSITORY_DIR" ]]; then
+    echo "SSR deployment aborted: SSR_REPOSITORY_DIR does not exist." >&2
+    exit 1
+  fi
+  SSR_REPOSITORY_DIR="$(cd "$SSR_REPOSITORY_DIR" && pwd -P)"
+fi
 if [[ ! -d "$SSR_DOCUMENT_ROOT" ]]; then
   echo "SSR deployment aborted: SSR_DOCUMENT_ROOT must resolve to the active document-root directory." >&2
   exit 1
@@ -121,13 +129,21 @@ for extension in ctype fileinfo mbstring openssl pdo pdo_mysql tokenizer xml; do
   fi
 done
 
-release_version="$(git -C "$GIT_SOURCE_DIR" rev-parse --verify 'HEAD^{commit}' 2>/dev/null || true)"
+if [[ -n "$SSR_REPOSITORY_DIR" ]]; then
+  release_version="$(git --git-dir="$SSR_REPOSITORY_DIR" rev-parse --verify 'refs/heads/main^{commit}' 2>/dev/null || git --git-dir="$SSR_REPOSITORY_DIR" rev-parse --verify 'HEAD^{commit}' 2>/dev/null || true)"
+else
+  release_version="$(git -C "$GIT_SOURCE_DIR" rev-parse --verify 'HEAD^{commit}' 2>/dev/null || true)"
+fi
 if [[ ! "$release_version" =~ ^[0-9a-f]{40}$ ]]; then
-  echo "SSR deployment aborted: unable to resolve a 40-character commit SHA from $GIT_SOURCE_DIR." >&2
+  echo "SSR deployment aborted: unable to resolve a 40-character commit SHA from the configured Git source." >&2
   exit 1
 fi
-if [[ ! -d "$GIT_SOURCE_DIR/.git" && ! -f "$GIT_SOURCE_DIR/.git" ]]; then
+if [[ -z "$SSR_REPOSITORY_DIR" && ! -d "$GIT_SOURCE_DIR/.git" && ! -f "$GIT_SOURCE_DIR/.git" ]]; then
   echo "SSR deployment aborted: $GIT_SOURCE_DIR is not a Git checkout." >&2
+  exit 1
+fi
+if [[ -n "$SSR_REPOSITORY_DIR" && ! -f "$SSR_REPOSITORY_DIR/HEAD" ]]; then
+  echo "SSR deployment aborted: SSR_REPOSITORY_DIR is not a Git repository." >&2
   exit 1
 fi
 
@@ -250,8 +266,13 @@ else
     "$SSR_SHARED_DIR/storage/logs" \
     "$SSR_SHARED_DIR/storage/app/public"
 
-  git -C "$GIT_SOURCE_DIR" archive --format=tar "$release_version" ssr \
-    | tar -xf - --strip-components=1 -C "$build_dir"
+  if [[ -n "$SSR_REPOSITORY_DIR" ]]; then
+    git --git-dir="$SSR_REPOSITORY_DIR" archive --format=tar "$release_version" ssr \
+      | tar -xf - --strip-components=1 -C "$build_dir"
+  else
+    git -C "$GIT_SOURCE_DIR" archive --format=tar "$release_version" ssr \
+      | tar -xf - --strip-components=1 -C "$build_dir"
+  fi
   if [[ ! -f "$build_dir/artisan" || ! -f "$build_dir/composer.lock" ]]; then
     echo "SSR deployment aborted: the selected Git commit does not contain the Laravel SSR application." >&2
     exit 1
