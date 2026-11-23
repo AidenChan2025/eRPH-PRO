@@ -1298,6 +1298,20 @@ class ExampleTest extends TestCase
         $this->assertGuest();
     }
 
+    public function test_platform_school_and_support_sessions_use_separate_host_only_cookies(): void
+    {
+        $middleware = app(\App\Http\Middleware\ConfigureHostSessionCookie::class);
+        foreach ([
+            'erphpro.com' => 'erph-platform-session',
+            'demo.erphpro.com' => 'erph-school-session',
+            'support.erphpro.com' => 'erph-support-session',
+        ] as $host => $expectedCookie) {
+            $middleware->handle(\Illuminate\Http\Request::create('https://'.$host.'/'), fn () => response('ok'));
+            $this->assertSame($expectedCookie, config('session.cookie'));
+            $this->assertNull(config('session.domain'));
+        }
+    }
+
     public function test_a_school_member_can_open_their_workspace(): void
     {
         $this->seed();
@@ -2255,8 +2269,8 @@ class ExampleTest extends TestCase
 
         $this->actingAs($owner)->get(route('owner.settings'))
             ->assertOk()
-            ->assertSee('domain-wide')
-            ->assertSee('configuration error');
+            ->assertSee('host-only')
+            ->assertDontSee('domain-wide');
     }
 
     public function test_platform_owner_can_assign_an_unmatched_account_once(): void

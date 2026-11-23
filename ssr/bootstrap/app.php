@@ -13,6 +13,7 @@ use App\Http\Middleware\ResolveSupportHost;
 use App\Http\Middleware\RequirePlatformHost;
 use App\Http\Middleware\BindAuthenticatedSessionToHost;
 use App\Http\Middleware\RequirePlatformAuthentication;
+use App\Http\Middleware\ConfigureHostSessionCookie;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -21,6 +22,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        $middleware->prependToGroup('web', ConfigureHostSessionCookie::class);
         $middleware->prependToGroup('web', \App\Http\Middleware\ResolveTenantContext::class);
         $middleware->appendToGroup('web', BindAuthenticatedSessionToHost::class);
         $middleware->alias([

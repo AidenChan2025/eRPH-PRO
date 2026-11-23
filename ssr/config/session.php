@@ -132,6 +132,10 @@ return [
         Str::slug((string) env('APP_NAME', 'laravel')).'-session'
     ),
 
+    'platform_cookie' => env('SESSION_PLATFORM_COOKIE', 'erph-platform-session'),
+    'school_cookie' => env('SESSION_SCHOOL_COOKIE', 'erph-school-session'),
+    'support_cookie' => env('SESSION_SUPPORT_COOKIE', 'erph-support-session'),
+
     /*
     |--------------------------------------------------------------------------
     | Session Cookie Path
