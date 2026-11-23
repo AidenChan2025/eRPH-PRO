@@ -1565,6 +1565,11 @@ class ExampleTest extends TestCase
             'school_id' => $school->id, 'lesson_plan_id' => $plan->id, 'teacher_profile_id' => $profile->id,
             'week_no' => 3, 'submitted_at' => '2028-01-20 09:00:00', 'status' => 'late',
         ]);
+        $formerProfile = TeacherProfile::withoutGlobalScopes()->create(['school_id' => $school->id, 'user_id' => User::factory()->create()->id, 'employment_status' => 'inactive']);
+        LessonPlanSubmission::withoutGlobalScopes()->create([
+            'school_id' => $school->id, 'lesson_plan_id' => $plan->id, 'teacher_profile_id' => $formerProfile->id,
+            'week_no' => 4, 'submitted_at' => '2028-01-25 09:00:00', 'status' => 'late',
+        ]);
         $otherSchool = School::create(['name' => 'Other report school', 'slug' => 'other-report-school', 'subdomain' => 'other-report-school']);
         $otherProfile = TeacherProfile::withoutGlobalScopes()->create(['school_id' => $otherSchool->id, 'user_id' => User::factory()->create()->id, 'employment_status' => 'active']);
         $otherPlan = LessonPlan::withoutGlobalScopes()->create([
@@ -1579,8 +1584,10 @@ class ExampleTest extends TestCase
         $this->actingAs($admin)->get('http://demo.erphpro.com/reports?from=2028-01-01&to=2028-01-31&status=late')
             ->assertOk()
             ->assertSee('Teachers submitted')
-            ->assertSee('2 total submission records')
-            ->assertSee('1 match the selected status filter')
+            ->assertSee('3 total submission records')
+            ->assertSee('2 match the selected status filter')
+            ->assertSee('1 of 1 teachers submitted')
+            ->assertSee('100%')
             ->assertSee('Late')
             ->assertDontSee('Other report school');
     }

@@ -27,7 +27,10 @@ class SchoolReportController extends Controller
             ->when($status !== '', fn ($query) => $query->where('status', $status));
         $activeTeachers = TeacherProfile::where('school_id', $school->id)->where('employment_status', 'active')->count();
         $submittedRecords = $period(LessonPlanSubmission::query())->count();
-        $submittedTeachers = $period(LessonPlanSubmission::query())->distinct('teacher_profile_id')->count('teacher_profile_id');
+        $submittedTeachers = $period(LessonPlanSubmission::query())
+            ->whereHas('teacherProfile', fn ($query) => $query->where('employment_status', 'active'))
+            ->distinct('teacher_profile_id')
+            ->count('teacher_profile_id');
         $onTime = $period(LessonPlanSubmission::query())->where('status', 'on_time')->count();
         $late = $period(LessonPlanSubmission::query())->where('status', 'late')->count();
         $pendingTeachers = max($activeTeachers - $submittedTeachers, 0);
