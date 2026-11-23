@@ -13,7 +13,9 @@ class OwnerSettingsController extends Controller
                 'DeepSeek integration' => filled(config('services.deepseek.api_key')),
                 'Queue connection' => (string) config('queue.default'),
                 'Session driver' => (string) config('session.driver'),
-                'Session cookie domain' => config('session.domain') ?: 'host-only',
+                'Session cookie scope' => filled(config('session.domain'))
+                    ? 'domain-wide (configuration error: expected host-only)'
+                    : 'host-only',
             ],
         ]);
     }

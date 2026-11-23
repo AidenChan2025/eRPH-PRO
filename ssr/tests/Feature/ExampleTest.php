@@ -2110,6 +2110,29 @@ class ExampleTest extends TestCase
         $this->actingAs($security)->get(route('owner.settings'))->assertForbidden();
     }
 
+    public function test_global_settings_labels_host_only_session_scope_without_echoing_configuration_values(): void
+    {
+        $owner = User::factory()->create([
+            'platform_role' => 'owner',
+            'platform_mfa_confirmed_at' => now(),
+        ]);
+
+        config(['session.domain' => null]);
+
+        $this->actingAs($owner)->get(route('owner.settings'))
+            ->assertOk()
+            ->assertSee('Session cookie scope')
+            ->assertSee('host-only')
+            ->assertDontSee('domain-wide');
+
+        config(['session.domain' => '.erphpro.com']);
+
+        $this->actingAs($owner)->get(route('owner.settings'))
+            ->assertOk()
+            ->assertSee('domain-wide')
+            ->assertSee('configuration error');
+    }
+
     public function test_platform_owner_can_assign_an_unmatched_account_once(): void
     {
         $this->seed();
