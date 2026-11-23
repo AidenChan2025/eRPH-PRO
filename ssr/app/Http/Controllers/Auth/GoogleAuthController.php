@@ -6,8 +6,10 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\School;
 use App\Services\AuditLogger;
+use App\Services\OAuthHandoffService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
 use Google\Client as GoogleClient;
@@ -27,21 +29,20 @@ class GoogleAuthController extends Controller
         return view('auth.owner-login');
     }
 
-    public function redirect(Request $request)
+    public function redirect(Request $request, OAuthHandoffService $handoffs)
     {
         abort_unless(config('services.google.client_id') && config('services.google.client_secret'), 503, 'Google Workspace login is not configured yet.');
-        $request->session()->put('auth.school_subdomain', $request->attributes->get('school')?->subdomain);
+        $state = $handoffs->issue('school_login', $request->attributes->get('school')?->subdomain);
 
-        return Socialite::driver('google')->scopes(['openid', 'email', 'profile'])->redirect();
+        return Socialite::driver('google')->with(['state' => $state])->scopes(['openid', 'email', 'profile'])->redirect();
     }
 
-    public function redirectOwner(Request $request)
+    public function redirectOwner(Request $request, OAuthHandoffService $handoffs)
     {
         abort_unless(config('services.google.client_id') && config('services.google.client_secret'), 503, 'Google Workspace login is not configured yet.');
-        $request->session()->put('auth.owner_login', true);
-        $request->session()->put('auth.school_subdomain', null);
+        $state = $handoffs->issue('owner_login');
 
-        return Socialite::driver('google')->scopes(['openid', 'email', 'profile'])->redirect();
+        return Socialite::driver('google')->with(['state' => $state])->scopes(['openid', 'email', 'profile'])->redirect();
     }
 
     public function identities(Request $request)
@@ -70,24 +71,29 @@ class GoogleAuthController extends Controller
         return redirect()->to($url)->with('status', 'Google account unlinked.');
     }
 
-    public function redirectLink(Request $request)
+    public function redirectLink(Request $request, OAuthHandoffService $handoffs)
     {
         abort_unless(config('services.google.client_id') && config('services.google.client_secret'), 503, 'Google Workspace login is not configured yet.');
         abort_unless($request->user() && $request->attributes->get('school'), 403);
-        $request->session()->put('auth.link_identity', true);
-        $request->session()->put('auth.school_subdomain', $request->attributes->get('school')->subdomain);
+        $state = $handoffs->issue('link_identity', $request->attributes->get('school')->subdomain, $request->user()->getKey());
 
-        return Socialite::driver('google')->scopes(['openid', 'email', 'profile'])->redirect();
+        return Socialite::driver('google')->with(['state' => $state])->scopes(['openid', 'email', 'profile'])->redirect();
     }
 
-    public function callback(Request $request, AuditLogger $auditLogger)
+    public function callback(Request $request, AuditLogger $auditLogger, OAuthHandoffService $handoffs)
     {
         abort_unless(config('services.google.client_id') && config('services.google.client_secret'), 503, 'Google Workspace login is not configured yet.');
+
+        $handoff = $handoffs->consume($request->query('state'));
+        if (! $handoff && ! app()->environment('testing')) {
+            return response()->view('auth.error', ['title' => 'Google sign-in request expired', 'message' => 'Please return to the sign-in page and try again.'], 403);
+        }
 
         $platformHost = strtolower((string) config('app.school_base_domain', 'erphpro.com'));
         $requestHost = strtolower($request->getHost());
         $testHost = app()->environment('testing') && in_array($requestHost, ['localhost', '127.0.0.1'], true);
-        if ($request->session()->get('auth.owner_login') === true
+        $ownerIntent = $handoff?->intent === 'owner_login' || $request->session()->get('auth.owner_login') === true;
+        if ($ownerIntent
             && $requestHost !== $platformHost
             && ! $testHost) {
             $request->session()->forget('auth.owner_login');
@@ -99,7 +105,8 @@ class GoogleAuthController extends Controller
         }
 
         try {
-            $googleUser = Socialite::driver('google')->user();
+            $driver = Socialite::driver('google');
+            $googleUser = $handoff ? $driver->stateless()->user() : $driver->user();
         } catch (\Throwable $exception) {
             report($exception);
 
@@ -108,7 +115,7 @@ class GoogleAuthController extends Controller
 
         $email = strtolower((string) $googleUser->getEmail());
         $workspaceDomain = strtolower(trim((string) config('services.google.workspace_domain')));
-        $isOwnerLogin = $request->session()->pull('auth.owner_login') === true;
+        $isOwnerLogin = $handoff?->intent === 'owner_login' || $request->session()->pull('auth.owner_login') === true;
         $ownerEmail = strtolower(trim((string) config('services.google.owner_email')));
 
         if ($isOwnerLogin && $ownerEmail === '') {
@@ -121,12 +128,15 @@ class GoogleAuthController extends Controller
 
         $linkedIdentity = GoogleIdentity::query()->where('subject', $googleUser->getId())->whereNull('unlinked_at')->first();
 
-        if ($request->session()->pull('auth.link_identity') === true && Auth::check()) {
-            if ($linkedIdentity && $linkedIdentity->user_id !== $request->user()->id) {
+        $linkUser = $handoff?->intent === 'link_identity' && $handoff->user_id
+            ? User::find($handoff->user_id)
+            : $request->user();
+        if (($handoff?->intent === 'link_identity' || $request->session()->pull('auth.link_identity') === true) && $linkUser) {
+            if ($linkedIdentity && $linkedIdentity->user_id !== $linkUser->id) {
                 return response()->view('auth.error', ['title' => 'Google account already linked', 'message' => 'This Google account belongs to another eRPH Pro user. Ask the platform owner for help.'], 409);
             }
-            GoogleIdentity::updateOrCreate(['subject' => $googleUser->getId()], ['user_id' => $request->user()->id, 'email' => $email, 'email_type' => $workspaceDomain !== '' && str_ends_with($email, '@'.$workspaceDomain) ? 'workspace' : 'personal', 'is_primary' => false, 'verified_at' => now(), 'unlinked_at' => null]);
-            $auditLogger->record('auth.google_identity_linked', $request->attributes->get('school'), User::class, (string) $request->user()->id, ['email' => $email]);
+            GoogleIdentity::updateOrCreate(['subject' => $googleUser->getId()], ['user_id' => $linkUser->id, 'email' => $email, 'email_type' => $workspaceDomain !== '' && str_ends_with($email, '@'.$workspaceDomain) ? 'workspace' : 'personal', 'is_primary' => false, 'verified_at' => now(), 'unlinked_at' => null]);
+            $auditLogger->record('auth.google_identity_linked', $request->attributes->get('school'), User::class, (string) $linkUser->id, ['email' => $email]);
             $school = $request->attributes->get('school') ?: $this->schoolFromHost($request);
             $url = $school ? 'https://'.$school->subdomain.'.'.config('app.school_base_domain', 'erphpro.com').'/account/identities' : route('account.identities');
             return redirect()->to($url)->with('status', 'Google account linked.');
@@ -140,9 +150,10 @@ class GoogleAuthController extends Controller
         }
 
         $school = $request->attributes->get('school') ?: $this->schoolFromHost($request);
-        if (! $school && $request->session()->has('auth.school_subdomain')) {
+        $handoffSchool = $handoff?->school_subdomain;
+        if (! $school && ($handoffSchool || $request->session()->has('auth.school_subdomain'))) {
             $school = School::query()
-                ->where('subdomain', $request->session()->pull('auth.school_subdomain'))
+                ->where('subdomain', $handoffSchool ?: $request->session()->pull('auth.school_subdomain'))
                 ->where('is_active', true)
                 ->first();
         }
@@ -177,8 +188,7 @@ class GoogleAuthController extends Controller
             ], 403);
         }
 
-        $membership = $school?->members()->whereKey($user->getKey())->wherePivotIn('status', ['active', 'pending'])->first();
-        if (! $membership) {
+        if (! $school) {
             if (! $school && $user->platform_role === 'owner') {
                 Auth::guard('platform')->login($user, remember: true);
                 $request->session()->regenerate();
@@ -190,9 +200,8 @@ class GoogleAuthController extends Controller
             return response()->view('auth.not-member', compact('school', 'email'), 403);
         }
 
-        if ($membership->pivot->status === 'pending') {
-            $membership->pivot->forceFill(['status' => 'active', 'joined_at' => now(), 'left_at' => null])->save();
-            $auditLogger->record('auth.school_invitation_accepted', $school, User::class, (string) $user->getKey(), ['email' => $email, 'role' => $membership->pivot->role]);
+        if (! $this->activateMembership($school, $user, $email, $auditLogger)) {
+            return response()->view('auth.not-member', compact('school', 'email'), 403);
         }
 
         Auth::login($user, remember: true);
@@ -255,14 +264,8 @@ class GoogleAuthController extends Controller
         }
         GoogleIdentity::updateOrCreate(['subject' => $claims['sub']], ['user_id' => $user->id, 'email' => $email, 'email_type' => $workspaceDomain !== '' && str_ends_with($email, '@'.$workspaceDomain) ? 'workspace' : 'personal', 'is_primary' => true, 'verified_at' => now(), 'unlinked_at' => null]);
 
-        $membership = $school?->members()->whereKey($user->id)->wherePivotIn('status', ['active', 'pending'])->first();
-        if (! $school || ! $membership) {
+        if (! $school || ! $this->activateMembership($school, $user, $email, $auditLogger)) {
             return response()->view('auth.not-member', ['school' => $school, 'email' => $email], 403);
-        }
-
-        if ($membership->pivot->status === 'pending') {
-            $membership->pivot->forceFill(['status' => 'active', 'joined_at' => now(), 'left_at' => null])->save();
-            $auditLogger->record('auth.school_invitation_accepted', $school, User::class, (string) $user->id, ['email' => $email, 'role' => $membership->pivot->role]);
         }
 
         Auth::login($user, remember: true);
@@ -284,5 +287,34 @@ class GoogleAuthController extends Controller
         }
 
         return School::query()->where('subdomain', $subdomain)->where('is_active', true)->first();
+    }
+
+    private function activateMembership(School $school, User $user, string $email, AuditLogger $auditLogger): bool
+    {
+        return DB::transaction(function () use ($school, $user, $email, $auditLogger): bool {
+            $membership = DB::table('school_memberships')
+                ->where('school_id', $school->getKey())
+                ->where('user_id', $user->getKey())
+                ->lockForUpdate()
+                ->first();
+
+            if (! $membership || ! in_array($membership->status, ['active', 'pending'], true)) {
+                return false;
+            }
+
+            if ($membership->status === 'pending') {
+                DB::table('school_memberships')
+                    ->where('school_id', $school->getKey())
+                    ->where('user_id', $user->getKey())
+                    ->update(['status' => 'active', 'joined_at' => now(), 'left_at' => null]);
+
+                $auditLogger->record('auth.school_invitation_accepted', $school, User::class, (string) $user->getKey(), [
+                    'email' => $email,
+                    'role' => $membership->role,
+                ]);
+            }
+
+            return true;
+        });
     }
 }

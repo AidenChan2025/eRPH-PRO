@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 class PlatformMfaService
 {
     public function issueSecret(): string
@@ -69,38 +70,42 @@ class PlatformMfaService
 
     public function consumeRecoveryCode(User $user, string $code): bool
     {
-        if (! $user->platform_mfa_recovery_codes) {
-            return false;
-        }
-
         $normalized = strtoupper(preg_replace('/[^A-Z0-9]/', '', $code) ?? '');
         if ($normalized === '') {
             return false;
         }
 
-        try {
-            $hashes = json_decode(decrypt($user->platform_mfa_recovery_codes), true, 512, JSON_THROW_ON_ERROR);
-        } catch (\Throwable) {
-            return false;
-        }
-
-        if (! is_array($hashes)) {
-            return false;
-        }
-        foreach ($hashes as $index => $hash) {
-            if (! is_string($hash) || ! hash_equals($hash, $this->recoveryDigest($normalized))) {
-                continue;
+        return DB::transaction(function () use ($user, $normalized): bool {
+            $lockedUser = User::query()->whereKey($user->getKey())->lockForUpdate()->first();
+            if (! $lockedUser?->platform_mfa_recovery_codes) {
+                return false;
             }
 
-            unset($hashes[$index]);
-            $user->forceFill([
-                'platform_mfa_recovery_codes' => encrypt(json_encode(array_values($hashes), JSON_THROW_ON_ERROR)),
-            ])->save();
+            try {
+                $hashes = json_decode(decrypt($lockedUser->platform_mfa_recovery_codes), true, 512, JSON_THROW_ON_ERROR);
+            } catch (\Throwable) {
+                return false;
+            }
 
-            return true;
-        }
+            if (! is_array($hashes)) {
+                return false;
+            }
 
-        return false;
+            foreach ($hashes as $index => $hash) {
+                if (! is_string($hash) || ! hash_equals($hash, $this->recoveryDigest($normalized))) {
+                    continue;
+                }
+
+                unset($hashes[$index]);
+                $lockedUser->forceFill([
+                    'platform_mfa_recovery_codes' => encrypt(json_encode(array_values($hashes), JSON_THROW_ON_ERROR)),
+                ])->save();
+
+                return true;
+            }
+
+            return false;
+        });
     }
 
     private function recoveryDigest(string $code): string

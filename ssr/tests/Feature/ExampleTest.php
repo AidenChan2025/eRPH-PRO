@@ -1162,6 +1162,17 @@ class ExampleTest extends TestCase
         $this->assertDatabaseHas('users', ['email' => 'owner@example.com', 'platform_role' => 'owner']);
     }
 
+    public function test_oauth_handoff_is_single_use_and_expires_server_side(): void
+    {
+        $service = app(\App\Services\OAuthHandoffService::class);
+        $state = $service->issue('school_login', 'demo');
+
+        $handoff = $service->consume($state);
+        $this->assertSame('school_login', $handoff?->intent);
+        $this->assertSame('demo', $handoff?->school_subdomain);
+        $this->assertNull($service->consume($state));
+    }
+
     public function test_authenticated_school_user_can_log_out_and_invalidate_session(): void
     {
         $this->seed();
