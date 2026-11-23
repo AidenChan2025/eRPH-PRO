@@ -1709,6 +1709,7 @@ class ExampleTest extends TestCase
         $security = User::factory()->create(['platform_role' => 'security']);
         $support = User::factory()->create(['platform_role' => 'support']);
         $schoolUser = User::factory()->create(['platform_role' => null]);
+        $content = User::factory()->create(['platform_role' => 'content']);
 
         $this->actingAs($security)->get('http://erphpro.com/owner')->assertOk();
         $this->actingAs($security)->get('http://erphpro.com/owner/audit')->assertOk();
@@ -1716,6 +1717,7 @@ class ExampleTest extends TestCase
         $this->actingAs($support)->get('http://erphpro.com/owner')->assertOk();
         $this->actingAs($support)->get('http://erphpro.com/owner/audit')->assertForbidden();
         $this->actingAs($schoolUser)->get('http://erphpro.com/owner')->assertForbidden();
+        $this->actingAs($content)->get('http://erphpro.com/owner')->assertOk()->assertSee('No schools registered.');
     }
 
     public function test_platform_support_writes_require_a_separate_write_permission(): void
