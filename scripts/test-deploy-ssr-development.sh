@@ -98,4 +98,11 @@ if run_hook >"$SANDBOX/out" 2>&1; then
   exit 1
 fi
 
+make_sandbox invalid_health_url
+if SSR_HEALTH_URL='http://erphpro.com/health' run_hook >"$SANDBOX/out" 2>&1; then
+  echo 'Expected non-HTTPS health URL to stop direct deployment.' >&2
+  exit 1
+fi
+grep -q 'SSR_HEALTH_URL must use HTTPS' "$SANDBOX/out"
+
 echo 'Direct-development deployment hook self-check passed.'
