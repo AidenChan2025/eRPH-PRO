@@ -11,6 +11,8 @@ on:
       - 'ssr/**'
       - 'scripts/deploy-ssr.sh'
       - 'scripts/test-deploy-ssr.sh'
+      - 'scripts/deploy-ssr-development.sh'
+      - 'scripts/test-deploy-ssr-development.sh'
       - 'scripts/verify-ssr-production.sh'
       - 'scripts/test-verify-ssr-production.sh'
       - '.github/workflows/ssr.yml'
@@ -51,9 +53,11 @@ jobs:
         working-directory: .
         run: |
           bash -n scripts/deploy-ssr.sh
+          bash -n scripts/deploy-ssr-development.sh
           bash -n scripts/verify-ssr-production.sh
           bash -n scripts/test-verify-ssr-production.sh
           bash scripts/test-deploy-ssr.sh
+          bash scripts/test-deploy-ssr-development.sh
           bash scripts/test-verify-ssr-production.sh
 
       - name: Run SSR tests
