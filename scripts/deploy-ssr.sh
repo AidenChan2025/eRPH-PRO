@@ -298,6 +298,9 @@ if (( reuse_release == 0 )); then
   "$PHP_BIN" artisan route:cache
   "$PHP_BIN" artisan view:cache
   printf '%s\n' "$release_version" > "$build_dir/.deploy-release-sha"
+  # mktemp creates the build root as 0700; the web server must be able to
+  # traverse the immutable release while secrets remain in shared/.env.
+  chmod 755 "$build_dir"
   mv "$build_dir" "$release_dir"
   build_dir=""
 fi
