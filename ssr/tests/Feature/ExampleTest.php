@@ -1071,6 +1071,40 @@ class ExampleTest extends TestCase
         }
     }
 
+    public function test_health_endpoint_falls_back_when_deployment_sha_marker_is_invalid(): void
+    {
+        $marker = base_path('.deploy-release-sha');
+        $hadMarker = is_file($marker);
+        $originalMarker = $hadMarker ? file_get_contents($marker) : null;
+        file_put_contents($marker, "not-a-release-sha\n");
+
+        try {
+            $this->get('/health')->assertOk()->assertJsonPath('release', config('app.release_version'));
+        } finally {
+            if ($hadMarker) {
+                file_put_contents($marker, $originalMarker);
+            } else {
+                @unlink($marker);
+            }
+        }
+    }
+
+    public function test_health_endpoint_falls_back_when_deployment_sha_marker_is_missing(): void
+    {
+        $marker = base_path('.deploy-release-sha');
+        $hadMarker = is_file($marker);
+        $originalMarker = $hadMarker ? file_get_contents($marker) : null;
+        @unlink($marker);
+
+        try {
+            $this->get('/health')->assertOk()->assertJsonPath('release', config('app.release_version'));
+        } finally {
+            if ($hadMarker) {
+                file_put_contents($marker, $originalMarker);
+            }
+        }
+    }
+
     public function test_owner_login_entrypoint_is_available_on_the_base_domain(): void
     {
         $this->get('/owner/login')->assertOk()->assertSee('Platform owner');
