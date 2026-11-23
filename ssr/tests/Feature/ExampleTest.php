@@ -1053,6 +1053,18 @@ class ExampleTest extends TestCase
         $response->assertOk()->assertJsonPath('status', 'ok')->assertJsonPath('database', 'ok')->assertJsonPath('cache', 'ok')->assertJsonPath('runtime_file_sha256', hash_file('sha256', app_path('Http/Controllers/HealthController.php')));
     }
 
+    public function test_health_endpoint_prefers_a_valid_deployment_sha_marker(): void
+    {
+        $marker = base_path('.deploy-release-sha');
+        file_put_contents($marker, "0123456789abcdef0123456789abcdef01234567\n");
+
+        try {
+            $this->get('/health')->assertOk()->assertJsonPath('release', '0123456789abcdef0123456789abcdef01234567');
+        } finally {
+            @unlink($marker);
+        }
+    }
+
     public function test_owner_login_entrypoint_is_available_on_the_base_domain(): void
     {
         $this->get('/owner/login')->assertOk()->assertSee('Platform owner');

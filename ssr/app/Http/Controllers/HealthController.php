@@ -8,6 +8,21 @@ use Illuminate\Support\Facades\Route;
 
 class HealthController extends Controller
 {
+    private function releaseVersion(): string
+    {
+        $marker = base_path('.deploy-release-sha');
+
+        if (is_file($marker)) {
+            $release = trim((string) file_get_contents($marker));
+
+            if (preg_match('/\A[0-9a-f]{40}\z/', $release) === 1) {
+                return $release;
+            }
+        }
+
+        return (string) config('app.release_version');
+    }
+
     private function runtimeFileSha256(): string
     {
         return hash_file('sha256', __FILE__) ?: 'unavailable';
@@ -22,7 +37,7 @@ class HealthController extends Controller
             $database = 'ok';
         } catch (\Throwable $exception) {
             report($exception);
-            return response()->json(['status' => 'degraded', 'database' => 'failed', 'cache' => 'unknown', 'release' => config('app.release_version'), 'runtime_file_sha256' => $runtimeFileSha256], 503);
+            return response()->json(['status' => 'degraded', 'database' => 'failed', 'cache' => 'unknown', 'release' => $this->releaseVersion(), 'runtime_file_sha256' => $runtimeFileSha256], 503);
         }
 
         try {
@@ -39,7 +54,7 @@ class HealthController extends Controller
                 'status' => 'degraded',
                 'database' => $database,
                 'cache' => $cache,
-                'release' => config('app.release_version'),
+                'release' => $this->releaseVersion(),
                 'runtime_file_sha256' => $runtimeFileSha256,
             ], 503);
         }
@@ -48,7 +63,7 @@ class HealthController extends Controller
             'status' => 'ok',
             'database' => $database,
             'cache' => $cache,
-            'release' => config('app.release_version'),
+            'release' => $this->releaseVersion(),
             'runtime_file_sha256' => $runtimeFileSha256,
             'app' => config('app.name'),
         ]);
