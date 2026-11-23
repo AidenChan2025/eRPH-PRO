@@ -1056,12 +1056,18 @@ class ExampleTest extends TestCase
     public function test_health_endpoint_prefers_a_valid_deployment_sha_marker(): void
     {
         $marker = base_path('.deploy-release-sha');
+        $hadMarker = is_file($marker);
+        $originalMarker = $hadMarker ? file_get_contents($marker) : null;
         file_put_contents($marker, "0123456789abcdef0123456789abcdef01234567\n");
 
         try {
             $this->get('/health')->assertOk()->assertJsonPath('release', '0123456789abcdef0123456789abcdef01234567');
         } finally {
-            @unlink($marker);
+            if ($hadMarker) {
+                file_put_contents($marker, $originalMarker);
+            } else {
+                @unlink($marker);
+            }
         }
     }
 
