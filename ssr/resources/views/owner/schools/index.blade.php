@@ -1,1 +1,43 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Schools · Platform · eRPH Pro</title><style>:root{--ink:#172033;--muted:#687386;--blue:#2563eb;--line:#e5eaf2;--canvas:#f7f9fc}*{box-sizing:border-box}body{margin:0;background:var(--canvas);color:var(--ink);font:15px system-ui,sans-serif}.top{height:70px;padding:0 30px;display:flex;align-items:center;justify-content:space-between;background:#fff;border-bottom:1px solid var(--line)}.brand{font-weight:800}.top a,.button{color:var(--blue);text-decoration:none;font-weight:700}.main{max-width:980px;margin:auto;padding:42px 24px}.head{display:flex;align-items:flex-end;justify-content:space-between;gap:20px}.eyebrow{color:var(--blue);font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase}.title{margin:8px 0;font-size:34px;letter-spacing:-.05em}.muted{color:var(--muted);line-height:1.6}.card{margin-top:22px;padding:8px 20px;border:1px solid var(--line);border-radius:15px;background:#fff}.row{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:17px 0;border-bottom:1px solid var(--line)}.row:last-child{border-bottom:0}.row strong{display:block}.row span{color:var(--muted);font-size:12px}.actions{display:flex;align-items:center;gap:12px}.pill{padding:5px 9px;border-radius:99px;color:#16845a;background:#ecfdf5;font-size:11px;font-weight:700}.pill.off{color:#8a5a16;background:#fff7df}.button{border:0;border-radius:9px;background:var(--blue);color:#fff;padding:11px 14px;font:inherit;cursor:pointer}.link-button{border:0;background:none;color:var(--blue);font:inherit;font-weight:700;cursor:pointer}</style></head><body><header class="top"><div class="brand">eRPH Pro · Platform</div><a href="{{ route('owner.dashboard') }}">Overview</a></header><main class="main"><div class="head"><div><span class="eyebrow">tenant lifecycle</span><h1 class="title">Schools</h1><p class="muted">Create and manage school tenants. Every lifecycle change is audited.</p></div><a class="button" href="{{ route('owner.schools.create') }}">New school</a></div>@if(session('status'))<p class="muted">{{ session('status') }}</p>@endif<section class="card">@forelse($schools as $school)<div class="row"><div><strong>{{ $school->name }}</strong><span>{{ $school->subdomain }}.{{ config('app.school_base_domain', 'erphpro.com') }} · {{ $school->members_count }} members</span></div><div class="actions"><span class="pill {{ $school->is_active ? '' : 'off' }}">{{ $school->is_active ? 'Active' : 'Suspended' }}</span><a class="link-button" href="{{ route('owner.schools.edit', $school) }}">Edit</a><form method="post" action="{{ route('owner.schools.toggle', $school) }}">@csrf<button class="link-button" type="submit">{{ $school->is_active ? 'Suspend' : 'Activate' }}</button></form></div></div>@empty<p class="muted">No schools registered yet.</p>@endforelse</section></main></body></html>
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Schools · Platform · eRPH Pro</title></head>
+<body>
+<main>
+<p><a href="{{ route('owner.dashboard') }}">Overview</a></p>
+<h1>Schools</h1>
+<p>Create and manage school tenants. Every lifecycle change and invitation is audited.</p>
+<p><a href="{{ route('owner.schools.create') }}">New school</a></p>
+@if(session('status'))<p>{{ session('status') }}</p>@endif
+@if($errors->any())<p>{{ $errors->first() }}</p>@endif
+<section>
+@forelse($schools as $school)
+<article>
+<h2>{{ $school->name }}</h2>
+<p>{{ $school->subdomain }}.{{ config('app.school_base_domain', 'erphpro.com') }} · {{ $school->members_count }} members · {{ $school->is_active ? 'Active' : 'Suspended' }}</p>
+<p><a href="{{ route('owner.schools.edit', $school) }}">Edit</a>
+@if($school->archived_at)<form method="post" action="{{ route('owner.schools.restore', $school) }}" style="display:inline">@csrf<button type="submit">Restore</button></form>@else<form method="post" action="{{ route('owner.schools.toggle', $school) }}" style="display:inline">@csrf<button type="submit">{{ $school->is_active ? 'Suspend' : 'Activate' }}</button></form>@endif</p>
+@if(!$school->archived_at)<form method="post" action="{{ route('owner.schools.archive', $school) }}">@csrf<button type="submit">Archive</button></form>@else<p>Archived {{ $school->archived_at }}</p>@endif
+@if($school->is_active)
+<details><summary>Invite administrator</summary>
+<form method="post" action="{{ route('owner.schools.invite', $school) }}">@csrf
+<label>Name <input name="name" required></label>
+<label>Email <input type="email" name="email" required></label>
+<label>Role <select name="role"><option value="school_admin">School Admin</option><option value="principal">Principal</option><option value="vice_principal">Vice Principal</option><option value="teacher">Teacher</option></select></label>
+<button type="submit">Record invitation</button>
+</form>
+<p>The invitation is pending until this email signs in from the school workspace. No email is sent by this page.</p>
+</details>
+@endif
+@foreach($pendingInvitations->get($school->id, collect()) as $invitation)
+<p>Pending: {{ $invitation->name }} ({{ $invitation->email }}) · {{ $invitation->role }}
+<form method="post" action="{{ route('owner.schools.invite.resend', [$school, $invitation->id]) }}" style="display:inline">@csrf<button type="submit">Resend</button></form>
+<form method="post" action="{{ route('owner.schools.invite.revoke', [$school, $invitation->id]) }}" style="display:inline">@csrf<button type="submit">Revoke</button></form></p>
+@endforeach
+</article>
+@empty
+<p>No schools registered yet.</p>
+@endforelse
+</section>
+</main>
+</body>
+</html>

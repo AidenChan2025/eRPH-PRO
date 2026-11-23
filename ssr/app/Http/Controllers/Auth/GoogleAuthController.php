@@ -177,10 +177,10 @@ class GoogleAuthController extends Controller
             ], 403);
         }
 
-        $membership = $school?->members()->whereKey($user->getKey())->first();
+        $membership = $school?->members()->whereKey($user->getKey())->wherePivotIn('status', ['active', 'pending'])->first();
         if (! $membership) {
             if (! $school && $user->platform_role === 'owner') {
-                Auth::login($user, remember: true);
+                Auth::guard('platform')->login($user, remember: true);
                 $request->session()->regenerate();
                 $auditLogger->record('auth.google_owner_login', null, User::class, (string) $user->getKey(), ['email' => $email]);
 
@@ -188,6 +188,11 @@ class GoogleAuthController extends Controller
             }
 
             return response()->view('auth.not-member', compact('school', 'email'), 403);
+        }
+
+        if ($membership->pivot->status === 'pending') {
+            $membership->pivot->forceFill(['status' => 'active', 'joined_at' => now(), 'left_at' => null])->save();
+            $auditLogger->record('auth.school_invitation_accepted', $school, User::class, (string) $user->getKey(), ['email' => $email, 'role' => $membership->pivot->role]);
         }
 
         Auth::login($user, remember: true);
@@ -204,6 +209,15 @@ class GoogleAuthController extends Controller
         $request->session()->regenerateToken();
 
         return redirect()->route('school.home');
+    }
+
+    public function logoutPlatform(Request $request)
+    {
+        Auth::guard('platform')->logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('owner.login');
     }
 
     public function oneTap(Request $request, AuditLogger $auditLogger)
@@ -241,8 +255,14 @@ class GoogleAuthController extends Controller
         }
         GoogleIdentity::updateOrCreate(['subject' => $claims['sub']], ['user_id' => $user->id, 'email' => $email, 'email_type' => $workspaceDomain !== '' && str_ends_with($email, '@'.$workspaceDomain) ? 'workspace' : 'personal', 'is_primary' => true, 'verified_at' => now(), 'unlinked_at' => null]);
 
-        if (! $school || ! $school->members()->whereKey($user->id)->exists()) {
+        $membership = $school?->members()->whereKey($user->id)->wherePivotIn('status', ['active', 'pending'])->first();
+        if (! $school || ! $membership) {
             return response()->view('auth.not-member', ['school' => $school, 'email' => $email], 403);
+        }
+
+        if ($membership->pivot->status === 'pending') {
+            $membership->pivot->forceFill(['status' => 'active', 'joined_at' => now(), 'left_at' => null])->save();
+            $auditLogger->record('auth.school_invitation_accepted', $school, User::class, (string) $user->id, ['email' => $email, 'role' => $membership->pivot->role]);
         }
 
         Auth::login($user, remember: true);

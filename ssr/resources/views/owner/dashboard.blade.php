@@ -1,1 +1,24 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Platform owner · eRPH Pro</title><style>:root{--ink:#172033;--muted:#687386;--blue:#2563eb;--line:#e5eaf2;--canvas:#f7f9fc}*{box-sizing:border-box}body{margin:0;background:var(--canvas);color:var(--ink);font:15px system-ui,sans-serif}.top{height:70px;padding:0 30px;display:flex;align-items:center;justify-content:space-between;background:#fff;border-bottom:1px solid var(--line)}.brand{font-weight:800}.top span{color:var(--muted);font-size:13px}.main{max-width:920px;margin:auto;padding:42px 24px}.eyebrow{color:var(--blue);font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase}.title{margin:8px 0;font-size:34px;letter-spacing:-.05em}.muted{color:var(--muted);line-height:1.6}.card{margin-top:22px;padding:20px;border:1px solid var(--line);border-radius:15px;background:#fff}.school{display:flex;align-items:center;justify-content:space-between;padding:15px 0;border-bottom:1px solid var(--line)}.school strong{display:block}.school span{color:var(--muted);font-size:12px}.pill{padding:5px 9px;border-radius:99px;color:#16845a;background:#ecfdf5;font-size:11px;font-weight:700}</style></head><body><header class="top"><div class="brand">eRPH Pro · Platform Owner</div><span>Support overview · read-only by default</span></header><main class="main"><span class="eyebrow">platform support</span><h1 class="title">Schools</h1><p class="muted">This overview is outside a school tenant. Any future support session must declare a reason, expiry and audit event before accessing school data.</p><section class="card">@forelse($schools as $school)<div class="school"><div><strong>{{ $school->name }}</strong><span>{{ $school->subdomain }}.erphpro.com · {{ $school->members_count }} members</span></div><span class="pill">{{ $school->is_active ? 'Active' : 'Inactive' }}</span></div>@empty<p class="muted">No schools registered.</p>@endforelse</section></main></body></html>
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Platform overview · eRPH Pro</title></head>
+<body>
+<header><strong>eRPH Pro · Platform Owner</strong><nav aria-label="Platform navigation">
+@if(in_array('platform.schools.view', $permissions, true)) <a href="{{ route('owner.schools.index') }}">Schools</a> @endif
+@if(in_array('platform.accounts.manage', $permissions, true)) <a href="{{ route('owner.accounts.index') }}">Accounts</a> @endif
+@if(in_array('platform.team.manage', $permissions, true)) <a href="{{ route('owner.team.index') }}">Team</a> @endif
+@if(in_array('platform.runtime.view', $permissions, true)) <a href="{{ route('owner.runtime') }}">Runtime</a> @endif
+@if(in_array('platform.audit.view', $permissions, true)) <a href="{{ route('owner.audit') }}">Audit</a> @endif
+@if(in_array('platform.settings.manage', $permissions, true)) <a href="{{ route('owner.settings') }}">Settings</a> @endif
+<form method="post" action="{{ route('owner.logout') }}">@csrf<button type="submit">Sign out</button></form>
+</nav></header>
+<main>
+<p>Platform overview · outside a school tenant</p><h1>Overview</h1>
+<p>Metrics are limited to the platform permissions granted to this operator.</p>
+<section aria-label="Platform metrics"><dl><dt>Total schools</dt><dd>{{ $metrics['schools'] }}</dd><dt>Active schools</dt><dd>{{ $metrics['active_schools'] }}</dd>
+@if($metrics['pending_invitations'] !== null)<dt>Pending invitations</dt><dd>{{ $metrics['pending_invitations'] }}</dd>@endif
+@if($metrics['platform_operators'] !== null)<dt>Platform operators</dt><dd>{{ $metrics['platform_operators'] }}</dd>@endif</dl></section>
+@if(in_array('platform.schools.view', $permissions, true))<section><h2>Schools</h2>@forelse($schools as $school)<article><strong>{{ $school->name }}</strong><span>{{ $school->subdomain }}.{{ config('app.school_base_domain', 'erphpro.com') }} · {{ $school->members_count }} members · {{ $school->is_active ? 'Active' : 'Inactive' }}</span></article>@empty<p>No schools registered.</p>@endforelse</section>@else<p>School directory unavailable for this role.</p>@endif
+@if(in_array('platform.audit.view', $permissions, true))<section><h2>Recent audit activity</h2>@forelse($recentAudits as $audit)<p><code>{{ $audit->action }}</code> · {{ $audit->created_at }}</p>@empty<p>No audit activity recorded.</p>@endforelse</section>@endif
+</main>
+</body>
+</html>

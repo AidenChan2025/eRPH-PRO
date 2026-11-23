@@ -53,4 +53,23 @@ class OwnerTeamController extends Controller
 
         return redirect()->route('owner.team.index')->with('status', 'Platform role updated.');
     }
+
+    public function resetMfa(Request $request, User $user, AuditLogger $auditLogger)
+    {
+        abort_if($user->is($request->user()), 422, 'Use the personal MFA recovery flow to reset your own MFA.');
+
+        DB::transaction(function () use ($user, $auditLogger): void {
+            $lockedUser = User::query()->whereKey($user->id)->lockForUpdate()->firstOrFail();
+            abort_unless($lockedUser->platform_role !== null, 422, 'Only platform operators can have platform MFA reset.');
+            $lockedUser->forceFill([
+                'platform_mfa_secret' => null,
+                'platform_mfa_confirmed_at' => null,
+                'platform_mfa_recovery_codes' => null,
+                'platform_mfa_recovery_codes_generated_at' => null,
+            ])->save();
+            $auditLogger->record('platform.operator_mfa_reset', null, User::class, (string) $lockedUser->id, ['platform_role' => $lockedUser->platform_role]);
+        });
+
+        return redirect()->route('owner.team.index')->with('status', 'Operator MFA reset. The operator must enroll again before using the platform console.');
+    }
 }

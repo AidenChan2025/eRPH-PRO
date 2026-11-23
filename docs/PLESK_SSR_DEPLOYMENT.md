@@ -1,5 +1,13 @@
 # Plesk SSR Deployment Contract
 
+## Fresh authenticated Plesk recheck (2026-11-23, Codex internal browser, read-only)
+
+The current Plesk Hosting Settings page now displays Document Root `erphpro.com/current/public`. The Git repository settings display `eRPH-PRO.git` tracking `main` with Automatic deployment enabled to `/erphpro.com/source`. The post-deployment action supplies `SSR_APP_DIR=/home/w4chinese.com/erphpro.com/source/ssr`, `SSR_RELEASES_DIR=/home/w4chinese.com/erphpro.com/releases`, `SSR_CURRENT_LINK=/home/w4chinese.com/erphpro.com/current`, `SSR_SHARED_DIR=/home/w4chinese.com/erphpro.com/shared`, `SSR_DOCUMENT_ROOT=/home/w4chinese.com/erphpro.com/current/public`, the Plesk PHP 8.3 binary, application-local Composer, and `https://erphpro.com/health`. No Apply, Pull, Deploy, Save, migration, or database action was performed during this recheck.
+
+The authenticated SSH terminal confirms `current` resolves to release `e5d200ecd53db062baed590a89aae8818cb8e4bb`; `current/public/index.php`, the shared `.env` and storage links, and the release permissions are present. `/health` returns `status=ok`, `database=ok`, `cache=ok`, release `e5d200ecd53db062baed590a89aae8818cb8e4bb`, and a runtime file fingerprint. The source deployment directory is not itself a Git worktree because Plesk maintains repository metadata separately; this is not treated as a failure of the configured Plesk Git integration.
+
+The Plesk notification still records a completed deployment task aborted when the hook could not create `/home/w4chinese.com/erphpro.com/releases/.deploy.lock`; a subsequent read-only process check found no deployment process and the lock file absent. This warning remains an operational incident to correlate with the deployment task log. The corrected source/current/document-root configuration is now evidenced, but the candidate worktree has not been pushed or deployed, no rollback has been exercised, and Phase 0 remains open pending a controlled deployment/recovery proof and the exact-version independent review.
+
 ## Current authenticated Plesk recheck (2026-11-23)
 
 ### Latest direct-development hook hardening (2026-11-23)

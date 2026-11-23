@@ -25,6 +25,10 @@ class User extends Authenticatable
         'email',
         'google_subject',
         'platform_role',
+        'platform_mfa_secret',
+        'platform_mfa_confirmed_at',
+        'platform_mfa_recovery_codes',
+        'platform_mfa_recovery_codes_generated_at',
         'password',
     ];
 
@@ -36,6 +40,8 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'platform_mfa_secret',
+        'platform_mfa_recovery_codes',
     ];
 
     /**
@@ -48,6 +54,8 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'platform_mfa_confirmed_at' => 'datetime',
+            'platform_mfa_recovery_codes_generated_at' => 'datetime',
         ];
     }
 

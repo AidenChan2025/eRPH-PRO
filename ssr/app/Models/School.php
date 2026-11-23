@@ -8,9 +8,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class School extends Model
 {
-    protected $fillable = ['name', 'slug', 'subdomain', 'workspace_domain', 'is_active'];
+    protected $fillable = ['name', 'slug', 'subdomain', 'workspace_domain', 'is_active', 'archived_at'];
 
-    protected $casts = ['is_active' => 'boolean'];
+    protected $casts = ['is_active' => 'boolean', 'archived_at' => 'datetime'];
 
     public function members(): BelongsToMany
     {

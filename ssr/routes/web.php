@@ -15,6 +15,10 @@ use App\Http\Controllers\OwnerAuditController;
 use App\Http\Controllers\OwnerSupportController;
 use App\Http\Controllers\OwnerSchoolController;
 use App\Http\Controllers\OwnerTeamController;
+use App\Http\Controllers\OwnerRuntimeController;
+use App\Http\Controllers\OwnerAccountController;
+use App\Http\Controllers\OwnerSettingsController;
+use App\Http\Controllers\OwnerMfaController;
 use App\Http\Controllers\SupportArticleController;
 use App\Http\Controllers\SupportHomeController;
 use App\Http\Controllers\SupportTicketController;
@@ -34,23 +38,44 @@ Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])
     ->middleware(\App\Http\Middleware\PreventSensitiveResponseCaching::class)
     ->name('auth.google.callback');
 Route::post('/auth/google/one-tap', [GoogleAuthController::class, 'oneTap'])->name('auth.google.one-tap')->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
-Route::middleware(['platform.host', 'auth', 'platform.permission:platform.dashboard.view'])->get('/owner', OwnerController::class)->name('owner.dashboard');
-Route::middleware(['platform.host', 'auth', 'platform.permission:platform.schools.view'])->prefix('owner/schools')->group(function () {
+Route::middleware(['platform.host', 'platform.auth', 'platform.permission:platform.dashboard.view'])->group(function () {
+    Route::get('/owner/mfa/setup', [OwnerMfaController::class, 'setup'])->name('owner.mfa.setup');
+    Route::middleware('throttle:5,1')->post('/owner/mfa/setup', [OwnerMfaController::class, 'confirm'])->name('owner.mfa.confirm');
+    Route::get('/owner/mfa/challenge', [OwnerMfaController::class, 'challenge'])->name('owner.mfa.challenge');
+    Route::middleware('throttle:5,1')->post('/owner/mfa/challenge', [OwnerMfaController::class, 'verifyChallenge'])->name('owner.mfa.challenge.verify');
+    Route::get('/owner/mfa/recover', fn () => view('owner.mfa.recover'))->name('owner.mfa.recover');
+    Route::middleware('throttle:5,1')->post('/owner/mfa/recover', [OwnerMfaController::class, 'recover'])->name('owner.mfa.recover.submit');
+    Route::post('/owner/logout', [GoogleAuthController::class, 'logoutPlatform'])->name('owner.logout');
+});
+Route::middleware(['platform.host', 'platform.auth', 'platform.permission:platform.dashboard.view', 'platform.mfa'])->get('/owner', OwnerController::class)->name('owner.dashboard');
+Route::middleware(['platform.host', 'platform.auth', 'platform.permission:platform.schools.view', 'platform.mfa'])->prefix('owner/schools')->group(function () {
     Route::get('/', [OwnerSchoolController::class, 'index'])->name('owner.schools.index');
 });
-Route::middleware(['platform.host', 'auth', 'platform.permission:platform.schools.manage'])->prefix('owner/schools')->group(function () {
+Route::middleware(['platform.host', 'platform.auth', 'platform.permission:platform.schools.manage', 'platform.mfa'])->prefix('owner/schools')->group(function () {
     Route::get('/create', [OwnerSchoolController::class, 'create'])->name('owner.schools.create');
     Route::post('/', [OwnerSchoolController::class, 'store'])->name('owner.schools.store');
+    Route::post('/{school}/invite', [OwnerSchoolController::class, 'inviteAdmin'])->name('owner.schools.invite');
+    Route::post('/{school}/invitations/{user}/revoke', [OwnerSchoolController::class, 'revokeInvitation'])->name('owner.schools.invite.revoke');
+    Route::post('/{school}/invitations/{user}/resend', [OwnerSchoolController::class, 'resendInvitation'])->name('owner.schools.invite.resend');
     Route::get('/{school}/edit', [OwnerSchoolController::class, 'edit'])->name('owner.schools.edit');
     Route::put('/{school}', [OwnerSchoolController::class, 'update'])->name('owner.schools.update');
     Route::post('/{school}/toggle', [OwnerSchoolController::class, 'toggle'])->name('owner.schools.toggle');
+    Route::post('/{school}/archive', [OwnerSchoolController::class, 'archive'])->name('owner.schools.archive');
+    Route::post('/{school}/restore', [OwnerSchoolController::class, 'restore'])->name('owner.schools.restore');
 });
-Route::middleware(['platform.host', 'auth', 'platform.permission:platform.team.manage'])->prefix('owner/team')->group(function () {
+Route::middleware(['platform.host', 'platform.auth', 'platform.permission:platform.team.manage', 'platform.mfa'])->prefix('owner/team')->group(function () {
     Route::get('/', [OwnerTeamController::class, 'index'])->name('owner.team.index');
     Route::post('/{user}/role', [OwnerTeamController::class, 'updateRole'])->name('owner.team.role');
+    Route::post('/{user}/reset-mfa', [OwnerTeamController::class, 'resetMfa'])->name('owner.team.reset-mfa');
 });
-Route::middleware(['platform.host', 'auth', 'platform.permission:platform.audit.view'])->get('/owner/audit', OwnerAuditController::class)->name('owner.audit');
-Route::middleware(['platform.host', 'auth', 'platform.permission:platform.support.view'])->prefix('owner/support')->group(function () {
+Route::middleware(['platform.host', 'platform.auth', 'platform.permission:platform.audit.view', 'platform.mfa'])->get('/owner/audit', OwnerAuditController::class)->name('owner.audit');
+Route::middleware(['platform.host', 'platform.auth', 'platform.permission:platform.runtime.view', 'platform.mfa'])->get('/owner/runtime', OwnerRuntimeController::class)->name('owner.runtime');
+Route::middleware(['platform.host', 'platform.auth', 'platform.permission:platform.accounts.manage', 'platform.mfa'])->prefix('owner/accounts')->group(function () {
+    Route::get('/', [OwnerAccountController::class, 'index'])->name('owner.accounts.index');
+    Route::post('/{user}/assign', [OwnerAccountController::class, 'assign'])->name('owner.accounts.assign');
+});
+Route::middleware(['platform.host', 'platform.auth', 'platform.permission:platform.settings.manage', 'platform.mfa'])->get('/owner/settings', OwnerSettingsController::class)->name('owner.settings');
+Route::middleware(['platform.host', 'platform.auth', 'platform.permission:platform.support.view', 'platform.mfa'])->prefix('owner/support')->group(function () {
     Route::get('/', [OwnerSupportController::class, 'index'])->name('owner.support.index');
     Route::get('/{publicId}', [OwnerSupportController::class, 'show'])->name('owner.support.show');
     Route::middleware('platform.permission:platform.support.write')->group(function () {

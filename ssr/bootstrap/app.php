@@ -8,8 +8,11 @@ use App\Http\Middleware\RequireSchoolMembership;
 use App\Http\Middleware\RequirePermission;
 use App\Http\Middleware\RequirePlatformOwner;
 use App\Http\Middleware\RequirePlatformPermission;
+use App\Http\Middleware\RequirePlatformMfa;
 use App\Http\Middleware\ResolveSupportHost;
 use App\Http\Middleware\RequirePlatformHost;
+use App\Http\Middleware\BindAuthenticatedSessionToHost;
+use App\Http\Middleware\RequirePlatformAuthentication;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -19,13 +22,16 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->prependToGroup('web', \App\Http\Middleware\ResolveTenantContext::class);
+        $middleware->appendToGroup('web', BindAuthenticatedSessionToHost::class);
         $middleware->alias([
             'school' => ResolveSchool::class,
             'school.member' => RequireSchoolMembership::class,
             'permission' => RequirePermission::class,
             'platform.owner' => RequirePlatformOwner::class,
             'platform.permission' => RequirePlatformPermission::class,
+            'platform.mfa' => RequirePlatformMfa::class,
             'platform.host' => RequirePlatformHost::class,
+            'platform.auth' => RequirePlatformAuthentication::class,
             'support.host' => ResolveSupportHost::class,
             'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         ]);

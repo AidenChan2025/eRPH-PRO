@@ -22,7 +22,10 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Notification;
 use App\Services\AuditLogger;
+use App\Notifications\SchoolInvitationNotification;
 use Mockery;
 use Illuminate\Support\Str;
 use Illuminate\Database\QueryException;
@@ -1057,7 +1060,7 @@ class ExampleTest extends TestCase
 
     public function test_platform_owner_routes_are_not_available_on_school_subdomains(): void
     {
-        $owner = User::factory()->create(['platform_role' => 'owner']);
+        $owner = User::factory()->create(['platform_role' => 'owner', 'platform_mfa_confirmed_at' => now()]);
         $ticketId = (string) Str::uuid();
 
         $this->get('http://demo.erphpro.com/owner/login')->assertNotFound();
@@ -1153,6 +1156,9 @@ class ExampleTest extends TestCase
         $response->assertRedirect(route('owner.dashboard'))
             ->assertHeader('Cache-Control', 'no-store, private')
             ->assertHeader('Referrer-Policy', 'no-referrer');
+        $owner = User::where('email', 'owner@example.com')->firstOrFail();
+        $this->assertSame($owner->id, Auth::guard('platform')->id());
+        $this->assertNull(Auth::guard('web')->id());
         $this->assertDatabaseHas('users', ['email' => 'owner@example.com', 'platform_role' => 'owner']);
     }
 
@@ -1519,15 +1525,17 @@ class ExampleTest extends TestCase
         $this->seed();
         $user = User::where('email', 'demo@erphpro.com')->firstOrFail();
         $this->actingAs($user)->get('/owner')->assertForbidden();
-        $user->update(['platform_role' => 'owner']);
-        $this->actingAs($user)->get('/owner')->assertOk()->assertSee('eRPH Pro Demo School');
+        $user->update(['platform_role' => 'owner', 'platform_mfa_confirmed_at' => now()]);
+        $this->actingAs($user)->get('/owner')->assertOk()
+            ->assertSee('eRPH Pro Demo School')->assertSee('Total schools')->assertSee('Recent audit activity')
+            ->assertSee('Schools')->assertSee('Accounts')->assertSee('Team')->assertSee('Runtime')->assertSee('Audit')->assertSee('Sign out');
     }
 
     public function test_platform_owner_can_view_cross_school_audit_activity(): void
     {
         $this->seed();
         $user = User::where('email', 'demo@erphpro.com')->firstOrFail();
-        $user->update(['platform_role' => 'owner']);
+        $user->update(['platform_role' => 'owner', 'platform_mfa_confirmed_at' => now()]);
         \App\Services\AuditLogger::class;
         $this->actingAs($user)->get('/owner/audit')->assertOk()->assertSee('Audit activity');
     }
@@ -1536,7 +1544,7 @@ class ExampleTest extends TestCase
     {
         $this->seed();
         $owner = User::where('email', 'demo@erphpro.com')->firstOrFail();
-        $owner->update(['platform_role' => 'owner']);
+        $owner->update(['platform_role' => 'owner', 'platform_mfa_confirmed_at' => now()]);
         $school = School::firstOrFail();
         $ticket = SupportTicket::create([
             'public_id' => (string) Str::uuid(), 'access_token_hash' => hash('sha256', 'secret'),
@@ -1553,7 +1561,7 @@ class ExampleTest extends TestCase
     {
         $this->seed();
         $admin = User::where('email', 'demo@erphpro.com')->firstOrFail();
-        $owner = User::factory()->create(['platform_role' => 'owner']);
+        $owner = User::factory()->create(['platform_role' => 'owner', 'platform_mfa_confirmed_at' => now()]);
         $school = School::firstOrFail();
         $school->members()->updateExistingPivot($admin->id, ['role' => 'school_admin']);
         $otherSchool = School::create(['name' => 'Other Test School', 'slug' => 'other-test', 'subdomain' => 'other-test']);
@@ -1611,6 +1619,7 @@ class ExampleTest extends TestCase
             'action' => 'school_support_access.granted',
         ]);
 
+        $this->flushSession();
         $this->actingAs($owner)->get('http://erphpro.com/owner/support/'.$ticket->public_id)
             ->assertOk()->assertSee('Approved support issue')->assertSee('Read-only school-approved access')
             ->assertDontSee('teacher@example.com')
@@ -1626,9 +1635,11 @@ class ExampleTest extends TestCase
         $grant = \App\Models\PlatformSupportAccessGrant::query()->firstOrFail();
         $otherAdmin = User::factory()->create();
         $otherSchool->members()->attach($otherAdmin->id, ['role' => 'school_admin', 'status' => 'active', 'joined_at' => now()]);
+        $this->flushSession();
         $this->actingAs($otherAdmin)->post("http://other-test.erphpro.com/admin/support-access/{$grant->id}/revoke")
             ->assertNotFound();
         $this->assertNull($grant->fresh()->revoked_at);
+        $this->flushSession();
         $this->actingAs($admin)->post("http://demo.erphpro.com/admin/support-access/{$grant->id}/revoke")
             ->assertSessionHasNoErrors();
         $this->assertNotNull($grant->fresh()->revoked_at);
@@ -1645,6 +1656,7 @@ class ExampleTest extends TestCase
         $this->assertNotNull($grant->fresh()->revoked_at);
         $this->assertNull($grant->fresh()->grant_slot_key);
         $this->assertSame(1, \App\Models\PlatformSupportAccessGrant::query()->whereNotNull('grant_slot_key')->count());
+        $this->flushSession();
         $this->actingAs($owner)->put('http://erphpro.com/owner/support/'.$ticket->public_id, [
             'status' => 'closed', 'priority' => 'urgent',
         ])->assertForbidden();
@@ -1657,6 +1669,7 @@ class ExampleTest extends TestCase
         $this->actingAs($owner)->post('http://erphpro.com/owner/support/'.$ticket->public_id.'/reply', ['message' => 'reply'])
             ->assertNotFound();
         $expiredGrant = \App\Models\PlatformSupportAccessGrant::query()->whereNotNull('grant_slot_key')->firstOrFail();
+        $this->flushSession();
         $this->actingAs($admin)->post('http://demo.erphpro.com/admin/support-access', [
             'ticket_public_id' => $ticket->public_id, 'owner_id' => $owner->id,
             'purpose' => 'Renew expired school support access', 'duration_minutes' => 15,
@@ -1704,9 +1717,50 @@ class ExampleTest extends TestCase
         $this->assertDatabaseHas('audit_logs', ['action' => 'auth.google_identity_unlinked', 'actor_id' => $user->id]);
     }
 
+    public function test_platform_owner_records_pending_school_invitation_and_rejects_duplicate(): void
+    {
+        Notification::fake();
+        $owner = User::factory()->create(['platform_role' => 'owner', 'platform_mfa_confirmed_at' => now()]);
+        $school = \App\Models\School::create([
+            'name' => 'Invitation School', 'slug' => 'invitation-school', 'subdomain' => 'invitation-school', 'is_active' => true,
+        ]);
+
+        $this->actingAs($owner)->post(route('owner.schools.invite', $school), [
+            'name' => 'Invited Admin', 'email' => 'invited-admin@example.com', 'role' => 'school_admin',
+        ])->assertRedirect(route('owner.schools.index'));
+
+        $user = User::where('email', 'invited-admin@example.com')->firstOrFail();
+        $this->assertDatabaseHas('school_memberships', [
+            'school_id' => $school->id, 'user_id' => $user->id, 'role' => 'school_admin', 'status' => 'pending',
+        ]);
+        $this->actingAs($user)->get('http://invitation-school.erphpro.com/workspace')->assertForbidden();
+        $this->assertDatabaseHas('audit_logs', ['action' => 'platform.school_admin_invited', 'actor_id' => $owner->id]);
+        Notification::assertSentOnDemand(SchoolInvitationNotification::class, function ($notification, $channels, $notifiable): bool {
+            return $notifiable->routes['mail'] === 'invited-admin@example.com' && $notification->via($notifiable) === ['mail'];
+        });
+        $this->actingAs($owner)->post('http://erphpro.com'.route('owner.schools.invite.resend', [$school, $user], false))
+            ->assertRedirect('http://erphpro.com'.route('owner.schools.index', [], false));
+        $this->assertDatabaseHas('audit_logs', ['action' => 'platform.school_invitation_resent', 'actor_id' => $owner->id]);
+
+        $revoke = $this->actingAs($owner)->post('http://erphpro.com'.route('owner.schools.invite.revoke', [$school, $user], false));
+        $revoke->assertRedirect('http://erphpro.com'.route('owner.schools.index', [], false));
+        $this->assertDatabaseHas('school_memberships', [
+            'school_id' => $school->id, 'user_id' => $user->id, 'status' => 'revoked',
+        ]);
+        $this->assertDatabaseHas('audit_logs', ['action' => 'platform.school_invitation_revoked', 'actor_id' => $owner->id]);
+        $this->actingAs($user)->get('http://invitation-school.erphpro.com/workspace')->assertForbidden();
+        $this->actingAs($owner)->post('http://erphpro.com'.route('owner.schools.invite.resend', [$school, $user], false))
+            ->assertNotFound();
+
+        $operator = User::factory()->create(['platform_role' => 'security', 'platform_mfa_confirmed_at' => now()]);
+        $this->actingAs($owner)->post('http://erphpro.com'.route('owner.schools.invite', $school, false), [
+            'name' => $operator->name, 'email' => $operator->email, 'role' => 'school_admin',
+        ])->assertSessionHasErrors('email');
+    }
+
     public function test_platform_owner_can_create_and_suspend_a_school_with_audit_trail(): void
     {
-        $owner = User::factory()->create(['platform_role' => 'owner']);
+        $owner = User::factory()->create(['platform_role' => 'owner', 'platform_mfa_confirmed_at' => now()]);
 
         $this->actingAs($owner)->post('http://erphpro.com/owner/schools', [
             'name' => 'North Star School',
@@ -1720,6 +1774,10 @@ class ExampleTest extends TestCase
             'action' => 'platform.school_created',
             'subject_id' => (string) $school->id,
         ]);
+        $this->actingAs($owner)->post('http://erphpro.com/owner/schools', [
+            'name' => 'North-Star School', 'subdomain' => 'north-star-duplicate',
+        ])->assertSessionHasErrors('name');
+        $this->assertDatabaseMissing('schools', ['subdomain' => 'north-star-duplicate']);
 
         $this->actingAs($owner)->post(route('owner.schools.toggle', $school))
             ->assertRedirect(route('owner.schools.index'));
@@ -1729,11 +1787,39 @@ class ExampleTest extends TestCase
             'action' => 'platform.school_suspended',
             'subject_id' => (string) $school->id,
         ]);
+
+        $this->actingAs($owner)->post('http://erphpro.com'.route('owner.schools.archive', $school, false))
+            ->assertRedirect('http://erphpro.com'.route('owner.schools.index', [], false));
+        $this->assertNotNull($school->fresh()->archived_at);
+        $this->assertDatabaseHas('audit_logs', [
+            'actor_id' => $owner->id,
+            'action' => 'platform.school_archived',
+            'subject_id' => (string) $school->id,
+        ]);
+        $teacher = User::factory()->create();
+        $school->members()->attach($teacher->id, ['role' => 'teacher', 'status' => 'active', 'joined_at' => now()]);
+        $this->flushSession();
+        $this->actingAs($teacher)->get('http://north-star.erphpro.com/workspace')->assertNotFound();
+        $this->flushSession();
+        $this->actingAs($owner)->post('http://erphpro.com'.route('owner.schools.invite', $school, false), [
+            'name' => 'Archived Invite', 'email' => 'archived-invite@example.com', 'role' => 'school_admin',
+        ])->assertStatus(422);
+        $this->flushSession();
+        $this->actingAs($owner)->post('http://erphpro.com'.route('owner.schools.toggle', $school, false))
+            ->assertStatus(422);
+        $this->flushSession();
+        $this->actingAs($owner)->post('http://erphpro.com'.route('owner.schools.restore', $school, false))
+            ->assertRedirect('http://erphpro.com'.route('owner.schools.index', [], false));
+        $this->assertNull($school->fresh()->archived_at);
+        $this->assertTrue($school->fresh()->is_active);
+        $this->assertDatabaseHas('audit_logs', ['actor_id' => $owner->id, 'action' => 'platform.school_restored']);
+        $this->flushSession();
+        $this->actingAs($teacher)->get('http://north-star.erphpro.com/workspace')->assertOk();
     }
 
     public function test_platform_school_lifecycle_rejects_reserved_subdomains_and_rolls_back_audit_failures(): void
     {
-        $owner = User::factory()->create(['platform_role' => 'owner']);
+        $owner = User::factory()->create(['platform_role' => 'owner', 'platform_mfa_confirmed_at' => now()]);
 
         $this->actingAs($owner)->post('http://erphpro.com/owner/schools', [
             'name' => 'Reserved School', 'subdomain' => 'support',
@@ -1760,7 +1846,7 @@ class ExampleTest extends TestCase
 
     public function test_non_owner_platform_roles_cannot_mutate_school_lifecycle(): void
     {
-        $security = User::factory()->create(['platform_role' => 'security']);
+        $security = User::factory()->create(['platform_role' => 'security', 'platform_mfa_confirmed_at' => now()]);
 
         $this->actingAs($security)->get('http://erphpro.com/owner/schools/create')->assertForbidden();
         $this->actingAs($security)->post('http://erphpro.com/owner/schools', [
@@ -1770,7 +1856,7 @@ class ExampleTest extends TestCase
 
     public function test_platform_owner_can_manage_operator_roles_but_cannot_remove_the_last_owner(): void
     {
-        $owner = User::factory()->create(['platform_role' => 'owner']);
+        $owner = User::factory()->create(['platform_role' => 'owner', 'platform_mfa_confirmed_at' => now()]);
         $operator = User::factory()->create(['platform_role' => null]);
 
         $this->actingAs($owner)->post(route('owner.team.role', $operator), [
@@ -1783,7 +1869,20 @@ class ExampleTest extends TestCase
             'subject_id' => (string) $operator->id,
         ]);
 
-        $secondOwner = User::factory()->create(['platform_role' => 'owner']);
+        $operator->forceFill([
+            'platform_mfa_secret' => encrypt('test-secret'),
+            'platform_mfa_confirmed_at' => now(),
+            'platform_mfa_recovery_codes' => encrypt('["digest"]'),
+            'platform_mfa_recovery_codes_generated_at' => now(),
+        ])->save();
+        $this->flushSession();
+        $this->actingAs($owner)->post('http://erphpro.com'.route('owner.team.reset-mfa', $operator, false))
+            ->assertRedirect('http://erphpro.com'.route('owner.team.index', [], false));
+        $this->assertNull($operator->fresh()->platform_mfa_secret);
+        $this->assertNull($operator->fresh()->platform_mfa_confirmed_at);
+        $this->assertDatabaseHas('audit_logs', ['action' => 'platform.operator_mfa_reset', 'actor_id' => $owner->id]);
+
+        $secondOwner = User::factory()->create(['platform_role' => 'owner', 'platform_mfa_confirmed_at' => now()]);
         $this->actingAs($owner)->post(route('owner.team.role', $secondOwner), [
             'platform_role' => 'content',
         ])->assertRedirect(route('owner.team.index'));
@@ -1800,37 +1899,242 @@ class ExampleTest extends TestCase
 
     public function test_non_owner_platform_roles_cannot_manage_platform_team(): void
     {
-        $security = User::factory()->create(['platform_role' => 'security']);
+        $security = User::factory()->create(['platform_role' => 'security', 'platform_mfa_confirmed_at' => now()]);
         $operator = User::factory()->create(['platform_role' => 'support']);
 
         $this->actingAs($security)->get(route('owner.team.index'))->assertForbidden();
         $this->actingAs($security)->post(route('owner.team.role', $operator), [
             'platform_role' => 'content',
         ])->assertForbidden();
+        $this->actingAs($security)->post('http://erphpro.com'.route('owner.team.reset-mfa', $operator, false))
+            ->assertForbidden();
     }
 
     public function test_platform_permissions_are_explicit_and_default_deny(): void
     {
-        $security = User::factory()->create(['platform_role' => 'security']);
-        $support = User::factory()->create(['platform_role' => 'support']);
+        $security = User::factory()->create(['platform_role' => 'security', 'platform_mfa_confirmed_at' => now()]);
+        $support = User::factory()->create(['platform_role' => 'support', 'platform_mfa_confirmed_at' => now()]);
         $schoolUser = User::factory()->create(['platform_role' => null]);
-        $content = User::factory()->create(['platform_role' => 'content']);
+        $content = User::factory()->create(['platform_role' => 'content', 'platform_mfa_confirmed_at' => now()]);
 
-        $this->actingAs($security)->get('http://erphpro.com/owner')->assertOk();
+        $this->actingAs($security)->get('http://erphpro.com/owner')->assertOk()
+            ->assertSee('Schools')->assertSee('Runtime')->assertSee('Audit')
+            ->assertDontSee('Accounts')->assertDontSee('Team');
         $this->actingAs($security)->get('http://erphpro.com/owner/audit')->assertOk();
         $this->actingAs($security)->get('http://erphpro.com/owner/support')->assertForbidden();
         $this->actingAs($support)->get('http://erphpro.com/owner')->assertOk();
         $this->actingAs($support)->get('http://erphpro.com/owner/audit')->assertForbidden();
         $this->actingAs($schoolUser)->get('http://erphpro.com/owner')->assertForbidden();
-        $this->actingAs($content)->get('http://erphpro.com/owner')->assertOk()->assertSee('No schools registered.');
+        $this->actingAs($content)->get('http://erphpro.com/owner')->assertOk()->assertSee('School directory unavailable for this role.')->assertDontSee('eRPH Pro Demo School');
     }
 
     public function test_platform_support_writes_require_a_separate_write_permission(): void
     {
-        $support = User::factory()->create(['platform_role' => 'support']);
+        $support = User::factory()->create(['platform_role' => 'support', 'platform_mfa_confirmed_at' => now()]);
 
         $this->actingAs($support)->put('http://erphpro.com/owner/support/missing-ticket', [
             'status' => 'closed',
         ])->assertForbidden();
+    }
+
+    public function test_unenrolled_platform_operator_is_required_to_set_up_totp_mfa(): void
+    {
+        $operator = User::factory()->create(['platform_role' => 'security']);
+
+        $this->actingAs($operator)->get('http://erphpro.com/owner')
+            ->assertRedirect(route('owner.mfa.setup'));
+        $this->actingAs($operator)->get(route('owner.mfa.setup'))
+            ->assertOk()->assertSee('Manual setup key')->assertSee('Use a recovery code instead');
+
+        $operator->refresh();
+        $secret = decrypt($operator->platform_mfa_secret);
+        $code = app(\App\Services\PlatformMfaService::class)->codeFor($secret);
+        $this->actingAs($operator)->post(route('owner.mfa.confirm'), ['code' => $code])
+            ->assertOk()->assertSee('Save your recovery codes');
+        $this->assertNotNull($operator->fresh()->platform_mfa_confirmed_at);
+        $this->assertNotNull($operator->fresh()->platform_mfa_recovery_codes);
+        $this->assertDatabaseHas('audit_logs', ['action' => 'platform.mfa_enabled', 'actor_id' => $operator->id]);
+    }
+
+    public function test_platform_mfa_recovery_code_is_single_use_and_audited(): void
+    {
+        $mfa = app(\App\Services\PlatformMfaService::class);
+        $recovery = $mfa->issueRecoveryCodes();
+        $operator = User::factory()->create([
+            'platform_role' => 'security',
+            'platform_mfa_secret' => encrypt($mfa->issueSecret()),
+            'platform_mfa_recovery_codes' => $recovery['payload'],
+        ]);
+
+        $plainCode = $recovery['codes'][0];
+        $this->actingAs($operator)->get(route('owner.mfa.recover'))->assertOk()->assertSee('Recover platform MFA');
+        $this->actingAs($operator)->post(route('owner.mfa.recover.submit'), ['code' => $plainCode])
+            ->assertRedirect(route('owner.dashboard'));
+        $this->assertNotNull($operator->fresh()->platform_mfa_confirmed_at);
+        $this->assertDatabaseHas('audit_logs', ['action' => 'platform.mfa_recovered', 'actor_id' => $operator->id]);
+
+        $this->actingAs($operator)->post(route('owner.mfa.recover.submit'), ['code' => $plainCode])
+            ->assertStatus(422);
+    }
+
+    public function test_corrupted_platform_mfa_recovery_payload_fails_closed(): void
+    {
+        $operator = User::factory()->create([
+            'platform_role' => 'security',
+            'platform_mfa_recovery_codes' => encrypt('not-json-recovery-payload'),
+        ]);
+
+        $this->assertFalse(app(\App\Services\PlatformMfaService::class)->consumeRecoveryCode($operator, 'ABCDE-12345'));
+    }
+
+    public function test_platform_logout_only_ends_the_platform_session(): void
+    {
+        $operator = User::factory()->create([
+            'platform_role' => 'security',
+            'platform_mfa_confirmed_at' => now(),
+        ]);
+
+        $this->actingAs($operator)->get('http://erphpro.com/owner')->assertOk();
+        $this->actingAs($operator)->post(route('owner.logout'))->assertRedirect(route('owner.login'));
+        $this->assertNull(\Illuminate\Support\Facades\Auth::guard('platform')->id());
+        $this->assertNull(\Illuminate\Support\Facades\Auth::guard('web')->id());
+    }
+
+    public function test_runtime_page_exposes_only_connected_health_signals_by_permission(): void
+    {
+        $security = User::factory()->create([
+            'platform_role' => 'security',
+            'platform_mfa_confirmed_at' => now(),
+        ]);
+        $support = User::factory()->create([
+            'platform_role' => 'support',
+            'platform_mfa_confirmed_at' => now(),
+        ]);
+
+        $this->actingAs($security)->get(route('owner.runtime'))
+            ->assertOk()->assertSee('System runtime')->assertSee('Database connectivity')->assertDontSee('QUEUE_CONNECTION');
+        $this->actingAs($support)->get(route('owner.runtime'))->assertForbidden();
+    }
+
+    public function test_global_settings_is_owner_only_and_does_not_expose_secret_values(): void
+    {
+        config([
+            'services.google.client_id' => 'client-id-for-test',
+            'services.google.client_secret' => 'secret-value-for-test',
+            'services.deepseek.api_key' => 'deepseek-secret-for-test',
+        ]);
+        $owner = User::factory()->create(['platform_role' => 'owner', 'platform_mfa_confirmed_at' => now()]);
+        $security = User::factory()->create(['platform_role' => 'security', 'platform_mfa_confirmed_at' => now()]);
+
+        $this->actingAs($owner)->get(route('owner.settings'))
+            ->assertOk()
+            ->assertSee('Global settings')
+            ->assertSee('Configured')
+            ->assertDontSee('secret-value-for-test')
+            ->assertDontSee('deepseek-secret-for-test');
+        $this->actingAs($security)->get(route('owner.settings'))->assertForbidden();
+    }
+
+    public function test_platform_owner_can_assign_an_unmatched_account_once(): void
+    {
+        $this->seed();
+        $owner = User::factory()->create(['platform_role' => 'owner', 'platform_mfa_confirmed_at' => now()]);
+        $user = User::factory()->create(['platform_role' => null]);
+        $school = School::firstOrFail();
+
+        $this->actingAs($owner)->get(route('owner.accounts.index'))
+            ->assertOk()->assertSee($user->email)->assertSee('Account assignment');
+        $this->actingAs($owner)->post(route('owner.accounts.assign', $user), [
+            'school_id' => $school->id,
+            'role' => 'teacher',
+        ])->assertRedirect(route('owner.accounts.index'));
+
+        $this->assertDatabaseHas('school_memberships', [
+            'school_id' => $school->id,
+            'user_id' => $user->id,
+            'role' => 'teacher',
+            'status' => 'active',
+        ]);
+        $this->assertDatabaseHas('audit_logs', ['action' => 'platform.account_assigned', 'actor_id' => $owner->id]);
+
+        $this->actingAs($owner)->post(route('owner.accounts.assign', $user), [
+            'school_id' => $school->id,
+            'role' => 'teacher',
+        ])->assertSessionHasErrors('user');
+    }
+
+    public function test_platform_mfa_matches_the_rfc6238_sha1_reference_vector(): void
+    {
+        $service = app(\App\Services\PlatformMfaService::class);
+
+        $this->assertSame('287082', $service->codeFor('GEZDGNBVGY3TQOJQGEZDGNBVGY3TQOJQ', 59));
+    }
+
+    public function test_confirmed_platform_operator_cannot_reopen_mfa_secret_setup(): void
+    {
+        $secret = app(\App\Services\PlatformMfaService::class)->issueSecret();
+        $operator = User::factory()->create([
+            'platform_role' => 'security',
+            'platform_mfa_secret' => encrypt($secret),
+            'platform_mfa_confirmed_at' => now(),
+        ]);
+
+        $this->actingAs($operator)->get(route('owner.mfa.setup'))
+            ->assertRedirect(route('owner.dashboard'));
+
+        $this->assertSame($secret, decrypt($operator->fresh()->platform_mfa_secret));
+    }
+
+    public function test_confirmed_platform_operator_must_verify_mfa_in_each_new_session(): void
+    {
+        $mfa = app(\App\Services\PlatformMfaService::class);
+        $secret = $mfa->issueSecret();
+        $operator = User::factory()->create([
+            'platform_role' => 'security',
+            'platform_mfa_secret' => encrypt($secret),
+            'platform_mfa_confirmed_at' => now(),
+        ]);
+
+        $this->actingAs($operator, 'platform')
+            ->withSession(['platform.mfa_verified_user_id' => null])
+            ->get('http://erphpro.com/owner')
+            ->assertRedirect(route('owner.mfa.challenge'));
+        $this->actingAs($operator, 'platform')
+            ->withSession(['platform.mfa_verified_user_id' => null])
+            ->get(route('owner.mfa.challenge'))->assertOk()->assertSee('Verify platform MFA');
+
+        $this->actingAs($operator, 'platform')
+            ->withSession(['platform.mfa_verified_user_id' => null])
+            ->post(route('owner.mfa.challenge.verify'), ['code' => $mfa->codeFor($secret)])
+            ->assertRedirect(route('owner.dashboard'));
+    }
+
+    public function test_authenticated_session_cannot_cross_from_platform_host_to_school_host(): void
+    {
+        $operator = User::factory()->create([
+            'platform_role' => 'owner',
+            'platform_mfa_confirmed_at' => now(),
+        ]);
+
+        $this->actingAs($operator)->get('http://erphpro.com/owner')->assertOk();
+
+        $this->get('http://demo.erphpro.com/workspace')->assertForbidden();
+        $this->assertGuest();
+    }
+
+    public function test_authenticated_school_session_cannot_cross_to_another_school_host(): void
+    {
+        $this->seed();
+        $user = User::where('email', 'demo@erphpro.com')->firstOrFail();
+        School::create([
+            'name' => 'Second Test School',
+            'slug' => 'second-test-school',
+            'subdomain' => 'second-test-school',
+        ]);
+
+        $this->actingAs($user)->get('http://demo.erphpro.com/workspace')->assertOk();
+
+        $this->get('http://second-test-school.erphpro.com/workspace')->assertForbidden();
+        $this->assertGuest();
     }
 }
