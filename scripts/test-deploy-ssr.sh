@@ -130,6 +130,10 @@ if HEALTH_URL=http://example.test/health run_hook >"$SANDBOX/out" 2>&1; then
   echo 'Expected an HTTP health URL to stop deployment.' >&2
   exit 1
 fi
+if [[ -s "$TRACE" || "$(readlink "$CURRENT")" != "$OLD_RELEASE" ]]; then
+  echo 'An HTTP health URL reached build commands or changed the live release.' >&2
+  exit 1
+fi
 
 new_sandbox missing_branch
 if DEPLOY_BRANCH=does-not-exist run_hook >"$SANDBOX/out" 2>&1; then
@@ -171,11 +175,6 @@ if [[ "$(readlink "$CURRENT")" != "$OLD_RELEASE" ]]; then
   echo 'Missing required parity configuration changed the live release.' >&2
   exit 1
 fi
-if [[ -s "$TRACE" || "$(readlink "$CURRENT")" != "$OLD_RELEASE" ]]; then
-  echo 'An HTTP health URL reached build commands or changed the live release.' >&2
-  exit 1
-fi
-
 new_sandbox missing_atomic_path
 if OVERRIDE_RELEASES_DIR= run_hook >"$SANDBOX/out" 2>&1; then
   echo 'Expected a missing atomic-release path to stop deployment.' >&2
