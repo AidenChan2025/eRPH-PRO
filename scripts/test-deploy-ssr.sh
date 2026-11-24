@@ -24,7 +24,7 @@ if [[ "${1:-}" == "-r" ]]; then
   exit 0
 fi
 if [[ "${1:-}" == "-m" ]]; then
-  tr ' ' '\n' <<<"${FAKE_PHP_MODULES:-ctype fileinfo mbstring openssl PDO pdo_mysql tokenizer xml}"
+  tr ' ' '\n' <<<"${FAKE_PHP_MODULES:-ctype fileinfo gd mbstring openssl PDO pdo_mysql tokenizer xml}"
   exit 0
 fi
 if [[ "${1:-}" == */composer ]]; then
@@ -168,7 +168,7 @@ run_hook() {
     SSR_COMPOSER_BIN="${COMPOSER_BIN_OVERRIDE:-$tmp_dir/bin/composer}" \
     TRACE_FILE="$TRACE" \
     FAKE_HEALTH_RESPONSE="${FAKE_HEALTH_RESPONSE:-}" \
-    FAKE_PHP_MODULES="${FAKE_PHP_MODULES:-ctype fileinfo mbstring openssl PDO pdo_mysql tokenizer xml}" \
+    FAKE_PHP_MODULES="${FAKE_PHP_MODULES:-ctype fileinfo gd mbstring openssl PDO pdo_mysql tokenizer xml}" \
     FAKE_PHP_VERSION_ID="${FAKE_PHP_VERSION_ID:-80300}" \
     MIGRATION_PENDING="${MIGRATION_PENDING:-0}" \
     COMPOSER_FAIL="${COMPOSER_FAIL:-0}" \
@@ -298,13 +298,18 @@ if [[ -s "$TRACE" || "$(readlink "$CURRENT")" != "$OLD_RELEASE" ]]; then
   echo 'An overlapping source checkout reached build commands or changed the live release.' >&2
   exit 1
 fi
-new_sandbox missing_extension
-if FAKE_PHP_MODULES='ctype fileinfo mbstring openssl PDO tokenizer xml' run_hook >"$SANDBOX/out" 2>&1; then
+new_sandbox missing_gd
+if FAKE_PHP_MODULES='ctype fileinfo mbstring openssl PDO pdo_mysql tokenizer xml' run_hook >"$SANDBOX/out" 2>&1; then
   echo 'Expected a missing PHP extension to stop deployment.' >&2
   exit 1
 fi
+if ! grep -q 'PHP extension gd is missing' "$SANDBOX/out"; then
+  cat "$SANDBOX/out" >&2
+  echo 'Missing GD did not produce the expected diagnostic.' >&2
+  exit 1
+fi
 if [[ -s "$TRACE" || "$(readlink "$CURRENT")" != "$OLD_RELEASE" ]]; then
-  echo 'Missing PHP extension reached build commands or changed the live release.' >&2
+  echo 'Missing GD reached build commands or changed the live release.' >&2
   exit 1
 fi
 

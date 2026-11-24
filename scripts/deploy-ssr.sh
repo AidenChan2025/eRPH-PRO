@@ -130,7 +130,7 @@ if [[ ! "$php_version_id" =~ ^[0-9]+$ ]] || (( php_version_id < 80300 )); then
   exit 1
 fi
 php_modules="$("$PHP_BIN" -m)"
-for extension in ctype fileinfo mbstring openssl pdo pdo_mysql tokenizer xml; do
+for extension in ctype fileinfo gd mbstring openssl pdo pdo_mysql tokenizer xml; do
   if ! grep -Fxqi "$extension" <<<"$php_modules"; then
     echo "SSR deployment aborted: PHP extension $extension is missing." >&2
     exit 1
