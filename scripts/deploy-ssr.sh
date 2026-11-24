@@ -13,6 +13,7 @@ SSR_SHARED_DIR="${SSR_SHARED_DIR:-}"
 SSR_HEALTH_URL="${SSR_HEALTH_URL:-}"
 SSR_DOCUMENT_ROOT="${SSR_DOCUMENT_ROOT:-}"
 SSR_PARITY_URLS="${SSR_PARITY_URLS:-}"
+SSR_PARITY_REQUIRED="${SSR_PARITY_REQUIRED:-0}"
 SSR_BRANCH="${SSR_BRANCH:-}"
 
 for required in SSR_RELEASES_DIR SSR_CURRENT_LINK SSR_SHARED_DIR SSR_HEALTH_URL SSR_DOCUMENT_ROOT; do
@@ -133,11 +134,11 @@ done
 
 if [[ -n "$SSR_REPOSITORY_DIR" ]]; then
   if [[ -n "$SSR_BRANCH" ]]; then
-    release_version="$(git --git-dir="$SSR_REPOSITORY_DIR" rev-parse --verify "refs/heads/$SSR_BRANCH^{commit}" 2>/dev/null || true)"
+    if ! release_version="$(git --git-dir="$SSR_REPOSITORY_DIR" rev-parse --verify "refs/heads/$SSR_BRANCH^{commit}" 2>/dev/null)"; then
+      echo "SSR deployment aborted: configured SSR_BRANCH does not resolve to a commit; refusing to fall back to HEAD." >&2
+      exit 1
+    fi
   else
-    release_version="$(git --git-dir="$SSR_REPOSITORY_DIR" rev-parse --verify 'HEAD^{commit}' 2>/dev/null || true)"
-  fi
-  if [[ -z "$release_version" ]]; then
     release_version="$(git --git-dir="$SSR_REPOSITORY_DIR" rev-parse --verify 'HEAD^{commit}' 2>/dev/null || true)"
   fi
 else
@@ -209,7 +210,12 @@ check_health_payload() {
 }
 
 check_host_parity() {
+  local expected_release="${1:-$release_version}"
   if [[ -z "$SSR_PARITY_URLS" ]]; then
+    if [[ "$SSR_PARITY_REQUIRED" == "1" ]]; then
+      echo "SSR deployment parity check failed: SSR_PARITY_URLS is required for this production deployment." >&2
+      return 1
+    fi
     return 0
   fi
   local parity_script="${SSR_PARITY_SCRIPT:-$GIT_SOURCE_DIR/scripts/verify-ssr-host-parity.sh}"
@@ -222,7 +228,15 @@ check_host_parity() {
     echo "SSR deployment parity check failed: SSR_PARITY_URLS must contain at least two HTTPS hosts." >&2
     return 1
   fi
-  "$parity_script" "$release_version" "${parity_hosts[@]}"
+  declare -A seen_hosts=()
+  for parity_host in "${parity_hosts[@]}"; do
+    if [[ -n "${seen_hosts[$parity_host]:-}" ]]; then
+      echo "SSR deployment parity check failed: duplicate host $parity_host." >&2
+      return 1
+    fi
+    seen_hosts[$parity_host]=1
+  done
+  "$parity_script" "$expected_release" "${parity_hosts[@]}"
 }
 
 finish_deployment() {
@@ -230,7 +244,14 @@ finish_deployment() {
   trap - EXIT
   if (( switched == 1 && healthy == 0 )); then
     if replace_current_link "$previous_target"; then
-      echo "SSR deployment failed; restored previous release $previous_target." >&2
+      rollback_release="$(basename "$previous_target")"
+      rollback_health_payload="$(curl --fail --silent --show-error --max-time 15 "$SSR_HEALTH_URL" 2>/dev/null || true)"
+      if check_health_payload "$rollback_health_payload" "$rollback_release" && check_host_parity "$rollback_release"; then
+        echo "SSR deployment failed; restored and re-verified previous release $previous_target." >&2
+      else
+        echo "CRITICAL: previous release was restored but post-rollback health/parity verification failed." >&2
+        result=1
+      fi
     else
       echo "CRITICAL: deployment failed and previous release could not be restored; current may still target $release_dir." >&2
       result=1
@@ -282,7 +303,7 @@ if [[ -e "$release_dir" || -L "$release_dir" ]]; then
   if [[ "$(cd -P "$SSR_CURRENT_LINK" && pwd -P)" == "$(cd -P "$release_dir" && pwd -P)" ]]; then
     health_payload="$(curl --fail --silent --show-error --max-time 15 "$SSR_HEALTH_URL")"
     check_health_payload "$health_payload"
-    check_host_parity
+    check_host_parity "$release_version"
     healthy=1
     echo "SSR release already active and healthy: $health_payload"
     exit 0
@@ -345,7 +366,7 @@ switched=1
 
 health_payload="$(curl --fail --silent --show-error --max-time 15 "$SSR_HEALTH_URL")"
 check_health_payload "$health_payload"
-check_host_parity
+check_host_parity "$release_version"
 
 healthy=1
 echo "SSR deployment healthy: $health_payload"
