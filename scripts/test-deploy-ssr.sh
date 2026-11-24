@@ -175,6 +175,29 @@ if [[ "$(readlink "$CURRENT")" != "$OLD_RELEASE" ]]; then
   echo 'Missing required parity configuration changed the live release.' >&2
   exit 1
 fi
+
+new_sandbox missing_support_host
+if PARITY_REQUIRED=1 PARITY_URLS='https://erphpro.com https://other.example.test' run_hook >"$SANDBOX/out" 2>&1; then
+  echo 'Expected missing support host parity configuration to stop deployment.' >&2
+  exit 1
+fi
+if ! grep -q 'must include both required hosts' "$SANDBOX/out"; then
+  cat "$SANDBOX/out" >&2
+  echo 'Missing support host did not produce the expected parity diagnostic.' >&2
+  exit 1
+fi
+
+new_sandbox normalized_duplicate_host
+if PARITY_REQUIRED=1 PARITY_URLS='https://erphpro.com https://erphpro.com/ https://support.erphpro.com' run_hook >"$SANDBOX/out" 2>&1; then
+  echo 'Expected normalized duplicate parity hosts to stop deployment.' >&2
+  exit 1
+fi
+if ! grep -q 'invalid or duplicate production parity host' "$SANDBOX/out"; then
+  cat "$SANDBOX/out" >&2
+  echo 'Normalized duplicate host did not produce the expected parity diagnostic.' >&2
+  exit 1
+fi
+
 new_sandbox missing_atomic_path
 if OVERRIDE_RELEASES_DIR= run_hook >"$SANDBOX/out" 2>&1; then
   echo 'Expected a missing atomic-release path to stop deployment.' >&2

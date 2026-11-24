@@ -13,7 +13,7 @@ SSR_SHARED_DIR="${SSR_SHARED_DIR:-}"
 SSR_HEALTH_URL="${SSR_HEALTH_URL:-}"
 SSR_DOCUMENT_ROOT="${SSR_DOCUMENT_ROOT:-}"
 SSR_PARITY_URLS="${SSR_PARITY_URLS:-}"
-SSR_PARITY_REQUIRED="${SSR_PARITY_REQUIRED:-0}"
+SSR_PARITY_REQUIRED="${SSR_PARITY_REQUIRED:-1}"
 SSR_BRANCH="${SSR_BRANCH:-}"
 SSR_EXPECTED_SHA="${SSR_EXPECTED_SHA:-}"
 
@@ -23,6 +23,10 @@ for required in SSR_RELEASES_DIR SSR_CURRENT_LINK SSR_SHARED_DIR SSR_HEALTH_URL 
     exit 1
   fi
 done
+if [[ "$SSR_PARITY_REQUIRED" != "0" && "$SSR_PARITY_REQUIRED" != "1" ]]; then
+  echo "SSR deployment aborted: SSR_PARITY_REQUIRED must be 0 or 1." >&2
+  exit 1
+fi
 
 if [[ "$SSR_HEALTH_URL" != https://* ]]; then
   echo "SSR deployment aborted: SSR_HEALTH_URL must use HTTPS." >&2
@@ -243,11 +247,16 @@ check_host_parity() {
   fi
   declare -A seen_hosts=()
   for parity_host in "${parity_hosts[@]}"; do
-    if [[ -n "${seen_hosts[$parity_host]:-}" ]]; then
-      echo "SSR deployment parity check failed: duplicate host $parity_host." >&2
+    normalized_host="${parity_host%/}"
+    if [[ "$normalized_host" != https://* || "$normalized_host" == */*/* ]]; then
+      echo "SSR deployment parity check failed: invalid HTTPS host $parity_host." >&2
       return 1
     fi
-    seen_hosts[$parity_host]=1
+    if [[ -n "${seen_hosts[$normalized_host]:-}" ]]; then
+      echo "SSR deployment parity check failed: duplicate normalized host $parity_host." >&2
+      return 1
+    fi
+    seen_hosts[$normalized_host]=1
   done
   if [[ "$SSR_PARITY_REQUIRED" == "1" && ( -z "${seen_hosts[https://erphpro.com]:-}" || -z "${seen_hosts[https://support.erphpro.com]:-}" ) ]]; then
     echo "SSR deployment parity check failed: production parity must include https://erphpro.com and https://support.erphpro.com." >&2
@@ -255,6 +264,37 @@ check_host_parity() {
   fi
   "$parity_script" "$expected_release" "${parity_hosts[@]}"
 }
+
+validate_parity_config() {
+  if [[ "$SSR_PARITY_REQUIRED" != "1" ]]; then
+    return 0
+  fi
+  if [[ -z "$SSR_PARITY_URLS" ]]; then
+    echo "SSR deployment aborted: SSR_PARITY_URLS is required for production." >&2
+    return 1
+  fi
+  check_host_parity_config_only=1
+  read -r -a preflight_hosts <<< "$SSR_PARITY_URLS"
+  if [[ ${#preflight_hosts[@]} -lt 2 ]]; then
+    echo "SSR deployment aborted: SSR_PARITY_URLS must contain both production hosts." >&2
+    return 1
+  fi
+  declare -A preflight_seen=()
+  for preflight_host in "${preflight_hosts[@]}"; do
+    normalized_host="${preflight_host%/}"
+    if [[ "$normalized_host" != https://* || "$normalized_host" == */*/* || -n "${preflight_seen[$normalized_host]:-}" ]]; then
+      echo "SSR deployment aborted: invalid or duplicate production parity host $preflight_host." >&2
+      return 1
+    fi
+    preflight_seen[$normalized_host]=1
+  done
+  if [[ -z "${preflight_seen[https://erphpro.com]:-}" || -z "${preflight_seen[https://support.erphpro.com]:-}" ]]; then
+    echo "SSR deployment aborted: production parity must include both required hosts." >&2
+    return 1
+  fi
+}
+
+validate_parity_config
 
 finish_deployment() {
   local result=$?
