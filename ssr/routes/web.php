@@ -79,6 +79,10 @@ Route::middleware(['platform.host', 'platform.auth', 'platform.permission:platfo
     Route::post('/{user}/assign', [OwnerAccountController::class, 'assign'])->name('owner.accounts.assign');
 });
 Route::middleware(['platform.host', 'platform.auth', 'platform.permission:platform.settings.manage', 'platform.mfa'])->get('/owner/settings', OwnerSettingsController::class)->name('owner.settings');
+Route::middleware(['platform.host', 'platform.auth', 'platform.permission:platform.settings.manage', 'platform.mfa', \App\Http\Middleware\PreventSensitiveResponseCaching::class])->group(function () {
+    Route::get('/owner/billing', [\App\Http\Controllers\OwnerBillingController::class, 'index'])->name('owner.billing');
+    Route::put('/owner/billing/{school}', [\App\Http\Controllers\OwnerBillingController::class, 'update'])->name('owner.billing.update');
+});
 Route::middleware(['platform.host', 'platform.auth', 'platform.permission:platform.support.view', 'platform.mfa'])->prefix('owner/support')->group(function () {
     Route::get('/', [OwnerSupportController::class, 'index'])->name('owner.support.index');
     Route::get('/{publicId}', [OwnerSupportController::class, 'show'])->name('owner.support.show');
@@ -146,6 +150,10 @@ Route::middleware('school')->group(function () {
         Route::get('/admin/settings', [SchoolSettingsController::class, 'edit'])->name('school.settings');
         Route::put('/admin/settings', [SchoolSettingsController::class, 'update'])->name('school.settings.update');
         Route::post('/admin/settings/timetable', [SchoolSettingsController::class, 'addSlot'])->name('school.settings.timetable.add');
+        Route::middleware(\App\Http\Middleware\PreventSensitiveResponseCaching::class)->group(function () {
+            Route::get('/admin/billing', [\App\Http\Controllers\SchoolBillingController::class, 'index'])->name('school.billing');
+            Route::middleware('throttle:10,1')->post('/admin/billing/checkout', [\App\Http\Controllers\SchoolBillingController::class, 'checkout'])->name('school.billing.checkout');
+        });
     });
     Route::middleware(['auth', 'school.member:school_admin,principal,vice_principal', 'permission:lesson_plans.review'])->group(function () {
         Route::get('/admin/rph/{lessonPlan}/review', [LessonPlanReviewController::class, 'show'])->name('rph.review');

@@ -21,6 +21,13 @@ class StripeBillingController extends Controller
             return response()->json(['error' => 'Invalid Stripe signature'], 400);
         }
 
-        return response()->json(['received' => true]);
+        $event = json_decode($payload, true);
+        if (! is_array($event)) {
+            return response()->json(['error' => 'Invalid JSON payload'], 400);
+        }
+
+        $result = $stripe->handleVerifiedEvent($event);
+
+        return response()->json($result);
     }
 }
