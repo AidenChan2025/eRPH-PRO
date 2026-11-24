@@ -11,7 +11,9 @@ class PreventSensitiveResponseCaching
     public function handle(Request $request, Closure $next): Response
     {
         $response = $next($request);
-        $response->headers->set('Cache-Control', 'no-store, private');
+        if (! str_contains((string) $response->headers->get('Cache-Control'), 'no-store')) {
+            $response->headers->set('Cache-Control', 'no-store, private');
+        }
         $response->headers->set('Referrer-Policy', 'no-referrer');
 
         return $response;

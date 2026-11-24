@@ -38,7 +38,7 @@ Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])
     ->middleware(\App\Http\Middleware\PreventSensitiveResponseCaching::class)
     ->name('auth.google.callback');
 Route::post('/auth/google/one-tap', [GoogleAuthController::class, 'oneTap'])->name('auth.google.one-tap')->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
-Route::middleware(['platform.host', 'platform.auth', 'platform.permission:platform.dashboard.view'])->group(function () {
+Route::middleware(['platform.host', 'platform.auth', 'platform.permission:platform.dashboard.view', \App\Http\Middleware\PreventSensitiveResponseCaching::class])->group(function () {
     Route::get('/owner/mfa/setup', [OwnerMfaController::class, 'setup'])->name('owner.mfa.setup');
     Route::middleware('throttle:5,1')->post('/owner/mfa/setup', [OwnerMfaController::class, 'confirm'])->name('owner.mfa.confirm');
     Route::get('/owner/mfa/challenge', [OwnerMfaController::class, 'challenge'])->name('owner.mfa.challenge');

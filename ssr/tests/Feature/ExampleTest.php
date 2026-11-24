@@ -2278,7 +2278,10 @@ class ExampleTest extends TestCase
         $secret = decrypt($operator->platform_mfa_secret);
         $code = app(\App\Services\PlatformMfaService::class)->codeFor($secret);
         $this->actingAs($operator)->post(route('owner.mfa.confirm'), ['code' => $code])
-            ->assertOk()->assertSee('Save your recovery codes');
+            ->assertOk()
+            ->assertHeader('Cache-Control', 'no-store, private')
+            ->assertHeader('Referrer-Policy', 'no-referrer')
+            ->assertSee('Save your recovery codes');
         $this->assertNotNull($operator->fresh()->platform_mfa_confirmed_at);
         $this->assertNotNull($operator->fresh()->platform_mfa_recovery_codes);
         $this->assertDatabaseHas('audit_logs', ['action' => 'platform.mfa_enabled', 'actor_id' => $operator->id]);
