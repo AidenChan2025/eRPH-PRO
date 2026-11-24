@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call(SupportContentSeeder::class);
+        $this->call(BpkDskpSeeder::class);
 
         $school = \App\Models\School::query()->updateOrCreate(
             ['subdomain' => 'demo'],
