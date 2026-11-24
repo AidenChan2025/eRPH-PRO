@@ -95,6 +95,10 @@ run_hook() {
     SSR_SHARED_DIR="${OVERRIDE_SHARED_DIR-$SHARED}" \
     SSR_DOCUMENT_ROOT="${DOCUMENT_ROOT:-$CURRENT/public}" \
     SSR_HEALTH_URL="${HEALTH_URL:-https://example.test/health}" \
+    SSR_BRANCH="${DEPLOY_BRANCH:-}" \
+    SSR_EXPECTED_SHA="${EXPECTED_SHA:-}" \
+    SSR_PARITY_REQUIRED="${PARITY_REQUIRED:-0}" \
+    SSR_PARITY_URLS="${PARITY_URLS:-}" \
     SSR_PHP_BIN="$tmp_dir/bin/php" \
     SSR_COMPOSER_BIN="${COMPOSER_BIN_OVERRIDE:-$tmp_dir/bin/composer}" \
     TRACE_FILE="$TRACE" \
@@ -124,6 +128,47 @@ fi
 new_sandbox insecure_health_url
 if HEALTH_URL=http://example.test/health run_hook >"$SANDBOX/out" 2>&1; then
   echo 'Expected an HTTP health URL to stop deployment.' >&2
+  exit 1
+fi
+
+new_sandbox missing_branch
+if DEPLOY_BRANCH=does-not-exist run_hook >"$SANDBOX/out" 2>&1; then
+  echo 'Expected a missing SSR_BRANCH to fail closed.' >&2
+  exit 1
+fi
+if ! grep -q 'refusing to fall back to HEAD' "$SANDBOX/out"; then
+  cat "$SANDBOX/out" >&2
+  echo 'Missing SSR_BRANCH did not produce the fail-closed diagnostic.' >&2
+  exit 1
+fi
+if [[ -s "$TRACE" || "$(readlink "$CURRENT")" != "$OLD_RELEASE" ]]; then
+  echo 'Missing SSR_BRANCH reached build commands or changed the live release.' >&2
+  exit 1
+fi
+
+new_sandbox wrong_expected_sha
+if EXPECTED_SHA=0000000000000000000000000000000000000000 run_hook >"$SANDBOX/out" 2>&1; then
+  echo 'Expected SSR_EXPECTED_SHA mismatch to stop deployment.' >&2
+  exit 1
+fi
+if ! grep -q 'does not match SSR_EXPECTED_SHA' "$SANDBOX/out"; then
+  cat "$SANDBOX/out" >&2
+  echo 'SSR_EXPECTED_SHA mismatch did not produce the expected diagnostic.' >&2
+  exit 1
+fi
+
+new_sandbox required_parity_missing
+if PARITY_REQUIRED=1 FAKE_HEALTH_RESPONSE="{\"status\":\"ok\",\"database\":\"ok\",\"cache\":\"ok\",\"release\":\"$expected_sha\"}" run_hook >"$SANDBOX/out" 2>&1; then
+  echo 'Expected required production parity without URLs to stop deployment.' >&2
+  exit 1
+fi
+if ! grep -q 'SSR_PARITY_URLS is required' "$SANDBOX/out"; then
+  cat "$SANDBOX/out" >&2
+  echo 'Missing required parity configuration did not produce the expected diagnostic.' >&2
+  exit 1
+fi
+if [[ "$(readlink "$CURRENT")" != "$OLD_RELEASE" ]]; then
+  echo 'Missing required parity configuration changed the live release.' >&2
   exit 1
 fi
 if [[ -s "$TRACE" || "$(readlink "$CURRENT")" != "$OLD_RELEASE" ]]; then
