@@ -248,7 +248,8 @@ check_host_parity() {
   seen_hosts=,
   for parity_host in "${parity_hosts[@]}"; do
     normalized_host="${parity_host%/}"
-    if [[ "$normalized_host" != https://* || "$normalized_host" == */*/* ]]; then
+    host_part="${normalized_host#https://}"
+    if [[ "$normalized_host" != https://* || -z "$host_part" || "$host_part" == */* ]]; then
       echo "SSR deployment parity check failed: invalid HTTPS host $parity_host." >&2
       return 1
     fi
@@ -282,7 +283,8 @@ validate_parity_config() {
   preflight_seen=,
   for preflight_host in "${preflight_hosts[@]}"; do
     normalized_host="${preflight_host%/}"
-    if [[ "$normalized_host" != https://* || "$normalized_host" == */*/* || "$preflight_seen" == *",$normalized_host,"* ]]; then
+    host_part="${normalized_host#https://}"
+    if [[ "$normalized_host" != https://* || -z "$host_part" || "$host_part" == */* || "$preflight_seen" == *",$normalized_host,"* ]]; then
       echo "SSR deployment aborted: invalid or duplicate production parity host $preflight_host." >&2
       return 1
     fi
