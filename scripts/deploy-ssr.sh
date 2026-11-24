@@ -13,6 +13,7 @@ SSR_SHARED_DIR="${SSR_SHARED_DIR:-}"
 SSR_HEALTH_URL="${SSR_HEALTH_URL:-}"
 SSR_DOCUMENT_ROOT="${SSR_DOCUMENT_ROOT:-}"
 SSR_PARITY_URLS="${SSR_PARITY_URLS:-}"
+SSR_BRANCH="${SSR_BRANCH:-}"
 
 for required in SSR_RELEASES_DIR SSR_CURRENT_LINK SSR_SHARED_DIR SSR_HEALTH_URL SSR_DOCUMENT_ROOT; do
   if [[ -z "${!required}" ]]; then
@@ -131,7 +132,14 @@ for extension in ctype fileinfo mbstring openssl pdo pdo_mysql tokenizer xml; do
 done
 
 if [[ -n "$SSR_REPOSITORY_DIR" ]]; then
-  release_version="$(git --git-dir="$SSR_REPOSITORY_DIR" rev-parse --verify 'refs/heads/main^{commit}' 2>/dev/null || git --git-dir="$SSR_REPOSITORY_DIR" rev-parse --verify 'HEAD^{commit}' 2>/dev/null || true)"
+  if [[ -n "$SSR_BRANCH" ]]; then
+    release_version="$(git --git-dir="$SSR_REPOSITORY_DIR" rev-parse --verify "refs/heads/$SSR_BRANCH^{commit}" 2>/dev/null || true)"
+  else
+    release_version="$(git --git-dir="$SSR_REPOSITORY_DIR" rev-parse --verify 'HEAD^{commit}' 2>/dev/null || true)"
+  fi
+  if [[ -z "$release_version" ]]; then
+    release_version="$(git --git-dir="$SSR_REPOSITORY_DIR" rev-parse --verify 'HEAD^{commit}' 2>/dev/null || true)"
+  fi
 else
   release_version="$(git -C "$GIT_SOURCE_DIR" rev-parse --verify 'HEAD^{commit}' 2>/dev/null || true)"
 fi
