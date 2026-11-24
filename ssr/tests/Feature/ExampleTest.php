@@ -2266,6 +2266,9 @@ class ExampleTest extends TestCase
             ->assertRedirect(route('owner.mfa.setup'));
         $this->actingAs($operator)->get(route('owner.mfa.setup'))
             ->assertOk()
+            ->assertHeader('Cache-Control', 'no-store, private, max-age=0')
+            ->assertHeader('Pragma', 'no-cache')
+            ->assertHeader('Vary', 'Cookie')
             ->assertSee('Scan this QR code')
             ->assertSee('Use manual setup instead')
             ->assertSee('enter this setup key manually')
