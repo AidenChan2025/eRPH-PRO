@@ -2268,7 +2268,7 @@ class ExampleTest extends TestCase
             ->assertOk()
             ->assertSee('Scan this QR code')
             ->assertSee('Use manual setup instead')
-            ->assertSee('Manual setup key')
+            ->assertSee('enter this setup key manually')
             ->assertSee('Use a recovery code instead');
 
         $operator->refresh();
