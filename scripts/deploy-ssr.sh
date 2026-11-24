@@ -179,6 +179,9 @@ if ! mkdir "$lock_dir" 2>/dev/null; then
   echo "SSR deployment aborted: another deployment holds $lock_dir (inspect stale locks manually)." >&2
   exit 1
 fi
+# Install a cleanup guard immediately after acquiring the lock.  Preflight
+# validation below must not strand the lock when it rejects configuration.
+trap 'rmdir "$lock_dir" 2>/dev/null || true' EXIT
 
 build_dir=""
 previous_target=""
@@ -292,6 +295,11 @@ validate_parity_config() {
   done
   if [[ "$preflight_seen" != *",https://erphpro.com,"* || "$preflight_seen" != *",https://support.erphpro.com,"* ]]; then
     echo "SSR deployment aborted: production parity must include both required hosts." >&2
+    return 1
+  fi
+  local parity_script="${SSR_PARITY_SCRIPT:-$GIT_SOURCE_DIR/scripts/verify-ssr-host-parity.sh}"
+  if [[ ! -x "$parity_script" ]]; then
+    echo "SSR deployment aborted: executable parity verifier not found at $parity_script." >&2
     return 1
   fi
 }

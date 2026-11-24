@@ -23,6 +23,9 @@ case "$*" in
   *second.test*) body='{"status":"ok","database":"ok","cache":"ok","release":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","runtime_file_sha256":"1111111111111111111111111111111111111111111111111111111111111111"}' ;;
   *drift.test*) body='{"status":"ok","database":"ok","cache":"ok","release":"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb","runtime_file_sha256":"1111111111111111111111111111111111111111111111111111111111111111"}' ;;
   *runtime-drift.test*) body='{"status":"ok","database":"ok","cache":"ok","release":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","runtime_file_sha256":"2222222222222222222222222222222222222222222222222222222222222222"}' ;;
+  *redirect.test*) body='{"status":"ok","database":"ok","cache":"ok","release":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","runtime_file_sha256":"1111111111111111111111111111111111111111111111111111111111111111"}' ; printf '%s' "$body" > "$output"; printf '302\thttps://redirect.test/health\thttps://redirect.test/health'; exit 0 ;;
+  *server-error.test*) body='{"status":"ok","database":"ok","cache":"ok","release":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","runtime_file_sha256":"1111111111111111111111111111111111111111111111111111111111111111"}' ; printf '%s' "$body" > "$output"; printf '500\thttps://server-error.test/health\t'; exit 0 ;;
+  *invalid-json.test*) body='not-json' ;;
   *) exit 22 ;;
 esac
 printf '%s' "$body" > "$output"
@@ -44,6 +47,26 @@ fi
 
 if PATH="$tmp_dir/bin:$PATH" bash "$repo_root/scripts/verify-ssr-host-parity.sh" "https://first.test" "https://runtime-drift.test" >/dev/null 2>&1; then
   echo 'Expected runtime fingerprint drift to fail.' >&2
+  exit 1
+fi
+
+if PATH="$tmp_dir/bin:$PATH" bash "$repo_root/scripts/verify-ssr-host-parity.sh" "http://first.test" "https://second.test" >/dev/null 2>&1; then
+  echo 'Expected an insecure host to fail.' >&2
+  exit 1
+fi
+
+if PATH="$tmp_dir/bin:$PATH" bash "$repo_root/scripts/verify-ssr-host-parity.sh" "https://redirect.test" "https://second.test" >/dev/null 2>&1; then
+  echo 'Expected an HTTP redirect to fail.' >&2
+  exit 1
+fi
+
+if PATH="$tmp_dir/bin:$PATH" bash "$repo_root/scripts/verify-ssr-host-parity.sh" "https://server-error.test" "https://second.test" >/dev/null 2>&1; then
+  echo 'Expected an HTTP 500 response to fail.' >&2
+  exit 1
+fi
+
+if PATH="$tmp_dir/bin:$PATH" bash "$repo_root/scripts/verify-ssr-host-parity.sh" "https://invalid-json.test" "https://second.test" >/dev/null 2>&1; then
+  echo 'Expected malformed JSON to fail.' >&2
   exit 1
 fi
 

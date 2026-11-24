@@ -58,6 +58,18 @@ cat > "$tmp_dir/bin/curl" <<'CURL'
 set -Eeuo pipefail
 printf 'curl %s\n' "$*" >> "$TRACE_FILE"
 if [[ "${CURL_FAIL:-0}" == 1 ]]; then exit 22; fi
+if [[ -n "${CURL_SEQUENCE_FILE:-}" ]]; then
+  sequence_index_file="${CURL_SEQUENCE_INDEX_FILE:-$CURL_SEQUENCE_FILE.index}"
+  if [[ -f "$sequence_index_file" ]]; then
+    sequence_index="$(sed -n '1p' "$sequence_index_file")"
+  else
+    sequence_index=1
+  fi
+  response="$(sed -n "${sequence_index}p" "$CURL_SEQUENCE_FILE")"
+  printf '%s' "$((sequence_index + 1))" > "$sequence_index_file"
+  printf '%s' "$response"
+  exit 0
+fi
 printf '%s' "${FAKE_HEALTH_RESPONSE:-}"
 CURL
 
@@ -70,18 +82,43 @@ READLINK
 
 chmod +x "$tmp_dir/bin/composer" "$tmp_dir/bin/php" "$tmp_dir/bin/curl" "$tmp_dir/bin/readlink"
 
+cat > "$tmp_dir/bin/parity-success" <<'PARITY'
+#!/usr/bin/env bash
+set -Eeuo pipefail
+printf '%s\n' "$*" >> "$PARITY_TRACE"
+exit 0
+PARITY
+cat > "$tmp_dir/bin/parity-fail" <<'PARITY'
+#!/usr/bin/env bash
+set -Eeuo pipefail
+printf '%s\n' "$*" >> "$PARITY_TRACE"
+exit 1
+PARITY
+cat > "$tmp_dir/bin/parity-flaky" <<'PARITY'
+#!/usr/bin/env bash
+set -Eeuo pipefail
+printf '%s\n' "$*" >> "$PARITY_TRACE"
+count="$(wc -l < "$PARITY_TRACE" | tr -d ' ')"
+if [[ "$count" == 1 ]]; then exit 1; fi
+exit 0
+PARITY
+chmod +x "$tmp_dir/bin/parity-success" "$tmp_dir/bin/parity-fail" "$tmp_dir/bin/parity-flaky"
+
 new_sandbox() {
   local name="$1"
   SANDBOX="$tmp_dir/$name"
   RELEASES="$SANDBOX/releases"
   SHARED="$SANDBOX/shared"
   CURRENT="$SANDBOX/current"
-  OLD_RELEASE="$RELEASES/previous-release"
+  OLD_SHA=1111111111111111111111111111111111111111
+  OLD_RELEASE="$RELEASES/$OLD_SHA"
   mkdir -p "$RELEASES" "$SHARED/storage" "$OLD_RELEASE/public" "$SANDBOX/bin"
   printf 'APP_KEY=test-only\n' > "$SHARED/.env"
   ln -s "$OLD_RELEASE" "$CURRENT"
   TRACE="$SANDBOX/trace"
   : > "$TRACE"
+  PARITY_TRACE="$SANDBOX/parity-trace"
+  : > "$PARITY_TRACE"
 }
 
 run_hook() {
@@ -99,6 +136,7 @@ run_hook() {
     SSR_EXPECTED_SHA="${EXPECTED_SHA:-}" \
     SSR_PARITY_REQUIRED="${PARITY_REQUIRED:-0}" \
     SSR_PARITY_URLS="${PARITY_URLS:-}" \
+    SSR_PARITY_SCRIPT="${PARITY_SCRIPT_OVERRIDE:-$repo_root/scripts/verify-ssr-host-parity.sh}" \
     SSR_PHP_BIN="$tmp_dir/bin/php" \
     SSR_COMPOSER_BIN="${COMPOSER_BIN_OVERRIDE:-$tmp_dir/bin/composer}" \
     TRACE_FILE="$TRACE" \
@@ -110,6 +148,9 @@ run_hook() {
     CURL_FAIL="${CURL_FAIL:-0}" \
     FAIL_READLINK="${FAIL_READLINK:-0}" \
     ARTISAN_FAIL="${ARTISAN_FAIL:-}" \
+    CURL_SEQUENCE_FILE="${CURL_SEQUENCE_FILE:-}" \
+    CURL_SEQUENCE_INDEX_FILE="${CURL_SEQUENCE_INDEX_FILE:-$SANDBOX/curl-sequence.index}" \
+    PARITY_TRACE="$PARITY_TRACE" \
     bash "$repo_root/scripts/deploy-ssr.sh"
 }
 
@@ -171,7 +212,7 @@ if ! grep -q 'SSR_PARITY_URLS is required' "$SANDBOX/out"; then
   echo 'Missing required parity configuration did not produce the expected diagnostic.' >&2
   exit 1
 fi
-if [[ "$(readlink "$CURRENT")" != "$OLD_RELEASE" ]]; then
+if [[ "$(readlink "$CURRENT")" != "$OLD_RELEASE" || -e "$RELEASES/.deploy.lock" ]]; then
   echo 'Missing required parity configuration changed the live release.' >&2
   exit 1
 fi
@@ -276,7 +317,7 @@ if COMPOSER_FAIL=1 run_hook >"$SANDBOX/out" 2>&1; then
   echo 'Expected Composer failure to stop deployment.' >&2
   exit 1
 fi
-if [[ "$(readlink "$CURRENT")" != "$OLD_RELEASE" ]]; then
+if [[ "$(readlink "$CURRENT")" != "$OLD_RELEASE" || -e "$RELEASES/.deploy.lock" ]]; then
   echo 'Composer failure changed the live release.' >&2
   exit 1
 fi
@@ -296,7 +337,7 @@ if CURL_FAIL=1 run_hook >"$SANDBOX/out" 2>&1; then
   echo 'Expected an HTTP health failure to stop deployment.' >&2
   exit 1
 fi
-if [[ "$(readlink "$CURRENT")" != "$OLD_RELEASE" ]]; then
+if [[ "$(readlink "$CURRENT")" != "$OLD_RELEASE" || -e "$RELEASES/.deploy.lock" ]]; then
   echo 'Health failure did not restore the previous release symlink.' >&2
   exit 1
 fi
@@ -351,6 +392,48 @@ if FAKE_HEALTH_RESPONSE="{\"status\":true,\"database\":\"ok\",\"cache\":\"ok\",\
 fi
 if [[ "$(readlink "$CURRENT")" != "$OLD_RELEASE" ]]; then
   echo 'Non-string health fields changed the live release.' >&2
+  exit 1
+fi
+
+new_sandbox rollback_recovery
+ROLLBACK_SEQUENCE="$SANDBOX/health-sequence"
+printf '{"status":"ok","database":"ok","cache":"ok","release":"%s"}\n{"status":"ok","database":"ok","cache":"ok","release":"%s"}\n' "$expected_sha" "$OLD_SHA" > "$ROLLBACK_SEQUENCE"
+if PARITY_REQUIRED=1 PARITY_URLS='https://erphpro.com https://support.erphpro.com' PARITY_SCRIPT_OVERRIDE="$tmp_dir/bin/parity-flaky" CURL_SEQUENCE_FILE="$ROLLBACK_SEQUENCE" run_hook >"$SANDBOX/out" 2>&1; then
+  echo 'Expected the promoted release to fail support-host parity and return nonzero.' >&2
+  exit 1
+fi
+if [[ "$(readlink "$CURRENT")" != "$OLD_RELEASE" ]]; then
+  echo 'Rollback did not restore the distinct old SHA release.' >&2
+  exit 1
+fi
+if ! grep -q 'restored and re-verified previous release' "$SANDBOX/out"; then
+  cat "$SANDBOX/out" >&2
+  echo 'Successful rollback verification diagnostic was missing.' >&2
+  exit 1
+fi
+if ! grep -q "$OLD_SHA" "$PARITY_TRACE" || [[ "$(wc -l < "$PARITY_TRACE")" -lt 2 ]]; then
+  echo 'Rollback did not verify both hosts using the old release SHA.' >&2
+  exit 1
+fi
+if [[ -e "$RELEASES/.deploy.lock" ]]; then
+  echo 'Successful rollback left a deployment lock.' >&2
+  exit 1
+fi
+
+new_sandbox rollback_critical
+CRITICAL_SEQUENCE="$SANDBOX/health-sequence"
+printf '{"status":"ok","database":"ok","cache":"ok","release":"%s"}\n{"status":"ok","database":"ok","cache":"ok","release":"%s"}\n' "$expected_sha" "$OLD_SHA" > "$CRITICAL_SEQUENCE"
+if PARITY_REQUIRED=1 PARITY_URLS='https://erphpro.com https://support.erphpro.com' PARITY_SCRIPT_OVERRIDE="$tmp_dir/bin/parity-fail" CURL_SEQUENCE_FILE="$CRITICAL_SEQUENCE" run_hook >"$SANDBOX/out" 2>&1; then
+  echo 'Expected post-rollback parity failure to return nonzero.' >&2
+  exit 1
+fi
+if ! grep -q 'CRITICAL: previous release was restored' "$SANDBOX/out"; then
+  cat "$SANDBOX/out" >&2
+  echo 'CRITICAL post-rollback diagnostic was missing.' >&2
+  exit 1
+fi
+if [[ "$(readlink "$CURRENT")" != "$OLD_RELEASE" || -e "$RELEASES/.deploy.lock" ]]; then
+  echo 'CRITICAL rollback case changed current or left a deployment lock.' >&2
   exit 1
 fi
 
