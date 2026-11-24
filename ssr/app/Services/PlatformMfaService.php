@@ -4,8 +4,17 @@ namespace App\Services;
 
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+
 class PlatformMfaService
 {
+    public function provisioningUri(string $secret, string $account, string $issuer = 'eRPH Pro'): string
+    {
+        return 'otpauth://totp/'.rawurlencode($issuer).':'.rawurlencode($account)
+            .'?secret='.rawurlencode($secret)
+            .'&issuer='.rawurlencode($issuer)
+            .'&algorithm=SHA1&digits=6&period=30';
+    }
+
     public function issueSecret(): string
     {
         $alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ234567';

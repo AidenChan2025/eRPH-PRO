@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Services\AuditLogger;
 use App\Services\PlatformMfaService;
+use Endroid\QrCode\Builder\Builder;
 use Illuminate\Http\Request;
 
 class OwnerMfaController extends Controller
@@ -20,7 +21,19 @@ class OwnerMfaController extends Controller
             $user->forceFill(['platform_mfa_secret' => encrypt($mfa->issueSecret())])->save();
         }
 
-        return view('owner.mfa.setup', ['secret' => decrypt($user->fresh()->platform_mfa_secret)]);
+        $secret = decrypt($user->fresh()->platform_mfa_secret);
+        $provisioningUri = $mfa->provisioningUri($secret, (string) $user->email);
+
+        return view('owner.mfa.setup', [
+            'secret' => $secret,
+            'qrDataUri' => (new Builder(
+                data: $provisioningUri,
+                size: 220,
+                margin: 0,
+            ))
+                ->build()
+                ->getDataUri(),
+        ]);
     }
 
     public function challenge(Request $request)
