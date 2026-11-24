@@ -15,6 +15,7 @@ SSR_DOCUMENT_ROOT="${SSR_DOCUMENT_ROOT:-}"
 SSR_PARITY_URLS="${SSR_PARITY_URLS:-}"
 SSR_PARITY_REQUIRED="${SSR_PARITY_REQUIRED:-0}"
 SSR_BRANCH="${SSR_BRANCH:-}"
+SSR_EXPECTED_SHA="${SSR_EXPECTED_SHA:-}"
 
 for required in SSR_RELEASES_DIR SSR_CURRENT_LINK SSR_SHARED_DIR SSR_HEALTH_URL SSR_DOCUMENT_ROOT; do
   if [[ -z "${!required}" ]]; then
@@ -142,10 +143,21 @@ if [[ -n "$SSR_REPOSITORY_DIR" ]]; then
     release_version="$(git --git-dir="$SSR_REPOSITORY_DIR" rev-parse --verify 'HEAD^{commit}' 2>/dev/null || true)"
   fi
 else
-  release_version="$(git -C "$GIT_SOURCE_DIR" rev-parse --verify 'HEAD^{commit}' 2>/dev/null || true)"
+  if [[ -n "$SSR_BRANCH" ]]; then
+    if ! release_version="$(git -C "$GIT_SOURCE_DIR" rev-parse --verify "refs/heads/$SSR_BRANCH^{commit}" 2>/dev/null)"; then
+      echo "SSR deployment aborted: configured SSR_BRANCH does not resolve to a commit; refusing to fall back to HEAD." >&2
+      exit 1
+    fi
+  else
+    release_version="$(git -C "$GIT_SOURCE_DIR" rev-parse --verify 'HEAD^{commit}' 2>/dev/null || true)"
+  fi
 fi
 if [[ ! "$release_version" =~ ^[0-9a-f]{40}$ ]]; then
   echo "SSR deployment aborted: unable to resolve a 40-character commit SHA from the configured Git source." >&2
+  exit 1
+fi
+if [[ -n "$SSR_EXPECTED_SHA" && "$release_version" != "$SSR_EXPECTED_SHA" ]]; then
+  echo "SSR deployment aborted: resolved release $release_version does not match SSR_EXPECTED_SHA $SSR_EXPECTED_SHA." >&2
   exit 1
 fi
 if [[ -z "$SSR_REPOSITORY_DIR" && ! -d "$GIT_SOURCE_DIR/.git" && ! -f "$GIT_SOURCE_DIR/.git" ]]; then
@@ -184,6 +196,7 @@ replace_current_link() {
 
 check_health_payload() {
   local payload="$1"
+  local expected_release="${2:-$release_version}"
   if ! "$PHP_BIN" -r '
     $payload = $argv[1] ?? "";
     $expectedRelease = $argv[2] ?? "";
@@ -203,8 +216,8 @@ check_health_payload() {
         fwrite(STDERR, "Health response fields do not match the expected release.\n");
         exit(1);
     }
-  ' -- "$payload" "$release_version"; then
-    echo "SSR deployment health check failed: expected strict JSON status/database/cache/release for $release_version." >&2
+  ' -- "$payload" "$expected_release"; then
+    echo "SSR deployment health check failed: expected strict JSON status/database/cache/release for $expected_release." >&2
     return 1
   fi
 }
@@ -236,6 +249,10 @@ check_host_parity() {
     fi
     seen_hosts[$parity_host]=1
   done
+  if [[ "$SSR_PARITY_REQUIRED" == "1" && ( -z "${seen_hosts[https://erphpro.com]:-}" || -z "${seen_hosts[https://support.erphpro.com]:-}" ) ]]; then
+    echo "SSR deployment parity check failed: production parity must include https://erphpro.com and https://support.erphpro.com." >&2
+    return 1
+  fi
   "$parity_script" "$expected_release" "${parity_hosts[@]}"
 }
 
