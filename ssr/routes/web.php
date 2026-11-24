@@ -38,6 +38,10 @@ Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback'])
     ->middleware(\App\Http\Middleware\PreventSensitiveResponseCaching::class)
     ->name('auth.google.callback');
 Route::post('/auth/google/one-tap', [GoogleAuthController::class, 'oneTap'])->name('auth.google.one-tap')->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class]);
+Route::post('/billing/stripe/webhook', [\App\Http\Controllers\StripeBillingController::class, 'webhook'])
+    ->middleware(['platform.host', \App\Http\Middleware\PreventSensitiveResponseCaching::class])
+    ->withoutMiddleware([\App\Http\Middleware\VerifyCsrfToken::class])
+    ->name('billing.stripe.webhook');
 Route::middleware(['platform.host', 'platform.auth', 'platform.permission:platform.dashboard.view', \App\Http\Middleware\PreventSensitiveResponseCaching::class])->group(function () {
     Route::get('/owner/mfa/setup', [OwnerMfaController::class, 'setup'])->name('owner.mfa.setup');
     Route::middleware('throttle:5,1')->post('/owner/mfa/setup', [OwnerMfaController::class, 'confirm'])->name('owner.mfa.confirm');

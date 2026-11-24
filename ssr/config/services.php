@@ -49,4 +49,17 @@ return [
         'model' => env('DEEPSEEK_MODEL', 'deepseek-chat'),
     ],
 
+    'platform_mfa' => [
+        'required' => filter_var(env('PLATFORM_MFA_REQUIRED', false), FILTER_VALIDATE_BOOLEAN),
+    ],
+
+    'stripe' => [
+        'key' => env('STRIPE_KEY'),
+        'secret' => env('STRIPE_SECRET'),
+        'webhook_secret' => env('STRIPE_WEBHOOK_SECRET'),
+        'currency' => env('STRIPE_CURRENCY', 'myr'),
+        'price_school_monthly' => env('STRIPE_PRICE_SCHOOL_MONTHLY'),
+        'price_school_yearly' => env('STRIPE_PRICE_SCHOOL_YEARLY'),
+    ],
+
 ];

@@ -10,6 +10,10 @@ class RequirePlatformMfa
 {
     public function handle(Request $request, Closure $next): Response
     {
+        if (! config('services.platform_mfa.required', false)) {
+            return $next($request);
+        }
+
         $user = $request->user();
         if ($user?->platform_mfa_confirmed_at === null) {
             return redirect()->route('owner.mfa.setup');

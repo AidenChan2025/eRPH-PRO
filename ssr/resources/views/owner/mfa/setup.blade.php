@@ -13,8 +13,8 @@
         .title{margin:8px 0;font-size:34px;letter-spacing:-.05em}
         .muted{color:var(--muted)}
         .card{margin-top:24px;padding:24px;border:1px solid var(--line);border-radius:16px;background:#fff}
-        .qr{display:grid;place-items:center;margin:20px auto;padding:16px;width:min(100%,252px);border:1px solid var(--line);border-radius:12px;background:#fff}
-        .qr img{display:block;width:min(220px,100%);height:auto;aspect-ratio:1}
+        .qr{display:grid;place-items:center;margin:20px auto;padding:16px;width:max-content;border:1px solid var(--line);border-radius:12px;background:#fff}
+        .qr img{display:block;width:220px;height:220px}
         .secret{display:block;margin:16px 0;padding:14px;border-radius:9px;background:#f1f5f9;font:700 20px ui-monospace,monospace;letter-spacing:.1em;word-break:break-all}
         .field{display:grid;gap:7px;margin-top:20px}
         .field input{width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:9px;font:inherit;letter-spacing:.2em}

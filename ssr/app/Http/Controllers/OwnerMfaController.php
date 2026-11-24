@@ -24,8 +24,7 @@ class OwnerMfaController extends Controller
         $secret = decrypt($user->fresh()->platform_mfa_secret);
         $provisioningUri = $mfa->provisioningUri($secret, (string) $user->email);
 
-        return response()
-            ->view('owner.mfa.setup', [
+        return view('owner.mfa.setup', [
             'secret' => $secret,
             'qrDataUri' => (new Builder(
                 data: $provisioningUri,
@@ -34,10 +33,7 @@ class OwnerMfaController extends Controller
             ))
                 ->build()
                 ->getDataUri(),
-            ])
-            ->header('Cache-Control', 'no-store, private, max-age=0')
-            ->header('Pragma', 'no-cache')
-            ->header('Vary', 'Cookie');
+        ]);
     }
 
     public function challenge(Request $request)

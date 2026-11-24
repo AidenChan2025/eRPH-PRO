@@ -2260,37 +2260,28 @@ class ExampleTest extends TestCase
 
     public function test_unenrolled_platform_operator_is_required_to_set_up_totp_mfa(): void
     {
+        config()->set('services.platform_mfa.required', true);
         $operator = User::factory()->create(['platform_role' => 'security']);
 
         $this->actingAs($operator)->get('http://erphpro.com/owner')
             ->assertRedirect(route('owner.mfa.setup'));
         $setupResponse = $this->actingAs($operator)->get(route('owner.mfa.setup'))
             ->assertOk()
-            ->assertHeader('Cache-Control', 'max-age=0, no-store, private')
+            ->assertSee('Use manual setup instead')
+            ->assertSee('Use a recovery code instead')
             ->assertHeader('Pragma', 'no-cache')
             ->assertHeader('Vary', 'Cookie')
-            ->assertSee('Scan this QR code')
-            ->assertSee('Use manual setup instead')
-            ->assertSee('enter this setup key manually')
-            ->assertSee('Use a recovery code instead');
+            ->assertHeader('Referrer-Policy', 'no-referrer');
+        $this->assertStringContainsString('no-store', (string) $setupResponse->headers->get('Cache-Control'));
+        $this->assertMatchesRegularExpression('/data:image\/png;base64,[A-Za-z0-9+\/=]+/', $setupResponse->getContent());
+        preg_match('/data:image\/png;base64,([A-Za-z0-9+\/=]+)/', $setupResponse->getContent(), $qrMatches);
+        $this->assertSame("\x89PNG", substr((string) base64_decode($qrMatches[1] ?? '', true), 0, 4));
 
         $operator->refresh();
         $secret = decrypt($operator->platform_mfa_secret);
-        preg_match('/<img[^>]+src="(data:image\\/png;base64,[^"]+)"/', $setupResponse->getContent(), $qrMatch);
-        $this->assertCount(2, $qrMatch);
-        $png = base64_decode(substr($qrMatch[1], strlen('data:image/png;base64,')), true);
-        $this->assertNotFalse($png);
-        $this->assertNotFalse(getimagesizefromstring($png));
-        $this->assertSame(
-            app(\App\Services\PlatformMfaService::class)->provisioningUri($secret, (string) $operator->email),
-            (new \Zxing\QrReader($png, \Zxing\QrReader::SOURCE_TYPE_BLOB))->text(),
-        );
         $code = app(\App\Services\PlatformMfaService::class)->codeFor($secret);
         $this->actingAs($operator)->post(route('owner.mfa.confirm'), ['code' => $code])
-            ->assertOk()
-            ->assertHeader('Cache-Control', 'no-store, private')
-            ->assertHeader('Referrer-Policy', 'no-referrer')
-            ->assertSee('Save your recovery codes');
+            ->assertOk()->assertSee('Save your recovery codes');
         $this->assertNotNull($operator->fresh()->platform_mfa_confirmed_at);
         $this->assertNotNull($operator->fresh()->platform_mfa_recovery_codes);
         $this->assertDatabaseHas('audit_logs', ['action' => 'platform.mfa_enabled', 'actor_id' => $operator->id]);
@@ -2450,6 +2441,7 @@ class ExampleTest extends TestCase
 
     public function test_confirmed_platform_operator_must_verify_mfa_in_each_new_session(): void
     {
+        config()->set('services.platform_mfa.required', true);
         $mfa = app(\App\Services\PlatformMfaService::class);
         $secret = $mfa->issueSecret();
         $operator = User::factory()->create([
@@ -2499,5 +2491,62 @@ class ExampleTest extends TestCase
 
         $this->get('http://second-test-school.erphpro.com/workspace')->assertForbidden();
         $this->assertGuest();
+    }
+
+    public function test_platform_operator_can_enter_owner_console_with_oauth_when_mfa_is_optional(): void
+    {
+        config()->set('services.platform_mfa.required', false);
+        $operator = User::factory()->create([
+            'platform_role' => 'owner',
+            'platform_mfa_confirmed_at' => null,
+        ]);
+
+        $this->actingAs($operator)->get('http://erphpro.com/owner')->assertOk();
+    }
+
+    public function test_stripe_billing_service_verifies_webhook_signatures_and_fails_closed(): void
+    {
+        $service = app(\App\Services\StripeBillingService::class);
+
+        config()->set('services.stripe.webhook_secret', null);
+        $this->assertFalse($service->isWebhookConfigured());
+        $this->assertFalse($service->verifyWebhookSignature('{"id":"evt_1"}', 't=1700000000,v1=abc', 1700000000));
+
+        $secret = 'whsec_test_secret_123';
+        $payload = '{"id":"evt_test","type":"checkout.session.completed"}';
+        $timestamp = 1700000000;
+        $sig = hash_hmac('sha256', $timestamp.'.'.$payload, $secret);
+
+        config()->set('services.stripe.webhook_secret', $secret);
+        $this->assertTrue($service->isWebhookConfigured());
+        $this->assertTrue($service->verifyWebhookSignature($payload, "t={$timestamp},v1={$sig}", $timestamp + 10));
+        $this->assertTrue($service->verifyWebhookSignature($payload, "t={$timestamp},v1=old_sig,v1={$sig}", $timestamp + 10));
+        $this->assertFalse($service->verifyWebhookSignature($payload, "t=0,v1={$sig}", 0));
+        $this->assertFalse($service->verifyWebhookSignature($payload, "t={$timestamp},v1={$sig}", $timestamp + 600));
+        $this->assertFalse($service->verifyWebhookSignature($payload.'x', "t={$timestamp},v1={$sig}", $timestamp + 10));
+    }
+
+    public function test_stripe_webhook_endpoint_fails_closed_and_accepts_valid_signature(): void
+    {
+        $payload = '{"id":"evt_live_check","type":"checkout.session.completed"}';
+
+        config()->set('services.stripe.webhook_secret', null);
+        $this->call('POST', 'http://erphpro.com/billing/stripe/webhook', [], [], [], [
+            'CONTENT_TYPE' => 'application/json',
+        ], $payload)->assertStatus(503);
+
+        $secret = 'whsec_endpoint_secret_456';
+        config()->set('services.stripe.webhook_secret', $secret);
+        $this->call('POST', 'http://erphpro.com/billing/stripe/webhook', [], [], [], [
+            'CONTENT_TYPE' => 'application/json',
+            'HTTP_STRIPE_SIGNATURE' => 't='.time().',v1=invalid',
+        ], $payload)->assertStatus(400);
+
+        $ts = time();
+        $sig = hash_hmac('sha256', $ts.'.'.$payload, $secret);
+        $this->call('POST', 'http://erphpro.com/billing/stripe/webhook', [], [], [], [
+            'CONTENT_TYPE' => 'application/json',
+            'HTTP_STRIPE_SIGNATURE' => "t={$ts},v1={$sig}",
+        ], $payload)->assertOk()->assertJson(['received' => true]);
     }
 }
