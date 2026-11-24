@@ -16,26 +16,34 @@
 @if($errors->any())<div class="notice" style="background:#fff7ed;color:#9a4d0b">Please check the required fields and try again.</div>@endif
 <form method="post" action="{{ route('rph.store') }}">@csrf
 <section class="card"><h2>Lesson details</h2><div class="grid">
-<label>Date<input type="date" name="lesson_date" value="{{ old('lesson_date', now()->format('Y-m-d')) }}" required></label>
+<label>Date<input type="date" name="lesson_date" value="{{ old('lesson_date', now()->format('Y-m-d')) }}" required></label><label>Teaching week<input type="number" name="week_no" min="1" max="53" value="{{ old('week_no') }}"></label>
 @if($assignments->isNotEmpty())<label>Class and subject assignment<select name="assignment_id" required><option value="">Choose your assignment</option>@foreach($assignments as $assignment)<option value="{{ $assignment->id }}" @selected(old('assignment_id') == $assignment->id)>{{ $assignment->subject }} · {{ $assignment->schoolClass->name }} · {{ $assignment->academicYear->year }}</option>@endforeach</select><span class="hint">Your school administrator controls these assignments.</span></label>@else<label>Subject<input name="subject" value="{{ old('subject') }}" required></label>
 <label>Class / year<input name="class_name" value="{{ old('class_name') }}" required></label>@endif
-<label>Lesson title<input name="title" value="{{ old('title') }}" required></label>
+<label>Lesson title<input name="title" value="{{ old('title') }}" required></label><label>Subtitle<input name="subtitle" value="{{ old('subtitle') }}"></label>
 <label>School time slot<select id="slot_id" name="slot_id"><option value="">Manual time / not selected</option>@foreach($slots as $slot)<option value="{{ $slot->id }}" data-start="{{ substr($slot->starts_at,0,5) }}" data-end="{{ substr($slot->ends_at,0,5) }}">{{ $slot->day_of_week }} · {{ $slot->label ?: 'Lesson period' }} ({{ substr($slot->starts_at,0,5) }}–{{ substr($slot->ends_at,0,5) }})</option>@endforeach</select><span class="hint">Configured by your school administrator.</span></label>
 <label>Start time<input id="start_time" type="time" name="start_time" value="{{ old('start_time') }}"></label>
 <label>End time<input id="end_time" type="time" name="end_time" value="{{ old('end_time') }}"></label>
 <label>Civic value / Nilai Sivik<input name="civic_value" value="{{ old('civic_value') }}"></label>
 <label>Civic topic / Tajuk Sivik<input name="civic_topic" value="{{ old('civic_topic') }}"></label>
+<label>Topic / Tema<input name="topic" value="{{ old('topic') }}"></label>
+<label>Semester<input name="semester" value="{{ old('semester') }}"></label>
+<label>Textbook reference<input name="textbook_reference" value="{{ old('textbook_reference') }}"></label>
+<label>Skills / Kemahiran<textarea name="skills">{{ old('skills') }}</textarea></label>
+<label class="full">Standards / SK · SP · TP<textarea name="standards">{{ old('standards') }}</textarea></label>
+<label class="full">Content / standard description<textarea name="content_standard">{{ old('content_standard') }}</textarea></label>
+<label>Content 1<textarea name="content_1">{{ old('content_1') }}</textarea></label><label>Content 2<textarea name="content_2">{{ old('content_2') }}</textarea></label>
 </div></section>
 <section class="card"><h2>Teaching record</h2><div class="grid">
-<label class="full">Learning objectives<textarea name="objectives">{{ old('objectives') }}</textarea></label>
-<label class="full">Activities / steps<textarea name="activities">{{ old('activities') }}</textarea></label>
+<label class="full">Learning outcomes<textarea name="learning_outcomes">{{ old('learning_outcomes') }}</textarea></label><label class="full">Learning objectives<textarea name="objectives">{{ old('objectives') }}</textarea></label>
+<label class="full">Activities / steps<textarea name="activities">{{ old('activities') }}</textarea></label><label>Activity / main<textarea name="activity_main">{{ old('activity_main') }}</textarea></label><label>Activity / closing<textarea name="activity_closing">{{ old('activity_closing') }}</textarea></label>
 <label>Assessment<textarea name="assessment">{{ old('assessment') }}</textarea></label><label>Reflection<textarea name="reflection">{{ old('reflection') }}</textarea></label>
 <label>Homework<textarea name="homework">{{ old('homework') }}</textarea></label><label>Materials / resources<textarea name="materials">{{ old('materials') }}</textarea></label>
 <label>EMK<textarea name="emk">{{ old('emk') }}</textarea></label><label>PAK21<textarea name="pak21">{{ old('pak21') }}</textarea></label>
 <label>Written assessment<textarea name="assessment_written">{{ old('assessment_written') }}</textarea></label><label>Oral assessment<textarea name="assessment_oral">{{ old('assessment_oral') }}</textarea></label>
 <label>Observation assessment<textarea name="assessment_observation">{{ old('assessment_observation') }}</textarea></label><label>Nilai-nilai murni<textarea name="moral_values">{{ old('moral_values') }}</textarea></label>
-<label>Student count<input type="number" name="student_count" min="0" value="{{ old('student_count') }}"></label><label>KBAT<input name="kbat" value="{{ old('kbat') }}"></label>
+<label>Student count<input type="number" name="student_count" min="0" value="{{ old('student_count') }}"></label><label>Present<input type="number" name="attendance_present" min="0" value="{{ old('attendance_present') }}"></label><label>Total enrolled<input type="number" name="attendance_total" min="0" value="{{ old('attendance_total') }}"></label><label>KBAT<input name="kbat" value="{{ old('kbat') }}"></label>
 <label>Pengayaan<textarea name="enrichment">{{ old('enrichment') }}</textarea></label><label>Pemulihan<textarea name="remedial">{{ old('remedial') }}</textarea></label>
+<label class="full">Intervention / reason not implemented<textarea name="intervention_reason">{{ old('intervention_reason') }}</textarea></label>
 <label>Multiple intelligences<textarea name="multiple_intelligences">{{ old('multiple_intelligences') }}</textarea></label><label>Notes<textarea name="notes">{{ old('notes') }}</textarea></label>
 </div><div class="actions"><button class="button" type="submit">Save draft</button><a class="back" href="{{ route('workspace.dashboard') }}">Cancel</a></div></section></form></main>
 <script>document.getElementById('slot_id')?.addEventListener('change',function(){const option=this.selectedOptions[0];if(option?.dataset.start){document.getElementById('start_time').value=option.dataset.start;document.getElementById('end_time').value=option.dataset.end;}});</script>

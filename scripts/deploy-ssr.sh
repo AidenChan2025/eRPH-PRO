@@ -12,6 +12,7 @@ SSR_CURRENT_LINK="${SSR_CURRENT_LINK:-}"
 SSR_SHARED_DIR="${SSR_SHARED_DIR:-}"
 SSR_HEALTH_URL="${SSR_HEALTH_URL:-}"
 SSR_DOCUMENT_ROOT="${SSR_DOCUMENT_ROOT:-}"
+SSR_PARITY_URLS="${SSR_PARITY_URLS:-}"
 
 for required in SSR_RELEASES_DIR SSR_CURRENT_LINK SSR_SHARED_DIR SSR_HEALTH_URL SSR_DOCUMENT_ROOT; do
   if [[ -z "${!required}" ]]; then
@@ -199,6 +200,23 @@ check_health_payload() {
   fi
 }
 
+check_host_parity() {
+  if [[ -z "$SSR_PARITY_URLS" ]]; then
+    return 0
+  fi
+  local parity_script="${SSR_PARITY_SCRIPT:-$GIT_SOURCE_DIR/scripts/verify-ssr-host-parity.sh}"
+  if [[ ! -x "$parity_script" ]]; then
+    echo "SSR deployment parity check failed: executable parity verifier not found at $parity_script." >&2
+    return 1
+  fi
+  read -r -a parity_hosts <<< "$SSR_PARITY_URLS"
+  if [[ ${#parity_hosts[@]} -lt 2 ]]; then
+    echo "SSR deployment parity check failed: SSR_PARITY_URLS must contain at least two HTTPS hosts." >&2
+    return 1
+  fi
+  "$parity_script" "$release_version" "${parity_hosts[@]}"
+}
+
 finish_deployment() {
   local result=$?
   trap - EXIT
@@ -256,6 +274,7 @@ if [[ -e "$release_dir" || -L "$release_dir" ]]; then
   if [[ "$(cd -P "$SSR_CURRENT_LINK" && pwd -P)" == "$(cd -P "$release_dir" && pwd -P)" ]]; then
     health_payload="$(curl --fail --silent --show-error --max-time 15 "$SSR_HEALTH_URL")"
     check_health_payload "$health_payload"
+    check_host_parity
     healthy=1
     echo "SSR release already active and healthy: $health_payload"
     exit 0
@@ -318,6 +337,7 @@ switched=1
 
 health_payload="$(curl --fail --silent --show-error --max-time 15 "$SSR_HEALTH_URL")"
 check_health_payload "$health_payload"
+check_host_parity
 
 healthy=1
 echo "SSR deployment healthy: $health_payload"

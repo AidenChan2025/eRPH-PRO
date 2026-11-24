@@ -525,7 +525,7 @@ AppSheet 审核操作流程取证增量（2026-11-21，内部浏览器只读）�
 只读追踪 `LessonPlanController`、`WorkspaceController`、`LessonPlan`/`LessonPlanVersion`、RPH create/edit Blade 与 `lesson_plan_submissions` migration，并与 `docs/RPH_FORMAT_MAPPING.md` 的可见 TING6 workbook 字段对照；未运行测试或修改业务代码。
 
 - `rph.create` 虽展示学校 timetable slot 下拉框，表单会在浏览器端据 slot 填充起止时间，但 `LessonPlanController::store` 未验证/接收 `slot_id`，也不校验日期星期、slot 是否属于当前学校/是否有效；DB `lesson_plans` 没有 timetable slot 外键。故所选课表关系未持久化，不能证明“按学校课表自动生成每天/每周教案”。日期、学科、班级仍手动输入，未实现按校历生成至少 5 个有效教学日。
-- 创建表单及 controller 缺源 workbook 里重复班级区块的 semester、课本参考、CONTENT 多栏、title/subtitle、learning outcomes、main/closing activities、intervention，以及 RPT 的 SK/SP、年级/周次上下文等独立字段；也没有 `attendance_present/attendance_total`、课表 Slot 关系与 substitute/original teacher 双身份。字段清单及来源证据详见 `docs/RPH_FORMAT_MAPPING.md`。现有 JSON version 可存当前提交进来的键，但不代表缺失源字段已经建模/验证/展示/打印保真。
+- 候选分支已补入一批源 workbook 观察到的独立字段：semester、课本参考、content/standard 说明、title subtitle、learning outcomes、main/closing activities、intervention、`attendance_present/attendance_total` 与 `week_no`，并接入创建/编辑表单、版本 JSON、范围校验和自动化测试；这只是实现增量，不等于完成所有 CONTENT 多栏、RPT 年级/周次上下文、课表 Slot 关系与 substitute/original teacher 双身份。字段清单及来源证据详见 `docs/RPH_FORMAT_MAPPING.md`。现有 JSON version 仍不能单独证明字段条件、打印/报告保真或所有学段变体已完成，Phase 2 门禁保持开放。
 - 创建时教学字段多数可空，`store` 只要求日期/科目/班级/标题；`submit` 不执行字段完成度、学校校历、至少五天/周或缺项清单校验，也没有“提交前列出缺项并确认”的服务端契约。因此最小草稿可直接提交，尚未实现完整提交前自动审查/提醒。
 - `edit` 页面仅渲染日期、科目、班级、标题、目标、活动、一般评估、反思、作业、材料与版本说明；虽接受部分其它键，教师不能在编辑页修改已创建的 Civic、时间、EMK/PAK21、书面/口头/观察评估、Nilai、出席人数、Enrichment/Remedial/KBAT/多元智能/备注等字段。更新时 JSON `array_replace` 会保留未渲染键的旧值，避免直接删除，但不能满足 RPH 全字段可编辑/保真验收。
 - 保存新版本会从 `current_version + 1` 取号，但在事务前读取且不锁定父记录；并发编辑可能争用相同版本号。表的唯一约束可能拒绝其中一笔，但当前没有友好冲突恢复/重试语义。审核只能读取版本列表；review 行、lesson status 与审计写入未原子化；审批可作用于未提交状态，return comment 可空。
@@ -623,6 +623,10 @@ Gemini 对本次备份增量的独立复核（2026-11-21，内部浏览器）：
 Firebase Hosting 只读复查（2026-11-21，内部浏览器）：`erph-pro` 项目的 Hosting 页面显示“Get started”初始设置界面，没有展示已部署版本清单。这降低了当前 Firebase Hosting 正在承载旧站的可能性，但不等同于验证所有 Hosting site/domain、Auth、Firestore、Storage 或历史数据均未使用；根目录 React/Firebase 代码与依赖仍须在确认托管域名、数据保留和归档策略后再清理。详见 `docs/FIREBASE_BRIDGE_PLAN.md`。
 
 ### Phase 0 当前闸门状态（证据截点：2026-11-21 21:05 MYT）
+
+**现场状态增量（2026-11-24）：** Plesk SSH Terminal 的只读复核已确认 `erphpro.com` 当前使用 `source`/`releases`/`shared`/`current` 隔离布局，`current` 与 `.deploy-release-sha` 均指向 `2414ce95bc9ebc30cc697a75a665d461ad46ff76`。因此“root 订阅仍是单目录、未准备 current release”的旧证据不再代表当前 root 状态；root 的隔离布局项可视为现场已观察，但尚未完成候选版本部署或回滚演练。`support.erphpro.com` 仍返回旧 release `0973ac7474e915ed6cd9027829c47f547daad043`，跨主机 parity 仍未关闭。该 SSH 操作只读，没有 Pull、Deploy、migration、配置保存或数据写入。
+
+Plesk 随后只读核对 `support.erphpro.com`（domain id 1197）：Hosting Settings 的 Document root 曾为 `/erphpro.com/ssr/public`，而该域名的 Git 页面没有仓库，显示 “Add a repository to start deploying files”。在 Owner 明确授权后，Document root 已改为共享 `/erphpro.com/current/public`；没有创建第二个 Git checkout，以避免与 root 现有 `/erphpro.com/source` → `/erphpro.com/current` 发布所有权冲突。Plesk 显示 “The settings were updated.”；support SSH 与公开 health 随后确认已服务 release `2414ce95bc9ebc30cc697a75a665d461ad46ff76`，本地双主机 parity verifier 通过。该修改没有 Pull、Deploy、migration、数据库或应用文件写入；完整候选版本仍未部署。
 
 | 闸门 | 状态 | 已有证据 | 尚缺证据 / 放行条件 |
 |---|---|---|---|

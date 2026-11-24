@@ -15,6 +15,7 @@ use App\Models\AcademicYear;
 use App\Models\SchoolClass;
 use App\Models\TeacherClassAssignment;
 use App\Models\TeacherProfile;
+use App\Models\SchoolTimetableSlot;
 use Database\Seeders\SupportContentSeeder;
 use App\Services\SupportAIService;
 use Illuminate\Http\Client\Request as ClientRequest;
@@ -1503,6 +1504,72 @@ class ExampleTest extends TestCase
         $response->assertRedirect(route('rph.create'));
         $this->assertDatabaseHas('lesson_plans', ['school_id' => 1, 'status' => 'draft', 'current_version' => 1]);
         $this->assertDatabaseHas('lesson_plan_versions', ['version' => 1, 'source' => 'manual']);
+    }
+
+    public function test_rph_preserves_core_template_fields_across_create_and_edit_versions(): void
+    {
+        $this->seed();
+        $user = User::where('email', 'demo@erphpro.com')->firstOrFail();
+
+        $this->actingAs($user)->post('http://demo.erphpro.com/rph', [
+            'lesson_date' => '2026-11-21', 'subject' => 'Bahasa Melayu', 'class_name' => '5 Bestari',
+            'title' => 'Kata Adjektif', 'subtitle' => 'Mengenal sifat', 'semester' => '2026 Semester 2', 'textbook_reference' => 'Buku teks BM Tahun 5, hlm. 42', 'content_standard' => 'Kata adjektif sifat', 'content_1' => 'Sifat manusia.', 'content_2' => 'Sifat benda.', 'learning_outcomes' => 'Murid dapat menggunakan kata adjektif.', 'activity_main' => 'Latihan berkumpulan.', 'activity_closing' => 'Rumusan dan exit ticket.', 'week_no' => 42, 'slot_id' => null, 'attendance_present' => 28, 'attendance_total' => 30, 'topic' => 'Kata sifat', 'skills' => 'Mengenal pasti dan membina ayat',
+            'standards' => 'SK 5.1 · SP 5.1.2 · TP 3', 'intervention_reason' => 'Masa PdPc dipendekkan kerana aktiviti sekolah.',
+        ])->assertRedirect(route('rph.create'));
+
+        $plan = LessonPlan::query()->latest('id')->firstOrFail();
+        $first = $plan->versions()->latest('version')->firstOrFail();
+        $this->assertSame('Kata sifat', $first->content['topic']);
+        $this->assertSame('Mengenal sifat', $first->content['subtitle']);
+        $this->assertSame('Murid dapat menggunakan kata adjektif.', $first->content['learning_outcomes']);
+        $this->assertSame('Latihan berkumpulan.', $first->content['activity_main']);
+        $this->assertSame(28, $first->content['attendance_present']);
+        $this->assertSame(30, $first->content['attendance_total']);
+        $this->assertSame(42, $first->content['week_no']);
+        $this->assertSame('2026 Semester 2', $first->content['semester']);
+        $this->assertSame('Buku teks BM Tahun 5, hlm. 42', $first->content['textbook_reference']);
+        $this->assertSame('Kata adjektif sifat', $first->content['content_standard']);
+        $this->assertSame('Sifat manusia.', $first->content['content_1']);
+        $this->assertSame('Sifat benda.', $first->content['content_2']);
+        $this->assertSame('Mengenal pasti dan membina ayat', $first->content['skills']);
+        $this->assertSame('SK 5.1 · SP 5.1.2 · TP 3', $first->content['standards']);
+
+        $this->actingAs($user)->get('http://demo.erphpro.com/rph/'.$plan->id.'/edit')
+            ->assertOk()->assertSee('Topic / Tema')->assertSee('SK · SP · TP')
+            ->assertSee('name="start_time"', false)->assertSee('name="civic_value"', false)
+            ->assertSee('name="multiple_intelligences"', false)->assertSee('name="notes"', false);
+        $this->actingAs($user)->post('http://demo.erphpro.com/rph', [
+            'lesson_date' => '2026-11-21', 'subject' => 'Bahasa Melayu', 'class_name' => '5 Bestari',
+            'title' => 'Invalid attendance', 'attendance_present' => 31, 'attendance_total' => 30,
+        ])->assertSessionHasErrors('attendance_total');
+        $this->actingAs($user)->put('http://demo.erphpro.com/rph/'.$plan->id, [
+            'lesson_date' => '2026-11-21', 'subject' => 'Bahasa Melayu', 'class_name' => '5 Bestari',
+            'title' => 'Merged attendance bypass', 'attendance_present' => 31,
+        ])->assertSessionHasErrors('attendance_total');
+        $this->assertSame(1, $plan->fresh()->current_version);
+        $this->assertSame(1, $plan->fresh()->versions()->count());
+        $otherSchool = School::create(['name' => 'Slot Boundary School', 'slug' => 'slot-boundary-school', 'subdomain' => 'slot-boundary-school']);
+        $foreignSlot = SchoolTimetableSlot::create(['school_id' => $otherSchool->id, 'day_of_week' => 'Monday', 'label' => 'Foreign period', 'starts_at' => '08:00', 'ends_at' => '09:00', 'sort_order' => 1, 'is_active' => true]);
+        $this->actingAs($user)->post('http://demo.erphpro.com/rph', [
+            'lesson_date' => '2026-11-21', 'subject' => 'Bahasa Melayu', 'class_name' => '5 Bestari',
+            'title' => 'Foreign slot', 'slot_id' => $foreignSlot->id,
+        ])->assertStatus(422);
+        $this->actingAs($user)->put('http://demo.erphpro.com/rph/'.$plan->id, [
+            'lesson_date' => '2026-11-21', 'subject' => 'Bahasa Melayu', 'class_name' => '5 Bestari',
+            'title' => 'Foreign slot edit', 'slot_id' => $foreignSlot->id,
+        ])->assertStatus(422);
+        $this->actingAs($user)->put('http://demo.erphpro.com/rph/'.$plan->id, [
+            'lesson_date' => '2026-11-22', 'subject' => 'Bahasa Melayu', 'class_name' => '5 Bestari',
+            'title' => 'Kata Adjektif dikemas kini', 'subtitle' => 'Mengenal ukuran', 'semester' => '2026 Semester 2', 'textbook_reference' => 'Buku teks BM Tahun 5, hlm. 43', 'content_standard' => 'Kata adjektif ukuran', 'learning_outcomes' => 'Murid dapat membina ayat.', 'activity_main' => 'Latihan individu.', 'activity_closing' => 'Semakan rakan.', 'attendance_present' => 29, 'attendance_total' => 30, 'topic' => 'Kata sifat lanjutan',
+            'skills' => 'Membina ayat gramatis', 'standards' => 'SK 5.1 · SP 5.1.3 · TP 4',
+            'intervention_reason' => 'Tiada.', 'change_note' => 'Tambah latihan pengayaan.',
+        ])->assertRedirect();
+
+        $latest = $plan->fresh()->versions()->latest('version')->firstOrFail();
+        $this->assertSame(2, $latest->version);
+        $this->assertSame('Kata sifat lanjutan', $latest->content['topic']);
+        $this->assertSame('SK 5.1 · SP 5.1.3 · TP 4', $latest->content['standards']);
+        $this->assertSame('Tambah latihan pengayaan.', $latest->change_note);
     }
 
     public function test_rph_creation_uses_the_teacher_class_subject_assignment(): void

@@ -16,6 +16,7 @@ Source workbooks inspected on 2026-11-20:
 | TARIKH / 日期 | `lesson_plans.lesson_date` | Use a real SQL date and render the existing Malay/English display format. |
 | KELAS / 班级 | `lesson_plans.class_name` | Preserve class labels such as `4B`, `5U`, `6B`. |
 | MASA / 时间 | `lesson_plan_versions.content.start_time`, `end_time` | Timetable can prefill these values. |
+| TIMETABLE SLOT / 课表节次 | `lesson_plan_versions.content.slot_id` | Candidate create/edit flow validates the slot belongs to the current school and is active; a cross-school slot is rejected by a feature test. |
 | SUBJEK / 科目 | `lesson_plans.subject` | Link to curriculum/subject master data when available. |
 
 ### RPH teaching content
@@ -38,7 +39,7 @@ The `DATA` tab demonstrates the school’s existing content vocabulary. These fi
 - `multiple_intelligences` / Kecergasan Pelbagai;
 - `reflection` and `notes` for lesson outcome and exceptions.
 
-The current SQL schema already stores version content as JSON. This is intentional: stable ownership, date, subject, class, status and version number are relational; the school-specific RPH field dictionary remains extensible until all existing variants are mapped.
+The current SQL schema already stores version content as JSON. This is intentional: stable ownership, date, subject, class, status and version number are relational; the school-specific RPH field dictionary remains extensible until all existing variants are mapped. The current candidate now captures additional workbook-observed fields in the version JSON and create/edit forms: semester, textbook reference, content/standard description, `content_1`/`content_2`, subtitle, learning outcomes, main/closing activity sections, topic, skills, SK/SP/TP standards, intervention reason, attendance present/total, teaching week and a tenant-checked timetable slot reference. These are implementation increments, not proof that every source condition, enum, repeated content column, report/print path or school-stage variant is complete.
 
 ### Additional read-only daily template observed (2026-11-21)
 
@@ -48,7 +49,7 @@ The same sample's `RPT` sheet visibly carries subject, class, Tingkatan, week nu
 
 The sample `DATA` sheet reports 1,001 rows and 89 columns. Its visible merged header groups are `KELAS`, `MASA`, `TARIKH` (spanning the date columns), `MINGGU`, and `M.SIVIK` (spanning repeated weekly-theme columns). This indicates the source workbook combines class timetable/date/week context with civic-theme lookup values. Merged-column formulas, row-level validation, holiday/week calculation, and the relationship from this sheet into each weekday RPH were not audited; do not infer them from the header layout alone.
 
-The current `LessonPlanController` and create/edit views do not expose this full structure. They store a single `title`, a free-text `activities` value, and selected general fields; there are no explicit inputs for semester, textbook reference, content/standard columns, learning outcomes, or intervention, and the three activity sections are not separate. A JSON version column alone does not make these fields capturable, validated, reviewable, or printable. These are confirmed format gaps to resolve in Phase 2 before claiming field-completeness.
+The current `LessonPlanController` and candidate create/edit views now expose a first increment of this structure, including semester, textbook reference, content/standard description, subtitle, learning outcomes, intervention, attendance, week number and separate main/closing activity fields. The legacy source still contains additional repeated content columns, subject/form and class-block context, richer validation/display conditions and stage-specific variants that remain unverified. A JSON version column and these new inputs do not by themselves prove field completeness, report/print fidelity or correct source conditions; those remain Phase 2 gates.
 
 Scope limits: this observation is one read-only Tingkatan 6 workbook sample, not a complete audit of all school templates. The tab names and visible layout were observed; formulas, validation rules, hidden ranges, every class block, and AppSheet field/display conditions remain unaudited. The sample contains personal/official visual assets; they are not copied into this mapping or approved for product reuse.
 
@@ -290,3 +291,9 @@ The copy has two cross-workbook imports into the same external workbook: `MENU!J
 #### KPM 2026 DSKP field-header inventory (2026-11-22, header row only)
 
 Read `DSKP!A1:Q1` formatted headers only. The grid extent is 56,813 rows × 17 columns; this is a sheet grid size, not a populated-row count. The raw non-empty header sequence is: A `SUBJEK`; B `TAHUN`; C `TEMA/BIDANG/TERAS`; D `tema2`; E `TAJUK/KEMAHIRAN/NILAITERAS`; F `tajuk2`; G `SK`; H `SP`; I `NTERAS`; J `TSIVIK:`; K `OB`; L `Pengetahuan`; M `Sosioemosi:`; N `Tindakan:`; O blank; P `XTVT`; Q `XTVT2`. Preserve the exact labels and blank column in source mapping. In particular, labels such as `tema2`, `tajuk2`, `OB`, `XTVT`, and `XTVT2` need owner/source documentation before the normalized curriculum schema assigns meaning. No body rows, standards, codes, or curricular prose were read. Header structure alone does not establish data coverage, version, rights, or import readiness.
+
+#### Candidate RPH persistence and tenant-boundary verification (2026-11-24)
+
+The current uncommitted candidate extends the manual RPH create/edit flow with semester, textbook reference, content-standard and two content blocks, subtitle, learning outcomes, main/closing activities, week number, topic, skills, SK/SP/TP standards, intervention reason, attendance present/total, and a school-scoped timetable-slot reference. The edit view exposes the same field family and retains prior version content through the existing versioned JSON contract. Attendance validation rejects present counts above total; active timetable slots are checked against the authenticated school on both create and edit, with a regression test rejecting a foreign-school slot in each path.
+
+Local verification for this candidate is **99 tests / 726 assertions**; the RPH-specific regression is **1 test / 28 assertions**. This closes only the listed persistence and tenant-boundary increment. It does not establish full source-workbook parity, all stage-specific conditions/enums, report/print behavior, or production deployment of this uncommitted worktree.
