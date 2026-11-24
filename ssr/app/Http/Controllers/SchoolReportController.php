@@ -18,10 +18,11 @@ class SchoolReportController extends Controller
         if ($end->lt($start)) [$start, $end] = [$end->copy()->startOfDay(), $start->copy()->endOfDay()];
         $status = $request->string('status')->toString();
         $rows = LessonPlanSubmission::query()->where('school_id', $school->id)->whereBetween('submitted_at', [$start, $end])
-            ->when($status !== '', fn ($query) => $query->where('status', $status))->with(['teacherProfile.user', 'lessonPlan'])->latest('submitted_at')->get();
+            ->when($status !== '', fn ($query) => $query->where('status', $status))->with(['teacherProfile.user', 'lessonPlan'])->latest('submitted_at')->lazy(200);
         $csv = static function ($value): string {
             $value = (string) $value;
-            return $value !== '' && in_array($value[0], ['=', '+', '-', '@', "\t", "\r"], true) ? "'".$value : $value;
+            $first = ltrim($value)[0] ?? '';
+            return $first !== '' && in_array($first, ['=', '+', '-', '@', "\t", "\r"], true) ? "'".$value : $value;
         };
         return response()->streamDownload(function () use ($rows, $csv): void {
             $handle = fopen('php://output', 'wb');

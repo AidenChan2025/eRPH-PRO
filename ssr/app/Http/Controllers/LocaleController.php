@@ -12,7 +12,9 @@ class LocaleController extends Controller
         $locale = $request->validate(['locale' => ['required', 'in:en,ms,zh']])['locale'];
         $request->session()->put('app.locale', $locale);
         App::setLocale($locale);
+        $referer = $request->headers->get('referer');
+        $redirect = $referer && parse_url($referer, PHP_URL_HOST) === $request->getHost() ? $referer : '/';
 
-        return back()->with('status', 'Language updated.');
+        return redirect($redirect)->with('status', 'Language updated.');
     }
 }

@@ -97,7 +97,7 @@ Route::middleware(['platform.host', 'platform.auth', 'platform.permission:platfo
 });
 
 Route::domain(config('support.host'))->middleware('support.host')->group(function () {
-    Route::post('/locale', [LocaleController::class, 'update'])->name('locale.switch.support');
+    Route::middleware('throttle:30,1')->post('/locale', [LocaleController::class, 'update'])->name('locale.switch.support');
     Route::get('/', SupportHomeController::class)->name('support.home');
     Route::get('/solutions', SupportHomeController::class)->name('support.solutions');
     Route::get('/solutions/{slug}', [SupportArticleController::class, 'show'])->name('support.article');
@@ -114,7 +114,7 @@ Route::domain(config('support.host'))->middleware('support.host')->group(functio
 Route::domain(config('app.school_base_domain', 'erphpro.com'))->middleware('school')->get('/', SchoolHomeController::class)->name('public.home');
 
 Route::middleware('school')->group(function () {
-    Route::post('/locale', [LocaleController::class, 'update'])->name('locale.switch');
+    Route::middleware('throttle:30,1')->post('/locale', [LocaleController::class, 'update'])->name('locale.switch');
     Route::get('/login', [GoogleAuthController::class, 'show'])->name('login');
     Route::get('/auth/google/redirect', [GoogleAuthController::class, 'redirect'])->name('auth.google.redirect');
     Route::get('/auth/google/complete', [GoogleAuthController::class, 'complete'])->name('auth.google.complete');

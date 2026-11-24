@@ -36,6 +36,8 @@ class Phase5To7FullSiteTest extends TestCase
         $response = $this->actingAs($admin)->get('http://demo.erphpro.com/reports/export?from=2028-01-01&to=2028-01-31');
         $response->assertOk()->assertHeader('Cache-Control', 'no-store, private');
         $this->assertStringContainsString("'=Injected", $response->streamedContent());
+        $plan->update(['subject' => ' =cmd']);
+        $this->assertStringContainsString("' =cmd", $this->actingAs($admin)->get('http://demo.erphpro.com/reports/export?from=2028-01-01&to=2028-01-31')->streamedContent());
         $teacher = User::factory()->create();
         $school->members()->attach($teacher->id, ['role' => 'teacher', 'status' => 'active']);
         $this->actingAs($teacher)->get('http://demo.erphpro.com/reports/export')->assertForbidden();
@@ -56,6 +58,11 @@ class Phase5To7FullSiteTest extends TestCase
         $this->actingAs($admin)->put('http://demo.erphpro.com/profile', ['telegram_chat_id' => '12345', 'telegram_opt_in' => '1'])->assertRedirect();
         $profile = TeacherProfile::withoutGlobalScopes()->where('user_id', $admin->id)->firstOrFail();
         $this->assertSame('12345', $profile->telegram_chat_id);
+        $this->assertTrue($profile->telegram_opt_in);
+        $this->actingAs($admin)->put('http://demo.erphpro.com/profile', ['telegram_chat_id' => 'not-a-chat-id'])
+            ->assertSessionHasErrors('telegram_chat_id');
+        $this->actingAs($admin)->put('http://demo.erphpro.com/profile', ['telegram_chat_id' => '12345'])->assertRedirect();
+        $profile->refresh();
         $this->assertTrue($profile->telegram_opt_in);
         $this->actingAs($admin)->put('http://demo.erphpro.com/profile', ['telegram_chat_id' => '', 'telegram_opt_in' => '0'])->assertRedirect();
         $profile->refresh();
