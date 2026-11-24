@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Workspace · {{ $school->name }}</title>
+    <link rel="stylesheet" href="{{ asset('css/erph-design-system.css') }}">
     <style>
         :root{--ink:#172033;--muted:#687386;--blue:#2563eb;--line:#e5eaf2;--canvas:#f7f9fc;--surface:#fff;--orange:#f97316}
         *{box-sizing:border-box}body{margin:0;color:var(--ink);background:var(--canvas);font:15px Arial,sans-serif}

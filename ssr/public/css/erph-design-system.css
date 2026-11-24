@@ -11,3 +11,17 @@ h1,h2,h3{font-family:'Plus Jakarta Sans',Inter,sans-serif;letter-spacing:-.04em;
 @media(max-width:760px){.site-wrap,.shell{width:min(100% - 32px,1200px)}.site-header{width:calc(100% - 24px);margin-top:12px}.nav a:not(.nav-cta),.navlinks a:not(:last-child){display:none}.page-hero{padding:65px 0 42px;gap:28px}.section{padding:70px 0}.callout,.footer-row{align-items:flex-start;flex-direction:column}.category-grid,.article-grid,.form-grid{grid-template-columns:1fr}.field.full{grid-column:auto}.hero-card{padding:40px 18px}.search{display:grid;grid-template-columns:1fr}.auth-shell{padding:14px}.auth-panel{padding:34px 24px}.auth-form h2{margin-top:38px}.auth-simple{padding:24px}.identity-main{padding:34px 16px}.identity-item{align-items:flex-start;flex-direction:column}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
 @media print{body:before,.site-header,.topbar,.site-footer,.footer{display:none!important}.section,.article,.ticket-shell{padding:0}.page-aside,.card,.panel,.form-panel,.article-body{box-shadow:none}}
+
+/* Phase B workspaces: shared application chrome and data surfaces. */
+body:has(.top),body:has(.main),body:has(.workspace-shell){background:var(--canvas);color:var(--ink)}
+.top{height:72px!important;padding:0 max(20px,calc((100% - 1200px)/2))!important;border-bottom:1px solid var(--line)!important;background:rgba(255,255,255,.82)!important;backdrop-filter:blur(16px)!important;box-shadow:0 8px 30px rgba(15,23,42,.05)!important}
+.top a,.top span:last-child{color:var(--muted)!important}.top .brand,.top>strong{color:var(--ink)}
+.main{width:min(100% - 40px,1200px)!important;margin:auto!important;padding:44px 0 72px!important}
+.main h1,.heading h1,.title{color:var(--ink);font-family:'Plus Jakarta Sans',Inter,sans-serif!important;letter-spacing:-.045em!important}
+.card,.panel,.form-panel{border-color:var(--line)!important;border-radius:var(--radius)!important;background:rgba(255,255,255,.9)!important;box-shadow:var(--shadow)!important}
+.button,button,.print-button{border-radius:12px!important;background:var(--emerald)!important;color:#fff!important;box-shadow:0 8px 20px rgba(5,150,105,.14)!important}
+input,select,textarea{border-color:var(--line)!important;border-radius:10px!important;background:#fff!important;color:var(--ink)!important}
+table{font-variant-numeric:tabular-nums}.pill,.badge{border-color:var(--emerald-line)!important;background:var(--emerald-soft)!important;color:var(--emerald-dark)!important}
+.toolbar{background:rgba(255,255,255,.88)!important;border-bottom-color:var(--line)!important}.sheet{border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+@media(max-width:760px){.main{width:min(100% - 32px,1200px)!important;padding:30px 0 52px!important}.top{padding:0 16px!important}}
+@media print{.sheet{border:0;border-radius:0}.toolbar{display:none!important}body{background:#fff!important}}

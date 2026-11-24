@@ -39,3 +39,4 @@
 </main>
 </body>
 </html>
+<link rel="stylesheet" href="{{ asset('css/erph-design-system.css') }}">

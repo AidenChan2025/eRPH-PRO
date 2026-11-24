@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Reports · {{ $school->name }}</title>
+    <link rel="stylesheet" href="{{ asset('css/erph-design-system.css') }}">
     <style>
         :root { --ink:#172033; --muted:#687386; --blue:#2563eb; --line:#e5eaf2; --canvas:#f7f9fc; --green:#16845a; --orange:#c55c0a; }
         * { box-sizing:border-box; } body { margin:0; background:var(--canvas); color:var(--ink); font:15px system-ui,sans-serif; }

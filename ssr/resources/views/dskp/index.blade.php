@@ -16,3 +16,4 @@
     @empty <p class="empty">No DSKP items found.</p> @endforelse
     {{ $items->links() }}
 </main></body></html>
+<link rel="stylesheet" href="{{ asset('css/erph-design-system.css') }}">
