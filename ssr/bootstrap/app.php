@@ -25,6 +25,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->prependToGroup('web', \App\Http\Middleware\ResolveTenantContext::class);
         $middleware->prependToGroup('web', ConfigureHostSessionCookie::class);
         $middleware->appendToGroup('web', BindAuthenticatedSessionToHost::class);
+        $middleware->appendToGroup('web', \App\Http\Middleware\SetApplicationLocale::class);
         $middleware->alias([
             'school' => ResolveSchool::class,
             'school.member' => RequireSchoolMembership::class,

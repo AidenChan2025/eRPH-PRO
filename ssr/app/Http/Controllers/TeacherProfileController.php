@@ -30,7 +30,10 @@ class TeacherProfileController extends Controller
             'position' => ['nullable', 'string', 'max:120'],
             'grade' => ['nullable', 'string', 'max:80'],
             'profile_data' => ['nullable', 'array'],
+            'telegram_chat_id' => ['nullable', 'string', 'max:80'],
+            'telegram_opt_in' => ['sometimes', 'boolean'],
         ]);
+        $data['telegram_opt_in'] = $request->boolean('telegram_opt_in');
         $profile->update($data);
         $auditLogger->record('teacher.profile_updated', $school, TeacherProfile::class, (string) $profile->id, ['fields' => array_keys($data)]);
 

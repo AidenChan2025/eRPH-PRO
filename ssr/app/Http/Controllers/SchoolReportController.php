@@ -5,9 +5,32 @@ namespace App\Http\Controllers;
 use App\Models\LessonPlanSubmission;
 use App\Models\TeacherProfile;
 use Illuminate\Http\Request;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class SchoolReportController extends Controller
 {
+    public function export(Request $request): StreamedResponse
+    {
+        $request->validate(['from' => ['nullable', 'date_format:Y-m-d'], 'to' => ['nullable', 'date_format:Y-m-d'], 'status' => ['nullable', 'in:on_time,late']]);
+        $school = $request->attributes->get('school');
+        $start = $request->date('from')?->startOfDay() ?? now()->startOfWeek();
+        $end = $request->date('to')?->endOfDay() ?? now()->endOfWeek();
+        if ($end->lt($start)) [$start, $end] = [$end->copy()->startOfDay(), $start->copy()->endOfDay()];
+        $status = $request->string('status')->toString();
+        $rows = LessonPlanSubmission::query()->where('school_id', $school->id)->whereBetween('submitted_at', [$start, $end])
+            ->when($status !== '', fn ($query) => $query->where('status', $status))->with(['teacherProfile.user', 'lessonPlan'])->latest('submitted_at')->get();
+        $csv = static function ($value): string {
+            $value = (string) $value;
+            return $value !== '' && in_array($value[0], ['=', '+', '-', '@', "\t", "\r"], true) ? "'".$value : $value;
+        };
+        return response()->streamDownload(function () use ($rows, $csv): void {
+            $handle = fopen('php://output', 'wb');
+            fputcsv($handle, ['Teacher', 'Lesson plan', 'Week', 'Status', 'Submitted at']);
+            foreach ($rows as $row) fputcsv($handle, [$csv($row->teacherProfile?->user?->name ?? $row->teacherProfile?->user?->email ?? ''), $csv($row->lessonPlan?->subject.' - '.$row->lessonPlan?->class_name), $csv($row->week_no), $csv($row->status), $csv($row->submitted_at?->toIso8601String())]);
+            fclose($handle);
+        }, 'rph-submission-compliance.csv', ['Content-Type' => 'text/csv; charset=UTF-8']);
+    }
+
     public function __invoke(Request $request)
     {
         $request->validate([

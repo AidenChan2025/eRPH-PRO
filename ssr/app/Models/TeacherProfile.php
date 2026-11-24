@@ -13,8 +13,8 @@ class TeacherProfile extends Model
     use SoftDeletes;
     use BelongsToSchoolTenant;
 
-    protected $fillable = ['school_id', 'user_id', 'staff_no', 'identity_no', 'phone', 'position', 'grade', 'employment_status', 'joined_school_on', 'left_school_on', 'profile_data'];
-    protected $casts = ['joined_school_on' => 'date', 'left_school_on' => 'date', 'profile_data' => 'array'];
+    protected $fillable = ['school_id', 'user_id', 'staff_no', 'identity_no', 'phone', 'position', 'grade', 'employment_status', 'joined_school_on', 'left_school_on', 'profile_data', 'telegram_chat_id', 'telegram_opt_in'];
+    protected $casts = ['joined_school_on' => 'date', 'left_school_on' => 'date', 'profile_data' => 'array', 'telegram_opt_in' => 'boolean'];
 
     public function user(): BelongsTo
     {

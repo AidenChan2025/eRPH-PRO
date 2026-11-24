@@ -25,6 +25,7 @@ use App\Http\Controllers\SupportTicketController;
 use App\Http\Controllers\SchoolSupportAccessController;
 use App\Http\Controllers\SchoolAcademicDataController;
 use App\Http\Controllers\DskpController;
+use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\OwnerDskpController;
 use Illuminate\Support\Facades\Route;
 
@@ -96,6 +97,7 @@ Route::middleware(['platform.host', 'platform.auth', 'platform.permission:platfo
 });
 
 Route::domain(config('support.host'))->middleware('support.host')->group(function () {
+    Route::post('/locale', [LocaleController::class, 'update'])->name('locale.switch.support');
     Route::get('/', SupportHomeController::class)->name('support.home');
     Route::get('/solutions', SupportHomeController::class)->name('support.solutions');
     Route::get('/solutions/{slug}', [SupportArticleController::class, 'show'])->name('support.article');
@@ -112,6 +114,7 @@ Route::domain(config('support.host'))->middleware('support.host')->group(functio
 Route::domain(config('app.school_base_domain', 'erphpro.com'))->middleware('school')->get('/', SchoolHomeController::class)->name('public.home');
 
 Route::middleware('school')->group(function () {
+    Route::post('/locale', [LocaleController::class, 'update'])->name('locale.switch');
     Route::get('/login', [GoogleAuthController::class, 'show'])->name('login');
     Route::get('/auth/google/redirect', [GoogleAuthController::class, 'redirect'])->name('auth.google.redirect');
     Route::get('/auth/google/complete', [GoogleAuthController::class, 'complete'])->name('auth.google.complete');
@@ -134,6 +137,7 @@ Route::middleware('school')->group(function () {
     });
     Route::middleware(['auth', 'school.member', \App\Http\Middleware\PreventSensitiveResponseCaching::class])->get('/rph/{lessonPlan}/print', [LessonPlanController::class, 'print'])->name('rph.print');
     Route::middleware(['auth', 'school.member:school_admin,principal,vice_principal', 'permission:reports.view'])->get('/reports', SchoolReportController::class)->name('school.reports');
+    Route::middleware(['auth', 'school.member:school_admin,principal,vice_principal', 'permission:reports.view', \App\Http\Middleware\PreventSensitiveResponseCaching::class])->get('/reports/export', [SchoolReportController::class, 'export'])->name('school.reports.export');
     Route::middleware(['auth', 'school.member:school_admin,principal,vice_principal', 'permission:school.users.manage'])->group(function () {
         Route::middleware('throttle:10,1')->post('/admin/support-access', [SchoolSupportAccessController::class, 'store'])->name('school.support-access.store');
         Route::post('/admin/support-access/{grant}/revoke', [SchoolAdminController::class, 'revokeSupportAccess'])->name('school.support-access.revoke');
