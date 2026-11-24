@@ -2264,7 +2264,7 @@ class ExampleTest extends TestCase
 
         $this->actingAs($operator)->get('http://erphpro.com/owner')
             ->assertRedirect(route('owner.mfa.setup'));
-        $this->actingAs($operator)->get(route('owner.mfa.setup'))
+        $setupResponse = $this->actingAs($operator)->get(route('owner.mfa.setup'))
             ->assertOk()
             ->assertHeader('Cache-Control', 'max-age=0, no-store, private')
             ->assertHeader('Pragma', 'no-cache')
@@ -2276,6 +2276,15 @@ class ExampleTest extends TestCase
 
         $operator->refresh();
         $secret = decrypt($operator->platform_mfa_secret);
+        preg_match('/<img[^>]+src="(data:image\\/png;base64,[^"]+)"/', $setupResponse->getContent(), $qrMatch);
+        $this->assertCount(2, $qrMatch);
+        $png = base64_decode(substr($qrMatch[1], strlen('data:image/png;base64,')), true);
+        $this->assertNotFalse($png);
+        $this->assertNotFalse(getimagesizefromstring($png));
+        $this->assertSame(
+            app(\App\Services\PlatformMfaService::class)->provisioningUri($secret, (string) $operator->email),
+            (new \Zxing\QrReader($png, \Zxing\QrReader::SOURCE_TYPE_BLOB))->text(),
+        );
         $code = app(\App\Services\PlatformMfaService::class)->codeFor($secret);
         $this->actingAs($operator)->post(route('owner.mfa.confirm'), ['code' => $code])
             ->assertOk()
