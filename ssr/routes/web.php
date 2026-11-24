@@ -24,6 +24,8 @@ use App\Http\Controllers\SupportHomeController;
 use App\Http\Controllers\SupportTicketController;
 use App\Http\Controllers\SchoolSupportAccessController;
 use App\Http\Controllers\SchoolAcademicDataController;
+use App\Http\Controllers\DskpController;
+use App\Http\Controllers\OwnerDskpController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/health', HealthController::class)->name('health');
@@ -82,6 +84,7 @@ Route::middleware(['platform.host', 'platform.auth', 'platform.permission:platfo
 Route::middleware(['platform.host', 'platform.auth', 'platform.permission:platform.settings.manage', 'platform.mfa', \App\Http\Middleware\PreventSensitiveResponseCaching::class])->group(function () {
     Route::get('/owner/billing', [\App\Http\Controllers\OwnerBillingController::class, 'index'])->name('owner.billing');
     Route::put('/owner/billing/{school}', [\App\Http\Controllers\OwnerBillingController::class, 'update'])->name('owner.billing.update');
+    Route::post('/owner/dskp', [OwnerDskpController::class, 'store'])->name('owner.dskp.store');
 });
 Route::middleware(['platform.host', 'platform.auth', 'platform.permission:platform.support.view', 'platform.mfa'])->prefix('owner/support')->group(function () {
     Route::get('/', [OwnerSupportController::class, 'index'])->name('owner.support.index');
@@ -116,6 +119,7 @@ Route::middleware('school')->group(function () {
     Route::middleware(['auth', 'school.member'])->get('/workspace', WorkspaceController::class)->name('workspace.dashboard');
     Route::middleware(['auth'])->post('/logout', [GoogleAuthController::class, 'logout'])->name('logout');
     Route::middleware(['auth', 'school.member'])->group(function () {
+        Route::get('/dskp', [DskpController::class, 'index'])->name('dskp.index');
         Route::get('/account/identities', [GoogleAuthController::class, 'identities'])->name('account.identities');
         Route::delete('/account/identities/{identity}', [GoogleAuthController::class, 'unlinkIdentity'])->name('account.identities.unlink');
         Route::get('/profile', [TeacherProfileController::class, 'edit'])->name('teacher.profile.edit');
@@ -128,6 +132,7 @@ Route::middleware('school')->group(function () {
         Route::put('/rph/{lessonPlan}', [LessonPlanController::class, 'update'])->name('rph.update');
         Route::post('/rph/{lessonPlan}/submit', [LessonPlanController::class, 'submit'])->name('rph.submit');
     });
+    Route::middleware(['auth', 'school.member', \App\Http\Middleware\PreventSensitiveResponseCaching::class])->get('/rph/{lessonPlan}/print', [LessonPlanController::class, 'print'])->name('rph.print');
     Route::middleware(['auth', 'school.member:school_admin,principal,vice_principal', 'permission:reports.view'])->get('/reports', SchoolReportController::class)->name('school.reports');
     Route::middleware(['auth', 'school.member:school_admin,principal,vice_principal', 'permission:school.users.manage'])->group(function () {
         Route::middleware('throttle:10,1')->post('/admin/support-access', [SchoolSupportAccessController::class, 'store'])->name('school.support-access.store');

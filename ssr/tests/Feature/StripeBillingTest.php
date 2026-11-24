@@ -167,6 +167,8 @@ class StripeBillingTest extends TestCase
             ->assertRedirect('http://demo.erphpro.com/admin/billing')
             ->assertSessionHasErrors('stripe');
 
+        $school = School::create(['name' => 'Billing Test School', 'slug' => 'billing-test-school', 'subdomain' => 'billing-test-school', 'is_demo' => false]);
+        $admin->schools()->attach($school->id, ['role' => 'school_admin', 'status' => 'active']);
         config()->set('services.stripe.key', 'pk_test_123');
         config()->set('services.stripe.secret', 'sk_test_123');
         config()->set('services.stripe.price_school_monthly', 'price_monthly_123');
@@ -178,8 +180,9 @@ class StripeBillingTest extends TestCase
             ], 200),
         ]);
 
+        $this->flushSession();
         $this->actingAs($admin)
-            ->post('http://demo.erphpro.com/admin/billing/checkout', ['plan_code' => 'monthly'])
+            ->post('http://billing-test-school.erphpro.com/admin/billing/checkout', ['plan_code' => 'monthly'])
             ->assertRedirect('https://checkout.stripe.com/c/pay/cs_test_123');
 
         Http::assertSent(fn ($request) => $request->hasHeader('Idempotency-Key'));

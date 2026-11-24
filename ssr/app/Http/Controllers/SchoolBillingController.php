@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\School;
 use App\Models\SchoolSubscription;
 use App\Services\StripeBillingService;
+use App\Services\DemoSandboxService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -25,7 +26,7 @@ class SchoolBillingController extends Controller
         ]);
     }
 
-    public function checkout(Request $request, StripeBillingService $stripe): RedirectResponse
+    public function checkout(Request $request, StripeBillingService $stripe, DemoSandboxService $sandbox): RedirectResponse
     {
         /** @var School $school */
         $school = $request->attributes->get('school');
@@ -33,6 +34,10 @@ class SchoolBillingController extends Controller
         $validated = $request->validate([
             'plan_code' => ['required', 'in:monthly,yearly'],
         ]);
+
+        if ($sandbox->isDemoSchool($school)) {
+            return redirect()->route('school.billing')->withErrors(['stripe' => 'Demo schools cannot initiate real Stripe checkout.']);
+        }
 
         if (! $stripe->isConfigured()) {
             return redirect()

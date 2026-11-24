@@ -32,11 +32,36 @@ class LessonPlanController extends Controller
         $school = $request->attributes->get('school');
         $profile = TeacherProfile::where('school_id', $school->id)->where('user_id', $request->user()->id)->firstOrFail();
         abort_unless($lessonPlan->school_id === $school->id && $lessonPlan->teacher_profile_id === $profile->id, 403);
+        abort_if($lessonPlan->status === 'approved', 422, 'Approved lesson plans cannot be edited.');
         $version = $lessonPlan->versions()->latest('version')->firstOrFail();
         $assignments = TeacherClassAssignment::query()->with(['schoolClass', 'academicYear'])->where('teacher_profile_id', $profile->id)->where('is_active', true)->orderBy('subject')->get();
 
         $slots = SchoolTimetableSlot::query()->where('school_id', $school->id)->where('is_active', true)->orderBy('day_of_week')->orderBy('sort_order')->get();
         return view('lesson-plans.edit-v2', compact('school', 'lessonPlan', 'version', 'assignments', 'slots'));
+    }
+
+    public function print(Request $request, LessonPlan $lessonPlan)
+    {
+        $school = $request->attributes->get('school');
+        abort_unless($lessonPlan->school_id === $school->id, 404);
+
+        $membership = $request->attributes->get('membership');
+        $isSchoolReviewer = in_array($membership?->role, ['school_admin', 'principal', 'vice_principal'], true);
+        $isOwner = TeacherProfile::query()
+            ->where('school_id', $school->id)
+            ->where('user_id', $request->user()->id)
+            ->whereKey($lessonPlan->teacher_profile_id)
+            ->exists();
+        abort_unless($isOwner || $isSchoolReviewer, 403);
+
+        $lessonPlan->load([
+            'versions' => fn ($query) => $query->where('version', $lessonPlan->current_version),
+        ]);
+        $version = $lessonPlan->versions->first();
+        abort_unless($version, 404);
+        $teacher = TeacherProfile::query()->with('user')->findOrFail($lessonPlan->teacher_profile_id);
+
+        return view('lesson-plans.print', compact('school', 'lessonPlan', 'version', 'teacher'));
     }
 
     public function store(Request $request, AuditLogger $auditLogger)
@@ -113,6 +138,7 @@ class LessonPlanController extends Controller
         abort_unless($lessonPlan->school_id === $school->id, 404);
         $profile = TeacherProfile::where('school_id', $school->id)->where('user_id', $request->user()->id)->firstOrFail();
         abort_unless($lessonPlan->teacher_profile_id === $profile->id, 403);
+        abort_if($lessonPlan->status === 'approved', 422, 'Approved RPH cannot be resubmitted.');
 
         $settings = SchoolSetting::firstOrCreate(['school_id' => $school->id]);
         $deadline = $settings->active_week_deadline;
