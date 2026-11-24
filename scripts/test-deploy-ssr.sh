@@ -18,6 +18,7 @@ if [[ "${1:-}" == "-r" ]]; then
     *'stat($argv[1])'*) exec "$REAL_PHP_BIN" "$@" ;;
     *'rename($argv[1], $argv[2])'*) exec "$REAL_PHP_BIN" "$@" ;;
     *'json_decode($payload'*) exec "$REAL_PHP_BIN" "$@" ;;
+    *'json_decode(file_get_contents'*) exec "$REAL_PHP_BIN" "$@" ;;
     *) printf 'Unexpected PHP probe: %s\n' "$2" >&2; exit 99 ;;
   esac
   exit 0
@@ -58,6 +59,32 @@ cat > "$tmp_dir/bin/curl" <<'CURL'
 set -Eeuo pipefail
 printf 'curl %s\n' "$*" >> "$TRACE_FILE"
 if [[ "${CURL_FAIL:-0}" == 1 ]]; then exit 22; fi
+if [[ "${PARITY_HTTP_INTEGRATION:-0}" == 1 && "$*" == *"--write-out"* ]]; then
+  output_file=""
+  request_url=""
+  previous=""
+  for arg in "$@"; do
+    if [[ "$previous" == "--output" ]]; then output_file="$arg"; fi
+    previous="$arg"
+    if [[ "$arg" == https://* ]]; then request_url="$arg"; fi
+  done
+  host="${request_url#https://}"
+  host="${host%%/*}"
+  active_sha="$(basename "$(readlink "$TEST_CURRENT_LINK")")"
+  response_sha="$active_sha"
+  response_status=200
+  if [[ "$active_sha" == "$PARITY_NEW_SHA" && "$host" == "support.erphpro.com" ]]; then
+    response_status=500
+  fi
+  runtime_hash="aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  printf '{"status":"ok","database":"ok","cache":"ok","release":"%s","runtime_file_sha256":"%s"}' "$response_sha" "$runtime_hash" > "$output_file"
+  if [[ "$response_status" != 200 ]]; then
+    printf '%s\t%s\t' "$response_status" "$request_url"
+    exit 0
+  fi
+  printf '200\t%s\t' "$request_url"
+  exit 0
+fi
 if [[ -n "${CURL_SEQUENCE_FILE:-}" ]]; then
   sequence_index_file="${CURL_SEQUENCE_INDEX_FILE:-$CURL_SEQUENCE_FILE.index}"
   if [[ -f "$sequence_index_file" ]]; then
@@ -151,6 +178,9 @@ run_hook() {
     CURL_SEQUENCE_FILE="${CURL_SEQUENCE_FILE:-}" \
     CURL_SEQUENCE_INDEX_FILE="${CURL_SEQUENCE_INDEX_FILE:-$SANDBOX/curl-sequence.index}" \
     PARITY_TRACE="$PARITY_TRACE" \
+    TEST_CURRENT_LINK="$CURRENT" \
+    PARITY_HTTP_INTEGRATION="${PARITY_HTTP_INTEGRATION:-0}" \
+    PARITY_NEW_SHA="${PARITY_NEW_SHA:-}" \
     bash "$repo_root/scripts/deploy-ssr.sh"
 }
 
@@ -417,6 +447,33 @@ if ! grep -q "$OLD_SHA" "$PARITY_TRACE" || [[ "$(wc -l < "$PARITY_TRACE")" -lt 2
 fi
 if [[ -e "$RELEASES/.deploy.lock" ]]; then
   echo 'Successful rollback left a deployment lock.' >&2
+  exit 1
+fi
+
+new_sandbox rollback_real_parity
+REAL_PARITY_SEQUENCE="$SANDBOX/health-sequence"
+printf '{"status":"ok","database":"ok","cache":"ok","release":"%s"}\n{"status":"ok","database":"ok","cache":"ok","release":"%s"}\n' "$expected_sha" "$OLD_SHA" > "$REAL_PARITY_SEQUENCE"
+if PARITY_REQUIRED=1 PARITY_URLS='https://erphpro.com https://support.erphpro.com' \
+  PARITY_HTTP_INTEGRATION=1 PARITY_NEW_SHA="$expected_sha" \
+  CURL_SEQUENCE_FILE="$REAL_PARITY_SEQUENCE" run_hook >"$SANDBOX/out" 2>&1; then
+  echo 'Expected the actual parity verifier to reject the unhealthy new support host.' >&2
+  exit 1
+fi
+if [[ "$(readlink "$CURRENT")" != "$OLD_RELEASE" ]]; then
+  echo 'Actual parity verifier rollback did not restore the old SHA release.' >&2
+  exit 1
+fi
+if ! grep -q 'restored and re-verified previous release' "$SANDBOX/out"; then
+  cat "$SANDBOX/out" >&2
+  echo 'Actual parity rollback success diagnostic was missing.' >&2
+  exit 1
+fi
+if ! grep -q 'https://erphpro.com/health' "$TRACE" || ! grep -q 'https://support.erphpro.com/health' "$TRACE"; then
+  echo 'Actual parity verifier did not request both production hosts.' >&2
+  exit 1
+fi
+if ! grep -q "$OLD_SHA" "$SANDBOX/out" || [[ -e "$RELEASES/.deploy.lock" ]]; then
+  echo 'Actual parity rollback did not verify the old SHA or release the lock.' >&2
   exit 1
 fi
 
