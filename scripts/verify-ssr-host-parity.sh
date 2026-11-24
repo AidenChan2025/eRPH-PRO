@@ -25,7 +25,7 @@ for base_url in "${hosts[@]}"; do
   expected_host="${base_url#https://}"
   expected_host="${expected_host%%/*}"
   body_file="$tmp_dir/$(printf '%s' "$expected_host" | tr -c '[:alnum:].-' '_').json"
-  curl_meta="$(curl --silent --show-error --fail-with-body --max-time 20 --proto '=https' --proto-redir '=https' \
+  curl_meta="$(curl --silent --show-error --fail --max-time 20 --proto '=https' --proto-redir '=https' \
     --output "$body_file" --write-out '%{http_code}\t%{url_effective}\t%{redirect_url}' "$health_url")" || {
     echo "FAIL: ${health_url} request failed" >&2
     exit 1
