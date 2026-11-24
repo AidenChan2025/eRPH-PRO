@@ -30,6 +30,9 @@ use App\Http\Controllers\OwnerDskpController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/health', HealthController::class)->name('health');
+Route::get('/robots.txt', fn () => response("User-agent: *\nAllow: /\nDisallow: /owner\nDisallow: /workspace\nDisallow: /school-admin\n", 200, [
+    'Content-Type' => 'text/plain; charset=UTF-8',
+]))->name('robots');
 Route::view('/features', 'public.features')->name('public.features');
 Route::view('/about', 'public.about')->name('public.about');
 Route::view('/faq', 'public.faq')->name('public.faq');

@@ -277,6 +277,10 @@ class StripeBillingService
      */
     private function applySubscriptionEvent(School $school, string $eventId, string $eventType, int $eventCreated, array $object): string
     {
+        // Serialize all subscription creation and updates for a school on the
+        // existing parent row. This also closes the missing-subscription race:
+        // concurrent deliveries cannot both observe an absent child row.
+        School::query()->whereKey($school->getKey())->lockForUpdate()->firstOrFail();
         $subscription = SchoolSubscription::where('school_id', $school->id)->lockForUpdate()->first();
         if (! $subscription) {
             $subscription = new SchoolSubscription(['school_id' => $school->id]);

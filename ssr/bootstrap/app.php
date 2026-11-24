@@ -14,6 +14,7 @@ use App\Http\Middleware\RequirePlatformHost;
 use App\Http\Middleware\BindAuthenticatedSessionToHost;
 use App\Http\Middleware\RequirePlatformAuthentication;
 use App\Http\Middleware\ConfigureHostSessionCookie;
+use App\Http\Middleware\AddSecurityHeaders;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -25,6 +26,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->prependToGroup('web', \App\Http\Middleware\ResolveTenantContext::class);
         $middleware->prependToGroup('web', ConfigureHostSessionCookie::class);
+        $middleware->appendToGroup('web', AddSecurityHeaders::class);
         $middleware->appendToGroup('web', BindAuthenticatedSessionToHost::class);
         $middleware->appendToGroup('web', \App\Http\Middleware\SetApplicationLocale::class);
         $middleware->alias([

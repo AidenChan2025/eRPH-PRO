@@ -50,7 +50,10 @@ return [
     ],
 
     'platform_mfa' => [
-        'required' => filter_var(env('PLATFORM_MFA_REQUIRED', false), FILTER_VALIDATE_BOOLEAN),
+        'required' => filter_var(
+            env('PLATFORM_MFA_REQUIRED', env('APP_ENV', 'production') === 'production'),
+            FILTER_VALIDATE_BOOLEAN
+        ),
     ],
 
     'stripe' => [

@@ -1,2 +1,5 @@
 User-agent: *
-Disallow:
+Allow: /
+Disallow: /owner
+Disallow: /workspace
+Disallow: /school-admin

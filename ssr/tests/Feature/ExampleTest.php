@@ -57,6 +57,26 @@ class ExampleTest extends TestCase
             ->assertSee('Platform owner sign in');
     }
 
+    public function test_public_responses_include_security_headers(): void
+    {
+        $this->get('http://erphpro.com/')
+            ->assertHeader('X-Content-Type-Options', 'nosniff')
+            ->assertHeader('X-Frame-Options', 'SAMEORIGIN')
+            ->assertHeader('Referrer-Policy', 'strict-origin-when-cross-origin')
+            ->assertHeaderMissing('Strict-Transport-Security');
+
+        $this->get('https://erphpro.com/')
+            ->assertHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
+    }
+
+    public function test_robots_txt_is_plain_text_with_clean_rules(): void
+    {
+        $this->get('http://erphpro.com/robots.txt')
+            ->assertOk()
+            ->assertHeader('Content-Type', 'text/plain; charset=UTF-8')
+            ->assertSeeText("User-agent: *\nAllow: /\nDisallow: /owner\nDisallow: /workspace\nDisallow: /school-admin\n");
+    }
+
     public function test_support_content_seeding_does_not_overwrite_operator_edits(): void
     {
         $this->seed(SupportContentSeeder::class);
