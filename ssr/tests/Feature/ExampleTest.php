@@ -2265,7 +2265,11 @@ class ExampleTest extends TestCase
         $this->actingAs($operator)->get('http://erphpro.com/owner')
             ->assertRedirect(route('owner.mfa.setup'));
         $this->actingAs($operator)->get(route('owner.mfa.setup'))
-            ->assertOk()->assertSee('Manual setup key')->assertSee('Use a recovery code instead');
+            ->assertOk()
+            ->assertSee('Scan this QR code')
+            ->assertSee('Use manual setup instead')
+            ->assertSee('Manual setup key')
+            ->assertSee('Use a recovery code instead');
 
         $operator->refresh();
         $secret = decrypt($operator->platform_mfa_secret);
