@@ -313,6 +313,21 @@ if [[ -s "$TRACE" || "$(readlink "$CURRENT")" != "$OLD_RELEASE" ]]; then
   exit 1
 fi
 
+new_sandbox missing_pdo_mysql
+if FAKE_PHP_MODULES='ctype fileinfo gd mbstring openssl PDO tokenizer xml' run_hook >"$SANDBOX/out" 2>&1; then
+  echo 'Expected a missing PHP extension to stop deployment.' >&2
+  exit 1
+fi
+if ! grep -q 'PHP extension pdo_mysql is missing' "$SANDBOX/out"; then
+  cat "$SANDBOX/out" >&2
+  echo 'Missing pdo_mysql did not produce the expected diagnostic.' >&2
+  exit 1
+fi
+if [[ -s "$TRACE" || "$(readlink "$CURRENT")" != "$OLD_RELEASE" ]]; then
+  echo 'Missing pdo_mysql reached build commands or changed the live release.' >&2
+  exit 1
+fi
+
 new_sandbox current_link_read_failure
 if FAIL_READLINK=1 run_hook >"$SANDBOX/out" 2>&1; then
   echo 'Expected a failed current-link read to stop deployment.' >&2
