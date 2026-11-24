@@ -245,20 +245,20 @@ check_host_parity() {
     echo "SSR deployment parity check failed: SSR_PARITY_URLS must contain at least two HTTPS hosts." >&2
     return 1
   fi
-  declare -A seen_hosts=()
+  seen_hosts=,
   for parity_host in "${parity_hosts[@]}"; do
     normalized_host="${parity_host%/}"
     if [[ "$normalized_host" != https://* || "$normalized_host" == */*/* ]]; then
       echo "SSR deployment parity check failed: invalid HTTPS host $parity_host." >&2
       return 1
     fi
-    if [[ -n "${seen_hosts[$normalized_host]:-}" ]]; then
+    if [[ "$seen_hosts" == *",$normalized_host,"* ]]; then
       echo "SSR deployment parity check failed: duplicate normalized host $parity_host." >&2
       return 1
     fi
-    seen_hosts[$normalized_host]=1
+    seen_hosts+="$normalized_host,"
   done
-  if [[ "$SSR_PARITY_REQUIRED" == "1" && ( -z "${seen_hosts[https://erphpro.com]:-}" || -z "${seen_hosts[https://support.erphpro.com]:-}" ) ]]; then
+  if [[ "$SSR_PARITY_REQUIRED" == "1" && ( "$seen_hosts" != *",https://erphpro.com,"* || "$seen_hosts" != *",https://support.erphpro.com,"* ) ]]; then
     echo "SSR deployment parity check failed: production parity must include https://erphpro.com and https://support.erphpro.com." >&2
     return 1
   fi
@@ -279,16 +279,16 @@ validate_parity_config() {
     echo "SSR deployment aborted: SSR_PARITY_URLS must contain both production hosts." >&2
     return 1
   fi
-  declare -A preflight_seen=()
+  preflight_seen=,
   for preflight_host in "${preflight_hosts[@]}"; do
     normalized_host="${preflight_host%/}"
-    if [[ "$normalized_host" != https://* || "$normalized_host" == */*/* || -n "${preflight_seen[$normalized_host]:-}" ]]; then
+    if [[ "$normalized_host" != https://* || "$normalized_host" == */*/* || "$preflight_seen" == *",$normalized_host,"* ]]; then
       echo "SSR deployment aborted: invalid or duplicate production parity host $preflight_host." >&2
       return 1
     fi
-    preflight_seen[$normalized_host]=1
+    preflight_seen+="$normalized_host,"
   done
-  if [[ -z "${preflight_seen[https://erphpro.com]:-}" || -z "${preflight_seen[https://support.erphpro.com]:-}" ]]; then
+  if [[ "$preflight_seen" != *",https://erphpro.com,"* || "$preflight_seen" != *",https://support.erphpro.com,"* ]]; then
     echo "SSR deployment aborted: production parity must include both required hosts." >&2
     return 1
   fi
