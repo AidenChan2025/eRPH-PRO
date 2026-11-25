@@ -57,6 +57,20 @@ class SchoolAcademicDataController extends Controller
         return back()->with('status', 'Academic year activated.');
     }
 
+    public function archiveYear(Request $request, AcademicYear $academicYear, AuditLogger $auditLogger)
+    {
+        $school = $request->attributes->get('school');
+        abort_unless($academicYear->school_id === $school->id, 404);
+        abort_if($academicYear->status === 'archived', 422, 'Academic year is already archived.');
+        DB::transaction(function () use ($school, $academicYear, $auditLogger): void {
+            $academicYear->update(['status' => 'archived']);
+            $academicYear->classes()->update(['is_active' => false]);
+            TeacherClassAssignment::query()->where('school_id', $school->id)->where('academic_year_id', $academicYear->id)->update(['is_active' => false]);
+            $auditLogger->record('school.academic_year_archived', $school, AcademicYear::class, (string) $academicYear->id, ['year' => $academicYear->year]);
+        });
+        return back()->with('status', 'Academic year archived.');
+    }
+
     public function copyClasses(Request $request, AuditLogger $auditLogger)
     {
         $school = $request->attributes->get('school');

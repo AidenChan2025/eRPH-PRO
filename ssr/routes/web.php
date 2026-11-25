@@ -24,6 +24,7 @@ use App\Http\Controllers\SupportHomeController;
 use App\Http\Controllers\SupportTicketController;
 use App\Http\Controllers\SchoolSupportAccessController;
 use App\Http\Controllers\SchoolAcademicDataController;
+use App\Http\Controllers\SchoolInspectorController;
 use App\Http\Controllers\DskpController;
 use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\OwnerDskpController;
@@ -126,7 +127,10 @@ Route::middleware('school')->group(function () {
     Route::get('/auth/google/redirect', [GoogleAuthController::class, 'redirect'])->name('auth.google.redirect');
     Route::get('/auth/google/complete', [GoogleAuthController::class, 'complete'])->name('auth.google.complete');
     Route::middleware('auth')->get('/auth/google/link', [GoogleAuthController::class, 'redirectLink'])->name('auth.google.link');
-    Route::middleware(['auth', 'school.member'])->get('/workspace', WorkspaceController::class)->name('workspace.dashboard');
+    Route::middleware(['auth', 'school.member'])->group(function () {
+        Route::get('/workspace', WorkspaceController::class)->name('workspace.dashboard');
+        Route::get('/workspace/maklumat-am', [WorkspaceController::class, 'maklumatAm'])->name('workspace.maklumat-am');
+    });
     Route::middleware(['auth'])->post('/logout', [GoogleAuthController::class, 'logout'])->name('logout');
     Route::middleware(['auth', 'school.member'])->group(function () {
         Route::get('/dskp', [DskpController::class, 'index'])->name('dskp.index');
@@ -153,6 +157,7 @@ Route::middleware('school')->group(function () {
         Route::get('/admin/academic-data', [SchoolAcademicDataController::class, 'index'])->name('school.academic-data');
         Route::post('/admin/academic-years', [SchoolAcademicDataController::class, 'storeYear'])->name('school.academic-years.store');
         Route::post('/admin/academic-years/{academicYear}/activate', [SchoolAcademicDataController::class, 'activateYear'])->name('school.academic-years.activate');
+        Route::post('/admin/academic-years/{academicYear}/archive', [SchoolAcademicDataController::class, 'archiveYear'])->name('school.academic-years.archive');
         Route::post('/admin/academic-years/copy-classes', [SchoolAcademicDataController::class, 'copyClasses'])->name('school.academic-years.copy-classes');
         Route::post('/admin/academic-years/copy-assignments', [SchoolAcademicDataController::class, 'copyAssignments'])->name('school.academic-years.copy-assignments');
         Route::post('/admin/classes', [SchoolAcademicDataController::class, 'storeClass'])->name('school.classes.store');
@@ -176,5 +181,6 @@ Route::middleware('school')->group(function () {
         Route::get('/admin/rph/{lessonPlan}/review', [LessonPlanReviewController::class, 'show'])->name('rph.review');
         Route::post('/admin/rph/{lessonPlan}/review', [LessonPlanReviewController::class, 'decide'])->name('rph.review.decide');
     });
+    Route::middleware(['auth', 'school.member:school_admin,principal,vice_principal,inspector', 'permission:reports.view'])->get('/school-admin/inspector-view', SchoolInspectorController::class)->name('school.inspector-view');
     Route::get('/', SchoolHomeController::class)->name('school.home');
 });

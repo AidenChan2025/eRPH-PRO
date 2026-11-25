@@ -8,6 +8,11 @@ use Illuminate\Http\Request;
 
 class WorkspaceController extends Controller
 {
+    public function maklumatAm(Request $request)
+    {
+        return view('workspace.maklumat-am', ['school' => $request->attributes->get('school')]);
+    }
+
     public function __invoke(Request $request)
     {
         $school = $request->attributes->get('school');
