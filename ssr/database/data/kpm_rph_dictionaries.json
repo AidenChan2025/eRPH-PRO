@@ -1,0 +1,12 @@
+{
+    "bbm": ["Contoh bahan siap, gambar, lembaran kerja, gam,gunting", "Komputer,LCD,DVD,buku teks,buku latihan,alat tulis", "Lembaran kerja, alat tulis, buku teks."],
+    "emk": ["Bahasa", "Kreativiti dan Inovasi", "Keusahawanan", "Kelestarian Alam Sekitar", "Pendidikan Kewangan", "Patriotisme", "Sains dan Teknologi", "TMK (ICT)"],
+    "nilai_murni": ["Kasih Sayang, menghormati", "Bertanggungjawab, Menjaga Kebersihan", "Bekerjasama, Menjaga Kebersihan"],
+    "pak21": ["PAK21-Rally Table", "PAK21- Same Different"],
+    "kbkk": ["Kreatif", "Kritis", "Menaakul", "Menyelesai Masalah", "Membuat Keputusan"],
+    "strategi": ["Pendekatan Berpusatkan Guru", "Pendekatan Berpusatkan Murid", "Pendekatan Induktif dan Deduktif", "Pembelajaran Konstruktivisme", "Pembelajaran Kontekstual", "Pembelajaran Masteri"],
+    "kaedah": ["Bercerita", "Brainstorming", "Kuiz", "Latih Tubi", "Lakonan", "Perbincangan", "Permainan", "Soal Jawab", "Talaqqi Musyafahah"],
+    "pengesahan": ["GURU BESAR", "KETUA BIDANG", "PENGETUA", "PKHEM", "PKKO", "PK1"],
+    "pentaksiran": ["Bacaan kuat", "Pemerhatian", "Soal jawab", "Penghasilan lukisan", "Laporan projek/ eksperimen/ kerja kursus/ folio"],
+    "xpnp": ["PDPC TIDAK DAPAT DIJALANKAN KERANA", "URUSAN RASMI", "URUSAN PERIBADI", "Pentaksiran Dijalankan"]
+}
