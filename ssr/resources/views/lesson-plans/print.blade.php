@@ -20,6 +20,7 @@
         <div><span class="label">Kelas</span>{{ $lessonPlan->class_name }}</div>
         <div><span class="label">Mata Pelajaran</span>{{ $lessonPlan->subject }}</div>
     </div>
+    @if($lessonPlan->is_relief)<div class="section"><h2>Hari Gantian / Relief Class</h2><div class="rows"><div class="key">Sebab</div><div class="text">{{ $lessonPlan->relief_reason ?: 'Kelas gantian' }}</div></div></div>@endif
     <section class="section"><h2>Maklumat Kurikulum</h2><div class="rows">
         <div class="key">Tema / Tajuk</div><div class="text">{{ $content['topic'] ?? $content['title'] ?? '—' }}{{ !empty($content['subtitle']) ? ' / '.$content['subtitle'] : '' }}</div>
         <div class="key">SK / SP / TP</div><div class="text">{{ $content['standards'] ?? $content['content_standard'] ?? '—' }}</div>

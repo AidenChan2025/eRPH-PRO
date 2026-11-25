@@ -75,6 +75,7 @@ class LessonPlanController extends Controller
             'assignment_id' => ['nullable', 'integer'],
             'subject' => ['required_without:assignment_id', 'string', 'max:120'],
             'class_name' => ['required_without:assignment_id', 'string', 'max:120'],
+            'is_relief' => ['sometimes', 'boolean'], 'relief_reason' => ['nullable', 'string', 'max:255'],
             'title' => ['required', 'string', 'max:240'],
             'start_time' => ['nullable', 'date_format:H:i'],
             'end_time' => ['nullable', 'date_format:H:i', 'after:start_time'],
@@ -120,6 +121,7 @@ class LessonPlanController extends Controller
                 'lesson_date' => $data['lesson_date'],
                 'subject' => $data['subject'],
                 'class_name' => $data['class_name'],
+                'is_relief' => $request->boolean('is_relief'), 'relief_reason' => $data['relief_reason'] ?? null,
                 'status' => 'draft',
                 'current_version' => 1,
             ]);
@@ -165,6 +167,7 @@ class LessonPlanController extends Controller
             'lesson_date' => ['required', 'date'], 'week_no' => ['nullable', 'integer', 'min:1', 'max:53'], 'slot_id' => ['nullable', 'integer'], 'subject' => ['required_without:assignment_id', 'string', 'max:120'],
             'assignment_id' => ['nullable', 'integer'],
             'class_name' => ['required_without:assignment_id', 'string', 'max:120'], 'title' => ['required', 'string', 'max:240'],
+            'is_relief' => ['sometimes', 'boolean'], 'relief_reason' => ['nullable', 'string', 'max:255'],
             'start_time' => ['nullable', 'date_format:H:i'], 'end_time' => ['nullable', 'date_format:H:i', 'after:start_time'],
             'civic_value' => ['nullable', 'string', 'max:160'], 'civic_topic' => ['nullable', 'string', 'max:240'],
             'semester' => ['nullable', 'string', 'max:80'], 'textbook_reference' => ['nullable', 'string', 'max:500'],
@@ -200,7 +203,7 @@ class LessonPlanController extends Controller
             $previousContent = (array) ($lessonPlan->versions()->latest('version')->value('content') ?? []);
             $content = array_replace($previousContent, collect($data)->only($this->contentKeys())->toArray());
             $this->assertContentConsistency($content);
-            $lessonPlan->update(['teacher_class_assignment_id' => $assignment?->id ?? $lessonPlan->teacher_class_assignment_id, 'lesson_date' => $data['lesson_date'], 'subject' => $data['subject'], 'class_name' => $data['class_name'], 'current_version' => $nextVersion, 'status' => 'draft']);
+            $lessonPlan->update(['teacher_class_assignment_id' => $assignment?->id ?? $lessonPlan->teacher_class_assignment_id, 'lesson_date' => $data['lesson_date'], 'subject' => $data['subject'], 'class_name' => $data['class_name'], 'is_relief' => $request->boolean('is_relief'), 'relief_reason' => $data['relief_reason'] ?? null, 'current_version' => $nextVersion, 'status' => 'draft']);
             $lessonPlan->versions()->create([
                 'version' => $nextVersion, 'created_by' => $request->user()->id, 'source' => 'manual',
                 'change_note' => $data['change_note'] ?? null,

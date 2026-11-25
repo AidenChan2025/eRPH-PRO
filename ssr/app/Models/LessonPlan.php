@@ -13,8 +13,8 @@ class LessonPlan extends Model
     use SoftDeletes;
     use BelongsToSchoolTenant;
 
-    protected $fillable = ['school_id', 'teacher_profile_id', 'teacher_class_assignment_id', 'curriculum_item_id', 'lesson_date', 'subject', 'class_name', 'status', 'current_version'];
-    protected $casts = ['lesson_date' => 'date', 'submitted_at' => 'datetime', 'approved_at' => 'datetime'];
+    protected $fillable = ['school_id', 'teacher_profile_id', 'teacher_class_assignment_id', 'curriculum_item_id', 'lesson_date', 'subject', 'class_name', 'is_relief', 'relief_reason', 'status', 'current_version'];
+    protected $casts = ['lesson_date' => 'date', 'is_relief' => 'boolean', 'submitted_at' => 'datetime', 'approved_at' => 'datetime'];
 
     public function versions(): HasMany
     {

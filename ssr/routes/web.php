@@ -138,6 +138,7 @@ Route::middleware('school')->group(function () {
     Route::middleware(['auth', 'school.member', 'permission:lesson_plans.create'])->group(function () {
         Route::get('/rph/create', [LessonPlanController::class, 'create'])->name('rph.create');
         Route::post('/rph', [LessonPlanController::class, 'store'])->name('rph.store');
+        Route::post('/workspace/lesson-plans/ai-generate', [\App\Http\Controllers\LessonPlanAiController::class, 'generate'])->name('lesson-plans.ai-generate');
         Route::get('/rph/{lessonPlan}/edit', [LessonPlanController::class, 'edit'])->name('rph.edit');
         Route::put('/rph/{lessonPlan}', [LessonPlanController::class, 'update'])->name('rph.update');
         Route::post('/rph/{lessonPlan}/submit', [LessonPlanController::class, 'submit'])->name('rph.submit');

@@ -26,14 +26,20 @@ class TeacherProfileController extends Controller
         $data = $request->validate([
             'staff_no' => ['nullable', 'string', 'max:40'],
             'identity_no' => ['nullable', 'string', 'max:40'],
+            'delima_id' => ['nullable', 'string', 'max:80'],
             'phone' => ['nullable', 'string', 'max:40'],
             'position' => ['nullable', 'string', 'max:120'],
+            'opsyen' => ['nullable', 'string', 'max:120'],
+            'guru_kelas' => ['sometimes', 'boolean'],
+            'jantina' => ['nullable', 'string', 'max:30'],
+            'agama' => ['nullable', 'string', 'max:80'],
             'grade' => ['nullable', 'string', 'max:80'],
             'profile_data' => ['nullable', 'array'],
             'telegram_chat_id' => ['nullable', 'regex:/^-?\d{1,20}$/'],
             'telegram_opt_in' => ['sometimes', 'boolean'],
         ]);
         $data['telegram_opt_in'] = $request->has('telegram_opt_in') ? $request->boolean('telegram_opt_in') : $profile->telegram_opt_in;
+        $data['guru_kelas'] = $request->boolean('guru_kelas');
         $profile->update($data);
         $auditLogger->record('teacher.profile_updated', $school, TeacherProfile::class, (string) $profile->id, ['fields' => array_keys($data)]);
 
