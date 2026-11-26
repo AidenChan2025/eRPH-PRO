@@ -50,6 +50,7 @@ cd "$SSR_APP_DIR"
 "$SSR_PHP_BIN" artisan config:cache
 "$SSR_PHP_BIN" artisan route:cache
 "$SSR_PHP_BIN" artisan view:cache
+"$SSR_PHP_BIN" artisan event:cache
 if [[ -n "$SSR_HEALTH_URL" ]]; then
   if ! command -v curl >/dev/null 2>&1; then
     echo "SSR development deployment aborted: curl is required for SSR_HEALTH_URL verification." >&2

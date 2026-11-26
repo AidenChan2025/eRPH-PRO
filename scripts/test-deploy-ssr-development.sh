@@ -76,6 +76,7 @@ grep -q 'composer install' "$TRACE_FILE"
 grep -q 'artisan config:cache' "$TRACE_FILE"
 grep -q 'artisan route:cache' "$TRACE_FILE"
 grep -q 'artisan view:cache' "$TRACE_FILE"
+grep -q 'artisan event:cache' "$TRACE_FILE"
 
 make_sandbox old_php
 if FAKE_PHP_VERSION_ID=80134 run_hook >"$SANDBOX/out" 2>&1; then

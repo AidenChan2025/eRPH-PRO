@@ -5,6 +5,7 @@ use App\Models\CurriculumItem;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
+use App\Services\SsrCache;
 
 class ImportBpkDskpCommand extends Command
 {
@@ -30,6 +31,7 @@ class ImportBpkDskpCommand extends Command
         }
         $this->info('Imported '.count($records).' BPK DSKP records.');
         foreach ($counts as $type => $count) { $this->line(sprintf('%-12s %d', $type, $count)); }
+        SsrCache::invalidate('curriculum');
         return self::SUCCESS;
     }
 }

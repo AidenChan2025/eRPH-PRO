@@ -6,6 +6,7 @@ use App\Models\CurriculumItem;
 use App\Models\School;
 use App\Services\AuditLogger;
 use Illuminate\Http\Request;
+use App\Services\SsrCache;
 
 class OwnerDskpController extends Controller
 {
@@ -30,6 +31,7 @@ class OwnerDskpController extends Controller
             'school_type' => $item->school_type,
             'title' => $item->title,
         ]);
+        SsrCache::invalidate('curriculum');
 
         return back()->with('status', 'DSKP item created.');
     }

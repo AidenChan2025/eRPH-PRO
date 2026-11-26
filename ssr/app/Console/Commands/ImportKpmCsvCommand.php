@@ -5,6 +5,7 @@ use App\Models\CurriculumItem;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
+use App\Services\SsrCache;
 final class ImportKpmCsvCommand extends Command
 {
     protected $signature = 'dskp:import-kpm {--dir= : Directory containing KPM CSV files} {--file= : A single KPM DSKP CSV file} {--type= : Prasekolah|SK|SMK|Tingkatan6|KAFA} {--report= : JSON report destination}';
@@ -23,6 +24,7 @@ final class ImportKpmCsvCommand extends Command
         $destination = $this->option('report');
         if ($destination) { $parent = dirname($destination); if (! is_dir($parent)) mkdir($parent, 0775, true); file_put_contents($destination, json_encode(['generated_at'=>now()->toIso8601String(), 'counts'=>$counts, 'files'=>$report], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR).PHP_EOL); }
         $this->info('KPM import: '.json_encode($counts));
+        if (($counts['imported'] + $counts['refreshed']) > 0) SsrCache::invalidate('curriculum');
         return self::SUCCESS;
     }
     private function files(): array

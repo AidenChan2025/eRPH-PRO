@@ -427,6 +427,7 @@ if (( reuse_release == 0 )); then
   RELEASE_VERSION="$release_version" "$PHP_BIN" artisan config:cache
   "$PHP_BIN" artisan route:cache
   "$PHP_BIN" artisan view:cache
+  "$PHP_BIN" artisan event:cache
 fi
 replace_current_link "$release_dir"
 switched=1

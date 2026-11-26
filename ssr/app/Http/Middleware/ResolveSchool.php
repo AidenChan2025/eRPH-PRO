@@ -6,6 +6,7 @@ use App\Models\School;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
+use App\Services\SsrCache;
 
 class ResolveSchool
 {
@@ -26,7 +27,7 @@ class ResolveSchool
 
         $tenantId = $request->attributes->get('tenant_school_id');
         $school = is_int($tenantId)
-            ? School::query()->whereKey($tenantId)->where('is_active', true)->first()
+            ? SsrCache::remember('ssr:school:'.SsrCache::version('school-hosts').':'.$tenantId, static fn () => School::query()->whereKey($tenantId)->where('is_active', true)->first())
             : null;
 
         if (!$school) {

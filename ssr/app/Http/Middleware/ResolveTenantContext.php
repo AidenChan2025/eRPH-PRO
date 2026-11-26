@@ -6,6 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Symfony\Component\HttpFoundation\Response;
+use App\Services\SsrCache;
 
 class ResolveTenantContext
 {
@@ -19,10 +20,11 @@ class ResolveTenantContext
         if (str_ends_with($host, $suffix)) {
             $subdomain = substr($host, 0, -strlen($suffix));
             if ($subdomain !== '' && ! str_contains($subdomain, '.') && $subdomain !== 'support') {
-                $schoolId = DB::table('schools')
+                $version = SsrCache::version('school-hosts');
+                $schoolId = SsrCache::remember("ssr:host:{$version}:{$subdomain}", static fn () => DB::table('schools')
                     ->where('subdomain', $subdomain)
                     ->where('is_active', true)
-                    ->value('id');
+                    ->value('id'));
             }
         }
 

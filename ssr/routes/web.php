@@ -39,9 +39,10 @@ Route::get('/css/erph-design-system.css', fn () => response()->file(resource_pat
     'Content-Type' => 'text/css; charset=UTF-8',
     'Cache-Control' => 'public, max-age=86400',
 ]))->name('design-system.css');
-Route::view('/features', 'public.features')->name('public.features');
-Route::view('/about', 'public.about')->name('public.about');
-Route::view('/faq', 'public.faq')->name('public.faq');
+$publicPage = static fn (string $view) => response()->view($view)->header('Cache-Control', 'public, max-age=30, s-maxage=30, stale-while-revalidate=30');
+Route::get('/features', fn () => $publicPage('public.features'))->name('public.features');
+Route::get('/about', fn () => $publicPage('public.about'))->name('public.about');
+Route::get('/faq', fn () => $publicPage('public.faq'))->name('public.faq');
 Route::middleware('platform.host')->group(function () {
     Route::get('/owner/login', [GoogleAuthController::class, 'showOwner'])->name('owner.login');
     Route::get('/owner/auth/google/redirect', [GoogleAuthController::class, 'redirectOwner'])->name('owner.auth.google.redirect');
