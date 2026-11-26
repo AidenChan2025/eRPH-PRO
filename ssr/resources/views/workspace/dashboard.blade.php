@@ -5,14 +5,14 @@
     <title>Workspace · {{ $school->name }}</title>
     <link rel="stylesheet" href="{{ asset('css/erph-design-system.css') }}">
     <style>
-        :root{--ink:#172033;--muted:#687386;--blue:#2563eb;--line:#e5eaf2;--canvas:#f7f9fc;--surface:#fff;--orange:#f97316}
+        :root{--ink:#191c1d;--muted:#454652;--blue:#24389c;--line:#c5c5d4;--canvas:#f8f9fa;--surface:#fff;--orange:#8f4700}
         *{box-sizing:border-box}body{margin:0;color:var(--ink);background:var(--canvas);font:15px Arial,sans-serif}
-        .top{height:72px;display:flex;align-items:center;justify-content:space-between;padding:0 34px;background:#fff;border-bottom:1px solid var(--line)}
+        .top{height:72px;display:flex;align-items:center;justify-content:space-between;padding:0 34px;background:#fff;border-bottom:1px solid var(--line);font-family:Inter,Arial,sans-serif}
         .brand{display:flex;align-items:center;gap:11px;font-weight:800}.mark{display:grid;place-items:center;width:36px;height:36px;border-radius:11px;color:#fff;background:var(--blue)}.user{color:var(--muted);font-size:13px}
         .layout{display:grid;grid-template-columns:230px 1fr;min-height:calc(100vh - 72px)}aside{padding:28px 18px;background:#fff;border-right:1px solid var(--line)}
         .nav{display:block;padding:11px 13px;margin:4px 0;border-radius:9px;color:var(--muted);text-decoration:none;font-weight:600}.nav.active,.nav:hover{color:var(--blue);background:#eef4ff}
         .main{max-width:1180px;width:100%;padding:44px 42px}.eyebrow{color:var(--blue);font-size:11px;font-weight:700;letter-spacing:.13em;text-transform:uppercase}
-        .heading{display:flex;align-items:end;justify-content:space-between;gap:20px;margin-bottom:32px}.heading h1{margin:8px 0 0;font:800 36px/1.1 Arial,sans-serif;letter-spacing:-.055em}.heading p{margin:8px 0 0;color:var(--muted)}
+        .heading{display:flex;align-items:end;justify-content:space-between;gap:20px;margin-bottom:32px}.heading h1{margin:8px 0 0;font:800 36px/1.1 Manrope,Arial,sans-serif;letter-spacing:-.055em}.heading p{margin:8px 0 0;color:var(--muted)}
         .button{display:inline-flex;align-items:center;min-height:42px;padding:0 16px;border-radius:10px;background:var(--blue);color:#fff;text-decoration:none;font-weight:700}
         .stats{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}.stat,.panel{padding:20px;border:1px solid var(--line);border-radius:16px;background:var(--surface);box-shadow:0 10px 28px #1e315308}.stat span{color:var(--muted);font-size:12px}.stat strong{display:block;margin-top:9px;font-size:28px;letter-spacing:-.06em}.stat.orange{border-top:3px solid var(--orange)}
         .grid{display:grid;grid-template-columns:1.1fr .9fr;gap:18px;margin-top:18px}.panel h2{margin:0;font-size:20px;letter-spacing:-.04em}.panel p{color:var(--muted);line-height:1.6}
