@@ -150,6 +150,13 @@ Route::middleware('school')->group(function () {
         Route::put('/rph/{lessonPlan}', [LessonPlanController::class, 'update'])->name('rph.update');
         Route::post('/rph/{lessonPlan}/submit', [LessonPlanController::class, 'submit'])->name('rph.submit');
     });
+    Route::middleware(['auth', 'school.member:school_admin,principal,vice_principal', 'permission:school.users.manage'])->prefix('/admin/student-affairs')->group(function () {
+        Route::get('/', [\App\Http\Controllers\StudentAffairsController::class, 'index'])->name('school.student-affairs');
+        Route::post('/students', [\App\Http\Controllers\StudentAffairsController::class, 'student'])->name('school.student-affairs.students.store');
+        Route::post('/attendance', [\App\Http\Controllers\StudentAffairsController::class, 'attendance'])->name('school.student-affairs.attendance.store');
+        Route::post('/discipline', [\App\Http\Controllers\StudentAffairsController::class, 'discipline'])->name('school.student-affairs.discipline.store');
+        Route::post('/pbd', [\App\Http\Controllers\StudentAffairsController::class, 'pbd'])->name('school.student-affairs.pbd.store');
+    });
     Route::middleware(['auth', 'school.member', \App\Http\Middleware\PreventSensitiveResponseCaching::class])->get('/rph/{lessonPlan}/print', [LessonPlanController::class, 'print'])->name('rph.print');
     Route::middleware(['auth', 'school.member:school_admin,principal,vice_principal', 'permission:reports.view'])->get('/reports', SchoolReportController::class)->name('school.reports');
     Route::middleware(['auth', 'school.member:school_admin,principal,vice_principal', 'permission:reports.view', \App\Http\Middleware\PreventSensitiveResponseCaching::class])->get('/reports/export', [SchoolReportController::class, 'export'])->name('school.reports.export');

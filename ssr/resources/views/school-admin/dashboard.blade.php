@@ -28,7 +28,7 @@
 <body>
 <header class="top"><div class="brand"><span class="mark" aria-hidden="true">✦</span><span>eRPH Pro</span></div><span>{{ $school->name }} · School administration</span></header>
 <main class="main">
-    <div class="heading"><div><span class="eyebrow">{{ $school->subdomain }} / administration</span><h1>School people</h1><p>Manage the people and official records belonging to this school.</p></div></div>
+    <div class="heading"><div><span class="eyebrow">{{ $school->subdomain }} / administration</span><h1>School people</h1><p>Manage the people and official records belonging to this school.</p></div><p><a class="pill" href="{{ route('school.student-affairs') }}">Student Affairs &amp; PBD</a> <a class="pill" href="{{ route('school.billing') }}">Billing</a></p></div>
     @if(session('status'))<div class="success">{{ session('status') }}</div>@endif
     @if($errors->any())<div class="error">{{ $errors->first() }}</div>@endif
     <section class="card"><h2>Add school account</h2><p class="subtext">Use the school Google Workspace email. The person will be linked when they sign in.</p>

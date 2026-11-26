@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\School;
 use App\Models\SchoolSubscription;
+use App\Models\SchoolInvoice;
 use App\Services\StripeBillingService;
 use App\Services\DemoSandboxService;
 use Illuminate\Http\RedirectResponse;
@@ -22,6 +23,7 @@ class SchoolBillingController extends Controller
         return view('school.billing', [
             'school' => $school,
             'subscription' => $subscription,
+            'invoices' => SchoolInvoice::where('school_id', $school->id)->latest('issued_on')->get(),
             'stripeConfigured' => $stripe->isConfigured(),
         ]);
     }

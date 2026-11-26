@@ -15,6 +15,7 @@
 <body>
 <main class="shell">
     <div class="heading"><span class="eyebrow">School workspace</span><h1>{{ $school->name }} — Subscription &amp; Billing</h1><p>Manage the plan attached to this school workspace.</p></div>
+    <section class="card"><h2>Invoices</h2><div class="table-wrap"><table><thead><tr><th>Invoice</th><th>Issued</th><th>Due</th><th>Status</th><th>Total</th></tr></thead><tbody>@forelse($invoices as $invoice)<tr><td>{{ $invoice->invoice_number }}</td><td>{{ $invoice->issued_on->format('d M Y') }}</td><td>{{ $invoice->due_on?->format('d M Y') ?: '—' }}</td><td>{{ ucfirst($invoice->status) }}</td><td>{{ $invoice->currency }} {{ number_format($invoice->amount_minor / 100, 2) }}</td></tr>@empty<tr><td colspan="5">No invoices yet.</td></tr>@endforelse</tbody></table></div></section>
     <section class="panel">
     @if(request('checkout') === 'success')
         <p class="notice" role="status">Stripe checkout completed. Your subscription will activate after Stripe confirms the billing period.</p>
