@@ -8,7 +8,7 @@
 @if(in_array('platform.team.manage', $permissions, true)) <a href="{{ route('owner.team.index') }}">Team</a> @endif
 @if(in_array('platform.runtime.view', $permissions, true)) <a href="{{ route('owner.runtime') }}">Runtime</a> @endif
 @if(in_array('platform.audit.view', $permissions, true)) <a href="{{ route('owner.audit') }}">Audit</a> @endif
-@if(in_array('platform.settings.manage', $permissions, true)) <a href="{{ route('owner.settings') }}">Settings</a> @endif
+{{-- Modules outside the Gate 3 usable set are deliberately not rendered. --}}
 <form method="post" action="{{ route('owner.logout') }}">@csrf<button type="submit">Sign out</button></form>
 </nav></header>
 <main>

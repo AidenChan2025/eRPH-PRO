@@ -35,11 +35,16 @@ class OwnerSchoolController extends Controller
     public function store(Request $request, AuditLogger $auditLogger)
     {
         $data = $this->validated($request);
-        $school = DB::transaction(function () use ($data, $auditLogger): School {
+        $school = DB::transaction(function () use ($data, $auditLogger, $request): School {
+            $key = $request->header('Idempotency-Key');
+            if ($key && ($existing = School::where('workspace_domain', 'idempotency:'.$key)->first())) {
+                return $existing;
+            }
             $school = School::create([
                 ...$data,
                 'slug' => Str::slug($data['name']),
                 'is_active' => true,
+                'workspace_domain' => $key ? 'idempotency:'.$key : ($data['workspace_domain'] ?? null),
             ]);
             $auditLogger->record('platform.school_created', null, School::class, (string) $school->id, [
                 'subdomain' => $school->subdomain,
@@ -116,7 +121,7 @@ class OwnerSchoolController extends Controller
             'role' => ['required', 'in:school_admin,principal,vice_principal,teacher'],
         ]);
 
-        $invitation = DB::transaction(function () use ($data, $school, $auditLogger): array {
+        $invitation = DB::transaction(function () use ($data, $school, $auditLogger, $request): array {
             $lockedSchool = School::query()->whereKey($school->id)->lockForUpdate()->firstOrFail();
             abort_unless($lockedSchool->is_active, 422, 'Inactive schools cannot receive invitations.');
 
@@ -130,6 +135,9 @@ class OwnerSchoolController extends Controller
             }
 
             $membership = DB::table('school_memberships')->where('school_id', $lockedSchool->id)->where('user_id', $user->id)->lockForUpdate()->first();
+            if ($request->header('Idempotency-Key') && $membership && $membership->status === 'pending' && $membership->role === $data['role']) {
+                return ['user' => $user, 'school' => $lockedSchool, 'role' => $membership->role, 'idempotent' => true];
+            }
             if ($membership && in_array($membership->status, ['active', 'pending'], true)) {
                 throw \Illuminate\Validation\ValidationException::withMessages(['email' => 'This account already has an active or pending school membership.']);
             }
@@ -142,8 +150,12 @@ class OwnerSchoolController extends Controller
             }
             $auditLogger->record('platform.school_admin_invited', $lockedSchool, User::class, (string) $user->id, ['email' => $email, 'role' => $data['role'], 'status' => 'pending']);
 
-            return ['user' => $user, 'school' => $lockedSchool, 'role' => $data['role']];
+            return ['user' => $user, 'school' => $lockedSchool, 'role' => $data['role'], 'idempotent' => false];
         });
+
+        if ($invitation['idempotent']) {
+            return redirect()->route('owner.schools.index')->with('status', 'Invitation already recorded.');
+        }
 
         $emailStatus = 'email notification sent';
         try {

@@ -1,0 +1,6 @@
+<?php
+namespace Tests\Feature;
+use App\Models\LessonPlan; use App\Models\School; use App\Models\TeacherProfile; use App\Models\User; use App\Services\RphStateMachine; use Illuminate\Foundation\Testing\RefreshDatabase; use Tests\TestCase;
+class RphStateMachineTest extends TestCase { use RefreshDatabase;
+ public function test_weekly_state_distinguishes_partial_return_and_all_return(): void { $this->seed(); $school=School::where('subdomain','demo')->first(); $teacher=User::factory()->create(); $school->members()->attach($teacher->id,['role'=>'teacher','status'=>'active']); $profile=TeacherProfile::create(['school_id'=>$school->id,'user_id'=>$teacher->id]); foreach(['returned','submitted'] as $i=>$status){$p=LessonPlan::create(['school_id'=>$school->id,'teacher_profile_id'=>$profile->id,'lesson_date'=>'2026-11-26','subject'=>'BM','class_name'=>'5A','status'=>$status,'current_version'=>1]);$p->versions()->create(['version'=>1,'created_by'=>$teacher->id,'content'=>['week_no'=>48]]);} $this->assertSame('partially_returned',(new RphStateMachine)->weekly($p)); LessonPlan::withoutGlobalScopes()->where('status','submitted')->update(['status'=>'returned']); $this->assertSame('returned',(new RphStateMachine)->weekly($p)); }
+}

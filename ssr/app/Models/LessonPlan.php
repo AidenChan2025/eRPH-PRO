@@ -25,4 +25,9 @@ class LessonPlan extends Model
     {
         return $this->belongsTo(TeacherClassAssignment::class);
     }
+
+    public function teacherProfile(): BelongsTo
+    {
+        return $this->belongsTo(TeacherProfile::class);
+    }
 }

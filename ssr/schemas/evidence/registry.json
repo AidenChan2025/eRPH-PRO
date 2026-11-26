@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Development 1 evidence registry",
+  "type": "object",
+  "required": ["plan_revision", "current_gate", "entries"],
+  "properties": {
+    "plan_revision": {"const": 8},
+    "current_gate": {"enum": ["gate0", "gate1", "gate2", "gate3", "gate4", "gate5"]},
+  "entries": {"type": "array", "minItems": 1, "items": {"type": "object", "required": ["path_pattern", "format", "owner", "candidate_binding"], "additionalProperties": true}}
+  },
+  "additionalProperties": false
+}

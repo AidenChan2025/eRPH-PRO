@@ -1,0 +1,58 @@
+{
+    "candidate_sha": "bebac247406f54e081f16823fc704fe7aa869794",
+    "generated_at": "2026-11-26T11:34:42+00:00",
+    "counts": {
+        "imported": 4,
+        "refreshed": 0,
+        "skipped": 1,
+        "rejected": 1
+    },
+    "files": [
+        {
+            "status": "imported",
+            "reason": "valid rows persisted",
+            "rows": 1,
+            "rejected_rows": 0,
+            "file": "Prasekolah.csv",
+            "type": "Prasekolah"
+        },
+        {
+            "status": "imported",
+            "reason": "valid rows persisted",
+            "rows": 1,
+            "rejected_rows": 0,
+            "file": "SK.csv",
+            "type": "SK"
+        },
+        {
+            "status": "imported",
+            "reason": "valid rows persisted",
+            "rows": 1,
+            "rejected_rows": 0,
+            "file": "SMK.csv",
+            "type": "SK"
+        },
+        {
+            "status": "imported",
+            "reason": "valid rows persisted",
+            "rows": 1,
+            "rejected_rows": 0,
+            "file": "Tingkatan6.csv",
+            "type": "Tingkatan6"
+        },
+        {
+            "status": "rejected",
+            "reason": "all data rows rejected",
+            "rows": 1,
+            "rejected_rows": 1,
+            "file": "malformed.csv",
+            "type": "SK"
+        },
+        {
+            "status": "skipped",
+            "reason": "non-DSKP CSV: required canonical header layout not recognised",
+            "file": "not-dskp.csv",
+            "type": "SK"
+        }
+    ]
+}

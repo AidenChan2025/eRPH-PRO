@@ -3,6 +3,8 @@
 namespace Tests\Feature;
 
 use App\Models\LessonPlan;
+use App\Models\LessonPlanReview;
+use App\Models\TeacherEmploymentHistory;
 use App\Models\School;
 use App\Models\TeacherProfile;
 use App\Models\User;
@@ -72,6 +74,40 @@ class RphWorkflowAndExportTest extends TestCase
         $this->actingAs($teacher)->get("http://{$school->subdomain}.erphpro.com/rph/{$plan->id}/print")
             ->assertOk();
         $this->assertSame(1, $plan->fresh()->current_version);
+    }
+
+    public function test_teacher_transfer_is_transactional_and_isolates_original_school_drafts_and_comments(): void
+    {
+        $this->seed();
+        [$school, $teacher, $plan] = $this->planFixture('returned');
+        LessonPlanReview::create(['school_id' => $school->id, 'lesson_plan_id' => $plan->id, 'reviewer_id' => User::where('email', 'demo@erphpro.com')->value('id'), 'decision' => 'returned', 'comment' => 'PRIVATE ORIGINAL SCHOOL COMMENT']);
+        $target = School::create(['name' => 'Target School', 'slug' => 'target-school', 'subdomain' => 'target-school', 'is_active' => true]);
+        $admin = User::where('email', 'demo@erphpro.com')->firstOrFail();
+
+        $this->actingAs($admin)->put("http://{$school->subdomain}.erphpro.com/admin/teachers/{$plan->teacher_profile_id}/transfer", [
+            'target_school_id' => $target->id, 'effective_date' => '2026-11-26',
+        ])->assertRedirect()->assertSessionHas('status');
+
+        $this->assertSame('2026-11-26', $plan->teacherProfile()->withoutGlobalScopes()->firstOrFail()->fresh()->left_school_on->toDateString());
+        $this->assertDatabaseHas('teacher_profiles', ['school_id' => $target->id, 'user_id' => $teacher->id, 'employment_status' => 'active']);
+        $this->assertSame('2026-11-26', TeacherEmploymentHistory::query()->where('school_id', $school->id)->where('user_id', $teacher->id)->firstOrFail()->ended_on->toDateString());
+
+        $this->actingAs($teacher)->get("http://{$school->subdomain}.erphpro.com/rph/{$plan->id}/print")->assertForbidden();
+        $export = $this->withSession(['auth.host_binding' => "{$target->subdomain}.erphpro.com"])->actingAs($teacher)->get("http://{$target->subdomain}.erphpro.com/teacher/rph/export")->assertOk();
+        $this->assertStringNotContainsString('PRIVATE ORIGINAL SCHOOL COMMENT', $export->streamedContent());
+        $this->assertStringNotContainsString('returned', $export->streamedContent());
+    }
+
+    public function test_archived_rph_is_read_only_and_exportable_without_review_comments(): void
+    {
+        $this->seed();
+        [$school, $teacher, $plan] = $this->planFixture('archived');
+        LessonPlanReview::create(['school_id' => $school->id, 'lesson_plan_id' => $plan->id, 'reviewer_id' => User::where('email', 'demo@erphpro.com')->value('id'), 'decision' => 'approved', 'comment' => 'INTERNAL REVIEW COMMENT']);
+        $this->actingAs($teacher)->get("http://{$school->subdomain}.erphpro.com/rph/{$plan->id}/edit")->assertStatus(422);
+        $this->actingAs($teacher)->put("http://{$school->subdomain}.erphpro.com/rph/{$plan->id}", ['lesson_date' => '2026-11-25', 'subject' => 'BM', 'class_name' => '5 Bestari', 'title' => 'Nope'])->assertStatus(422);
+        $export = $this->actingAs($teacher)->get("http://{$school->subdomain}.erphpro.com/teacher/rph/export")->assertOk();
+        $this->assertStringContainsString('archived', $export->streamedContent());
+        $this->assertStringNotContainsString('INTERNAL REVIEW COMMENT', $export->streamedContent());
     }
 
     private function planFixture(string $status = 'draft'): array

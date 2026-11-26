@@ -1,0 +1,7 @@
+{
+  "candidate_sha": "bebac247406f54e081f16823fc704fe7aa869794",
+  "implemented_modules": ["overview", "schools", "platform_team", "account_assignment", "security_audit", "runtime_health"],
+  "hidden_modules": ["settings", "support", "billing", "content"],
+  "conditions": {"platform_role": "required", "permission": "required", "mfa": "required when configured", "school_membership": "not required"},
+  "tests": ["PlatformControlPlaneTest", "PlatformModuleUnlockTest"]
+}

@@ -1,0 +1,10 @@
+{
+  "candidate_sha": "bebac247406f54e081f16823fc704fe7aa869794",
+  "controls": [
+    {"stride":"Spoofing","threat":"OAuth state replay","test":"OAuthStateReplayTest","assertion":"second consume returns null"},
+    {"stride":"Elevation of privilege","threat":"platform access without MFA","test":"MfaRecoveryTest","assertion":"MFA required configuration gates workspace"},
+    {"stride":"Tampering","threat":"cross-host session/CSRF reuse","test":"PlatformSessionIsolationTest,CsrfScopeTest","assertion":"distinct host-scoped cookies"},
+    {"stride":"Information disclosure","threat":"unknown role access","test":"PermissionDenialMatrixTest","assertion":"unknown role maps to empty permissions"},
+    {"stride":"Repudiation","threat":"sensitive action audit","test":"existing AuditLogger coverage","assertion":"audit_logs records actor and school context"}
+  ]
+}

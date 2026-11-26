@@ -25,6 +25,7 @@ use App\Http\Controllers\SupportTicketController;
 use App\Http\Controllers\SchoolSupportAccessController;
 use App\Http\Controllers\SchoolAcademicDataController;
 use App\Http\Controllers\SchoolInspectorController;
+use App\Http\Controllers\TeacherTransferController;
 use App\Http\Controllers\DskpController;
 use App\Http\Controllers\LocaleController;
 use App\Http\Controllers\OwnerDskpController;
@@ -130,6 +131,7 @@ Route::middleware('school')->group(function () {
     Route::middleware(['auth', 'school.member'])->group(function () {
         Route::get('/workspace', WorkspaceController::class)->name('workspace.dashboard');
         Route::get('/workspace/maklumat-am', [WorkspaceController::class, 'maklumatAm'])->name('workspace.maklumat-am');
+        Route::get('/teacher/rph/export', [TeacherTransferController::class, 'export'])->name('teacher.rph.export');
     });
     Route::middleware(['auth'])->post('/logout', [GoogleAuthController::class, 'logout'])->name('logout');
     Route::middleware(['auth', 'school.member'])->group(function () {
@@ -165,6 +167,7 @@ Route::middleware('school')->group(function () {
         Route::post('/admin/teacher-assignments', [SchoolAcademicDataController::class, 'storeAssignment'])->name('school.teacher-assignments.store');
         Route::post('/admin/teacher-assignments/{assignment}/remove', [SchoolAcademicDataController::class, 'removeAssignment'])->name('school.teacher-assignments.remove');
         Route::put('/admin/teacher-assignments/{assignment}/transfer', [SchoolAcademicDataController::class, 'transferAssignment'])->name('school.teacher-assignments.transfer');
+        Route::put('/admin/teachers/{teacherProfile}/transfer', [TeacherTransferController::class, 'transfer'])->name('school.teachers.transfer');
         Route::post('/admin/people', [SchoolAdminController::class, 'store'])->name('school.admin.people.store');
         Route::put('/admin/people/{user}', [SchoolAdminController::class, 'updateMember'])->name('school.admin.people.update');
         Route::get('/admin/access', [SchoolAdminController::class, 'access'])->name('school.admin.access');
@@ -180,6 +183,7 @@ Route::middleware('school')->group(function () {
     Route::middleware(['auth', 'school.member:school_admin,principal,vice_principal', 'permission:lesson_plans.review'])->group(function () {
         Route::get('/admin/rph/{lessonPlan}/review', [LessonPlanReviewController::class, 'show'])->name('rph.review');
         Route::post('/admin/rph/{lessonPlan}/review', [LessonPlanReviewController::class, 'decide'])->name('rph.review.decide');
+    Route::post('/admin/rph/{lessonPlan}/archive', [LessonPlanReviewController::class, 'archive'])->name('rph.review.archive');
     });
     Route::middleware(['auth', 'school.member:school_admin,principal,vice_principal,inspector', 'permission:reports.view'])->get('/school-admin/inspector-view', SchoolInspectorController::class)->name('school.inspector-view');
     Route::get('/', SchoolHomeController::class)->name('school.home');

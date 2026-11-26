@@ -32,7 +32,7 @@ class LessonPlanController extends Controller
         $school = $request->attributes->get('school');
         $profile = TeacherProfile::where('school_id', $school->id)->where('user_id', $request->user()->id)->firstOrFail();
         abort_unless($lessonPlan->school_id === $school->id && $lessonPlan->teacher_profile_id === $profile->id, 403);
-        abort_if($lessonPlan->status === 'approved', 422, 'Approved lesson plans cannot be edited.');
+        abort_if(in_array($lessonPlan->status, ['approved', 'archived'], true), 422, 'Approved and archived lesson plans are read-only.');
         $version = $lessonPlan->versions()->latest('version')->firstOrFail();
         $assignments = TeacherClassAssignment::query()->with(['schoolClass', 'academicYear'])->where('teacher_profile_id', $profile->id)->where('is_active', true)->orderBy('subject')->get();
 
@@ -140,7 +140,7 @@ class LessonPlanController extends Controller
         abort_unless($lessonPlan->school_id === $school->id, 404);
         $profile = TeacherProfile::where('school_id', $school->id)->where('user_id', $request->user()->id)->firstOrFail();
         abort_unless($lessonPlan->teacher_profile_id === $profile->id, 403);
-        abort_if($lessonPlan->status === 'approved', 422, 'Approved RPH cannot be resubmitted.');
+        abort_if(in_array($lessonPlan->status, ['approved', 'archived'], true), 422, 'Approved and archived RPH cannot be resubmitted.');
 
         $settings = SchoolSetting::firstOrCreate(['school_id' => $school->id]);
         $deadline = $settings->active_week_deadline;
@@ -162,7 +162,7 @@ class LessonPlanController extends Controller
         $school = $request->attributes->get('school');
         $profile = TeacherProfile::where('school_id', $school->id)->where('user_id', $request->user()->id)->firstOrFail();
         abort_unless($lessonPlan->school_id === $school->id && $lessonPlan->teacher_profile_id === $profile->id, 403);
-        abort_if($lessonPlan->status === 'approved', 422, 'Approved lesson plans cannot be edited.');
+        abort_if(in_array($lessonPlan->status, ['approved', 'archived'], true), 422, 'Approved and archived lesson plans are read-only.');
         $data = $request->validate([
             'lesson_date' => ['required', 'date'], 'week_no' => ['nullable', 'integer', 'min:1', 'max:53'], 'slot_id' => ['nullable', 'integer'], 'subject' => ['required_without:assignment_id', 'string', 'max:120'],
             'assignment_id' => ['nullable', 'integer'],

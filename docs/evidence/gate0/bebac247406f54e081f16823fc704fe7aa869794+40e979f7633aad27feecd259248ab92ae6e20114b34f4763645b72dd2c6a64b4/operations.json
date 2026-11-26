@@ -1,0 +1,1 @@
+[{"name":"read","enumeration":["view","list","export"]},{"name":"write","enumeration":["create","update","submit","approve","archive"]},{"name":"operate","enumeration":["invite","suspend","restore","grant_access","recover"]}]

@@ -1,0 +1,1 @@
+[{"name":"school tenant","enumeration":["profile","lesson_plan","teacher_record","export"]},{"name":"platform control plane","enumeration":["school","platform_team","account_assignment","audit","runtime_health"]},{"name":"support","enumeration":["article","ticket","access_grant"]},{"name":"runtime","enumeration":["health","queue","cron","backup"]}]

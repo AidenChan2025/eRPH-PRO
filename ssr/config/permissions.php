@@ -1,6 +1,14 @@
 <?php
 
 return [
+    'platform_modules' => [
+        'overview' => ['platform.dashboard.view'],
+        'schools' => ['platform.schools.view'],
+        'platform_team' => ['platform.team.manage'],
+        'account_assignment' => ['platform.accounts.manage'],
+        'security_audit' => ['platform.audit.view'],
+        'runtime_health' => ['platform.runtime.view'],
+    ],
     'platform_roles' => [
         'owner' => [
             'platform.dashboard.view',

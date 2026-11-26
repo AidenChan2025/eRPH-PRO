@@ -1,0 +1,1 @@
+{"$schema":"https://json-schema.org/draft/2020-12/schema","type":"object","required":["rto_hours","rpo_hours","approving_role"],"properties":{"rto_hours":{"const":4},"rpo_hours":{"const":24}}}

@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\DB;
 use RuntimeException;
 final class ImportKpmCsvCommand extends Command
 {
-    protected $signature = 'dskp:import-kpm {--dir= : Directory containing KPM CSV files} {--file= : A single KPM DSKP CSV file} {--type= : Prasekolah|SK|SMK|Tingkatan6|KAFA}';
+    protected $signature = 'dskp:import-kpm {--dir= : Directory containing KPM CSV files} {--file= : A single KPM DSKP CSV file} {--type= : Prasekolah|SK|SMK|Tingkatan6|KAFA} {--report= : JSON report destination}';
     protected $description = 'Stream and idempotently import official KPM DSKP/DPK CSV files';
     private const CHUNK_SIZE = 500;
     private const PRA_HEADERS = ['BIDANG PEMBELAJARAN', 'BIDANG', 'KEMAHIRAN', 'SP', 'SUBP'];
@@ -18,10 +18,11 @@ final class ImportKpmCsvCommand extends Command
         if ($this->option('file') && $this->option('dir')) { $this->error('Pass either --file or --dir, not both.'); return self::FAILURE; }
         try { $files = $this->files(); } catch (RuntimeException $e) { $this->error($e->getMessage()); return self::FAILURE; }
         if ($files === []) { $this->error('No KPM DSKP/DPK CSV files found.'); return self::FAILURE; }
-        $counts = [];
-        foreach ($files as $file) { try { $count = $this->importFile($file, $this->typeFor($file)); } catch (RuntimeException $e) { $this->error($e->getMessage()); return self::FAILURE; } if ($count !== null) { $type = $this->typeFor($file); $counts[$type] = ($counts[$type] ?? 0) + $count; } }
-        $this->info('Imported or refreshed '.array_sum($counts).' KPM curriculum rows.');
-        foreach ($counts as $type => $count) $this->line(sprintf('%-14s %d', $type, $count));
+        $counts = ['imported'=>0, 'refreshed'=>0, 'skipped'=>0, 'rejected'=>0]; $report = [];
+        foreach ($files as $file) { try { $result = $this->importFile($file, $this->typeFor($file)); } catch (RuntimeException $e) { $this->error($e->getMessage()); return self::FAILURE; } $counts[$result['status']]++; $report[] = $result + ['file'=>basename($file), 'type'=>$this->typeFor($file)]; if ($result['status'] === 'skipped') $this->warn('Skipping non-DSKP CSV '.$file.': '.$result['reason']); if ($result['status'] === 'rejected') $this->error('Rejecting '.$file.': '.$result['reason']); }
+        $destination = $this->option('report');
+        if ($destination) { $parent = dirname($destination); if (! is_dir($parent)) mkdir($parent, 0775, true); file_put_contents($destination, json_encode(['generated_at'=>now()->toIso8601String(), 'counts'=>$counts, 'files'=>$report], JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES|JSON_THROW_ON_ERROR).PHP_EOL); }
+        $this->info('KPM import: '.json_encode($counts));
         return self::SUCCESS;
     }
     private function files(): array
@@ -35,12 +36,29 @@ final class ImportKpmCsvCommand extends Command
         $requested = $this->option('type'); if ($requested && in_array($requested, ['Prasekolah', 'SK', 'SMK', 'Tingkatan6', 'KAFA'], true)) return $requested;
         $name = strtolower(basename($file)); return str_contains($name, 'pra') ? 'Prasekolah' : (str_contains($name, 'ting6') || str_contains($name, 'tingkatan6') ? 'Tingkatan6' : (str_contains($name, 'kafa') ? 'KAFA' : (preg_match('/(^|[^a-z])sm([^a-z]|$)/', $name) ? 'SMK' : 'SK')));
     }
-    private function importFile(string $file, string $type): ?int
+    private function importFile(string $file, string $type): array
     {
         $handle = fopen($file, 'rb'); if ($handle === false) throw new RuntimeException("Unable to open CSV: {$file}");
-        try { $header = fgetcsv($handle, 0, ',', '"', ''); if (! is_array($header)) throw new RuntimeException("CSV has no header: {$file}"); $header = array_map(static fn ($v): string => strtoupper(trim(ltrim((string) $v, "\xEF\xBB\xBF"))), $header); if ($header !== self::PRA_HEADERS && $header !== self::DSKP_HEADERS) { $this->warn("Skipping non-DSKP CSV: {$file} (header does not match official 5- or 17-column layout)"); return null; }
-            $chunk = []; $count = 0; while (($row = fgetcsv($handle, 0, ',', '"', '')) !== false) { if (($record = $this->record($header, $row, $type)) !== null) $chunk[$record['code']] = $record; if (count($chunk) >= self::CHUNK_SIZE) { $this->persist(array_values($chunk)); $count += count($chunk); $chunk = []; } } if ($chunk !== []) { $this->persist(array_values($chunk)); $count += count($chunk); } return $count;
+        try { $header = fgetcsv($handle, 0, ',', '"', ''); if (! is_array($header)) return ['status'=>'rejected','reason'=>'missing header']; $header = array_map(fn ($v): string => $this->normalizeHeader((string) $v), $header); if (count($header) !== count(array_unique($header)) || in_array('', $header, true) && $header !== self::DSKP_HEADERS) return ['status'=>'rejected','reason'=>'duplicate or blank canonical header']; if ($header !== self::PRA_HEADERS && $header !== self::DSKP_HEADERS) return ['status'=>'skipped','reason'=>'non-DSKP CSV: required canonical header layout not recognised'];
+            $chunk = []; $seen = 0; $rejectedRows = 0; $inserted = 0; $refreshed = 0; while (($row = fgetcsv($handle, 0, ',', '"', '')) !== false) { $seen++; if (count($row) !== count($header)) { $rejectedRows++; continue; } if (($record = $this->record($header, $row, $type)) !== null) $chunk[$record['code']] = $record; else $rejectedRows++; if (count($chunk) >= self::CHUNK_SIZE) { [$i, $u] = $this->persist(array_values($chunk)); $inserted += $i; $refreshed += $u; $chunk = []; } } if ($chunk !== []) { [$i, $u] = $this->persist(array_values($chunk)); $inserted += $i; $refreshed += $u; } if ($seen === 0 || ($rejectedRows > 0 && $rejectedRows === $seen)) return ['status'=>'rejected','reason'=>$seen === 0 ? 'no data rows' : 'all data rows rejected','rows'=>$seen,'rejected_rows'=>$rejectedRows]; return ['status'=>$refreshed > 0 && $inserted === 0 ? 'refreshed' : ($inserted > 0 ? 'imported' : 'skipped'),'reason'=>$rejectedRows ? 'valid rows imported; invalid rows rejected' : ($inserted || $refreshed ? 'valid rows persisted' : 'no changes'),'rows'=>$seen,'rejected_rows'=>$rejectedRows];
         } finally { fclose($handle); }
+    }
+    private function normalizeHeader(string $value): string
+    {
+        $value = ltrim($value, "\xEF\xBB\xBF");
+        $value = strtoupper(trim($value));
+        $value = preg_replace('/\s+/u', ' ', $value) ?? $value;
+        $value = trim(rtrim($value, '.:;'));
+
+        $value = preg_replace('/[\x{00A0}\x{200B}]+/u', ' ', $value) ?? $value;
+        return match ($value) {
+            'SUBJEK' => 'SUBJEK',
+            'TINGKATAN', 'TAHUN', 'YEAR', 'YEAR LEVEL' => 'TAHUN',
+            'TSIVIK' => 'TSIVIK:',
+            'SOSIOEMOSI' => 'SOSIOEMOSI:',
+            'TINDAKAN' => 'TINDAKAN:',
+            default => $value,
+        };
     }
     private function clean(?string $value): ?string { $value = trim((string) $value); return $value === '' || in_array(strtoupper($value), self::PLACEHOLDERS, true) ? null : $value; }
     private function record(array $header, array|false $row, string $type): ?array
@@ -50,8 +68,8 @@ final class ImportKpmCsvCommand extends Command
         if (array_filter($fields, static fn ($v): bool => $v !== null) === []) return null; $canonical = implode('|', [$type, ...array_map(static fn ($v): string => (string) $v, $fields)]); $year = $this->clean($map['TAHUN'] ?? ($map['TINGKATAN'] ?? null)); $title = $fields['title'] ?: ($fields['sp'] ?: 'Kurikulum KPM');
         return ['school_id'=>null, 'code'=>'KPM-'.$type.'-'.substr(sha1($canonical), 0, 12), 'subject'=>$fields['subject'] ?: 'Umum', 'year_level'=>$year, 'curriculum_version'=>'KPM e-RPH 2026', 'school_type'=>$type, 'grade_level'=>$year, 'sk_code'=>$fields['sk'], 'sp_code'=>$fields['sp'], 'title'=>$title, 'description'=>$fields['objective'], 'content'=>$fields['activity'] ?? null, 'metadata'=>['tema'=>$this->clean($map['TEMA/BIDANG/TERAS'] ?? ($map['BIDANG'] ?? null)), 'tajuk'=>$title, 'objektif'=>$fields['objective'], 'aktiviti'=>$fields['activity'] ?? null, 'sivik'=>$this->clean($map['TSIVIK:'] ?? ($map['TSIVIK'] ?? null)), 'source'=>'KPM e-RPH 2026'], 'is_active'=>true];
     }
-    private function persist(array $records): void
+    private function persist(array $records): array
     {
-        DB::transaction(function () use ($records): void { $codes = array_column($records, 'code'); $existing = CurriculumItem::withoutGlobalScopes()->whereNull('school_id')->whereIn('code', $codes)->pluck('id', 'code'); $now = now(); $inserts = []; $updates = []; foreach ($records as $record) { $record['updated_at'] = $now; $record['metadata'] = json_encode($record['metadata'], JSON_THROW_ON_ERROR); if ($existing->has($record['code'])) $updates[] = $record; else { $record['created_at'] = $now; $inserts[] = $record; } } if ($inserts !== []) DB::table('curriculum_items')->insert($inserts); foreach ($updates as $record) { $code = $record['code']; unset($record['code'], $record['created_at']); DB::table('curriculum_items')->whereNull('school_id')->where('code', $code)->update($record); } });
+        return DB::transaction(function () use ($records): array { $codes = array_column($records, 'code'); $existing = CurriculumItem::withoutGlobalScopes()->whereNull('school_id')->whereIn('code', $codes)->pluck('id', 'code'); $now = now(); $inserts = []; $updates = []; foreach ($records as $record) { $record['updated_at'] = $now; $record['metadata'] = json_encode($record['metadata'], JSON_THROW_ON_ERROR); if ($existing->has($record['code'])) $updates[] = $record; else { $record['created_at'] = $now; $inserts[] = $record; } } if ($inserts !== []) DB::table('curriculum_items')->insert($inserts); foreach ($updates as $record) { $code = $record['code']; unset($record['code'], $record['created_at']); DB::table('curriculum_items')->whereNull('school_id')->where('code', $code)->update($record); } return [count($inserts), count($updates)]; });
     }
 }

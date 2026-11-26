@@ -33,6 +33,22 @@ class KpmCsvImportTest extends TestCase
         unlink($path);
     }
 
+    public function test_tingkatan_headers_are_normalized_to_the_dskp_schema(): void
+    {
+        $path = tempnam(sys_get_temp_dir(), 'kpm-tingkatan6-');
+        file_put_contents($path, "SUBJEK .,TINGKATAN ,TEMA/BIDANG/TERAS,tema2,TAJUK/KEMAHIRAN/NILAITERAS,tajuk2,SK,SP,NTERAS,TSIVIK,OB,Pengetahuan,Sosioemosi,Tindakan,,XTVT,XTVT2\nSejarah,6,Bidang,,,,1.1,1.1.1,,,,,,,,Aktiviti,\n");
+
+        $this->artisan('dskp:import-kpm', ['--file' => $path, '--type' => 'Tingkatan6'])->assertSuccessful();
+
+        $this->assertDatabaseHas('curriculum_items', [
+            'school_id' => null,
+            'school_type' => 'Tingkatan6',
+            'subject' => 'Sejarah',
+            'year_level' => '6',
+        ]);
+        unlink($path);
+    }
+
     public function test_bom_and_placeholders_are_normalized(): void
     {
         $path = tempnam(sys_get_temp_dir(), 'kpm-bom-');

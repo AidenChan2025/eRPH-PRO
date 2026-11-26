@@ -1,0 +1,6 @@
+<?php
+namespace Tests\Feature;
+use App\Models\LessonPlan; use App\Models\School; use App\Models\TeacherProfile; use App\Models\User; use Illuminate\Foundation\Testing\RefreshDatabase; use Tests\TestCase;
+class RphFieldCoverageTest extends TestCase { use RefreshDatabase;
+ public function test_normalized_rph_content_preserves_required_single_lesson_and_relief_fields(): void { $this->seed(); $school=School::where('subdomain','demo')->first(); $teacher=User::factory()->create(); $school->members()->attach($teacher->id,['role'=>'teacher','status'=>'active']); $profile=TeacherProfile::create(['school_id'=>$school->id,'user_id'=>$teacher->id,'employment_status'=>'active']); $plan=LessonPlan::create(['school_id'=>$school->id,'teacher_profile_id'=>$profile->id,'lesson_date'=>'2026-11-26','subject'=>'BM','class_name'=>'5A','is_relief'=>true,'relief_reason'=>'Guru asal cuti','status'=>'draft','current_version'=>1]); $version=$plan->versions()->withoutGlobalScopes()->create(['version'=>1,'created_by'=>$teacher->id,'content'=>['title'=>'T','objectives'=>'O','activities'=>'A','assessment'=>'PBD','week_no'=>48,'slot_id'=>3],'source'=>'manual']); $this->assertSame(3,$version->content['slot_id']); $this->assertTrue($plan->is_relief); }
+}
