@@ -37,14 +37,17 @@ class OwnerSchoolController extends Controller
         $data = $this->validated($request);
         $school = DB::transaction(function () use ($data, $auditLogger, $request): School {
             $key = $request->header('Idempotency-Key');
-            if ($key && ($existing = School::where('workspace_domain', 'idempotency:'.$key)->first())) {
+            if ($key !== null && ! preg_match('/\A[A-Za-z0-9._:-]{1,255}\z/', $key)) {
+                abort(422, 'Idempotency-Key must be 1-255 ASCII token characters.');
+            }
+            if ($key && ($existing = School::where('idempotency_key', $key)->first())) {
                 return $existing;
             }
             $school = School::create([
                 ...$data,
                 'slug' => Str::slug($data['name']),
                 'is_active' => true,
-                'workspace_domain' => $key ? 'idempotency:'.$key : ($data['workspace_domain'] ?? null),
+                'idempotency_key' => $key,
             ]);
             $auditLogger->record('platform.school_created', null, School::class, (string) $school->id, [
                 'subdomain' => $school->subdomain,

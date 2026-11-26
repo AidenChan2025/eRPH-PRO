@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class School extends Model
 {
-    protected $fillable = ['name', 'slug', 'subdomain', 'workspace_domain', 'is_active', 'is_demo', 'archived_at'];
+    protected $fillable = ['name', 'slug', 'subdomain', 'workspace_domain', 'idempotency_key', 'is_active', 'is_demo', 'archived_at'];
 
     protected $casts = ['is_active' => 'boolean', 'is_demo' => 'boolean', 'archived_at' => 'datetime'];
 
