@@ -8,7 +8,7 @@
         :root{--ink:#172033;--muted:#687386;--blue:#2563eb;--line:#e5eaf2;--canvas:#f7f9fc;--error:#b42318}
         *{box-sizing:border-box}
         body{margin:0;background:var(--canvas);color:var(--ink);font:15px/1.6 system-ui,sans-serif}
-        .main{max-width:620px;margin:auto;padding:64px 24px}
+        .main{width:clamp(80vw,90vw,1800px);max-width:none;margin-inline:auto;padding:64px 24px}
         .eyebrow{color:var(--blue);font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase}
         .title{margin:8px 0;font-size:34px;letter-spacing:-.05em}
         .muted{color:var(--muted)}

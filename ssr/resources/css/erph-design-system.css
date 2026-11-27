@@ -39,3 +39,12 @@ h1,h2,h3{font-family:Manrope,Inter,sans-serif}
 .auth-visual{background:linear-gradient(145deg,#dee0ff,#f8f9ff)}
 .auth-orb{background:#8a99fe;box-shadow:-70px -25px 0 rgba(186,195,255,.85)}
 .google{background:#24389c}.google:hover{background:#1b2b8c}
+
+/* Responsive page shells: wide on desktop, edge-to-edge with safe padding on mobile. */
+@media(min-width:768px){
+  .site-wrap,.shell,.main,.layout,.workspace-shell,.home-hero,.hero,.section-inner,.nav{width:clamp(80vw,90vw,1800px)!important;max-width:none!important;margin-inline:auto;box-sizing:border-box}
+  .site-header{width:clamp(80vw,90vw,1800px)!important;max-width:none!important}
+}
+@media(max-width:767px){
+  .site-wrap,.shell,.main,.layout,.workspace-shell,.home-hero,.hero,.section-inner,.nav{width:100%!important;max-width:none!important;margin-inline:auto;padding-inline:16px;box-sizing:border-box}
+}

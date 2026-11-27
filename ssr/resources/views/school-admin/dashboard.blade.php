@@ -9,7 +9,7 @@
         *{box-sizing:border-box}body{margin:0;background:var(--canvas);color:var(--ink);font:15px Arial,sans-serif}
         .top{height:72px;padding:0 34px;display:flex;align-items:center;justify-content:space-between;background:#fff;border-bottom:1px solid var(--line)}
         .brand{display:flex;align-items:center;gap:11px;font-weight:800}.mark{display:grid;place-items:center;width:36px;height:36px;border-radius:11px;color:#fff;background:var(--blue)}
-        .top span:last-child{color:var(--muted);font-size:13px}.main{max-width:1180px;margin:auto;padding:44px 30px}
+        .top span:last-child{color:var(--muted);font-size:13px}.main{width:clamp(80vw,90vw,1800px);max-width:none;margin-inline:auto;padding:44px 30px}
         .eyebrow{color:var(--blue);font-size:11px;font-weight:700;letter-spacing:.13em;text-transform:uppercase}
         .heading{display:flex;justify-content:space-between;align-items:end;margin-bottom:28px}.heading h1{margin:8px 0 0;font:800 36px/1.1 Arial,sans-serif;letter-spacing:-.055em}.heading p{color:var(--muted)}
         .card{overflow:hidden;margin-bottom:24px;border:1px solid var(--line);border-radius:16px;background:#fff;box-shadow:0 10px 28px #1e315308}

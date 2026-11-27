@@ -10,7 +10,7 @@
         * { box-sizing:border-box; } body { margin:0; background:var(--canvas); color:var(--ink); font:15px system-ui,sans-serif; }
         .top { min-height:72px; padding:0 34px; display:flex; align-items:center; justify-content:space-between; background:#fff; border-bottom:1px solid var(--line); }
         .brand { font-weight:800; } .top span:last-child,.muted { color:var(--muted); font-size:13px; }
-        .main { max-width:1180px; margin:auto; padding:44px 30px; } .eyebrow { color:var(--blue); font-size:11px; font-weight:700; letter-spacing:.13em; text-transform:uppercase; }
+        .main {width:clamp(80vw,90vw,1800px);max-width:none;margin-inline:auto; padding:44px 30px; } .eyebrow { color:var(--blue); font-size:11px; font-weight:700; letter-spacing:.13em; text-transform:uppercase; }
         h1 { margin:8px 0; font-size:36px; letter-spacing:-.05em; } h2 { margin:0 0 18px; font-size:20px; }
         .card { padding:21px; border:1px solid var(--line); border-radius:16px; background:#fff; box-shadow:0 10px 28px #1e315308; }
         .filters { display:flex; gap:14px; align-items:end; flex-wrap:wrap; margin:24px 0; } label { display:grid; gap:6px; color:var(--muted); font-size:12px; }
